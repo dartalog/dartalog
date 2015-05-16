@@ -1,0 +1,26 @@
+name: 'dartalog'
+version: 0.0.1
+description: A web app built using polymer.dart.
+#author: <your name> <email@example.com>
+#homepage: https://www.example.com
+environment:
+  sdk: '>=1.0.0 <2.0.0'
+dependencies:
+  browser: 'any'
+  paper_elements: 'any'
+  core_elements: 'any'
+  polymer: 'any'
+  rpc: 'any'
+  logging: 'any'
+  logging_handlers: 'any'
+  shelf: 'any'
+  sqljocky: 'any'
+  options_file: 'any'
+  uuid: 'any'
+  http: 'any'
+  crypto: 'any'
+  _discoveryapis_commons: 'any'
+
+transformers:
+- polymer:
+    entry_points: web/index.html

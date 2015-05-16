@@ -1,0 +1,101 @@
+{
+ "kind": "discovery#restDescription",
+ "etag": "b8e068ede48f3ed99b2608c9087e38f01e6e0fb2",
+ "discoveryVersion": "v1",
+ "id": "dartalog:0.1",
+ "name": "dartalog",
+ "version": "0.1",
+ "revision": "0",
+ "description": "Dartalog REST API",
+ "protocol": "rest",
+ "baseUrl": "http://localhost:8080/dartalog/0.1/",
+ "basePath": "/dartalog/0.1/",
+ "rootUrl": "http://localhost:8080/",
+ "servicePath": "dartalog/0.1/",
+ "parameters": {},
+ "schemas": {
+  "ListOfField": {
+   "id": "ListOfField",
+   "type": "array",
+   "items": {
+    "$ref": "Field"
+   }
+  },
+  "Field": {
+   "id": "Field",
+   "type": "object",
+   "properties": {
+    "uuid": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "type": {
+     "type": "string"
+    },
+    "format": {
+     "type": "string"
+    }
+   }
+  },
+  "ListOfTemplate": {
+   "id": "ListOfTemplate",
+   "type": "array",
+   "items": {
+    "$ref": "Template"
+   }
+  },
+  "Template": {
+   "id": "Template",
+   "type": "object",
+   "properties": {
+    "uuid": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "fields": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  }
+ },
+ "methods": {},
+ "resources": {
+  "fields": {
+   "methods": {
+    "getAll": {
+     "id": "DartalogApi.fields.getAll",
+     "path": "fields/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "ListOfField"
+     }
+    }
+   },
+   "resources": {}
+  },
+  "templates": {
+   "methods": {
+    "getAll": {
+     "id": "DartalogApi.templates.getAll",
+     "path": "templates/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "ListOfTemplate"
+     }
+    }
+   },
+   "resources": {}
+  }
+ }
+}

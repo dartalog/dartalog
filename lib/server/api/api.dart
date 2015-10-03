@@ -9,3 +9,4 @@ part 'src/dartalog_api.dart';
 
 part 'src/resources/field_resource.dart';
 part 'src/resources/template_resource.dart';
+part 'src/responses/uuid_response.dart';

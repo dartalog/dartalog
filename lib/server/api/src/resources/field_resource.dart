@@ -10,15 +10,15 @@ class FieldResource {
   }
 
   @ApiMethod(method: 'POST', path: 'fields/')
-  Future<String> create(Field field) async {
+  Future<UuidResponse> create(Field field) async {
     String output = await model.write(field);
-    return output;
+    return new UuidResponse.fromUuid(output);
   }
 
   @ApiMethod(method: 'PUT', path: 'fields/{uuid}/')
-  Future<String> update(String uuid, Field field) async {
+  Future<UuidResponse> update(String uuid, Field field) async {
     String output = await model.write(field,uuid);
-    return output;
+    return new UuidResponse.fromUuid(output);
   }
 
 }

@@ -48,7 +48,7 @@ class FieldModel extends _AModel {
     return output;
   }
 
-  Future<Template> getByUUID(String uuid) {
+  Future<Field> getByUUID(String uuid) {
     if(!isUuid(uuid)) {
       throw new ValidationException("Not a valid UUID: ${uuid}");
     }
@@ -62,9 +62,7 @@ class FieldModel extends _AModel {
           return null;
         } else {
           dynamic result = results[0];
-          Map<String,Field> output = new Map<String,Field>();
-          output[formatUuid(result.uuid)] = new Field.fromData(result);
-          return output;
+          return new Field.fromData(result);
         }
       });
     });

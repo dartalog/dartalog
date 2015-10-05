@@ -19,6 +19,7 @@ dependencies:
   uuid: 'any'
   http: 'any'
   crypto: 'any'
+  route_hierarchical: 'any'
   _discoveryapis_commons: 'any'
 
 transformers:

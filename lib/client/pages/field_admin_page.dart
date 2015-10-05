@@ -1,24 +1,38 @@
 // Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
+@HtmlImport("field_admin_page.html")
+library dartalog.client.pages.field_admin_page;
+
 import 'dart:html';
 import 'dart:async';
 import 'package:logging/logging.dart';
+
 import 'package:polymer/polymer.dart';
+import 'package:paper_elements/paper_input.dart';
+import 'package:paper_elements/paper_button.dart';
 import 'package:paper_elements/paper_action_dialog.dart';
+import 'package:paper_elements/paper_shadow.dart';
+import 'package:paper_elements/paper_item.dart';
+import 'package:paper_elements/paper_dropdown.dart';
+import 'package:paper_elements/paper_dropdown_menu.dart';
+import 'package:core_elements/core_selector.dart';
+import 'package:core_elements/core_menu.dart';
+
+
 import 'package:dartalog/dartalog.dart';
 import 'package:dartalog/client/pages/pages.dart';
 import 'package:dartalog/client/client.dart';
 
-/// A Polymer `<property-admin-page>` element.
-@CustomTag('property-admin-page')
-class PropertyAdminPage extends APage {
-  static final Logger _log = new Logger("PropertyAdminPage");
+/// A Polymer `<field-admin-page>` element.
+@CustomTag('field-admin-page')
+class FieldAdminPage extends APage {
+  static final Logger _log = new Logger("FieldAdminPage");
 
   Map fields = new ObservableMap();
 
   /// Constructor used to create instance of MainApp.
-  PropertyAdminPage.created() : super.created();
+  FieldAdminPage.created() : super.created();
 
   @observable Map schema = new ObservableMap();
   @observable Map field_errors = new ObservableMap();

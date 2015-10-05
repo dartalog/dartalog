@@ -9,4 +9,9 @@ class TemplateResource {
       return output;
   }
 
+  @ApiMethod(path: 'templates/{uuid}/')
+  Future<Template> get(String uuid) async {
+    Template output = await model.getByUUID(uuid);
+    return output;
+  }
 }

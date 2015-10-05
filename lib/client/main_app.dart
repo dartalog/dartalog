@@ -1,22 +1,59 @@
 // Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
+@HtmlImport('main_app.html')
+library dartalog.client.main_app;
+
 import 'dart:html';
 
 import 'package:logging/logging.dart';
+import 'package:route_hierarchical/client.dart';
+
 import 'package:polymer/polymer.dart';
+import 'package:core_elements/core_scaffold.dart';
+import 'package:core_elements/core_toolbar.dart';
+import 'package:core_elements/core_icon.dart';
+import 'package:core_elements/core_animated_pages.dart';
+import 'package:core_elements/core_animated_pages/transitions/slide_from_right.dart';
+import 'package:paper_elements/paper_item.dart';
+import 'package:paper_elements/paper_icon_button.dart';
 import 'package:paper_elements/paper_input.dart';
+import 'package:paper_elements/paper_progress.dart';
+import 'pages/field_admin_page.dart';
+
+import 'pages/field_admin_page.dart';
 
 /// A Polymer `<main-app>` element.
 @CustomTag('main-app')
 class MainApp extends PolymerElement {
   @observable String reversed = '';
 
+  @observable String visiblePage = "field_admin";
+
+  final Router router = new Router(useFragment: true);
+
+  CoreScaffold get scaffold => $['scaffold'];
+
   /// Constructor used to create instance of MainApp.
   MainApp.created() : super.created();
 
-  void reverseText(Event event, Object object, PaperInput target) {
-    reversed = target.value.split('').reversed.join('');
+  domReady() {
+    // Set up the routes for all the pages.
+    router.root.addRoute(
+        name: "Field Admin", path: "field_admin",
+        defaultRoute: true,
+        enter: enterRoute);
+
+    router.listen();
+  }
+
+  void routeChanged() {
+    if (visiblePage is! String) return;
+    router.go("field_admin", {});
+  }
+
+  void enterRoute(RouteEvent e) {
+    visiblePage = e.path;
   }
 
   // Optional lifecycle methods - uncomment if needed.

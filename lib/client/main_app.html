@@ -3,41 +3,62 @@
   is governed by a BSD-style license that can be found in the LICENSE file.
 -->
 
-<!-- import polymer-element's definition -->
-<link rel="import" href="../../../packages/polymer/polymer.html">
-<link rel="import" href="../../../packages/core_elements/core_toolbar.html">
-<link rel="import" href="../../../packages/paper_elements/paper_icon_button.html">
-<link rel="import" href="../../../packages/paper_elements/paper_input.html">
-<link rel="import" href="../../../packages/paper_elements/paper_progress.html">
 
 <polymer-element name="main-app">
   <template>
-    <style>
-      :host {
-        display: block;
-      }
-    </style>
-    <core-toolbar id="main_toolbar" class="short">
-      <paper-icon-button icon="arrow-back"></paper-icon-button>
-      <span flex>{{currentPage.title}}</span>
-      <paper-icon-button icon="search"></paper-icon-button>
-      <paper-input label="Search"></paper-input>
+      <link rel="stylesheet" href="main_app.css">
 
-      <template if="{{currentPage.supportsAdding}}">
-        <paper-icon-button icon="add" on-click="{{addClicked}}"></paper-icon-button>
-      </template>
-      <paper-icon-button icon="account-circle"></paper-icon-button>
-      <paper-icon-button icon="bug-report"></paper-icon-button>
+      <core-scaffold id="scaffold">
+          <nav>
+              <core-toolbar><span>Single Page Polymer</span></core-toolbar>
+              <core-menu selected="0">
+                  <paper-item noink>
+                      <core-icon icon="label-outline"></core-icon>
+                      <a href="#one">Single</a>
+                  </paper-item>
+                  <paper-item noink>
+                      <core-icon icon="label-outline"></core-icon>
+                      <a href="#two">page</a>
+                  </paper-item>
+              </core-menu>
+          </nav>
+          <core-toolbar tool flex>
+              <div flex>{{selectedPage.name}}</div>
+              <core-icon-button icon="refresh"></core-icon-button>
+              <core-icon-button icon="add"></core-icon-button>
+          </core-toolbar>
+      <!--    <core-toolbar tool>
+              <paper-icon-button icon="arrow-back"></paper-icon-button>
+              <span flex>{{currentPage.title}}</span>
+              <paper-icon-button icon="search"></paper-icon-button>
+              <paper-input label="Search"></paper-input>
+
+              <template if="{{currentPage.supportsAdding}}">
+                  <paper-icon-button icon="add" on-click="{{addClicked}}"></paper-icon-button>
+              </template>
+              <paper-icon-button icon="account-circle"></paper-icon-button>
+              <paper-icon-button icon="bug-report"></paper-icon-button>
+          </core-toolbar>-->
+
+          <core-animated-pages id="pages" selected="{{visiblePage}}"
+                               valueattr="path"
+                               transitions="slide-from-right"
+                               >
+              <section path="field_admin" layout vertical center-center>
+
+              <field-admin-page id="field_admin"></field-admin-page>
+                  </section>
+          </core-animated-pages>
+      </core-scaffold>
+<!--
       <!--<paper-icon-button icon="more-vert"></paper-icon-button>-->
-    </core-toolbar>
+<!--
     <template if="{{process_active}}">
       <paper-progress indeterminate></paper-progress>
     </template>
 
     <section style="position:absolute; top:80px;left:14px;right:14px;bottom:150px;overflow:hidden;">
-      <property-admin-page id="property_admin"></property-admin-page>
     </section>
-
+-->
   </template>
-  <script type="application/dart" src="main_app.dart"></script>
 </polymer-element>

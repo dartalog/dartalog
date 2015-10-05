@@ -5,8 +5,14 @@ class FieldResource {
 
   @ApiMethod(path: 'fields/')
   Future<List<Field>> getAll() async {
-      List<Field> output =await model.getAll();
-      return output;
+    List<Field> output =await model.getAll();
+    return output;
+  }
+
+  @ApiMethod(path: 'fields/{uuid}/')
+  Future<Field> get(String uuid) async {
+    Field output = await model.getByUUID(uuid);
+    return output;
   }
 
   @ApiMethod(method: 'POST', path: 'fields/')

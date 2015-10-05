@@ -47,22 +47,20 @@ class TemplateModel extends _AModel {
     return output;
   }
 
-  Future<Map> getTemplateByUUID(String uuid) {
+  Future<Map> getByUUID(String uuid) {
     if(!isUuid(uuid)) {
       throw new ValidationException("Not a valid UUID: ${uuid}");
     }
 
     _log.info("Getting specific field by UUID: ${uuid}");
     mysql.ConnectionPool pool = Model.getConnectionPool();
-    return pool.query(_GET_FIELD_BY_UUID + uuid.replaceAll("-", "")).then((Stream str) {
+    return pool.query(_GET_TEMPLATE_BY_UUID.replaceAll(_AModel._UUID_REPLACEMENT_STRING, uuid.replaceAll("-", ""))).then((Stream str) {
       return str.toList().then((results) {
         if(results.length==0) {
           return null;
         } else {
           dynamic result = results[0];
-          Map<String,Map> output = new Map<String,Map>();
-          output[formatUuid(result.uuid)] = this._createFieldMap(result);
-          return output;
+          return new Template.fromData(result);
         }
       });
     });

@@ -8,7 +8,6 @@ import 'dart:async' as async;
 import 'dart:convert' as convert;
 
 import 'package:_discoveryapis_commons/_discoveryapis_commons.dart' as commons;
-import 'package:crypto/crypto.dart' as crypto;
 import 'package:http/http.dart' as http;
 
 export 'package:_discoveryapis_commons/_discoveryapis_commons.dart' show
@@ -34,6 +33,80 @@ class FieldsResourceApi {
 
   FieldsResourceApi(commons.ApiRequester client) : 
       _requester = client;
+
+  /**
+   * [request] - The metadata request object.
+   *
+   * Request parameters:
+   *
+   * Completes with a [UuidResponse].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<UuidResponse> create(Field request) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (request != null) {
+      _body = convert.JSON.encode((request).toJson());
+    }
+
+    _url = 'fields/';
+
+    var _response = _requester.request(_url,
+                                       "POST",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new UuidResponse.fromJson(data));
+  }
+
+  /**
+   * Request parameters:
+   *
+   * [uuid] - Path parameter: 'uuid'.
+   *
+   * Completes with a [Field].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<Field> get(core.String uuid) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (uuid == null) {
+      throw new core.ArgumentError("Parameter uuid is required.");
+    }
+
+    _url = 'fields/' + commons.Escaper.ecapeVariable('$uuid') + '/';
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new Field.fromJson(data));
+  }
 
   /**
    * Request parameters:
@@ -67,6 +140,48 @@ class FieldsResourceApi {
     return _response.then((data) => new ListOfField.fromJson(data));
   }
 
+  /**
+   * [request] - The metadata request object.
+   *
+   * Request parameters:
+   *
+   * [uuid] - Path parameter: 'uuid'.
+   *
+   * Completes with a [UuidResponse].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<UuidResponse> update(Field request, core.String uuid) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (request != null) {
+      _body = convert.JSON.encode((request).toJson());
+    }
+    if (uuid == null) {
+      throw new core.ArgumentError("Parameter uuid is required.");
+    }
+
+    _url = 'fields/' + commons.Escaper.ecapeVariable('$uuid') + '/';
+
+    var _response = _requester.request(_url,
+                                       "PUT",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new UuidResponse.fromJson(data));
+  }
+
 }
 
 
@@ -75,6 +190,43 @@ class TemplatesResourceApi {
 
   TemplatesResourceApi(commons.ApiRequester client) : 
       _requester = client;
+
+  /**
+   * Request parameters:
+   *
+   * [uuid] - Path parameter: 'uuid'.
+   *
+   * Completes with a [Template].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<Template> get(core.String uuid) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (uuid == null) {
+      throw new core.ArgumentError("Parameter uuid is required.");
+    }
+
+    _url = 'templates/' + commons.Escaper.ecapeVariable('$uuid') + '/';
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new Template.fromJson(data));
+  }
 
   /**
    * Request parameters:
@@ -232,6 +384,26 @@ class Template {
     if (name != null) {
       _json["name"] = name;
     }
+    if (uuid != null) {
+      _json["uuid"] = uuid;
+    }
+    return _json;
+  }
+}
+
+class UuidResponse {
+  core.String uuid;
+
+  UuidResponse();
+
+  UuidResponse.fromJson(core.Map _json) {
+    if (_json.containsKey("uuid")) {
+      uuid = _json["uuid"];
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
     if (uuid != null) {
       _json["uuid"] = uuid;
     }

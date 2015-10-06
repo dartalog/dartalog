@@ -5,6 +5,7 @@
 library dartalog.client.main_app;
 
 import 'dart:html';
+import 'package:http/browser_client.dart' as http;
 
 import 'package:logging/logging.dart';
 import 'package:route_hierarchical/client.dart';
@@ -19,8 +20,8 @@ import 'package:paper_elements/paper_item.dart';
 import 'package:paper_elements/paper_icon_button.dart';
 import 'package:paper_elements/paper_input.dart';
 import 'package:paper_elements/paper_progress.dart';
-import 'pages/field_admin_page.dart';
 
+import 'api/dartalog.dart';
 import 'pages/field_admin_page.dart';
 
 /// A Polymer `<main-app>` element.
@@ -34,6 +35,10 @@ class MainApp extends PolymerElement {
 
   CoreScaffold get scaffold => $['scaffold'];
 
+  final DartalogApi api = new DartalogApi(new http.BrowserClient(), rootUrl: "http://localhost:8888/", servicePath: "api/dartalog/0.1/");
+
+  FieldAdminPage get fieldAdmin=> $['field_admin'];
+
   /// Constructor used to create instance of MainApp.
   MainApp.created() : super.created();
 
@@ -45,6 +50,8 @@ class MainApp extends PolymerElement {
         enter: enterRoute);
 
     router.listen();
+
+    this.fieldAdmin.init(this.api);
   }
 
   void routeChanged() {

@@ -1,15 +1,16 @@
 part of pages;
 
+
 abstract class APage extends PolymerElement {
   APage.created() : super.created();
 
-  Api api;
+  DartalogApi api;
 
   @observable bool supportsAdding = false;
 
   @observable String title = "";
 
-  void init(Api api) {
+  void init(DartalogApi api) {
     this.api = api;
   }
 

@@ -14,16 +14,16 @@
               <core-menu selected="0">
                   <paper-item noink>
                       <core-icon icon="label-outline"></core-icon>
-                      <a href="#one">Single</a>
+                      <a href="#field_admin">Fields</a>
                   </paper-item>
                   <paper-item noink>
                       <core-icon icon="label-outline"></core-icon>
-                      <a href="#two">page</a>
+                      <a href="#template_admin">Templates</a>
                   </paper-item>
               </core-menu>
           </nav>
           <core-toolbar tool flex>
-              <div flex>{{selectedPage.name}}</div>
+              <div flex>{{visiblePage}}</div>
               <core-icon-button icon="refresh"></core-icon-button>
               <core-icon-button icon="add"></core-icon-button>
           </core-toolbar>

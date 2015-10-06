@@ -24,12 +24,14 @@ import 'package:dartalog/dartalog.dart';
 import 'package:dartalog/client/pages/pages.dart';
 import 'package:dartalog/client/client.dart';
 
+import '../api/dartalog.dart';
+
 /// A Polymer `<field-admin-page>` element.
 @CustomTag('field-admin-page')
 class FieldAdminPage extends APage {
   static final Logger _log = new Logger("FieldAdminPage");
 
-  Map fields = new ObservableMap();
+  List fields = new ObservableList();
 
   /// Constructor used to create instance of MainApp.
   FieldAdminPage.created() : super.created();
@@ -41,21 +43,20 @@ class FieldAdminPage extends APage {
   @observable Map current_field = new ObservableMap();
 
   @override
-  void init(Api api) {
+  void init(DartalogApi api) {
     super.init(api);
     this.supportsAdding = true;
     this.title = "Property Admin";
     loadProperties();
-
   }
 
   Future loadProperties() async {
     schema.clear();
     fields.clear();
 
-    Map data = await api.getAllProperties();
-    fields.addAll(data["data"]);
-    schema.addAll(data["schema"]);
+    ListOfField data = await api.fields.getAll();
+
+    fields.addAll(data);
     current_field.clear();
     current_field_uuid = '';
   }
@@ -106,27 +107,4 @@ class FieldAdminPage extends APage {
 
   }
 
-// Optional lifecycle methods - uncomment if needed.
-
-//  /// Called when an instance of main-app is inserted into the DOM.
-//  attached() {
-//    super.attached();
-//  }
-
-//  /// Called when an instance of main-app is removed from the DOM.
-//  detached() {
-//    super.detached();
-//  }
-
-//  /// Called when an attribute (such as a class) of an instance of
-//  /// main-app is added, changed, or removed.
-//  attributeChanged(String name, String oldValue, String newValue) {
-//    super.attributeChanges(name, oldValue, newValue);
-//  }
-
-//  /// Called when main-app has been fully prepared (Shadow DOM created,
-//  /// property observers set up, event listeners attached).
-//  ready() {
-//    super.ready();
-//  }
 }

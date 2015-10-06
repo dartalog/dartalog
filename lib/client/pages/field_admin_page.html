@@ -12,6 +12,8 @@
             }
 
         </style>
-    This is test content for the field admin page
+        <template repeat="{{field in fields}}">
+            <paper-item>{{field.name}}</paper-item>
+        </template>
     </template>
 </polymer-element>

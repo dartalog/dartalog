@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "b8e068ede48f3ed99b2608c9087e38f01e6e0fb2",
+ "etag": "0439007ef64cc81b48f4e4d230f79ceeadaf0044",
  "discoveryVersion": "v1",
  "id": "dartalog:0.1",
  "name": "dartalog",
@@ -35,6 +35,15 @@
      "type": "string"
     },
     "format": {
+     "type": "string"
+    }
+   }
+  },
+  "UuidResponse": {
+   "id": "UuidResponse",
+   "type": "object",
+   "properties": {
+    "uuid": {
      "type": "string"
     }
    }
@@ -78,6 +87,60 @@
      "response": {
       "$ref": "ListOfField"
      }
+    },
+    "get": {
+     "id": "DartalogApi.fields.get",
+     "path": "fields/{uuid}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "uuid": {
+       "type": "string",
+       "description": "Path parameter: 'uuid'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "uuid"
+     ],
+     "response": {
+      "$ref": "Field"
+     }
+    },
+    "create": {
+     "id": "DartalogApi.fields.create",
+     "path": "fields/",
+     "httpMethod": "POST",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "Field"
+     },
+     "response": {
+      "$ref": "UuidResponse"
+     }
+    },
+    "update": {
+     "id": "DartalogApi.fields.update",
+     "path": "fields/{uuid}/",
+     "httpMethod": "PUT",
+     "parameters": {
+      "uuid": {
+       "type": "string",
+       "description": "Path parameter: 'uuid'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "uuid"
+     ],
+     "request": {
+      "$ref": "Field"
+     },
+     "response": {
+      "$ref": "UuidResponse"
+     }
     }
    },
    "resources": {}
@@ -92,6 +155,25 @@
      "parameterOrder": [],
      "response": {
       "$ref": "ListOfTemplate"
+     }
+    },
+    "get": {
+     "id": "DartalogApi.templates.get",
+     "path": "templates/{uuid}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "uuid": {
+       "type": "string",
+       "description": "Path parameter: 'uuid'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "uuid"
+     ],
+     "response": {
+      "$ref": "Template"
      }
     }
    },

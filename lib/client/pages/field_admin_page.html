@@ -6,12 +6,8 @@
 <!-- import polymer-element's definition -->
 <polymer-element name="field-admin-page">
     <template>
-        <style>
-            :host {
-                display: block;
-            }
+        <link rel="stylesheet" href="field_admin_page.css">
 
-        </style>
         <template repeat="{{field in fields}}">
             <paper-item>{{field.name}}</paper-item>
         </template>

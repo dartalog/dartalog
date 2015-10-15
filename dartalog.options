@@ -5,4 +5,4 @@ mysql_user=dartalog
 mysql_password=rRJPnQUttLPqAxUA
 musql_port=3306
 mysql_db=dartalog
-mysql_host=192.168.1.10
+mysql_host=localhost

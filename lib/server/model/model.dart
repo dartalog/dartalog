@@ -4,11 +4,9 @@ import 'dart:async';
 
 import 'package:logging/logging.dart';
 
-//import 'package:mongo_dart/mongo_dart.dart' as mongo;
-import 'package:sqljocky/sqljocky.dart' as mysql;
-//import 'package:server/database/database.dart';
+import 'package:dart_orm/dart_orm.dart' as ORM;
+import 'package:dart_orm_adapter_mysql/dart_orm_adapter_mysql.dart' as MySQL;
 import 'package:options_file/options_file.dart';
-
 
 import 'package:dartalog/dartalog.dart';
 
@@ -24,23 +22,24 @@ part 'src/data/template.dart';
 
 
 class Model {
-  static mysql.ConnectionPool _pool;
-
   static OptionsFile options;
 
-  static void initializeConnectionPool() {
+  static Future setUpDataAdapter() async {
     if(options==null) {
       options = new OptionsFile('dartalog.options');
     }
-    _pool = new mysql.ConnectionPool(host: options.getString("mysql_host"), port: options.getInt("mysql_port",3306),
-    user:options.getString("mysql_user"),password: options.getString("mysql_password"), db: options.getString("mysql_db"), max: 5);
-  }
+    String connection_string = 'mysql://$options.getString("mysql_user"):$options.getString("mysql_password")@$options.getString("mysql_host"):$options.getInt("mysql_port",3306)/$options.getString("mysql_db")';
 
-  static mysql.ConnectionPool getConnectionPool() {
-    if(_pool==null) {
-      initializeConnectionPool();
-    }
-    return _pool;
+    ORM.DBAdapter adapter = new MySQL.MySQLDBAdapter(connection_string);
+
+    await adapter.connect();
+
+    ORM.addAdapter('modelAdapter', adapter);
+    ORM.setDefaultAdapter('modelAdapter');
+
+    bool migrationResult = await ORM.Migrator.migrate();
+
+    assert(migrationResult);
   }
 
 }

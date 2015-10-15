@@ -1,9 +1,18 @@
 part of model;
 
-class Field {
+class Field extends ORM.Model {
+  @ORM.DBField()
+  @ORM.DBFieldPrimaryKey()
+  @ORM.DBFieldType()
   String uuid;
+
+  @ORM.DBField()
   String name;
+
+  @ORM.DBField()
   String type;
+
+  @ORM.DBField()
   String format = "";
 
   Field();

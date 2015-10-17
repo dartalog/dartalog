@@ -9,7 +9,15 @@
         <link rel="stylesheet" href="field_admin_page.css">
 
         <template repeat="{{field in fields}}">
-            <paper-item>{{field.name}}</paper-item>
+            <paper-item horizontal>{{field.name}}</paper-item>
         </template>
+            <paper-input label="Name"></paper-input>
+            <paper-dropdown-menu label="Type">
+                    <paper-item>Croissant</paper-item>
+                    <paper-item>Donut</paper-item>
+                    <paper-item>Financier</paper-item>
+                    <paper-item>Madeleine</paper-item>
+            </paper-dropdown-menu>
+            <paper-input label="format"></paper-input>
     </template>
 </polymer-element>

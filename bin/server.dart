@@ -17,6 +17,7 @@ main() async {
   Logger.root.level = Level.INFO;
   Logger.root.onRecord.listen(new LogPrintHandler());
   try {
+
     OptionsFile options = new OptionsFile('dartalog.options');
     Model.options = options;
 

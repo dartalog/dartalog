@@ -6,6 +6,7 @@ description: A web app built using polymer.dart.
 environment:
   sdk: '>=1.0.0 <2.0.0'
 dependencies:
+  args: 'any'
   browser: 'any'
   paper_elements: 'any'
   core_elements: 'any'
@@ -14,8 +15,7 @@ dependencies:
   logging: 'any'
   logging_handlers: 'any'
   shelf: 'any'
-  dart_orm: 'any'
-  dart_orm_adapter_mysql: 'any'
+  mongo_dart: 'any'
   options_file: 'any'
   uuid: 'any'
   http: 'any'

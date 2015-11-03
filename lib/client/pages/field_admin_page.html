@@ -11,16 +11,20 @@
         <template repeat="{{field in fields}}">
             <paper-item horizontal>{{field.name}}</paper-item>
         </template>
-            <paper-input label="Name"></paper-input>
-            <paper-dropdown-menu label="Type">
-                <paper-menu class="dropdown-content">
 
-                <paper-item>Croissant</paper-item>
-                    <paper-item>Donut</paper-item>
-                    <paper-item>Financier</paper-item>
-                    <paper-item>Madeleine</paper-item>
-                    </paper-menu>
-            </paper-dropdown-menu>
-            <paper-input label="format"></paper-input>
+<div layout vertical>
+        <paper-input floatinglabel label="Name" value="{{current_name}}"></paper-input>
+        <paper-dropdown-menu floatinglabel label="Type">
+            <paper-dropdown class="dropdown">
+                <core-menu valueattr="value" selected="{{current_type}}">
+                    <template repeat="{{field_type in FIELD_TYPES.keys}}">
+                        <paper-item value="{{field_type}}">{{FIELD_TYPES[field_type]}}</paper-item>
+                    </template>
+                </core-menu>
+            </paper-dropdown>
+        </paper-dropdown-menu>
+        <paper-input floatinglabel label="Format" value="{{current_format}}"></paper-input>
+        <paper-button raised on-click="{{saveClicked}}">Save</paper-button>
+</div>
     </template>
 </polymer-element>

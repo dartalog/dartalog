@@ -5,14 +5,10 @@ class FieldModel extends _AModel {
 
   FieldModel();
 
-  static const String _TABLE_NAME = "fields";
-
-  static const String _GET_ALL_FIELDS = "SELECT HEX(uuid) uuid, name, type, format FROM ${_TABLE_NAME} ORDER BY uuid;";
-  static const String _GET_FIELD_BY_UUID = "SELECT HEX(uuid) uuid,  name, type, format FROM ${_TABLE_NAME} WHERE uuid = 0x${_AModel._UUID_REPLACEMENT_STRING}";
-  static const String _GET_FIELD_BY_NAME = "SELECT HEX(uuid) uuid,  name, type, format FROM ${_TABLE_NAME} WHERE name = ?";
-  static const String _UPDATE_FIELD = "UPDATE ${_TABLE_NAME} SET name = ?, type = ?, format = ? WHERE uuid = 0x${_AModel._UUID_REPLACEMENT_STRING}";
-  static const String _INSERT_FIELD = "INSERT INTO ${_TABLE_NAME} (uuid, name, type, format) VALUES (0x${_AModel._UUID_REPLACEMENT_STRING},?, ?, ?);";
-
+  Future<mongo.DbCollection> getCollection() async {
+    mongo.Db db = await Model.setUpDataAdapter();
+    return db.collection("fields");
+  }
 
   Future<Map<String,String>> getAllIDsAndNames() async {
     _log.info("Getting all field IDs and names ");
@@ -23,7 +19,7 @@ class FieldModel extends _AModel {
 
     Map<String,String> output = new Map<String,String>();
     for (var result in results) {
-      output[formatUuid(result.uuid)] = result.name;
+      output[tools.formatUuid(result.uuid)] = result.name;
     }
     return output;
   }
@@ -31,9 +27,7 @@ class FieldModel extends _AModel {
   Future<List<Field>> getAll() async {
     _log.info("Getting all fields");
 
-    mongo.Db db = await Model.setUpDataAdapter();
-
-    mongo.DbCollection collection = db.collection("fields");
+    mongo.DbCollection collection = await getCollection();
 
     List results = await collection.find().toList();
 
@@ -53,7 +47,24 @@ class FieldModel extends _AModel {
 
   }
 
-  Future write(Map<String,Object> data, [String uuid = null]) async {
+  Future write(Field field, [String uuid = null]) async {
+    mongo.DbCollection collection = await getCollection();
+
+
+    if(tools.isNullOrWhitespace(uuid)) {
+      Map<String, dynamic> data = field.toMap();
+      data["uuid"] = tools.generateUuid();
+      collection.insert(data);
+      return data["uuid"];
+    } else {
+      if(!tools.isUuid(uuid)) {
+        throw new Exception("Invalid UUID");
+      }
+      var data = await collection.findOne({"uuid": uuid});
+      field.setData(data);
+      await collection.save(data);
+      return uuid;
+    }
 
  }
 

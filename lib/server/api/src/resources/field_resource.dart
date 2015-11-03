@@ -18,20 +18,36 @@ class FieldResource {
 
   @ApiMethod(path: 'fields/{uuid}/')
   Future<Field> get(String uuid) async {
+    try {
     Field output = await model.getByUUID(uuid);
     return output;
+    } catch(e,st) {
+      _log.severe(e,st);
+      throw e;
+    }
   }
 
   @ApiMethod(method: 'POST', path: 'fields/')
   Future<UuidResponse> create(Field field) async {
+    try {
       String output = await model.write(field);
       return new UuidResponse.fromUuid(output);
+    } catch(e,st) {
+    _log.severe(e,st);
+    throw e;
+    }
   }
 
   @ApiMethod(method: 'PUT', path: 'fields/{uuid}/')
   Future<UuidResponse> update(String uuid, Field field) async {
+    try {
     String output = await model.write(field,uuid);
     return new UuidResponse.fromUuid(output);
+    } catch(e,st) {
+      _log.severe(e,st);
+      throw e;
+    }
+
   }
 
 }

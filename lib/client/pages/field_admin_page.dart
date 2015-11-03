@@ -20,11 +20,11 @@ import 'package:core_elements/core_selector.dart';
 import 'package:core_elements/core_menu.dart';
 
 
-import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/dartalog.dart' as dartalog;
 import 'package:dartalog/client/pages/pages.dart';
 import 'package:dartalog/client/client.dart';
 
-import '../api/dartalog.dart';
+import '../api/dartalog.dart' as API;
 
 /// A Polymer `<field-admin-page>` element.
 @CustomTag('field-admin-page')
@@ -36,14 +36,15 @@ class FieldAdminPage extends APage {
   /// Constructor used to create instance of MainApp.
   FieldAdminPage.created() : super.created();
 
-  @observable Map schema = new ObservableMap();
-  @observable Map field_errors = new ObservableMap();
+  @published String current_uuid;
+  @published String current_name;
+  @published String current_type;
+  @published String current_format;
 
-  @observable String current_field_uuid = '';
-  @observable Map current_field = new ObservableMap();
+  Map<String,String> get FIELD_TYPES => dartalog.FIELD_TYPES;
 
   @override
-  void init(DartalogApi api) {
+  void init(API.DartalogApi api) {
     super.init(api);
     this.supportsAdding = true;
     this.title = "Property Admin";
@@ -51,28 +52,19 @@ class FieldAdminPage extends APage {
   }
 
   Future loadProperties() async {
-    schema.clear();
     fields.clear();
 
-    ListOfField data = await api.fields.getAll();
+    API.ListOfField data = await api.fields.getAll();
 
     fields.addAll(data);
-    current_field.clear();
-    current_field_uuid = '';
   }
 
   showModal(event, detail, target) {
     String uuid = target.dataset['uuid'];
-    current_field.clear();
-    current_field.addAll(this.fields[uuid]);
-    current_field_uuid = uuid;
-    field_errors.clear();
   }
 
   @override
   addItem() {
-    this.current_field_uuid = "";
-    this.current_field.clear();
   }
 
   validateField(event, detail, target) {
@@ -82,23 +74,10 @@ class FieldAdminPage extends APage {
   saveClicked(event, detail, target) async {
     try {
 
-      Map data = new Map();
+      API.Field field = new API.Field();
 
-      field_errors.clear();
-      for(String field in schema['properties'].keys) {
-        String value = current_field[field];
+      this.api.fields.create(field);
 
-        if(isNullOrWhitespace(value)&&schema["required"].contains(field)) {
-          field_errors[field] = "This field is required";
-        }
-        data[field] = value;
-      }
-
-      if(field_errors.length>0) {
-        return;
-      }
-
-      await this.api.writeProperty(data,this.current_field_uuid);
       loadProperties();
 
     } catch(e,st) {

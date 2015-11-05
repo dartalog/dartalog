@@ -24,46 +24,40 @@ class FieldModel extends _AModel {
     return output;
   }
 
-  Future<List<Field>> getAll() async {
+  Future<Map<String,Field>> getAll() async {
     _log.info("Getting all fields");
 
     mongo.DbCollection collection = await getCollection();
 
     List results = await collection.find().toList();
 
-    List<Field> output = new List<Field>();
+    Map<String,Field> output = new Map<String,Field>();
     for (var result in results) {
-      output.add(new Field.fromData(result));
+      mongo.ObjectId id = result["_id"];
+      String str_id = id.toJson();
+      output[str_id] = (new Field.fromData(result));
     }
     return output;
   }
 
-  Future<Field> getByUUID(String uuid) {
-    if(!isUuid(uuid)) {
-      throw new ValidationException("Not a valid UUID: ${uuid}");
-    }
-
-    _log.info("Getting specific field by UUID: ${uuid}");
+  Future<Field> getByID(String id) {
+    _log.info("Getting specific field by ID: ${id}");
 
   }
 
-  Future write(Field field, [String uuid = null]) async {
+  Future write(Field field, [String id = null]) async {
     mongo.DbCollection collection = await getCollection();
 
 
-    if(tools.isNullOrWhitespace(uuid)) {
+    if(tools.isNullOrWhitespace(id)) {
       Map<String, dynamic> data = field.toMap();
-      data["uuid"] = tools.generateUuid();
-      collection.insert(data);
-      return data["uuid"];
+      dynamic result = collection.insert(data);
+      return result.toString();
     } else {
-      if(!tools.isUuid(uuid)) {
-        throw new Exception("Invalid UUID");
-      }
-      var data = await collection.findOne({"uuid": uuid});
+      var data = await collection.findOne({"_id": id});
       field.setData(data);
       await collection.save(data);
-      return uuid;
+      return id;
     }
 
  }

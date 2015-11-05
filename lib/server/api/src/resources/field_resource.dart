@@ -8,7 +8,7 @@ class FieldResource {
   @ApiMethod(path: 'fields/')
   Future<List<Field>> getAll() async {
     try {
-      List<Field> output = await model.getAll();
+      dynamic output = await model.getAll();
       return output;
     } catch(e,st) {
      _log.severe(e,st);
@@ -19,7 +19,7 @@ class FieldResource {
   @ApiMethod(path: 'fields/{uuid}/')
   Future<Field> get(String uuid) async {
     try {
-    Field output = await model.getByUUID(uuid);
+    dynamic output = await model.getByUUID(uuid);
     return output;
     } catch(e,st) {
       _log.severe(e,st);

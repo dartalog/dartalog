@@ -1,7 +1,7 @@
 library model;
 
 import 'dart:async';
-
+import 'package:rpc/rpc.dart';
 import 'package:logging/logging.dart';
 
 import 'package:mongo_dart/mongo_dart.dart' as mongo;
@@ -23,17 +23,27 @@ part 'src/data/template.dart';
 
 
 class Model {
+  static final Logger _log = new Logger('Model');
+
   static OptionsFile options;
 
   static mongo.Db _db;
 
   static Future<mongo.Db> setUpDataAdapter() async {
     if (options == null) {
+      _log.info("Opening options file");
       options = new OptionsFile('dartalog.options');
     }
 
-    _db = new mongo.Db(options.getString("mongo"));
-    await _db.open();
-    return _db;
+    if(Model._db==null) {
+      _log.info("Opening database connection");
+      _db = new mongo.Db(options.getString("mongo"));
+      await _db.open();
+    }
+    if(_db.state==mongo.State.OPEN) {
+      return _db;
+    } else {
+      throw new Exception("Database connection not open");
+    }
   }
 }

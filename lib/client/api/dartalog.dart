@@ -111,7 +111,7 @@ class FieldsResourceApi {
   /**
    * Request parameters:
    *
-   * Completes with a [ListOfField].
+   * Completes with a [MapOfField].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
@@ -119,7 +119,7 @@ class FieldsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ListOfField> getAll() {
+  async.Future<MapOfField> getAll() {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -137,7 +137,7 @@ class FieldsResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new ListOfField.fromJson(data));
+    return _response.then((data) => new MapOfField.fromJson(data));
   }
 
   /**
@@ -268,7 +268,6 @@ class Field {
   core.String format;
   core.String name;
   core.String type;
-  core.String uuid;
 
   Field();
 
@@ -281,9 +280,6 @@ class Field {
     }
     if (_json.containsKey("type")) {
       type = _json["type"];
-    }
-    if (_json.containsKey("uuid")) {
-      uuid = _json["uuid"];
     }
   }
 
@@ -298,36 +294,7 @@ class Field {
     if (type != null) {
       _json["type"] = type;
     }
-    if (uuid != null) {
-      _json["uuid"] = uuid;
-    }
     return _json;
-  }
-}
-
-class ListOfField
-    extends collection.ListBase<Field> {
-  final core.List<Field> _inner;
-
-  ListOfField() : _inner = [];
-
-  ListOfField.fromJson(core.List json)
-      : _inner = json.map((value) => new Field.fromJson(value)).toList();
-
-  core.List toJson() {
-    return _inner.map((value) => (value).toJson()).toList();
-  }
-
-  Field operator [](core.int key) => _inner[key];
-
-  void operator []=(core.int key, Field value) {
-    _inner[key] = value;
-  }
-
-  core.int get length => _inner.length;
-
-  void set length(core.int newLength) {
-    _inner.length = newLength;
   }
 }
 
@@ -355,6 +322,42 @@ class ListOfTemplate
   void set length(core.int newLength) {
     _inner.length = newLength;
   }
+}
+
+class MapOfField
+    extends collection.MapBase<core.String, Field> {
+  final core.Map _innerMap = {};
+
+  MapOfField();
+
+  MapOfField.fromJson(core.Map _json) {
+    _json.forEach((core.String key, value) {
+      this[key] = new Field.fromJson(value);
+    });
+  }
+
+  core.Map toJson() {
+    var _json = {};
+    this.forEach((core.String key, value) {
+      _json[key] = (value).toJson();
+    });
+    return _json;
+  }
+
+  Field operator [](core.Object key)
+      => _innerMap[key];
+
+  operator []=(core.String key, Field value) {
+    _innerMap[key] = value;
+  }
+
+  void clear() {
+    _innerMap.clear();
+  }
+
+  core.Iterable<core.String> get keys => _innerMap.keys;
+
+  Field remove(core.Object key) => _innerMap.remove(key);
 }
 
 class Template {

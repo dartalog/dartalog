@@ -8,8 +8,8 @@
     <template>
         <link rel="stylesheet" href="field_admin_page.css">
 
-        <template repeat="{{field in fields}}">
-            <paper-item horizontal>{{field.name}}</paper-item>
+        <template repeat="{{field in fields.keys}}">
+            <paper-item horizontal on-click="{{fieldClicked}}" data-id="{{field}}">{{fields[field].name}}</paper-item>
         </template>
 
 <div layout vertical>
@@ -24,7 +24,8 @@
             </paper-dropdown>
         </paper-dropdown-menu>
         <paper-input floatinglabel label="Format" value="{{current_format}}"></paper-input>
-        <paper-button raised on-click="{{saveClicked}}">Save</paper-button>
+    <paper-button raised on-click="{{saveClicked}}">Save</paper-button>
+    <paper-button raised on-click="{{clearClicked}}">Clear</paper-button>
 </div>
     </template>
 </polymer-element>

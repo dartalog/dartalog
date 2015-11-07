@@ -25,5 +25,5 @@ const String SCHEMA_LINK_GET_OBJECTS = "get_objects";
 const String SCHEMA_LINK_GET_SETTINGS = "get_settings";
 const String SCHEMA_LINK_NUKE = "nuke";
 
-final Map<String,String> FIELD_TYPES = {'numeric': 'Numeric'};
+final Map<String,String> FIELD_TYPES = {'numeric': 'Numeric', 'string': 'String', 'date': 'Date'};
 

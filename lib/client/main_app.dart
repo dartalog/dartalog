@@ -12,6 +12,7 @@ import 'package:route_hierarchical/client.dart';
 
 import 'package:polymer/polymer.dart';
 import 'package:core_elements/core_scaffold.dart';
+import 'package:core_elements/core_pages.dart';
 import 'package:core_elements/core_toolbar.dart';
 import 'package:core_elements/core_icon.dart';
 import 'package:core_elements/core_animated_pages.dart';
@@ -22,13 +23,15 @@ import 'package:paper_elements/paper_input.dart';
 import 'package:paper_elements/paper_progress.dart';
 
 import 'api/dartalog.dart';
-import 'pages/field_admin_page.dart';
+import 'package:dartalog/client/pages/field_admin/field_admin_page.dart';
+import 'package:dartalog/client/pages/template_admin/template_admin_page.dart';
 
 /// A Polymer `<main-app>` element.
 @CustomTag('main-app')
 class MainApp extends PolymerElement {
   @observable String reversed = '';
 
+  @observable String visiblePageTitle = "Field Admin";
   @observable String visiblePage = "field_admin";
 
   final Router router = new Router(useFragment: true);
@@ -38,6 +41,7 @@ class MainApp extends PolymerElement {
   final DartalogApi api = new DartalogApi(new http.BrowserClient(), rootUrl: "http://localhost:8888/", servicePath: "api/dartalog/0.1/");
 
   FieldAdminPage get fieldAdmin=> $['field_admin'];
+  TemplateAdminPage get templateAdmin=> $['template_admin'];
 
   /// Constructor used to create instance of MainApp.
   MainApp.created() : super.created();
@@ -46,6 +50,10 @@ class MainApp extends PolymerElement {
     // Set up the routes for all the pages.
     router.root.addRoute(
         name: "Field Admin", path: "field_admin",
+        defaultRoute: false,
+        enter: enterRoute);
+    router.root.addRoute(
+        name: "Template Admin", path: "template_admin",
         defaultRoute: true,
         enter: enterRoute);
 
@@ -61,6 +69,7 @@ class MainApp extends PolymerElement {
 
   void enterRoute(RouteEvent e) {
     visiblePage = e.path;
+    this.visiblePageTitle = e.route.name;
   }
 
   // Optional lifecycle methods - uncomment if needed.

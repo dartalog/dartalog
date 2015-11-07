@@ -41,6 +41,7 @@ class Model {
       await _db.open();
     }
     if(_db.state==mongo.State.OPEN) {
+      _log.info("Database is open");
       return _db;
     } else {
       throw new Exception("Database connection not open");

@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "0439007ef64cc81b48f4e4d230f79ceeadaf0044",
+ "etag": "091abce7c7b52bcb09cc00d9c0196c3398dd05d4",
  "discoveryVersion": "v1",
  "id": "dartalog:0.1",
  "name": "dartalog",
@@ -14,10 +14,10 @@
  "servicePath": "dartalog/0.1/",
  "parameters": {},
  "schemas": {
-  "ListOfField": {
-   "id": "ListOfField",
-   "type": "array",
-   "items": {
+  "MapOfField": {
+   "id": "MapOfField",
+   "type": "object",
+   "additionalProperties": {
     "$ref": "Field"
    }
   },
@@ -25,14 +25,13 @@
    "id": "Field",
    "type": "object",
    "properties": {
-    "uuid": {
-     "type": "string"
-    },
     "name": {
-     "type": "string"
+     "type": "string",
+     "required": true
     },
     "type": {
-     "type": "string"
+     "type": "string",
+     "required": true
     },
     "format": {
      "type": "string"
@@ -85,7 +84,7 @@
      "parameters": {},
      "parameterOrder": [],
      "response": {
-      "$ref": "ListOfField"
+      "$ref": "MapOfField"
      }
     },
     "get": {

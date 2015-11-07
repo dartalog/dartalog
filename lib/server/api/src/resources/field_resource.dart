@@ -6,7 +6,7 @@ class FieldResource {
   FieldModel model = new FieldModel();
 
   @ApiMethod(path: 'fields/')
-  Future<List<Field>> getAll() async {
+  Future<Map<String,Field>> getAll() async {
     try {
       dynamic output = await model.getAll();
       return output;

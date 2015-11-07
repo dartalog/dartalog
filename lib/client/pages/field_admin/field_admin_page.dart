@@ -24,14 +24,14 @@ import 'package:dartalog/dartalog.dart' as dartalog;
 import 'package:dartalog/client/pages/pages.dart';
 import 'package:dartalog/client/client.dart';
 
-import '../api/dartalog.dart' as API;
+import '../../api/dartalog.dart' as API;
 
 /// A Polymer `<field-admin-page>` element.
 @CustomTag('field-admin-page')
 class FieldAdminPage extends APage {
   static final Logger _log = new Logger("FieldAdminPage");
 
-  List fields = new ObservableList();
+  Map fields = new ObservableMap();
 
   /// Constructor used to create instance of MainApp.
   FieldAdminPage.created() : super.created();
@@ -52,11 +52,16 @@ class FieldAdminPage extends APage {
   }
 
   Future loadProperties() async {
+    try {
     fields.clear();
 
-    API.ListOfField data = await api.fields.getAll();
+    API.MapOfField data = await api.fields.getAll();
 
     fields.addAll(data);
+    } catch(e,st) {
+      _log.severe(e, st);
+      window.alert(e.toString());
+    }
   }
 
   showModal(event, detail, target) {
@@ -67,21 +72,49 @@ class FieldAdminPage extends APage {
   addItem() {
   }
 
+  fieldClicked(event, detail, target) async {
+    try {
+      String id = target.dataset["id"];
+      API.Field field = this.fields[id];
+
+      this.current_format = field.format;
+      this.current_name = field.name;
+      this.current_type = field.type;
+      this.current_uuid = id;
+    } catch(e,st) {
+      _log.severe(e, st);
+      window.alert(e.toString());
+    }
+  }
+
   validateField(event, detail, target) {
     _log.info("Validating");
   }
 
+  clearClicked(event, detail, target) async {
+  this.current_uuid = null;
+    this.current_format = "";
+    this.current_type = "";
+    this.current_name ="";
+  }
   saveClicked(event, detail, target) async {
     try {
 
       API.Field field = new API.Field();
+      field.name = this.current_name;
+      field.type = this.current_type;
+      field.format = this.current_format;
 
-      this.api.fields.create(field);
-
-      loadProperties();
-
+      if(this.current_uuid==null) {
+        await this.api.fields.create(field);
+      } else {
+        await this.api.fields.update(field, this.current_uuid);
+      }
     } catch(e,st) {
-      _log.severe(e,st);
+      _log.severe(e, st);
+      window.alert(e.toString());
+    } finally {
+      loadProperties();
     }
 
   }

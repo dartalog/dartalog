@@ -7,7 +7,8 @@ class FieldModel extends _AModel {
 
   Future<mongo.DbCollection> getCollection() async {
     mongo.Db db = await Model.setUpDataAdapter();
-    return db.collection("fields");
+    mongo.DbCollection col = db.collection("fields");
+    return col;
   }
 
   Future<Map<String,String>> getAllIDsAndNames() async {
@@ -54,7 +55,12 @@ class FieldModel extends _AModel {
       dynamic result = collection.insert(data);
       return result.toString();
     } else {
-      var data = await collection.findOne({"_id": id});
+      mongo.ObjectId obj_id = mongo.ObjectId.parse(id);
+
+      var data = await collection.findOne({"_id": obj_id});
+      if(data==null) {
+        throw new Exception("Field not found ${field}");
+      }
       field.setData(data);
       await collection.save(data);
       return id;

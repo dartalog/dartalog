@@ -3,47 +3,31 @@ part of model;
 class TemplateModel extends _AModel {
   static final Logger _log = new Logger('TemplateModel');
 
-  //ADatabase _db;
-  //ANoSqlDatabase get _nsdb => this._db;
-  //mongo.Db _db;
+  static const String TEMPLATES_COLLECTION = "templates";
+
+  mongo.Db _db;
 
   TemplateModel();
 
-  static const String _GET_ALL_TEMPLATES = "SELECT HEX(uuid) uuid, name FROM templates ORDER BY name;";
-  static const String _GET_TEMPLATE_BY_UUID = "SELECT HEX(uuid) uuid, name FROM templates WHERE uuid = 0x${_AModel._UUID_REPLACEMENT_STRING}";
-  static const String _GET_TEMPLATE_BY_NAME = "SELECT HEX(uuid) uuid, name FROM templates WHERE name = ?";
-  static const String _UPDATE_TEMPLATE = "UPDATE templates SET name = ? WHERE uuid = 0x${_AModel._UUID_REPLACEMENT_STRING}";
-  static const String _INSERT_TEMPLATE = "INSERT INTO templates (uuid, name) VALUES (0x${_AModel._UUID_REPLACEMENT_STRING}, ?);";
+  Future<mongo.DbCollection> getCollection() async {
+    mongo.Db db = await Model.setUpDataAdapter();
+    mongo.DbCollection col = db.collection(TEMPLATES_COLLECTION);
+    return col;
+  }
 
-  static const String _GET_ALL_TEMPLATES_WITH_FIELDS =
-  """SELECT HEX(t.uuid) uuid, t.name, HEX(field_uuid) field_uuid, f.name field_name
-          FROM templates t
-          LEFT JOIN template_fields tf ON tf.template_uuid = t.uuid
-          LEFT JOIN fields f ON tf.field_uuid = f.uuid
-          ORDER BY t.uuid, f.uuid;""";
-
-  static const String _GET_ALL_TEMPLATE_FIELDS = "SELECT HEX(template_uuid) uuid FROM template_fields WHERE template_uuid = 0x${_AModel._UUID_REPLACEMENT_STRING}";
-
-  Future<List<Template>> getAll() async {
+  Future<Map<String,Template>> getAll() async {
     _log.info("Getting all templates");
 
-    mysql.ConnectionPool pool = Model.getConnectionPool();
+    mongo.DbCollection collection = await getCollection();
 
-    Stream str = await pool.query(TemplateModel._GET_ALL_TEMPLATES_WITH_FIELDS);
-    List results = await str.toList();
+    List results = await collection.find().toList();
 
-    List<Template> output = new List<Template>();
-    for (dynamic result in results) {
-      Template tmplt;
-      if (tmplt == null || tmplt.uuid != formatUuid(result.uuid)) {
-        tmplt = new Template.fromData(result);
-        output.add(tmplt);
-      }
-      if (result.field_uuid != null) {
-        tmplt.fields.add(formatUuid(result.field_uuid));
-      }
+    Map<String,Template> output = new Map<String,Template>();
+    for (var result in results) {
+      mongo.ObjectId id = result["_id"];
+      String str_id = id.toJson();
+      output[str_id] = (new Template.fromData(result));
     }
-
     return output;
   }
 
@@ -67,50 +51,27 @@ class TemplateModel extends _AModel {
   }
 
 
-  Future write(Map<String,Object> data, [String uuid = null]) {
-//    mongo.DbCollection col = this._db.collection("fields");
-//    return this._db.open().then((_) {
-//      if(data.containsKey("id")) {
-//        data.remove("id");
-//      }
-//      col.insert(data);
-//    });
-    mysql.ConnectionPool pool = Model.getConnectionPool();
-    String query;
-    if(uuid!=null) {
-      if(!isUuid(uuid)) {
-        throw new ValidationException("Not a valid UUID: ${uuid}");
-      }
-      query = FieldsModel._UPDATE_FIELD + uuid.replaceAll("-", "");
+  Future write(Template template, [String id = null]) async {
+    mongo.DbCollection collection = await getCollection();
+
+
+    if(tools.isNullOrWhitespace(id)) {
+      Map<String, dynamic> data = template.toMap();
+      dynamic result = collection.insert(data);
+      return result.toString();
     } else {
-      query = FieldsModel._INSERT_FIELD;
-    }
+      mongo.ObjectId obj_id = mongo.ObjectId.parse(id);
 
-//    if(!data.containsKey("name")) {
-//      throw new ValidationException("\"name\" property is required");
-//    }
-//    if(isNullOrWhitespace(data["name"])) {
-//      throw new ValidationException("\"name\" must have a value");
-//    }
-    if(!data.containsKey("title")) {
-      throw new ValidationException("\"title\" property is required");
-    }
-    if(isNullOrWhitespace(data["title"])) {
-      throw new ValidationException("\"title\" must have a value");
-    }
+      var data = await collection.findOne({"_id": obj_id});
+      if(data==null) {
+        throw new Exception("Template not found ${id}");
+      }
+      template.setData(data);
+      await collection.save(data);
+  return id;
+}
 
-    return pool.prepare(query).then((mysql.Query q) {
-      return q.execute([data["name"],data["title"],data["type"],data["pattern"]]).then((mysql.Results r) {
-
-      }).whenComplete(() {
-        q.close();
-      });
-    });
-  }
-
-//  Future write(String name, String title, String type, String pattern) {
-//    return _write(this.createFieldMap(name, title, type, pattern));
-//  }
+}
 
   Map<String, Object> _createFieldMap(dynamic data) {
     Map<String, Object> output = new Map<String, Object>();

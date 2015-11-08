@@ -24,7 +24,7 @@
           </nav>
           <core-toolbar tool flex>
               <div flex>{{visiblePageTitle}}</div>
-              <core-icon-button icon="refresh" on-click="{{refreshClicked}}"></core-icon-button>
+              <core-icon-button icon="refresh" on-click="{{refreshClicked}}" hidden?="{{!visiblePageRefreshable}}"></core-icon-button>
               <core-icon-button icon="add"></core-icon-button>
           </core-toolbar>
       <!--    <core-toolbar tool>

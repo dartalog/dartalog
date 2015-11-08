@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "091abce7c7b52bcb09cc00d9c0196c3398dd05d4",
+ "etag": "48eaf90b9d0ef68a171eb90996365720e992abee",
  "discoveryVersion": "v1",
  "id": "dartalog:0.1",
  "name": "dartalog",
@@ -47,10 +47,10 @@
     }
    }
   },
-  "ListOfTemplate": {
-   "id": "ListOfTemplate",
-   "type": "array",
-   "items": {
+  "MapOfTemplate": {
+   "id": "MapOfTemplate",
+   "type": "object",
+   "additionalProperties": {
     "$ref": "Template"
    }
   },
@@ -58,14 +58,13 @@
    "id": "Template",
    "type": "object",
    "properties": {
-    "uuid": {
-     "type": "string"
-    },
     "name": {
-     "type": "string"
+     "type": "string",
+     "required": true
     },
     "fields": {
      "type": "array",
+     "required": true,
      "items": {
       "type": "string"
      }
@@ -153,7 +152,7 @@
      "parameters": {},
      "parameterOrder": [],
      "response": {
-      "$ref": "ListOfTemplate"
+      "$ref": "MapOfTemplate"
      }
     },
     "get": {
@@ -173,6 +172,41 @@
      ],
      "response": {
       "$ref": "Template"
+     }
+    },
+    "create": {
+     "id": "DartalogApi.templates.create",
+     "path": "templates/",
+     "httpMethod": "POST",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "Template"
+     },
+     "response": {
+      "$ref": "UuidResponse"
+     }
+    },
+    "update": {
+     "id": "DartalogApi.templates.update",
+     "path": "templates/{uuid}/",
+     "httpMethod": "PUT",
+     "parameters": {
+      "uuid": {
+       "type": "string",
+       "description": "Path parameter: 'uuid'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "uuid"
+     ],
+     "request": {
+      "$ref": "Template"
+     },
+     "response": {
+      "$ref": "UuidResponse"
      }
     }
    },

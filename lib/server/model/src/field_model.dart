@@ -3,18 +3,20 @@ part of model;
 class FieldModel extends _AModel {
   static final Logger _log = new Logger('FieldModel');
 
+  static const String FIELDS_COLLECTION = "fields";
+
   FieldModel();
 
   Future<mongo.DbCollection> getCollection() async {
     mongo.Db db = await Model.setUpDataAdapter();
-    mongo.DbCollection col = db.collection("fields");
+    mongo.DbCollection col = db.collection(FIELDS_COLLECTION);
     return col;
   }
 
   Future<Map<String,String>> getAllIDsAndNames() async {
     _log.info("Getting all field IDs and names ");
 
-    mongo.DbCollection collection = Model._db.collection("fields");
+    mongo.DbCollection collection = Model._db.collection(FIELDS_COLLECTION);
 
     List results = await collection.find().toList();
 
@@ -43,7 +45,6 @@ class FieldModel extends _AModel {
 
   Future<Field> getByID(String id) {
     _log.info("Getting specific field by ID: ${id}");
-
   }
 
   Future write(Field field, [String id = null]) async {
@@ -67,10 +68,5 @@ class FieldModel extends _AModel {
     }
 
  }
-
-//  Future write(String name, String title, String type, String pattern) {
-//    return _write(this.createFieldMap(name, title, type, pattern));
-//  }
-
 
 }

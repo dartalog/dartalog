@@ -192,6 +192,43 @@ class TemplatesResourceApi {
       _requester = client;
 
   /**
+   * [request] - The metadata request object.
+   *
+   * Request parameters:
+   *
+   * Completes with a [UuidResponse].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<UuidResponse> create(Template request) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (request != null) {
+      _body = convert.JSON.encode((request).toJson());
+    }
+
+    _url = 'templates/';
+
+    var _response = _requester.request(_url,
+                                       "POST",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new UuidResponse.fromJson(data));
+  }
+
+  /**
    * Request parameters:
    *
    * [uuid] - Path parameter: 'uuid'.
@@ -231,7 +268,7 @@ class TemplatesResourceApi {
   /**
    * Request parameters:
    *
-   * Completes with a [ListOfTemplate].
+   * Completes with a [MapOfTemplate].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
@@ -239,7 +276,7 @@ class TemplatesResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ListOfTemplate> getAll() {
+  async.Future<MapOfTemplate> getAll() {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -257,7 +294,49 @@ class TemplatesResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new ListOfTemplate.fromJson(data));
+    return _response.then((data) => new MapOfTemplate.fromJson(data));
+  }
+
+  /**
+   * [request] - The metadata request object.
+   *
+   * Request parameters:
+   *
+   * [uuid] - Path parameter: 'uuid'.
+   *
+   * Completes with a [UuidResponse].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<UuidResponse> update(Template request, core.String uuid) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (request != null) {
+      _body = convert.JSON.encode((request).toJson());
+    }
+    if (uuid == null) {
+      throw new core.ArgumentError("Parameter uuid is required.");
+    }
+
+    _url = 'templates/' + commons.Escaper.ecapeVariable('$uuid') + '/';
+
+    var _response = _requester.request(_url,
+                                       "PUT",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new UuidResponse.fromJson(data));
   }
 
 }
@@ -298,32 +377,6 @@ class Field {
   }
 }
 
-class ListOfTemplate
-    extends collection.ListBase<Template> {
-  final core.List<Template> _inner;
-
-  ListOfTemplate() : _inner = [];
-
-  ListOfTemplate.fromJson(core.List json)
-      : _inner = json.map((value) => new Template.fromJson(value)).toList();
-
-  core.List toJson() {
-    return _inner.map((value) => (value).toJson()).toList();
-  }
-
-  Template operator [](core.int key) => _inner[key];
-
-  void operator []=(core.int key, Template value) {
-    _inner[key] = value;
-  }
-
-  core.int get length => _inner.length;
-
-  void set length(core.int newLength) {
-    _inner.length = newLength;
-  }
-}
-
 class MapOfField
     extends collection.MapBase<core.String, Field> {
   final core.Map _innerMap = {};
@@ -360,10 +413,45 @@ class MapOfField
   Field remove(core.Object key) => _innerMap.remove(key);
 }
 
+class MapOfTemplate
+    extends collection.MapBase<core.String, Template> {
+  final core.Map _innerMap = {};
+
+  MapOfTemplate();
+
+  MapOfTemplate.fromJson(core.Map _json) {
+    _json.forEach((core.String key, value) {
+      this[key] = new Template.fromJson(value);
+    });
+  }
+
+  core.Map toJson() {
+    var _json = {};
+    this.forEach((core.String key, value) {
+      _json[key] = (value).toJson();
+    });
+    return _json;
+  }
+
+  Template operator [](core.Object key)
+      => _innerMap[key];
+
+  operator []=(core.String key, Template value) {
+    _innerMap[key] = value;
+  }
+
+  void clear() {
+    _innerMap.clear();
+  }
+
+  core.Iterable<core.String> get keys => _innerMap.keys;
+
+  Template remove(core.Object key) => _innerMap.remove(key);
+}
+
 class Template {
   core.List<core.String> fields;
   core.String name;
-  core.String uuid;
 
   Template();
 
@@ -374,9 +462,6 @@ class Template {
     if (_json.containsKey("name")) {
       name = _json["name"];
     }
-    if (_json.containsKey("uuid")) {
-      uuid = _json["uuid"];
-    }
   }
 
   core.Map toJson() {
@@ -386,9 +471,6 @@ class Template {
     }
     if (name != null) {
       _json["name"] = name;
-    }
-    if (uuid != null) {
-      _json["uuid"] = uuid;
     }
     return _json;
   }

@@ -28,7 +28,7 @@ import '../../api/dartalog.dart' as API;
 
 /// A Polymer `<template-admin-page>` element.
 @CustomTag('template-admin-page')
-class TemplateAdminPage extends APage {
+class TemplateAdminPage extends APage with ARefreshablePage {
   static final Logger _log = new Logger("TemplateAdminPage");
 
   Map fields = new ObservableMap();
@@ -36,51 +36,68 @@ class TemplateAdminPage extends APage {
   /// Constructor used to create instance of MainApp.
   TemplateAdminPage.created() : super.created();
 
-  @published String current_uuid;
-  @published String current_name;
-  @published String current_type;
-  @published String current_format;
+  @observable Map templates = new ObservableMap();
+  @observable Map available_fields = new ObservableMap();
 
-  Map<String,String> get FIELD_TYPES => dartalog.FIELD_TYPES;
+  @published String current_id;
+  @published String current_name;
+  @published List<String> current_fields = new ObservableList();
 
   @override
   void init(API.DartalogApi api) {
     super.init(api);
-    this.supportsAdding = true;
-    this.title = "Property Admin";
-    loadProperties();
+    this.title = "Template Admin";
+    this.refresh();
   }
 
-  Future loadProperties() async {
+  Future refresh() async {
+    this.clear();
+    await loadAvailableFields();
+    await loadTemplates();
+  }
+
+  Future loadAvailableFields() async {
     try {
-    fields.clear();
-
-    API.MapOfField data = await api.fields.getAll();
-
-    fields.addAll(data);
+      available_fields.clear();
+      API.MapOfField data = await api.fields.getAll();
+      available_fields.addAll(data);
     } catch(e,st) {
       _log.severe(e, st);
       window.alert(e.toString());
     }
   }
 
+  Future loadTemplates() async {
+    try {
+      templates.clear();
+      API.MapOfTemplate data = await api.templates.getAll();
+      templates.addAll(data);
+    } catch(e,st) {
+      _log.severe(e, st);
+      window.alert(e.toString());
+    }
+  }
+
+  void clear() {
+    this.current_id = null;
+    this.current_name ="";
+    this.current_fields .clear();
+  }
+
   showModal(event, detail, target) {
     String uuid = target.dataset['uuid'];
   }
 
-  @override
-  addItem() {
-  }
 
-  fieldClicked(event, detail, target) async {
+  templateClicked(event, detail, target) async {
     try {
       String id = target.dataset["id"];
-      API.Field field = this.fields[id];
+      API.Template template = this.templates[id];
 
-      this.current_format = field.format;
-      this.current_name = field.name;
-      this.current_type = field.type;
-      this.current_uuid = id;
+      this.current_id = id;
+      this.current_name = template.name;
+      this.current_fields.clear();
+      this.current_fields.addAll(template.fields);
     } catch(e,st) {
       _log.severe(e, st);
       window.alert(e.toString());
@@ -92,29 +109,26 @@ class TemplateAdminPage extends APage {
   }
 
   clearClicked(event, detail, target) async {
-  this.current_uuid = null;
-    this.current_format = "";
-    this.current_type = "";
-    this.current_name ="";
+    this.clear();
   }
   saveClicked(event, detail, target) async {
     try {
 
-      API.Field field = new API.Field();
-      field.name = this.current_name;
-      field.type = this.current_type;
-      field.format = this.current_format;
+      API.Template template = new API.Template();
 
-      if(this.current_uuid==null) {
-        await this.api.fields.create(field);
+      template.name = this.current_name;
+      template.fields = this.current_fields;
+
+      if(this.current_id==null) {
+        await this.api.templates.create(template);
       } else {
-        await this.api.fields.update(field, this.current_uuid);
+        await this.api.templates.update(template, this.current_id);
       }
     } catch(e,st) {
       _log.severe(e, st);
       window.alert(e.toString());
     } finally {
-      loadProperties();
+      this.refresh();
     }
 
   }

@@ -47,7 +47,6 @@ class FieldResource {
       _log.severe(e,st);
       throw e;
     }
-
   }
 
 }

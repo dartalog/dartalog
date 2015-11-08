@@ -19,6 +19,5 @@ class Field extends AData {
     data["name"] = this.name;
     data["type"] = this.type;
     data["format"] = this.format;
-
   }
 }

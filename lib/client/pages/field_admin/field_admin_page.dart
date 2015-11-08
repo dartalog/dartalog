@@ -28,7 +28,7 @@ import '../../api/dartalog.dart' as API;
 
 /// A Polymer `<field-admin-page>` element.
 @CustomTag('field-admin-page')
-class FieldAdminPage extends APage {
+class FieldAdminPage extends APage with ARefreshablePage {
   static final Logger _log = new Logger("FieldAdminPage");
 
   Map fields = new ObservableMap();
@@ -46,10 +46,22 @@ class FieldAdminPage extends APage {
   @override
   void init(API.DartalogApi api) {
     super.init(api);
-    this.supportsAdding = true;
     this.title = "Property Admin";
     loadProperties();
   }
+
+  Future refresh() async {
+    this.clear();
+    await loadProperties();
+  }
+
+        void clear() {
+      this.current_uuid = null;
+      this.current_format = "";
+      this.current_type = "";
+      this.current_name ="";
+
+    }
 
   Future loadProperties() async {
     try {
@@ -91,11 +103,8 @@ class FieldAdminPage extends APage {
     _log.info("Validating");
   }
 
-  clearClicked(event, detail, target) async {
-  this.current_uuid = null;
-    this.current_format = "";
-    this.current_type = "";
-    this.current_name ="";
+  clearClicked(event, detail, target) {
+    this.clear();
   }
   saveClicked(event, detail, target) async {
     try {

@@ -25,6 +25,8 @@ import 'package:paper_elements/paper_progress.dart';
 
 import 'api/dartalog.dart';
 import 'package:dartalog/client/pages/pages.dart';
+import 'package:dartalog/client/pages/item_browse/item_browse_page.dart';
+import 'package:dartalog/client/pages/item_add/item_add_page.dart';
 import 'package:dartalog/client/pages/field_admin/field_admin_page.dart';
 import 'package:dartalog/client/pages/template_admin/template_admin_page.dart';
 
@@ -46,6 +48,8 @@ class MainApp extends PolymerElement {
   APage get currentPage => $[visiblePage];
   FieldAdminPage get fieldAdmin=> $['field_admin'];
   TemplateAdminPage get templateAdmin=> $['template_admin'];
+  ItemAddPage get itemAddAdmin=> $['item_add'];
+  ItemBrowsePage get itemBrowseAdmin=> $['item_browse'];
 
   /// Constructor used to create instance of MainApp.
   MainApp.created() : super.created();
@@ -56,18 +60,28 @@ class MainApp extends PolymerElement {
 
     // Set up the routes for all the pages.
     router.root.addRoute(
+        name: "Item Browse", path: "item_browse",
+        defaultRoute: true,
+        enter: enterRoute);
+    router.root.addRoute(
+        name: "Item Add", path: "item_add",
+        defaultRoute: false,
+        enter: enterRoute);
+    router.root.addRoute(
         name: "Field Admin", path: "field_admin",
         defaultRoute: false,
         enter: enterRoute);
     router.root.addRoute(
         name: "Template Admin", path: "template_admin",
-        defaultRoute: true,
+        defaultRoute: false,
         enter: enterRoute);
 
     router.listen();
 
     this.fieldAdmin.init(this.api);
     this.templateAdmin.init(this.api);
+    this.itemAddAdmin.init(this.api);
+    this.itemBrowseAdmin.init(this.api);
   }
 
   void routeChanged() {

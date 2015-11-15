@@ -8,22 +8,24 @@
     <template>
         <link rel="stylesheet" href="item_add_page.css">
 
-        <core-menu valueattr="data-id" selected="{{current_id}}">
-        <template repeat="{{template in templates.keys}}">
-            <paper-item horizontal on-click="{{templateClicked}}" data-id="{{template}}">{{templates[template].name}}</paper-item>
-        </template>
-        </core-menu>
 
-<div layout vertical>
-        <paper-input floatinglabel label="Name" value="{{current_name}}"></paper-input>
+        <core-pages id="item_add_pages" valueattr="id" selected="type_select">
+            <core-menu id="type_select" valueattr="data-id" selected="{{templateId}}">
+                <template repeat="{{template in templates.keys}}">
+                    <paper-item horizontal on-click="{{templateClicked}}" data-id="{{template}}">{{templates[template].name}}</paper-item>
+                </template>
+            </core-menu>
+            <div id="field_input" layout vertical>
+                <paper-button raised on-click="{{backClicked}}">Back</paper-button>
 
-    <core-menu multi="true" selected="{{current_fields}}" valueattr="data-id">
-        <template repeat="{{field in available_fields.keys}}">
-            <paper-item horizontal data-id="{{field}}">{{available_fields[field].name}}</paper-item>
-        </template>
-    </core-menu>
-    <paper-button raised on-click="{{saveClicked}}">Save</paper-button>
-    <paper-button raised on-click="{{clearClicked}}">Clear</paper-button>
-</div>
+                <template repeat="{{templateField in templateFields.keys}}">
+                    <paper-input floatinglabel label="{{templateFields[templateField].name}}"></paper-input>
+                </template>
+            </div>
+
+
+
+        </core-pages>
+
     </template>
 </polymer-element>

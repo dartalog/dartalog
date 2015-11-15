@@ -61,11 +61,11 @@ class MainApp extends PolymerElement {
     // Set up the routes for all the pages.
     router.root.addRoute(
         name: "Item Browse", path: "item_browse",
-        defaultRoute: true,
+        defaultRoute: false,
         enter: enterRoute);
     router.root.addRoute(
         name: "Item Add", path: "item_add",
-        defaultRoute: false,
+        defaultRoute: true,
         enter: enterRoute);
     router.root.addRoute(
         name: "Field Admin", path: "field_admin",

@@ -450,14 +450,14 @@ class MapOfTemplate
 }
 
 class Template {
-  core.List<core.String> fields;
+  core.Map<core.String, Field> fields;
   core.String name;
 
   Template();
 
   Template.fromJson(core.Map _json) {
     if (_json.containsKey("fields")) {
-      fields = _json["fields"];
+      fields = commons.mapMap(_json["fields"], (item) => new Field.fromJson(item));
     }
     if (_json.containsKey("name")) {
       name = _json["name"];
@@ -467,7 +467,7 @@ class Template {
   core.Map toJson() {
     var _json = new core.Map();
     if (fields != null) {
-      _json["fields"] = fields;
+      _json["fields"] = commons.mapMap(fields, (item) => (item).toJson());
     }
     if (name != null) {
       _json["name"] = name;

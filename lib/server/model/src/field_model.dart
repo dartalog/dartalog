@@ -7,13 +7,13 @@ class FieldModel extends _AModel {
 
   FieldModel();
 
-  Future<mongo.DbCollection> getCollection() async {
+  static Future<mongo.DbCollection> getCollection() async {
     mongo.Db db = await Model.setUpDataAdapter();
     mongo.DbCollection col = db.collection(FIELDS_COLLECTION);
     return col;
   }
 
-  Future<Map<String,String>> getAllIDsAndNames() async {
+  static Future<Map<String,String>> getAllIDsAndNames() async {
     _log.info("Getting all field IDs and names ");
 
     mongo.DbCollection collection = Model._db.collection(FIELDS_COLLECTION);
@@ -27,7 +27,7 @@ class FieldModel extends _AModel {
     return output;
   }
 
-  Future<Map<String,Field>> getAll() async {
+  static Future<Map<String,Field>> getAll() async {
     _log.info("Getting all fields");
 
     mongo.DbCollection collection = await getCollection();
@@ -43,11 +43,11 @@ class FieldModel extends _AModel {
     return output;
   }
 
-  Future<Field> getByID(String id) {
+  static Future<Field> getByID(String id) {
     _log.info("Getting specific field by ID: ${id}");
   }
 
-  Future write(Field field, [String id = null]) async {
+  static Future write(Field field, [String id = null]) async {
     mongo.DbCollection collection = await getCollection();
 
 

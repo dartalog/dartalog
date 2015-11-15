@@ -10,8 +10,12 @@
 
       <core-scaffold id="scaffold">
           <nav>
-              <core-toolbar><span>Single Page Polymer</span></core-toolbar>
+              <core-toolbar><span>Dartalog</span></core-toolbar>
               <core-menu selected="0">
+                  <paper-item noink>
+                      <core-icon icon="label-outline"></core-icon>
+                      <a href="#item_add">Add Item</a>
+                  </paper-item>
                   <paper-item noink>
                       <core-icon icon="label-outline"></core-icon>
                       <a href="#field_admin">Fields</a>
@@ -41,8 +45,8 @@
           </core-toolbar>-->
 
         <core-pages valueattr="id" selected="{{visiblePage}}">
-            <item_browse-page id="item-browse"></item_browse-page>
-            <item_add-page id="item_add"></item_add-page>
+            <item-browse-page id="item_browse"></item-browse-page>
+            <item-add-page id="item_add"></item-add-page>
             <field-admin-page id="field_admin"></field-admin-page>
           <template-admin-page id="template_admin"></template-admin-page>
         </core-pages>

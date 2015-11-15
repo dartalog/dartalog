@@ -21,6 +21,7 @@ import 'package:core_elements/core_menu.dart';
 
 
 import 'package:dartalog/dartalog.dart' as dartalog;
+import 'package:core_elements/core_pages.dart';
 import 'package:dartalog/client/pages/pages.dart';
 import 'package:dartalog/client/client.dart';
 
@@ -31,17 +32,15 @@ import '../../api/dartalog.dart' as API;
 class ItemAddPage extends APage {
   static final Logger _log = new Logger("ItemAddPage");
 
-  Map fields = new ObservableMap();
+  CorePages get pages => $['item_add_pages'];
 
   /// Constructor used to create instance of MainApp.
   ItemAddPage.created() : super.created();
 
   @observable Map templates = new ObservableMap();
-  @observable Map available_fields = new ObservableMap();
 
-  @published String current_id;
-  @published String current_name;
-  @published List<String> current_fields = new ObservableList();
+  @published String templateId;
+  @observable Map<String,API.Field> templateFields = new ObservableMap<String,API.Field>();
 
   @override
   void init(API.DartalogApi api) {
@@ -51,37 +50,20 @@ class ItemAddPage extends APage {
   }
 
   Future refresh() async {
-    this.clear();
-    await loadAvailableFields();
+    //this.clear();
     await loadTemplates();
-  }
-
-  Future loadAvailableFields() async {
-    try {
-      available_fields.clear();
-      API.MapOfField data = await api.fields.getAll();
-      available_fields.addAll(data);
-    } catch(e,st) {
-      _log.severe(e, st);
-      window.alert(e.toString());
-    }
   }
 
   Future loadTemplates() async {
     try {
       templates.clear();
+      templateFields.clear();
       API.MapOfTemplate data = await api.templates.getAll();
       templates.addAll(data);
     } catch(e,st) {
       _log.severe(e, st);
       window.alert(e.toString());
     }
-  }
-
-  void clear() {
-    this.current_id = null;
-    this.current_name ="";
-    this.current_fields .clear();
   }
 
   showModal(event, detail, target) {
@@ -93,11 +75,10 @@ class ItemAddPage extends APage {
     try {
       String id = target.dataset["id"];
       API.Template template = this.templates[id];
+      this.templateFields.addAll(template.fields);
 
-      this.current_id = id;
-      this.current_name = template.name;
-      this.current_fields.clear();
-      this.current_fields.addAll(template.fields);
+      this.templateId = id;
+      pages.selected = "field_input";
     } catch(e,st) {
       _log.severe(e, st);
       window.alert(e.toString());
@@ -108,29 +89,10 @@ class ItemAddPage extends APage {
     _log.info("Validating");
   }
 
-  clearClicked(event, detail, target) async {
-    this.clear();
+  backClicked(event, detail, target) async {
+    this.templateId = "";
+    pages.selected = "type_select";
   }
-  saveClicked(event, detail, target) async {
-    try {
 
-      API.Template template = new API.Template();
-
-      template.name = this.current_name;
-      template.fields = this.current_fields;
-
-      if(this.current_id==null) {
-        await this.api.templates.create(template);
-      } else {
-        await this.api.templates.update(template, this.current_id);
-      }
-    } catch(e,st) {
-      _log.severe(e, st);
-      window.alert(e.toString());
-    } finally {
-      this.refresh();
-    }
-
-  }
 
 }

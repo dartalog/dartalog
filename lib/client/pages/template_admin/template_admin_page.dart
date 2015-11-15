@@ -97,7 +97,7 @@ class TemplateAdminPage extends APage with ARefreshablePage {
       this.current_id = id;
       this.current_name = template.name;
       this.current_fields.clear();
-      this.current_fields.addAll(template.fields);
+      this.current_fields.addAll(template.fields.keys);
     } catch(e,st) {
       _log.severe(e, st);
       window.alert(e.toString());
@@ -117,7 +117,13 @@ class TemplateAdminPage extends APage with ARefreshablePage {
       API.Template template = new API.Template();
 
       template.name = this.current_name;
-      template.fields = this.current_fields;
+      template.fields = new API.MapOfField();
+      for(String field in this.current_fields) {
+        if(!this.available_fields.containsKey(field)) {
+          throw new Exception("Field not found: ${field}");
+        }
+        template.fields[field] = this.available_fields[field];
+      }
 
       if(this.current_id==null) {
         await this.api.templates.create(template);

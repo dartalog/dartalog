@@ -19,6 +19,7 @@ part 'src/template_model.dart';
 
 part 'src/data/a_data.dart';
 part 'src/data/field.dart';
+part 'src/data/item.dart';
 part 'src/data/template.dart';
 
 

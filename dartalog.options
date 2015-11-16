@@ -7,4 +7,4 @@ mysql_port=3306
 mysql_db=dartalog
 mysql_host=localhost
 # mongo options
-mongo=mongodb://192.168.1.25:27017/dartalog
+mongo=mongodb://localhost:27017/dartalog

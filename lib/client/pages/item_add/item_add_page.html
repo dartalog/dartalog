@@ -15,14 +15,15 @@
                     <paper-item horizontal on-click="{{templateClicked}}" data-id="{{template}}">{{templates[template].name}}</paper-item>
                 </template>
             </core-menu>
-            <div id="field_input" layout vertical>
+            <div id="field_input">
+            <div layout vertical>
                 <paper-button raised on-click="{{backClicked}}">Back</paper-button>
 
                 <template repeat="{{templateField in templateFields.keys}}">
-                    <paper-input floatinglabel label="{{templateFields[templateField].name}}"></paper-input>
+                    <paper-input horizontal floatinglabel label="{{templateFields[templateField].name}}"></paper-input>
                 </template>
             </div>
-
+            </div>
 
 
         </core-pages>

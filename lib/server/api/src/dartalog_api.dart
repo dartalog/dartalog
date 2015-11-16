@@ -11,4 +11,6 @@ class DartalogApi {
     @ApiResource()
     final TemplateResource templates = new TemplateResource();
 
+    @ApiResource()
+    final ItemResource items = new ItemResource();
 }

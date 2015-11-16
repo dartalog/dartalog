@@ -38,10 +38,10 @@ class TemplateAdminPage extends APage with ARefreshablePage {
 
   @observable Map templates = new ObservableMap();
   @observable Map available_fields = new ObservableMap();
+  @published List current_fields = new ObservableList();
 
   @published String current_id;
   @published String current_name;
-  @published List<String> current_fields = new ObservableList();
 
   @override
   void init(API.DartalogApi api) {

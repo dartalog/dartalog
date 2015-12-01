@@ -18,13 +18,10 @@ main() async {
   Logger.root.onRecord.listen(new LogPrintHandler());
   try {
 
-    OptionsFile options = new OptionsFile('dartalog.options');
-    Model.options = options;
-
     _apiServer.addApi(new DartalogApi());
     _apiServer.enableDiscoveryApi();
 
-    HttpServer server = await HttpServer.bind(InternetAddress.ANY_IP_V4, options.getInt("rpc_port"));
+    HttpServer server = await HttpServer.bind(InternetAddress.ANY_IP_V4, Model.options.getInt("rpc_port"));
     server.listen(_apiServer.httpRequestHandler);
   } catch(e,s) {
     _log.severe("Error while starting server",e,s);

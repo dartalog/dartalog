@@ -1,5 +1,6 @@
 library pages;
 
+import 'dart:async';
 import 'package:polymer/polymer.dart';
 import 'package:dartalog/client/client.dart';
 import '../api/dartalog.dart';

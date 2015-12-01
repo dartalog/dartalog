@@ -25,6 +25,7 @@ import 'package:dartalog/client/pages/pages.dart';
 import 'package:dartalog/client/client.dart';
 
 import '../../api/dartalog.dart' as API;
+import '../../../tools.dart';
 
 /// A Polymer `<template-admin-page>` element.
 @CustomTag('template-admin-page')
@@ -37,11 +38,13 @@ class TemplateAdminPage extends APage with ARefreshablePage {
   TemplateAdminPage.created() : super.created();
 
   @observable Map templates = new ObservableMap();
-  @observable Map available_fields = new ObservableMap();
-  @published List current_fields = new ObservableList();
+  @observable Map availableFields = new ObservableMap();
 
-  @published String current_id;
-  @published String current_name;
+  @published String currentId;
+  @published String currentName;
+  @published List currentFields = new ObservableList();
+
+  CoreMenu get fieldDropdown=> $['field_dropdown'];
 
   @override
   void init(API.DartalogApi api) {
@@ -58,9 +61,9 @@ class TemplateAdminPage extends APage with ARefreshablePage {
 
   Future loadAvailableFields() async {
     try {
-      available_fields.clear();
+      availableFields.clear();
       API.MapOfField data = await api.fields.getAll();
-      available_fields.addAll(data);
+      availableFields.addAll(data);
     } catch(e,st) {
       _log.severe(e, st);
       window.alert(e.toString());
@@ -79,9 +82,9 @@ class TemplateAdminPage extends APage with ARefreshablePage {
   }
 
   void clear() {
-    this.current_id = null;
-    this.current_name ="";
-    this.current_fields .clear();
+    this.currentId = null;
+    this.currentName ="";
+    this.currentFields .clear();
   }
 
   showModal(event, detail, target) {
@@ -94,16 +97,38 @@ class TemplateAdminPage extends APage with ARefreshablePage {
       String id = target.dataset["id"];
       API.Template template = this.templates[id];
 
-      this.current_id = id;
-      this.current_name = template.name;
-      this.current_fields.clear();
-      this.current_fields.addAll(template.fields.keys);
+      this.currentId = id;
+      this.currentName = template.name;
+      this.currentFields.clear();
+      this.currentFields.addAll(template.fields.keys);
     } catch(e,st) {
       _log.severe(e, st);
       window.alert(e.toString());
     }
   }
 
+  addFieldClicked(event, detail, target) async {
+    try {
+      String id = this.fieldDropdown.selected;
+
+      if(isNullOrWhitespace(id))
+        throw new Exception("Please select a field");
+
+      if(!this.availableFields.containsKey(id))
+        throw new Exception("Invalid field selected: ${id}");
+
+      API.Field field = this.availableFields[id];
+
+      if(currentFields.contains(field)){
+        throw new Exception("Field has already been added");
+      }
+
+      currentFields.add(field);
+    } catch(e,st) {
+      _log.severe(e, st);
+      window.alert(e.toString());
+    }
+  }
   validateField(event, detail, target) {
     _log.info("Validating");
   }
@@ -116,19 +141,19 @@ class TemplateAdminPage extends APage with ARefreshablePage {
 
       API.Template template = new API.Template();
 
-      template.name = this.current_name;
+      template.name = this.currentName;
       template.fields = new API.MapOfField();
-      for(String field in this.current_fields) {
-        if(!this.available_fields.containsKey(field)) {
+      for(String field in this.currentFields) {
+        if(!this.availableFields.containsKey(field)) {
           throw new Exception("Field not found: ${field}");
         }
-        template.fields[field] = this.available_fields[field];
+        template.fields[field] = this.availableFields[field];
       }
 
-      if(this.current_id==null) {
+      if(this.currentId==null) {
         await this.api.templates.create(template);
       } else {
-        await this.api.templates.update(template, this.current_id);
+        await this.api.templates.update(template, this.currentId);
       }
     } catch(e,st) {
       _log.severe(e, st);

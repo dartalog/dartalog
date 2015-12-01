@@ -6,7 +6,7 @@ class FieldResource {
   @ApiMethod(path: 'fields/')
   Future<Map<String,Field>> getAll() async {
     try {
-      dynamic output = await FieldModel.getAll();
+      dynamic output = await Model.fields.getAll();
       return output;
     } catch(e,st) {
      _log.severe(e,st);
@@ -17,7 +17,7 @@ class FieldResource {
   @ApiMethod(path: 'fields/{uuid}/')
   Future<Field> get(String uuid) async {
     try {
-    dynamic output = await FieldModel.getByUUID(uuid);
+    dynamic output = await Model.fields.getByUUID(uuid);
     return output;
     } catch(e,st) {
       _log.severe(e,st);
@@ -26,10 +26,10 @@ class FieldResource {
   }
 
   @ApiMethod(method: 'POST', path: 'fields/')
-  Future<UuidResponse> create(Field field) async {
+  Future<VoidMessage> create(Field field) async {
     try {
-      String output = await FieldModel.write(field);
-      return new UuidResponse.fromUuid(output);
+      await Model.fields.write(field);
+      //return new UuidResponse.fromUuid(output);
     } catch(e,st) {
     _log.severe(e,st);
     throw e;
@@ -37,9 +37,9 @@ class FieldResource {
   }
 
   @ApiMethod(method: 'PUT', path: 'fields/{uuid}/')
-  Future<UuidResponse> update(String uuid, Field field) async {
+  Future<VoidMessage> update(String uuid, Field field) async {
     try {
-    String output = await FieldModel.write(field,uuid);
+    String output = await Model.fields.write(field,uuid);
     return new UuidResponse.fromUuid(output);
     } catch(e,st) {
       _log.severe(e,st);

@@ -1,51 +1,43 @@
 library model;
 
 import 'dart:async';
-import 'package:rpc/rpc.dart';
 import 'package:logging/logging.dart';
 
+import 'package:connection_pool/connection_pool.dart';
 import 'package:mongo_dart/mongo_dart.dart' as mongo;
 import 'package:options_file/options_file.dart';
 
 import 'package:dartalog/tools.dart' as tools;
 import 'package:dartalog/dartalog.dart' as dartalog;
+import 'package:dartalog/server/api/api.dart' as api;
+
 
 part 'src/exceptions/validation_exception.dart';
 
 part 'src/_a_model.dart';
-part 'src/field_model.dart';
-part 'src/template_model.dart';
+part 'src/a_field_model.dart';
+part 'src/a_template_model.dart';
+part 'src/a_item_model.dart';
 // part 'src/settings_model.dart';
 
-part 'src/data/a_data.dart';
-part 'src/data/field.dart';
-part 'src/data/item.dart';
-part 'src/data/template.dart';
+part 'src/mongo/_mongo_db_connection_pool.dart';
+part 'src/mongo/_mongo_database.dart';
+part 'src/mongo/_mongo_field_model.dart';
+part 'src/mongo/_mongo_template_model.dart';
+part 'src/mongo/_mongo_item_model.dart';
+
 
 
 class Model {
   static final Logger _log = new Logger('Model');
 
-  static OptionsFile options;
+  static AItemModel items = new _MongoItemModel();
 
-  static mongo.Db _db;
+  static AFieldModel fields = new _MongoFieldModel();
 
-  static Future<mongo.Db> setUpDataAdapter() async {
-    if (options == null) {
-      _log.info("Opening options file");
-      options = new OptionsFile('dartalog.options');
-    }
+  static ATemplateModel templates = new _MongoTemplateModel();
 
-    if(Model._db==null) {
-      _log.info("Opening database connection");
-      _db = new mongo.Db(options.getString("mongo"));
-      await _db.open();
-    }
-    if(_db.state==mongo.State.OPEN) {
-      _log.info("Database is open");
-      return _db;
-    } else {
-      throw new Exception("Database connection not open");
-    }
+  static OptionsFile get options {
+    return _AModel.options;
   }
 }

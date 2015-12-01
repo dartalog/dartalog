@@ -1,4 +1,5 @@
 // Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
+
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
 @HtmlImport("field_admin_page.html")
@@ -41,7 +42,7 @@ class FieldAdminPage extends APage with ARefreshablePage {
   @published String current_type;
   @published String current_format;
 
-  Map<String,String> get FIELD_TYPES => dartalog.FIELD_TYPES;
+  Map<String, String> get FIELD_TYPES => dartalog.FIELD_TYPES;
 
   @override
   void init(API.DartalogApi api) {
@@ -55,22 +56,21 @@ class FieldAdminPage extends APage with ARefreshablePage {
     await loadProperties();
   }
 
-        void clear() {
-      this.current_uuid = null;
-      this.current_format = "";
-      this.current_type = "";
-      this.current_name ="";
-
-    }
+  void clear() {
+    this.current_uuid = null;
+    this.current_format = "";
+    this.current_type = "";
+    this.current_name = "";
+  }
 
   Future loadProperties() async {
     try {
-    fields.clear();
+      fields.clear();
 
-    API.MapOfField data = await api.fields.getAll();
+      API.MapOfField data = await api.fields.getAll();
 
-    fields.addAll(data);
-    } catch(e,st) {
+      fields.addAll(data);
+    } catch (e, st) {
       _log.severe(e, st);
       window.alert(e.toString());
     }
@@ -93,7 +93,7 @@ class FieldAdminPage extends APage with ARefreshablePage {
       this.current_name = field.name;
       this.current_type = field.type;
       this.current_uuid = id;
-    } catch(e,st) {
+    } catch (e, st) {
       _log.severe(e, st);
       window.alert(e.toString());
     }
@@ -106,26 +106,25 @@ class FieldAdminPage extends APage with ARefreshablePage {
   clearClicked(event, detail, target) {
     this.clear();
   }
+
   saveClicked(event, detail, target) async {
     try {
-
       API.Field field = new API.Field();
       field.name = this.current_name;
       field.type = this.current_type;
       field.format = this.current_format;
 
-      if(this.current_uuid==null) {
+      if (this.current_uuid == null) {
         await this.api.fields.create(field);
       } else {
         await this.api.fields.update(field, this.current_uuid);
       }
-    } catch(e,st) {
+    } catch (e, st) {
       _log.severe(e, st);
       window.alert(e.toString());
     } finally {
       loadProperties();
     }
-
   }
 
 }

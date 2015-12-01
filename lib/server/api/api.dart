@@ -14,3 +14,10 @@ part 'src/resources/item_resource.dart';
 part 'src/responses/data_response.dart';
 part 'src/responses/uuid_response.dart';
 part 'src/responses/error_response.dart';
+part 'src/responses/full_item_response.dart';
+
+part 'src/data/a_data.dart';
+part 'src/data/field.dart';
+part 'src/data/item.dart';
+part 'src/data/template.dart';
+part 'src/data/template_field.dart';

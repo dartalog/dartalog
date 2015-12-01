@@ -3,10 +3,10 @@ part of api;
 class ItemResource {
   static final Logger _log = new Logger('ItemResource');
 
-  @ApiMethod(path: 'fields/')
-  Future<Map<String,Field>> getAll() async {
+  @ApiMethod(path: 'items/')
+  Future<Map<String,Item>> getAll() async {
     try {
-      dynamic output = await FieldModel.getAll();
+      dynamic output = await Model.items.getAll();
       return output;
     } catch(e,st) {
      _log.severe(e,st);
@@ -14,10 +14,10 @@ class ItemResource {
     }
   }
 
-  @ApiMethod(path: 'fields/{uuid}/')
-  Future<Field> get(String uuid) async {
+  @ApiMethod(path: 'items/{uuid}/')
+  Future<Item> get(String uuid) async {
     try {
-    dynamic output = await FieldModel.getByUUID(uuid);
+    dynamic output = await Model.items.getByUUID(uuid);
     return output;
     } catch(e,st) {
       _log.severe(e,st);
@@ -25,22 +25,22 @@ class ItemResource {
     }
   }
 
-  @ApiMethod(method: 'POST', path: 'fields/')
-  Future<UuidResponse> create(Field field) async {
+  @ApiMethod(method: 'POST', path: 'items/')
+  Future<VoidMessage> create(Item item) async {
     try {
-      String output = await FieldModel.write(field);
-      return new UuidResponse.fromUuid(output);
+      String output = await Model.items.write(item);
+      //return new UuidResponse.fromUuid(output);
     } catch(e,st) {
     _log.severe(e,st);
     throw e;
     }
   }
 
-  @ApiMethod(method: 'PUT', path: 'fields/{uuid}/')
-  Future<UuidResponse> update(String uuid, Field field) async {
+  @ApiMethod(method: 'PUT', path: 'items/{uuid}/')
+  Future<VoidMessage> update(String uuid, Item item) async {
     try {
-    String output = await FieldModel.write(field,uuid);
-    return new UuidResponse.fromUuid(output);
+    String output = await Model.items.write(item,uuid);
+    //return new UuidResponse.fromUuid(output);
     } catch(e,st) {
       _log.severe(e,st);
       throw e;

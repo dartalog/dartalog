@@ -16,6 +16,7 @@ dependencies:
   logging_handlers: 'any'
   shelf: 'any'
   mongo_dart: 'any'
+  connection_pool: 'any'
   options_file: 'any'
   uuid: 'any'
   http: 'any'

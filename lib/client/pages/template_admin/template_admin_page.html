@@ -9,7 +9,7 @@
         <link rel="stylesheet" href="template_admin_page.css">
 
 
-        <core-menu valueattr="data-id" selected="{{current_id}}">
+        <core-menu valueattr="data-id" selected="{{currentId}}">
             <template repeat="{{template in templates.keys}}">
                 <paper-item horizontal on-click="{{templateClicked}}" data-id="{{template}}">
                     {{templates[template].name}}
@@ -18,13 +18,24 @@
         </core-menu>
 
         <paper-menu layout vertical>
-            <paper-input floatinglabel label="Name" value="{{current_name}}"></paper-input>
+            <paper-input floatinglabel label="Name" value="{{currentName}}"></paper-input>
 
-            <core-menu multi="true" selected="{{current_fields}}" valueattr="data-id">
-                <template repeat="{{field in available_fields.keys}}">
-                    <paper-item horizontal data-id="{{field}}">{{available_fields[field].name}}</paper-item>
-                </template>
-            </core-menu>
+            <template repeat="{{field in currentFields}}">
+                <paper-item value="{{current_fields.indexOf(field)}}">{{field.name}}</paper-item>
+            </template>
+
+
+            <paper-dropdown-menu floatinglabel label="Type">
+                <paper-dropdown class="dropdown">
+                    <core-menu valueattr="value" id="field_dropdown">
+                        <template repeat="{{field in availableFields.keys}}">
+                            <paper-item value="{{field}}">{{availableFields[field].name}}</paper-item>
+                        </template>
+                    </core-menu>
+                </paper-dropdown>
+            </paper-dropdown-menu>
+            <paper-button raised on-click="{{addFieldClicked}}">Add</paper-button>
+            <br />
             <paper-button raised on-click="{{saveClicked}}">Save</paper-button>
             <paper-button raised on-click="{{clearClicked}}">Clear</paper-button>
         </paper-menu>

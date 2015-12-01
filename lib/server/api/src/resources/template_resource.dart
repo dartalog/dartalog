@@ -6,7 +6,7 @@ class TemplateResource {
   @ApiMethod(path: 'templates/')
   Future<Map<String,Template>> getAll() async {
     try {
-      Map<String,Template> output = await TemplateModel.getAll();
+      Map<String,Template> output = await Model.templates.getAll();
       return output;
     } catch (e, st) {
       _log.severe(e, st);
@@ -17,7 +17,7 @@ class TemplateResource {
   @ApiMethod(path: 'templates/{uuid}/')
   Future<Template> get(String uuid) async {
     try {
-      Template output = await TemplateModel.getByUUID(uuid);
+      Template output = await Model.templates.getByUUID(uuid);
       return output;
     } catch (e, st) {
       _log.severe(e, st);
@@ -26,10 +26,10 @@ class TemplateResource {
   }
 
   @ApiMethod(method: 'POST', path: 'templates/')
-  Future<UuidResponse> create(Template template) async {
+  Future<VoidMessage> create(Template template) async {
     try {
-      String output = await TemplateModel.write(template);
-      return new UuidResponse.fromUuid(output);
+      String output = await Model.templates.write(template);
+      //return new UuidResponse.fromUuid(output);
     } catch (e, st) {
       _log.severe(e, st);
       throw e;
@@ -37,10 +37,10 @@ class TemplateResource {
   }
 
   @ApiMethod(method: 'PUT', path: 'templates/{uuid}/')
-  Future<UuidResponse> update(String uuid, Template template) async {
+  Future<VoidMessage> update(String uuid, Template template) async {
     try {
-      String output = await TemplateModel.write(template, uuid);
-      return new UuidResponse.fromUuid(output);
+      String output = await Model.templates.write(template, uuid);
+      //return new UuidResponse.fromUuid(output);
     } catch (e, st) {
       _log.severe(e, st);
       throw e;

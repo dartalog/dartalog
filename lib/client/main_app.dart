@@ -95,6 +95,7 @@ class MainApp extends PolymerElement {
 
     if(currentPage is ARefreshablePage) {
       this.visiblePageRefreshable = true;
+      (currentPage as ARefreshablePage).refresh();
     } else {
       this.visiblePageRefreshable = false;
     }

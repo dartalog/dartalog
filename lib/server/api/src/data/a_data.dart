@@ -1,7 +1,7 @@
 part of api;
 
 abstract class AData {
-
+  void validate();
   //void setData(dynamic data);
 
 //  Map<String, dynamic> toMap() {

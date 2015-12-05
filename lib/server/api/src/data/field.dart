@@ -9,4 +9,11 @@ class Field extends AData {
   String format = "";
 
   Field();
+
+  void validate() {
+    if(isNullOrWhitespace(this.name))
+      throw new BadRequestError("Field ""name"" must have a value");
+    if(isNullOrWhitespace(this.type))
+      throw new BadRequestError("Field ""type"" must have a value");
+  }
 }

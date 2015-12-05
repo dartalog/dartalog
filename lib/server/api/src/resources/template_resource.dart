@@ -28,8 +28,8 @@ class TemplateResource {
   @ApiMethod(method: 'POST', path: 'templates/')
   Future<VoidMessage> create(Template template) async {
     try {
-      String output = await Model.templates.write(template);
-      //return new UuidResponse.fromUuid(output);
+      template.validate();
+      await Model.templates.write(template);
     } catch (e, st) {
       _log.severe(e, st);
       throw e;
@@ -39,6 +39,7 @@ class TemplateResource {
   @ApiMethod(method: 'PUT', path: 'templates/{uuid}/')
   Future<VoidMessage> update(String uuid, Template template) async {
     try {
+      template.validate();
       String output = await Model.templates.write(template, uuid);
       //return new UuidResponse.fromUuid(output);
     } catch (e, st) {

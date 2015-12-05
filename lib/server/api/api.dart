@@ -3,6 +3,8 @@ library api;
 import 'dart:io';
 import 'dart:async';
 import 'package:rpc/rpc.dart';
+import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/tools.dart';
 import 'package:dartalog/server/model/model.dart';
 import 'package:logging/logging.dart';
 

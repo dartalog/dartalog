@@ -50,7 +50,6 @@ class TemplateAdminPage extends APage with ARefreshablePage {
   void init(API.DartalogApi api) {
     super.init(api);
     this.title = "Template Admin";
-    this.refresh();
   }
 
   Future refresh() async {
@@ -117,13 +116,11 @@ class TemplateAdminPage extends APage with ARefreshablePage {
       if(!this.availableFields.containsKey(id))
         throw new Exception("Invalid field selected: ${id}");
 
-      API.Field field = this.availableFields[id];
-
-      if(currentFields.contains(field)){
+      if(currentFields.contains(id)){
         throw new Exception("Field has already been added");
       }
 
-      currentFields.add(field);
+      currentFields.add(id);
     } catch(e,st) {
       _log.severe(e, st);
       window.alert(e.toString());
@@ -143,11 +140,11 @@ class TemplateAdminPage extends APage with ARefreshablePage {
 
       template.name = this.currentName;
       template.fields = new API.MapOfField();
-      for(String field in this.currentFields) {
-        if(!this.availableFields.containsKey(field)) {
-          throw new Exception("Field not found: ${field}");
+      for(String field_id in this.currentFields) {
+        if(!this.availableFields.containsKey(field_id)) {
+          throw new Exception("Field not found: ${field_id}");
         }
-        template.fields[field] = this.availableFields[field];
+        template.fields[field_id] = this.availableFields[field_id];
       }
 
       if(this.currentId==null) {
@@ -155,11 +152,11 @@ class TemplateAdminPage extends APage with ARefreshablePage {
       } else {
         await this.api.templates.update(template, this.currentId);
       }
+      this.refresh();
     } catch(e,st) {
       _log.severe(e, st);
       window.alert(e.toString());
     } finally {
-      this.refresh();
     }
 
   }

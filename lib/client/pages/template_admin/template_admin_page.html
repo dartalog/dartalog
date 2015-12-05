@@ -20,8 +20,8 @@
         <paper-menu layout vertical>
             <paper-input floatinglabel label="Name" value="{{currentName}}"></paper-input>
 
-            <template repeat="{{field in currentFields}}">
-                <paper-item value="{{current_fields.indexOf(field)}}">{{field.name}}</paper-item>
+            <template repeat="{{id in currentFields}}">
+                <paper-item value="{{id}}">{{availableFields[id].name}}</paper-item>
             </template>
 
 

@@ -91,7 +91,7 @@ class _MongoTemplateModel extends ATemplateModel {
 
     List<mongo.DbRef> field_ids = new List<mongo.DbRef>();
     for(String field_string in template.fields.keys) {
-      field_ids.add(new mongo.DbRef(_AMongoModel._TEMPLATES_MONGO_COLLECTION,mongo.ObjectId.parse(field_string)));
+      field_ids.add(new mongo.DbRef(_MongoDatabase._TEMPLATES_MONGO_COLLECTION,mongo.ObjectId.parse(field_string)));
     }
 
     data["fields"] = field_ids;

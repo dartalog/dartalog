@@ -28,8 +28,8 @@ class FieldResource {
   @ApiMethod(method: 'POST', path: 'fields/')
   Future<VoidMessage> create(Field field) async {
     try {
+      field.validate();
       await Model.fields.write(field);
-      //return new UuidResponse.fromUuid(output);
     } catch(e,st) {
     _log.severe(e,st);
     throw e;
@@ -39,6 +39,7 @@ class FieldResource {
   @ApiMethod(method: 'PUT', path: 'fields/{uuid}/')
   Future<VoidMessage> update(String uuid, Field field) async {
     try {
+      field.validate();
     String output = await Model.fields.write(field,uuid);
     return new UuidResponse.fromUuid(output);
     } catch(e,st) {

@@ -37,10 +37,10 @@ class FieldAdminPage extends APage with ARefreshablePage {
   /// Constructor used to create instance of MainApp.
   FieldAdminPage.created() : super.created();
 
-  @published String current_uuid;
-  @published String current_name;
-  @published String current_type;
-  @published String current_format;
+  @published String currentUuid;
+  @published String currentName;
+  @published String currentType;
+  @published String currentFormat;
 
   Map<String, String> get FIELD_TYPES => dartalog.FIELD_TYPES;
 
@@ -48,23 +48,12 @@ class FieldAdminPage extends APage with ARefreshablePage {
   void init(API.DartalogApi api) {
     super.init(api);
     this.title = "Property Admin";
-    loadProperties();
   }
 
   Future refresh() async {
-    this.clear();
-    await loadProperties();
-  }
-
-  void clear() {
-    this.current_uuid = null;
-    this.current_format = "";
-    this.current_type = "";
-    this.current_name = "";
-  }
-
-  Future loadProperties() async {
     try {
+      this.clear();
+
       fields.clear();
 
       API.MapOfField data = await api.fields.getAll();
@@ -74,6 +63,13 @@ class FieldAdminPage extends APage with ARefreshablePage {
       _log.severe(e, st);
       window.alert(e.toString());
     }
+  }
+
+  void clear() {
+    this.currentUuid = null;
+    this.currentFormat = "";
+    this.currentType = "";
+    this.currentName = "";
   }
 
   showModal(event, detail, target) {
@@ -89,10 +85,10 @@ class FieldAdminPage extends APage with ARefreshablePage {
       String id = target.dataset["id"];
       API.Field field = this.fields[id];
 
-      this.current_format = field.format;
-      this.current_name = field.name;
-      this.current_type = field.type;
-      this.current_uuid = id;
+      this.currentFormat = field.format;
+      this.currentName = field.name;
+      this.currentType = field.type;
+      this.currentUuid = id;
     } catch (e, st) {
       _log.severe(e, st);
       window.alert(e.toString());
@@ -110,20 +106,21 @@ class FieldAdminPage extends APage with ARefreshablePage {
   saveClicked(event, detail, target) async {
     try {
       API.Field field = new API.Field();
-      field.name = this.current_name;
-      field.type = this.current_type;
-      field.format = this.current_format;
+      field.name = this.currentName;
+      field.type = this.currentType;
+      field.format = this.currentFormat;
 
-      if (this.current_uuid == null) {
+      if (this.currentUuid == null) {
         await this.api.fields.create(field);
       } else {
-        await this.api.fields.update(field, this.current_uuid);
+        await this.api.fields.update(field, this.currentUuid);
       }
+
+      refresh();
     } catch (e, st) {
       _log.severe(e, st);
       window.alert(e.toString());
     } finally {
-      loadProperties();
     }
   }
 

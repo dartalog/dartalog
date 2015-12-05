@@ -13,17 +13,17 @@
         </template>
 
 <div layout vertical>
-        <paper-input floatinglabel label="Name" value="{{current_name}}"></paper-input>
+        <paper-input floatinglabel label="Name" value="{{currentName}}"></paper-input>
         <paper-dropdown-menu floatinglabel label="Type">
             <paper-dropdown class="dropdown">
-                <core-menu valueattr="value" selected="{{current_type}}">
+                <core-menu valueattr="value" selected="{{currentType}}">
                     <template repeat="{{field_type in FIELD_TYPES.keys}}">
                         <paper-item value="{{field_type}}">{{FIELD_TYPES[field_type]}}</paper-item>
                     </template>
                 </core-menu>
             </paper-dropdown>
         </paper-dropdown-menu>
-        <paper-input floatinglabel label="Format" value="{{current_format}}"></paper-input>
+        <paper-input floatinglabel label="Format" value="{{currentFormat}}"></paper-input>
     <paper-button raised on-click="{{saveClicked}}">Save</paper-button>
     <paper-button raised on-click="{{clearClicked}}">Clear</paper-button>
 </div>

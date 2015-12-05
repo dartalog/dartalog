@@ -27,3 +27,7 @@ const String SCHEMA_LINK_NUKE = "nuke";
 
 final Map<String,String> FIELD_TYPES = {'numeric': 'Numeric', 'string': 'String', 'date': 'Date'};
 
+class ValidationException implements  Exception {
+  String message;
+  ValidationException(this.message);
+}

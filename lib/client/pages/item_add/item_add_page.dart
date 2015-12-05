@@ -29,7 +29,7 @@ import '../../api/dartalog.dart' as API;
 
 /// A Polymer `<template-admin-page>` element.
 @CustomTag('item-add-page')
-class ItemAddPage extends APage {
+class ItemAddPage extends APage with ARefreshablePage  {
   static final Logger _log = new Logger("ItemAddPage");
 
   CorePages get pages => $['item_add_pages'];
@@ -40,15 +40,16 @@ class ItemAddPage extends APage {
   @observable Map templates = new ObservableMap();
 
   @published String templateId;
+
   @observable Map<String,API.Field> templateFields = new ObservableMap<String,API.Field>();
 
   @override
   void init(API.DartalogApi api) {
     super.init(api);
     this.title = "Template Admin";
-    this.refresh();
   }
 
+  @override
   Future refresh() async {
     //this.clear();
     await loadTemplates();

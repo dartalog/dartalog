@@ -11,9 +11,6 @@ import 'package:dartalog/tools.dart' as tools;
 import 'package:dartalog/dartalog.dart' as dartalog;
 import 'package:dartalog/server/api/api.dart' as api;
 
-
-part 'src/exceptions/validation_exception.dart';
-
 part 'src/_a_model.dart';
 part 'src/a_field_model.dart';
 part 'src/a_template_model.dart';

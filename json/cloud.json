@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "88d6a9b54b6a211cc023056a6de9d20214e09a8b",
+ "etag": "2c13607f7ce3f29c41d6a1656b3c643ae45c2ca0",
  "discoveryVersion": "v1",
  "id": "dartalog:0.1",
  "name": "dartalog",
@@ -62,15 +62,6 @@
     }
    }
   },
-  "UuidResponse": {
-   "id": "UuidResponse",
-   "type": "object",
-   "properties": {
-    "uuid": {
-     "type": "string"
-    }
-   }
-  },
   "MapOfItem": {
    "id": "MapOfItem",
    "type": "object",
@@ -85,7 +76,7 @@
     "template": {
      "type": "string"
     },
-    "field_values": {
+    "fieldValues": {
      "type": "object",
      "required": true,
      "additionalProperties": {
@@ -199,9 +190,6 @@
      "parameterOrder": [],
      "request": {
       "$ref": "Template"
-     },
-     "response": {
-      "$ref": "UuidResponse"
      }
     },
     "update": {
@@ -221,9 +209,6 @@
      ],
      "request": {
       "$ref": "Template"
-     },
-     "response": {
-      "$ref": "UuidResponse"
      }
     }
    },
@@ -268,9 +253,6 @@
      "parameterOrder": [],
      "request": {
       "$ref": "Item"
-     },
-     "response": {
-      "$ref": "UuidResponse"
      }
     },
     "update": {
@@ -290,9 +272,6 @@
      ],
      "request": {
       "$ref": "Item"
-     },
-     "response": {
-      "$ref": "UuidResponse"
      }
     }
    },

@@ -197,15 +197,13 @@ class ItemsResourceApi {
    *
    * Request parameters:
    *
-   * Completes with a [UuidResponse].
-   *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
    *
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<UuidResponse> create(Item request) {
+  async.Future create(Item request) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -217,6 +215,8 @@ class ItemsResourceApi {
       _body = convert.JSON.encode((request).toJson());
     }
 
+    _downloadOptions = null;
+
     _url = 'items/';
 
     var _response = _requester.request(_url,
@@ -226,7 +226,7 @@ class ItemsResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new UuidResponse.fromJson(data));
+    return _response.then((data) => null);
   }
 
   /**
@@ -305,15 +305,13 @@ class ItemsResourceApi {
    *
    * [uuid] - Path parameter: 'uuid'.
    *
-   * Completes with a [UuidResponse].
-   *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
    *
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<UuidResponse> update(Item request, core.String uuid) {
+  async.Future update(Item request, core.String uuid) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -328,6 +326,8 @@ class ItemsResourceApi {
       throw new core.ArgumentError("Parameter uuid is required.");
     }
 
+    _downloadOptions = null;
+
     _url = 'items/' + commons.Escaper.ecapeVariable('$uuid') + '/';
 
     var _response = _requester.request(_url,
@@ -337,7 +337,7 @@ class ItemsResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new UuidResponse.fromJson(data));
+    return _response.then((data) => null);
   }
 
 }
@@ -354,15 +354,13 @@ class TemplatesResourceApi {
    *
    * Request parameters:
    *
-   * Completes with a [UuidResponse].
-   *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
    *
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<UuidResponse> create(Template request) {
+  async.Future create(Template request) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -374,6 +372,8 @@ class TemplatesResourceApi {
       _body = convert.JSON.encode((request).toJson());
     }
 
+    _downloadOptions = null;
+
     _url = 'templates/';
 
     var _response = _requester.request(_url,
@@ -383,7 +383,7 @@ class TemplatesResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new UuidResponse.fromJson(data));
+    return _response.then((data) => null);
   }
 
   /**
@@ -462,15 +462,13 @@ class TemplatesResourceApi {
    *
    * [uuid] - Path parameter: 'uuid'.
    *
-   * Completes with a [UuidResponse].
-   *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
    *
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<UuidResponse> update(Template request, core.String uuid) {
+  async.Future update(Template request, core.String uuid) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -485,6 +483,8 @@ class TemplatesResourceApi {
       throw new core.ArgumentError("Parameter uuid is required.");
     }
 
+    _downloadOptions = null;
+
     _url = 'templates/' + commons.Escaper.ecapeVariable('$uuid') + '/';
 
     var _response = _requester.request(_url,
@@ -494,7 +494,7 @@ class TemplatesResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new UuidResponse.fromJson(data));
+    return _response.then((data) => null);
   }
 
 }
@@ -542,8 +542,8 @@ class Item {
   Item();
 
   Item.fromJson(core.Map _json) {
-    if (_json.containsKey("field_values")) {
-      fieldValues = _json["field_values"];
+    if (_json.containsKey("fieldValues")) {
+      fieldValues = _json["fieldValues"];
     }
     if (_json.containsKey("template")) {
       template = _json["template"];
@@ -553,7 +553,7 @@ class Item {
   core.Map toJson() {
     var _json = new core.Map();
     if (fieldValues != null) {
-      _json["field_values"] = fieldValues;
+      _json["fieldValues"] = fieldValues;
     }
     if (template != null) {
       _json["template"] = template;
@@ -692,26 +692,6 @@ class Template {
     }
     if (name != null) {
       _json["name"] = name;
-    }
-    return _json;
-  }
-}
-
-class UuidResponse {
-  core.String uuid;
-
-  UuidResponse();
-
-  UuidResponse.fromJson(core.Map _json) {
-    if (_json.containsKey("uuid")) {
-      uuid = _json["uuid"];
-    }
-  }
-
-  core.Map toJson() {
-    var _json = new core.Map();
-    if (uuid != null) {
-      _json["uuid"] = uuid;
     }
     return _json;
   }

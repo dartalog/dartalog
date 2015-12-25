@@ -25,7 +25,7 @@ const String SCHEMA_LINK_GET_OBJECTS = "get_objects";
 const String SCHEMA_LINK_GET_SETTINGS = "get_settings";
 const String SCHEMA_LINK_NUKE = "nuke";
 
-final Map<String,String> FIELD_TYPES = {'numeric': 'Numeric', 'string': 'String', 'date': 'Date'};
+final Map<String,String> FIELD_TYPES = {'numeric': 'Numeric', 'string': 'String', 'date': 'Date', 'image': 'Image'};
 
 class ValidationException implements  Exception {
   String message;

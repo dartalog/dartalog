@@ -7,5 +7,5 @@ abstract class AItemModel extends _AModel {
 
   Future<Map<String,api.Item>> getAll();
 
-  Future write(api.Field field, [String id = null]);
+  Future write(api.Item item, [String id = null]);
 }

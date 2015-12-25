@@ -27,6 +27,7 @@ import 'api/dartalog.dart';
 import 'package:dartalog/client/pages/pages.dart';
 import 'package:dartalog/client/pages/item_browse/item_browse_page.dart';
 import 'package:dartalog/client/pages/item_add/item_add_page.dart';
+import 'package:dartalog/client/pages/item/item_page.dart';
 import 'package:dartalog/client/pages/field_admin/field_admin_page.dart';
 import 'package:dartalog/client/pages/template_admin/template_admin_page.dart';
 
@@ -49,7 +50,8 @@ class MainApp extends PolymerElement {
   FieldAdminPage get fieldAdmin=> $['field_admin'];
   TemplateAdminPage get templateAdmin=> $['template_admin'];
   ItemAddPage get itemAddAdmin=> $['item_add'];
-  ItemBrowsePage get itemBrowseAdmin=> $['item_browse'];
+  ItemBrowsePage get itemBrowse=> $['browse'];
+  ItemPage get itemPage=> $['item'];
 
   /// Constructor used to create instance of MainApp.
   MainApp.created() : super.created();
@@ -60,19 +62,28 @@ class MainApp extends PolymerElement {
 
     // Set up the routes for all the pages.
     router.root.addRoute(
-        name: "Item Browse", path: "item_browse",
-        defaultRoute: false,
-        enter: enterRoute);
-    router.root.addRoute(
-        name: "Item Add", path: "item_add",
+        name: this.itemBrowse.title,
+        path: "browse",
         defaultRoute: true,
         enter: enterRoute);
     router.root.addRoute(
-        name: "Field Admin", path: "field_admin",
+        name: this.itemPage.title,
+        path: "item/:itemId",
         defaultRoute: false,
         enter: enterRoute);
     router.root.addRoute(
-        name: "Template Admin", path: "template_admin",
+        name: this.itemAddAdmin.title,
+        path: "item_add",
+        defaultRoute: false,
+        enter: enterRoute);
+    router.root.addRoute(
+        name: this.fieldAdmin.title,
+        path: "field_admin",
+        defaultRoute: false,
+        enter: enterRoute);
+    router.root.addRoute(
+        name: this.templateAdmin.title,
+        path: "template_admin",
         defaultRoute: false,
         enter: enterRoute);
 
@@ -81,7 +92,8 @@ class MainApp extends PolymerElement {
     this.fieldAdmin.init(this.api);
     this.templateAdmin.init(this.api);
     this.itemAddAdmin.init(this.api);
-    this.itemBrowseAdmin.init(this.api);
+    this.itemBrowse.init(this.api);
+    this.itemPage.init(this.api);
   }
 
   void routeChanged() {
@@ -90,15 +102,33 @@ class MainApp extends PolymerElement {
   }
 
   void enterRoute(RouteEvent e) {
-    visiblePage = e.path;
-    this.visiblePageTitle = e.route.name;
+
+    switch(e.path) {
+      case "item":
+        visiblePage = "browse";
+        break;
+      case "item/:itemId":
+        visiblePage = "item";
+        break;
+      default:
+        visiblePage = e.path;
+    }
+
+    this.visiblePageRefreshable = false;
+
+    if(this.currentPage==null) {
+      this.visiblePageTitle = "PAGE MISSING";
+      throw new Exception("Page not found: ${this.visiblePage}");
+    }
+
+    this.currentPage.activate(e.parameters);
 
     if(currentPage is ARefreshablePage) {
       this.visiblePageRefreshable = true;
-      (currentPage as ARefreshablePage).refresh();
-    } else {
-      this.visiblePageRefreshable = false;
     }
+
+    this.visiblePageTitle = this.currentPage.title;
+
   }
 
   refreshClicked(event, detail, target) async {

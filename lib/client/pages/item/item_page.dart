@@ -1,8 +1,8 @@
 // Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
-@HtmlImport("item_browse_page.html")
-library dartalog.client.pages.item_browse_page;
+@HtmlImport("item_page.html")
+library dartalog.client.pages.item_page;
 
 import 'dart:html';
 import 'dart:async';
@@ -27,22 +27,20 @@ import 'package:dartalog/client/client.dart';
 import '../../api/dartalog.dart' as API;
 
 /// A Polymer `<template-admin-page>` element.
-@CustomTag('item-browse-page')
-class ItemBrowsePage extends APage with ARefreshablePage {
-  static final Logger _log = new Logger("ItemBrowsePage");
+@CustomTag('item-page')
+class ItemPage extends APage with ARefreshablePage {
+  static final Logger _log = new Logger("ItemPage");
 
   Map fields = new ObservableMap();
 
   /// Constructor used to create instance of MainApp.
-  ItemBrowsePage.created() : super.created("Item Browse");
+  ItemPage.created() : super.created("Item View");
 
   @observable Map items = new ObservableMap();
 
   @override
   void init(API.DartalogApi api) {
     super.init(api);
-    this.title = "Browse Items";
-    this.refresh();
   }
 
   void activate(Map args) {
@@ -73,15 +71,48 @@ class ItemBrowsePage extends APage with ARefreshablePage {
   }
 
 
-  itemClicked(event, detail, target) async {
+  templateClicked(event, detail, target) async {
     try {
       String id = target.dataset["id"];
-      window.location.hash = "item/${id}";
+      API.Template template = this.templates[id];
+
+      this.current_id = id;
+      this.current_name = template.name;
+      this.current_fields.clear();
+      this.current_fields.addAll(template.fields);
     } catch(e,st) {
       _log.severe(e, st);
       window.alert(e.toString());
     }
   }
 
+  validateField(event, detail, target) {
+    _log.info("Validating");
+  }
+
+  clearClicked(event, detail, target) async {
+    this.clear();
+  }
+  saveClicked(event, detail, target) async {
+    try {
+
+      API.Template template = new API.Template();
+
+      template.name = this.current_name;
+      template.fields = this.current_fields;
+
+      if(this.current_id==null) {
+        await this.api.templates.create(template);
+      } else {
+        await this.api.templates.update(template, this.current_id);
+      }
+    } catch(e,st) {
+      _log.severe(e, st);
+      window.alert(e.toString());
+    } finally {
+      this.refresh();
+    }
+
+  }
 
 }

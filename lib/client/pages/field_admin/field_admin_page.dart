@@ -35,7 +35,7 @@ class FieldAdminPage extends APage with ARefreshablePage {
   Map fields = new ObservableMap();
 
   /// Constructor used to create instance of MainApp.
-  FieldAdminPage.created() : super.created();
+  FieldAdminPage.created() : super.created("Field Admin");
 
   @published String currentUuid;
   @published String currentName;
@@ -47,7 +47,10 @@ class FieldAdminPage extends APage with ARefreshablePage {
   @override
   void init(API.DartalogApi api) {
     super.init(api);
-    this.title = "Property Admin";
+  }
+
+  void activate(Map args) {
+    this.refresh();
   }
 
   Future refresh() async {

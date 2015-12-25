@@ -20,8 +20,10 @@
                 <paper-button raised on-click="{{backClicked}}">Back</paper-button>
 
                 <template repeat="{{templateField in templateFields.keys}}">
-                    <paper-input horizontal floatinglabel label="{{templateFields[templateField].name}}"></paper-input>
+                    <paper-input horizontal floatinglabel label="{{templateFields[templateField].name}}" value="{{fieldValues[templateField]}}"></paper-input>
                 </template>
+
+                <paper-button raised on-click="{{saveClicked}}">Save</paper-button>
             </div>
             </div>
 

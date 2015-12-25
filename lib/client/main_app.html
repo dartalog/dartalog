@@ -5,62 +5,68 @@
 
 
 <polymer-element name="main-app">
-  <template>
-      <link rel="stylesheet" href="main_app.css">
+    <template>
+        <link rel="stylesheet" href="main_app.css">
 
-      <core-scaffold id="scaffold">
-          <nav>
-              <core-toolbar><span>Dartalog</span></core-toolbar>
-              <core-menu selected="0">
-                  <paper-item noink>
-                      <core-icon icon="label-outline"></core-icon>
-                      <a href="#item_add">Add Item</a>
-                  </paper-item>
-                  <paper-item noink>
-                      <core-icon icon="label-outline"></core-icon>
-                      <a href="#field_admin">Fields</a>
-                  </paper-item>
-                  <paper-item noink>
-                      <core-icon icon="label-outline"></core-icon>
-                      <a href="#template_admin">Templates</a>
-                  </paper-item>
-              </core-menu>
-          </nav>
+        <core-scaffold id="scaffold">
+            <nav>
+                <core-toolbar><span>Dartalog</span></core-toolbar>
+                <core-menu selected="0">
+                    <paper-item noink>
+                        <core-icon icon="label-outline"></core-icon>
+                        <a href="#browse">Browse Items</a>
+                    </paper-item>
+                    <paper-item noink>
+                        <core-icon icon="label-outline"></core-icon>
+                        <a href="#item_add">Add Item</a>
+                    </paper-item>
+                    <paper-item noink>
+                        <core-icon icon="label-outline"></core-icon>
+                        <a href="#field_admin">Fields</a>
+                    </paper-item>
+                    <paper-item noink>
+                        <core-icon icon="label-outline"></core-icon>
+                        <a href="#template_admin">Templates</a>
+                    </paper-item>
+                </core-menu>
+            </nav>
 
-          <core-toolbar tool flex>
-              <div flex>{{visiblePageTitle}}</div>
-              <core-icon-button icon="refresh" on-click="{{refreshClicked}}" hidden?="{{!visiblePageRefreshable}}"></core-icon-button>
-              <core-icon-button icon="add"></core-icon-button>
-          </core-toolbar>
-      <!--    <core-toolbar tool>
-              <paper-icon-button icon="arrow-back"></paper-icon-button>
-              <span flex>{{currentPage.title}}</span>
-              <paper-icon-button icon="search"></paper-icon-button>
-              <paper-input label="Search"></paper-input>
+            <core-toolbar tool flex>
+                <div flex>{{visiblePageTitle}}</div>
+                <core-icon-button icon="refresh" on-click="{{refreshClicked}}"
+                                  hidden?="{{!visiblePageRefreshable}}"></core-icon-button>
+                <core-icon-button icon="add"></core-icon-button>
+            </core-toolbar>
+            <!--    <core-toolbar tool>
+                    <paper-icon-button icon="arrow-back"></paper-icon-button>
+                    <span flex>{{currentPage.title}}</span>
+                    <paper-icon-button icon="search"></paper-icon-button>
+                    <paper-input label="Search"></paper-input>
 
-              <template if="{{currentPage.supportsAdding}}">
-                  <paper-icon-button icon="add" on-click="{{addClicked}}"></paper-icon-button>
-              </template>
-              <paper-icon-button icon="account-circle"></paper-icon-button>
-              <paper-icon-button icon="bug-report"></paper-icon-button>
-          </core-toolbar>-->
+                    <template if="{{currentPage.supportsAdding}}">
+                        <paper-icon-button icon="add" on-click="{{addClicked}}"></paper-icon-button>
+                    </template>
+                    <paper-icon-button icon="account-circle"></paper-icon-button>
+                    <paper-icon-button icon="bug-report"></paper-icon-button>
+                </core-toolbar>-->
 
-        <core-pages valueattr="id" selected="{{visiblePage}}">
-            <item-browse-page id="item_browse"></item-browse-page>
-            <item-add-page id="item_add"></item-add-page>
-            <field-admin-page id="field_admin"></field-admin-page>
-          <template-admin-page id="template_admin"></template-admin-page>
-        </core-pages>
-      </core-scaffold>
-<!--
-      <!--<paper-icon-button icon="more-vert"></paper-icon-button>-->
-<!--
-    <template if="{{process_active}}">
-      <paper-progress indeterminate></paper-progress>
+            <core-pages valueattr="id" selected="{{visiblePage}}">
+                <item-browse-page id="browse"></item-browse-page>
+                <item-page id="item"></item-page>
+                <item-add-page id="item_add"></item-add-page>
+                <field-admin-page id="field_admin"></field-admin-page>
+                <template-admin-page id="template_admin"></template-admin-page>
+            </core-pages>
+        </core-scaffold>
+        <!--
+              <!--<paper-icon-button icon="more-vert"></paper-icon-button>-->
+        <!--
+            <template if="{{process_active}}">
+              <paper-progress indeterminate></paper-progress>
+            </template>
+
+            <section style="position:absolute; top:80px;left:14px;right:14px;bottom:150px;overflow:hidden;">
+            </section>
+        -->
     </template>
-
-    <section style="position:absolute; top:80px;left:14px;right:14px;bottom:150px;overflow:hidden;">
-    </section>
--->
-  </template>
 </polymer-element>

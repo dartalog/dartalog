@@ -35,18 +35,22 @@ class ItemAddPage extends APage with ARefreshablePage  {
   CorePages get pages => $['item_add_pages'];
 
   /// Constructor used to create instance of MainApp.
-  ItemAddPage.created() : super.created();
+  ItemAddPage.created() : super.created("Item Add");
 
   @observable Map templates = new ObservableMap();
 
   @published String templateId;
 
   @observable Map<String,API.Field> templateFields = new ObservableMap<String,API.Field>();
+  @observable Map<String,String> fieldValues = new ObservableMap<String,String>();
 
   @override
   void init(API.DartalogApi api) {
     super.init(api);
-    this.title = "Template Admin";
+  }
+
+  void activate(Map args) {
+    this.refresh();
   }
 
   @override
@@ -76,10 +80,30 @@ class ItemAddPage extends APage with ARefreshablePage  {
     try {
       String id = target.dataset["id"];
       API.Template template = this.templates[id];
+      this.fieldValues.clear();
+      for(var field in template.fields.keys) {
+        this.fieldValues[field] = ""; // SOme day, default values!
+      }
       this.templateFields.addAll(template.fields);
-
       this.templateId = id;
       pages.selected = "field_input";
+    } catch(e,st) {
+      _log.severe(e, st);
+      window.alert(e.toString());
+    }
+  }
+
+  saveClicked(event, detail, target) {
+    try {
+      if(this.templateId==null) {
+        throw new Exception("Template not selected");
+      }
+      API.Item item = new API.Item();
+      item.template = this.templateId;
+
+      item.fieldValues = this.fieldValues;
+
+      api.items.create(item);
     } catch(e,st) {
       _log.severe(e, st);
       window.alert(e.toString());

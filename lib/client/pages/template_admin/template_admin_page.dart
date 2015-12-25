@@ -35,7 +35,7 @@ class TemplateAdminPage extends APage with ARefreshablePage {
   Map fields = new ObservableMap();
 
   /// Constructor used to create instance of MainApp.
-  TemplateAdminPage.created() : super.created();
+  TemplateAdminPage.created() : super.created( "Template Admin");
 
   @observable Map templates = new ObservableMap();
   @observable Map availableFields = new ObservableMap();
@@ -49,8 +49,12 @@ class TemplateAdminPage extends APage with ARefreshablePage {
   @override
   void init(API.DartalogApi api) {
     super.init(api);
-    this.title = "Template Admin";
   }
+
+  void activate(Map args) {
+    this.refresh();
+  }
+
 
   Future refresh() async {
     this.clear();

@@ -234,7 +234,7 @@ class ItemsResourceApi {
    *
    * [uuid] - Path parameter: 'uuid'.
    *
-   * Completes with a [Item].
+   * Completes with a [ItemResponse].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
@@ -242,7 +242,7 @@ class ItemsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<Item> get(core.String uuid) {
+  async.Future<ItemResponse> get(core.String uuid) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -263,7 +263,7 @@ class ItemsResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new Item.fromJson(data));
+    return _response.then((data) => new ItemResponse.fromJson(data));
   }
 
   /**
@@ -391,7 +391,7 @@ class TemplatesResourceApi {
    *
    * [uuid] - Path parameter: 'uuid'.
    *
-   * Completes with a [Template].
+   * Completes with a [TemplateResponse].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
@@ -399,7 +399,7 @@ class TemplatesResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<Template> get(core.String uuid) {
+  async.Future<TemplateResponse> get(core.String uuid) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -420,7 +420,7 @@ class TemplatesResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new Template.fromJson(data));
+    return _response.then((data) => new TemplateResponse.fromJson(data));
   }
 
   /**
@@ -562,6 +562,40 @@ class Item {
   }
 }
 
+class ItemResponse {
+  core.Map<core.String, Field> fields;
+  Item item;
+  Template template;
+
+  ItemResponse();
+
+  ItemResponse.fromJson(core.Map _json) {
+    if (_json.containsKey("fields")) {
+      fields = commons.mapMap(_json["fields"], (item) => new Field.fromJson(item));
+    }
+    if (_json.containsKey("item")) {
+      item = new Item.fromJson(_json["item"]);
+    }
+    if (_json.containsKey("template")) {
+      template = new Template.fromJson(_json["template"]);
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (fields != null) {
+      _json["fields"] = commons.mapMap(fields, (item) => (item).toJson());
+    }
+    if (item != null) {
+      _json["item"] = (item).toJson();
+    }
+    if (template != null) {
+      _json["template"] = (template).toJson();
+    }
+    return _json;
+  }
+}
+
 class MapOfField
     extends collection.MapBase<core.String, Field> {
   final core.Map _innerMap = {};
@@ -671,14 +705,14 @@ class MapOfTemplate
 }
 
 class Template {
-  core.Map<core.String, Field> fields;
+  core.List<core.String> fields;
   core.String name;
 
   Template();
 
   Template.fromJson(core.Map _json) {
     if (_json.containsKey("fields")) {
-      fields = commons.mapMap(_json["fields"], (item) => new Field.fromJson(item));
+      fields = _json["fields"];
     }
     if (_json.containsKey("name")) {
       name = _json["name"];
@@ -688,10 +722,37 @@ class Template {
   core.Map toJson() {
     var _json = new core.Map();
     if (fields != null) {
-      _json["fields"] = commons.mapMap(fields, (item) => (item).toJson());
+      _json["fields"] = fields;
     }
     if (name != null) {
       _json["name"] = name;
+    }
+    return _json;
+  }
+}
+
+class TemplateResponse {
+  core.Map<core.String, Field> fields;
+  Template template;
+
+  TemplateResponse();
+
+  TemplateResponse.fromJson(core.Map _json) {
+    if (_json.containsKey("fields")) {
+      fields = commons.mapMap(_json["fields"], (item) => new Field.fromJson(item));
+    }
+    if (_json.containsKey("template")) {
+      template = new Template.fromJson(_json["template"]);
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (fields != null) {
+      _json["fields"] = commons.mapMap(fields, (item) => (item).toJson());
+    }
+    if (template != null) {
+      _json["template"] = (template).toJson();
     }
     return _json;
   }

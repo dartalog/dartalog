@@ -9,13 +9,12 @@
         <link rel="stylesheet" href="item_page.css">
 
 
-
-<core-selector>
-        <template repeat="{{item in items.keys}}">
-            <paper-shadow z="1">
-            <paper-item data-id="{{item}}">{{item}}</paper-item>
-            </paper-shadow>
-        </template>
-</core-selector>
+        <core-selector>
+            <template repeat="{{item in items.keys}}">
+                <paper-shadow z="1">
+                    <paper-item data-id="{{item}}">{{item}}</paper-item>
+                </paper-shadow>
+            </template>
+        </core-selector>
     </template>
 </polymer-element>

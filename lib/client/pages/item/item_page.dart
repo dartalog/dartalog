@@ -21,6 +21,7 @@ import 'package:core_elements/core_menu.dart';
 
 
 import 'package:dartalog/dartalog.dart' as dartalog;
+import 'package:dartalog/tools.dart';
 import 'package:dartalog/client/pages/pages.dart';
 import 'package:dartalog/client/client.dart';
 
@@ -31,31 +32,32 @@ import '../../api/dartalog.dart' as API;
 class ItemPage extends APage with ARefreshablePage {
   static final Logger _log = new Logger("ItemPage");
 
-  Map fields = new ObservableMap();
+  @observable String currentItemId = null;
+  @observable Map fields = new ObservableMap();
+
+  API.Item currentItem = null;
 
   /// Constructor used to create instance of MainApp.
   ItemPage.created() : super.created("Item View");
 
-  @observable Map items = new ObservableMap();
-
   @override
-  void init(API.DartalogApi api) {
-    super.init(api);
-  }
-
-  void activate(Map args) {
+  void activateInternal(Map args) {
+    if(isNullOrWhitespace(args["itemId"])) {
+      throw new Exception("itemId is required");
+    }
+    this.currentItemId = args["itemId"];
     this.refresh();
   }
 
   Future refresh() async {
-    this.clear();
-    await loadItems();
+    await loadItem();
   }
 
-  Future loadItems() async {
+  Future loadItem() async {
     try {
-      items.clear();
-      API.MapOfItem data = await api.items.getAll();
+      this.clear();
+
+      this.currentItem = await api.items.get(this.currentItemId);
       items.addAll(data);
     } catch(e,st) {
       _log.severe(e, st);
@@ -64,6 +66,9 @@ class ItemPage extends APage with ARefreshablePage {
   }
 
   void clear() {
+    this.currentItem = null;
+    this.currentItemId = null;
+    this.fields.clear();
   }
 
   showModal(event, detail, target) {

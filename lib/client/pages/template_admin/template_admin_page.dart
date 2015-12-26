@@ -46,12 +46,7 @@ class TemplateAdminPage extends APage with ARefreshablePage {
 
   CoreMenu get fieldDropdown=> $['field_dropdown'];
 
-  @override
-  void init(API.DartalogApi api) {
-    super.init(api);
-  }
-
-  void activate(Map args) {
+  void activateInternal(Map args) {
     this.refresh();
   }
 
@@ -103,7 +98,7 @@ class TemplateAdminPage extends APage with ARefreshablePage {
       this.currentId = id;
       this.currentName = template.name;
       this.currentFields.clear();
-      this.currentFields.addAll(template.fields.keys);
+      this.currentFields.addAll(template.fields);
     } catch(e,st) {
       _log.severe(e, st);
       window.alert(e.toString());
@@ -143,12 +138,12 @@ class TemplateAdminPage extends APage with ARefreshablePage {
       API.Template template = new API.Template();
 
       template.name = this.currentName;
-      template.fields = new API.MapOfField();
+      template.fields = new List<String>();
       for(String field_id in this.currentFields) {
         if(!this.availableFields.containsKey(field_id)) {
           throw new Exception("Field not found: ${field_id}");
         }
-        template.fields[field_id] = this.availableFields[field_id];
+        template.fields.add(field_id);
       }
 
       if(this.currentId==null) {

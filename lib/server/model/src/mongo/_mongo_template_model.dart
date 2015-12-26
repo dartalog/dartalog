@@ -6,10 +6,25 @@ class _MongoTemplateModel extends ATemplateModel {
   Future<Map<String, api.Template>> getAll() async {
     _log.info("Getting all templates");
 
+    return await _getFromDb(null);
+  }
+
+  Future<api.Template> get(String id) async {
+    _log.info("Getting specific field by ID: ${id}");
+    Map results = await _getFromDb(mongo.where.id(mongo.ObjectId.parse(id)));
+
+    if(results.length==0) {
+      return null;
+    }
+
+    return results[results.keys.first];
+  }
+
+  Future<Map<String, api.Template>> _getFromDb(dynamic selector) async {
     _MongoDatabase con = await _MongoDatabase.getConnection();
     mongo.DbCollection collection = await con.getTemplatesCollection();
 
-    List results = await collection.find().toList();
+    List results = await collection.find(selector).toList();
 
     Map<String, api.Template> output = new Map<String, api.Template>();
     con.release(); // Release the connection before calling another model function, so that we don't end up opening multiple connections unnecessarily
@@ -21,29 +36,8 @@ class _MongoTemplateModel extends ATemplateModel {
       output[str_id] = _createTemplate(result, fields);
     }
     return output;
+
   }
-
-  static Future<Map> getByUUID(String uuid) {
-    if (!isUuid(uuid)) {
-      throw new ValidationException("Not a valid UUID: ${uuid}");
-    }
-
-    _log.info("Getting specific field by UUID: ${uuid}");
-    mysql.ConnectionPool pool = Model.getConnectionPool();
-    return pool.query(_GET_TEMPLATE_BY_UUID.replaceAll(
-        _AModel._UUID_REPLACEMENT_STRING, uuid.replaceAll("-", ""))).then((
-        Stream str) {
-      return str.toList().then((results) {
-        if (results.length == 0) {
-          return null;
-        } else {
-          dynamic result = results[0];
-          return new Template.fromData(result);
-        }
-      });
-    });
-  }
-
 
   Future write(api.Template template, [String id = null]) async {
     _MongoDatabase con = await _MongoDatabase.getConnection();
@@ -72,10 +66,7 @@ class _MongoTemplateModel extends ATemplateModel {
     api.Template template = new api.Template();
     template.name = data["name"];
     for(mongo.DbRef field_ref in data["fields"]) {
-      if(!fields.containsKey(field_ref.id.toJson())) {
-        throw new Exception();
-      }
-      template.fields[field_ref.id.toJson()] = fields[field_ref.id.toJson()];
+      template.fields.add(field_ref.id.toJson());
     }
     return template;
   }
@@ -90,7 +81,7 @@ class _MongoTemplateModel extends ATemplateModel {
     data["name"] = template.name;
 
     List<mongo.DbRef> field_ids = new List<mongo.DbRef>();
-    for(String field_string in template.fields.keys) {
+    for(String field_string in template.fields) {
       field_ids.add(new mongo.DbRef(_MongoDatabase._TEMPLATES_MONGO_COLLECTION,mongo.ObjectId.parse(field_string)));
     }
 

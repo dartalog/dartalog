@@ -5,7 +5,7 @@ class Template extends AData {
   String name;
 
   @ApiProperty(required: true)
-  Map<String,Field> fields = new Map<String,Field>();
+  List<String> fields = new List<String>();
 
   Template();
 

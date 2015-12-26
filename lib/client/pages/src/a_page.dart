@@ -8,10 +8,10 @@ abstract class APage extends PolymerElement {
 
   @observable String title;
 
-  void init(DartalogApi api) {
+  void activate(DartalogApi api, Map args) {
     this.api = api;
+    activateInternal(args);
   }
-
-  void activate(Map args);
+  void activateInternal(Map args);
 
 }

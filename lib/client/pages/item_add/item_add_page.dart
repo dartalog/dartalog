@@ -44,12 +44,7 @@ class ItemAddPage extends APage with ARefreshablePage  {
   @observable Map<String,API.Field> templateFields = new ObservableMap<String,API.Field>();
   @observable Map<String,String> fieldValues = new ObservableMap<String,String>();
 
-  @override
-  void init(API.DartalogApi api) {
-    super.init(api);
-  }
-
-  void activate(Map args) {
+  void activateInternal(Map args) {
     this.refresh();
   }
 
@@ -79,9 +74,11 @@ class ItemAddPage extends APage with ARefreshablePage  {
   templateClicked(event, detail, target) async {
     try {
       String id = target.dataset["id"];
-      API.Template template = this.templates[id];
+      API.Template template = await api.tem
+
+      this.templates[id];
       this.fieldValues.clear();
-      for(var field in template.fields.keys) {
+      for(var field in template.fields) {
         this.fieldValues[field] = ""; // SOme day, default values!
       }
       this.templateFields.addAll(template.fields);

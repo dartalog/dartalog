@@ -6,11 +6,25 @@ class _MongoItemModel extends AItemModel  {
 
   Future<Map<String,api.Item>> getAll() async {
     _log.info("Getting all items");
+    return await _getFromDb(null);
+  }
 
+  Future<api.Item> get(String id) async {
+    _log.info("Getting specific item by ID: ${id}");
+    Map results = await _getFromDb(mongo.where.id(mongo.ObjectId.parse(id)));
+
+    if(results.length==0) {
+      return null;
+    }
+
+    return results[results.keys.first];
+  }
+
+  Future<Map<String, api.Item>> _getFromDb(dynamic selector) async {
     _MongoDatabase con = await _MongoDatabase.getConnection();
     mongo.DbCollection collection = await con.getItemsCollection();
 
-    List results = await collection.find().toList();
+    List results = await collection.find(selector).toList();
 
     Map<String,api.Item> output = new Map<String,api.Item>();
     for (var result in results) {
@@ -20,10 +34,6 @@ class _MongoItemModel extends AItemModel  {
     }
     con.release();
     return output;
-  }
-
-  static Future<api.Item> getByID(String id) {
-    _log.info("Getting specific item by ID: ${id}");
   }
 
   Future write(api.Item item, [String id = null]) async {

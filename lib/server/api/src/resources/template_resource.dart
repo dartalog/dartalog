@@ -15,9 +15,11 @@ class TemplateResource {
   }
 
   @ApiMethod(path: 'templates/{uuid}/')
-  Future<Template> get(String uuid) async {
+  Future<TemplateResponse> get(String uuid) async {
     try {
-      Template output = await Model.templates.getByUUID(uuid);
+      TemplateResponse output = new TemplateResponse();
+      output.template = await Model.templates.get(uuid);
+      output.fields = await Model.fields.getAllForIDs(output.template.fields);
       return output;
     } catch (e, st) {
       _log.severe(e, st);

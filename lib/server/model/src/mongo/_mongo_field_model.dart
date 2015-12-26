@@ -21,11 +21,45 @@ class _MongoFieldModel extends AFieldModel {
 
   Future<Map<String,api.Field>> getAll() async {
     _log.info("Getting all fields");
+    return await _getFromDb(null);
+  }
 
+  Future<api.Field> get(String id) async {
+    _log.info("Getting specific field by ID: ${id}");
+    Map results = await _getFromDb(mongo.where.id(mongo.ObjectId.parse(id)));
+
+    if(results.length==0) {
+      return null;
+    }
+
+    return results[results.keys.first];
+  }
+
+
+  Future<Map<String,api.Field>> getAllForIDs(List<String> ids) async {
+    _log.info("Getting all fields for IDs");
+
+    mongo.SelectorBuilder query = null;
+
+    for(String id in ids) {
+      mongo.SelectorBuilder sb =mongo.where.id(mongo.ObjectId.parse(id));
+      if(query==null) {
+        query = sb;
+      } else {
+        query.or(sb);
+      }
+    }
+
+    Map results = await _getFromDb(query);
+
+    return results;
+  }
+
+  Future<Map<String, api.Field>> _getFromDb(dynamic selector) async {
     _MongoDatabase con = await _MongoDatabase.getConnection();
     mongo.DbCollection collection = await con.getFieldsCollection();
 
-    List results = await collection.find().toList();
+    List results = await collection.find(selector).toList();
 
     Map<String,api.Field> output = new Map<String,api.Field>();
     for (var result in results) {
@@ -35,10 +69,7 @@ class _MongoFieldModel extends AFieldModel {
     }
     con.release();
     return output;
-  }
 
-  static Future<api.Field> getByID(String id) {
-    _log.info("Getting specific field by ID: ${id}");
   }
 
   Future write(api.Field field, [String id = null]) async {

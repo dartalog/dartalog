@@ -6,6 +6,7 @@ abstract class ATemplateModel extends _AModel {
   ATemplateModel();
 
   Future<Map<String, api.Template>> getAll();
+  Future<api.Template> get(String id);
 
   Future write(api.Template template, [String id = null]);
 

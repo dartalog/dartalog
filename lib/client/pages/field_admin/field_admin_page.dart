@@ -44,12 +44,7 @@ class FieldAdminPage extends APage with ARefreshablePage {
 
   Map<String, String> get FIELD_TYPES => dartalog.FIELD_TYPES;
 
-  @override
-  void init(API.DartalogApi api) {
-    super.init(api);
-  }
-
-  void activate(Map args) {
+  void activateInternal(Map args) {
     this.refresh();
   }
 

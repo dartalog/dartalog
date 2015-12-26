@@ -38,14 +38,7 @@ class ItemBrowsePage extends APage with ARefreshablePage {
 
   @observable Map items = new ObservableMap();
 
-  @override
-  void init(API.DartalogApi api) {
-    super.init(api);
-    this.title = "Browse Items";
-    this.refresh();
-  }
-
-  void activate(Map args) {
+  void activateInternal(Map args) {
     this.refresh();
   }
 

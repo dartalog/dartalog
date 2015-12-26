@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "2c13607f7ce3f29c41d6a1656b3c643ae45c2ca0",
+ "etag": "f285b56b0c15a16647f9dd88bf420969ead760c2",
  "discoveryVersion": "v1",
  "id": "dartalog:0.1",
  "name": "dartalog",
@@ -54,8 +54,23 @@
      "required": true
     },
     "fields": {
-     "type": "object",
+     "type": "array",
      "required": true,
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "TemplateResponse": {
+   "id": "TemplateResponse",
+   "type": "object",
+   "properties": {
+    "template": {
+     "$ref": "Template"
+    },
+    "fields": {
+     "type": "object",
      "additionalProperties": {
       "$ref": "Field"
      }
@@ -81,6 +96,24 @@
      "required": true,
      "additionalProperties": {
       "type": "string"
+     }
+    }
+   }
+  },
+  "ItemResponse": {
+   "id": "ItemResponse",
+   "type": "object",
+   "properties": {
+    "item": {
+     "$ref": "Item"
+    },
+    "template": {
+     "$ref": "Template"
+    },
+    "fields": {
+     "type": "object",
+     "additionalProperties": {
+      "$ref": "Field"
      }
     }
    }
@@ -179,7 +212,7 @@
       "uuid"
      ],
      "response": {
-      "$ref": "Template"
+      "$ref": "TemplateResponse"
      }
     },
     "create": {
@@ -242,7 +275,7 @@
       "uuid"
      ],
      "response": {
-      "$ref": "Item"
+      "$ref": "ItemResponse"
      }
     },
     "create": {

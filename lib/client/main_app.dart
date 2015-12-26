@@ -62,38 +62,32 @@ class MainApp extends PolymerElement {
 
     // Set up the routes for all the pages.
     router.root.addRoute(
-        name: this.itemBrowse.title,
+        name: "browse",
         path: "browse",
         defaultRoute: true,
         enter: enterRoute);
     router.root.addRoute(
-        name: this.itemPage.title,
+        name: "item",
         path: "item/:itemId",
         defaultRoute: false,
         enter: enterRoute);
     router.root.addRoute(
-        name: this.itemAddAdmin.title,
+        name: "item_add",
         path: "item_add",
         defaultRoute: false,
         enter: enterRoute);
     router.root.addRoute(
-        name: this.fieldAdmin.title,
+        name: "field_admin",
         path: "field_admin",
         defaultRoute: false,
         enter: enterRoute);
     router.root.addRoute(
-        name: this.templateAdmin.title,
+        name: "template_admin",
         path: "template_admin",
         defaultRoute: false,
         enter: enterRoute);
 
     router.listen();
-
-    this.fieldAdmin.init(this.api);
-    this.templateAdmin.init(this.api);
-    this.itemAddAdmin.init(this.api);
-    this.itemBrowse.init(this.api);
-    this.itemPage.init(this.api);
   }
 
   void routeChanged() {
@@ -103,16 +97,7 @@ class MainApp extends PolymerElement {
 
   void enterRoute(RouteEvent e) {
 
-    switch(e.path) {
-      case "item":
-        visiblePage = "browse";
-        break;
-      case "item/:itemId":
-        visiblePage = "item";
-        break;
-      default:
-        visiblePage = e.path;
-    }
+    visiblePage = e.route.name;
 
     this.visiblePageRefreshable = false;
 
@@ -121,7 +106,7 @@ class MainApp extends PolymerElement {
       throw new Exception("Page not found: ${this.visiblePage}");
     }
 
-    this.currentPage.activate(e.parameters);
+    this.currentPage.activate(this.api,e.parameters);
 
     if(currentPage is ARefreshablePage) {
       this.visiblePageRefreshable = true;

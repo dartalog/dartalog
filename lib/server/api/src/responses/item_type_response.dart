@@ -1,8 +1,8 @@
 part of api;
 
-class TemplateResponse {
-  Template template;
+class ItemTypeResponse {
+  ItemType itemType;
   Map<String,Field> fields = new Map<String,Field>();
 
-  TemplateResponse();
+  ItemTypeResponse();
 }

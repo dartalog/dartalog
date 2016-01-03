@@ -1,15 +1,15 @@
 part of model;
 
-class _MongoTemplateModel extends ATemplateModel {
+class _MongoItemTypeModel extends AItemTypeModel {
   static final Logger _log = new Logger('_MongoTemplateModel');
 
-  Future<Map<String, api.Template>> getAll() async {
+  Future<Map<String, api.ItemType>> getAll() async {
     _log.info("Getting all templates");
 
     return await _getFromDb(null);
   }
 
-  Future<api.Template> get(String id) async {
+  Future<api.ItemType> get(String id) async {
     _log.info("Getting specific field by ID: ${id}");
     Map results = await _getFromDb(mongo.where.id(mongo.ObjectId.parse(id)));
 
@@ -20,13 +20,13 @@ class _MongoTemplateModel extends ATemplateModel {
     return results[results.keys.first];
   }
 
-  Future<Map<String, api.Template>> _getFromDb(dynamic selector) async {
+  Future<Map<String, api.ItemType>> _getFromDb(dynamic selector) async {
     _MongoDatabase con = await _MongoDatabase.getConnection();
     mongo.DbCollection collection = await con.getTemplatesCollection();
 
     List results = await collection.find(selector).toList();
 
-    Map<String, api.Template> output = new Map<String, api.Template>();
+    Map<String, api.ItemType> output = new Map<String, api.ItemType>();
     con.release(); // Release the connection before calling another model function, so that we don't end up opening multiple connections unnecessarily
 
     Map<String, api.Field> fields = await Model.fields.getAll();
@@ -39,7 +39,7 @@ class _MongoTemplateModel extends ATemplateModel {
 
   }
 
-  Future write(api.Template template, [String id = null]) async {
+  Future write(api.ItemType template, [String id = null]) async {
     _MongoDatabase con = await _MongoDatabase.getConnection();
     mongo.DbCollection collection = await con.getTemplatesCollection();
 
@@ -62,8 +62,8 @@ class _MongoTemplateModel extends ATemplateModel {
     con.release();
   }
 
-  api.Template _createTemplate(Map data, Map<String,api.Field> fields) {
-    api.Template template = new api.Template();
+  api.ItemType _createTemplate(Map data, Map<String,api.Field> fields) {
+    api.ItemType template = new api.ItemType();
     template.name = data["name"];
     for(mongo.DbRef field_ref in data["fields"]) {
       template.fields.add(field_ref.id.toJson());
@@ -71,18 +71,18 @@ class _MongoTemplateModel extends ATemplateModel {
     return template;
   }
 
-  Map _createMap(api.Template template) {
+  Map _createMap(api.ItemType template) {
     Map data = new Map();
     _updateMap(template, data);
     return data;
   }
 
-  void _updateMap(api.Template template, Map data) {
+  void _updateMap(api.ItemType template, Map data) {
     data["name"] = template.name;
 
     List<mongo.DbRef> field_ids = new List<mongo.DbRef>();
     for(String field_string in template.fields) {
-      field_ids.add(new mongo.DbRef(_MongoDatabase._TEMPLATES_MONGO_COLLECTION,mongo.ObjectId.parse(field_string)));
+      field_ids.add(new mongo.DbRef(_MongoDatabase._FIELDS_MONGO_COLLECTION,mongo.ObjectId.parse(field_string)));
     }
 
     data["fields"] = field_ids;

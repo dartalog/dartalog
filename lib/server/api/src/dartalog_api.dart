@@ -9,8 +9,11 @@ class DartalogApi {
     final FieldResource fields = new FieldResource();
 
     @ApiResource()
-    final TemplateResource templates = new TemplateResource();
+    final ItemTypeResource templates = new ItemTypeResource();
 
     @ApiResource()
     final ItemResource items = new ItemResource();
+
+    @ApiResource()
+    final ImportResource import = new ImportResource();
 }

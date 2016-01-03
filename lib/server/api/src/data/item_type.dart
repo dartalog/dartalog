@@ -1,13 +1,13 @@
 part of api;
 
-class Template extends AData {
+class ItemType extends AData {
   @ApiProperty(required: true)
   String name;
 
   @ApiProperty(required: true)
   List<String> fields = new List<String>();
 
-  Template();
+  ItemType();
 
   void validate() {
     if(isNullOrWhitespace(this.name))

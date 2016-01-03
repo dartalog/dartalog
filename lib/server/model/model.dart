@@ -13,14 +13,14 @@ import 'package:dartalog/server/api/api.dart' as api;
 
 part 'src/_a_model.dart';
 part 'src/a_field_model.dart';
-part 'src/a_template_model.dart';
+part 'src/a_item_type_model.dart';
 part 'src/a_item_model.dart';
 // part 'src/settings_model.dart';
 
 part 'src/mongo/_mongo_db_connection_pool.dart';
 part 'src/mongo/_mongo_database.dart';
 part 'src/mongo/_mongo_field_model.dart';
-part 'src/mongo/_mongo_template_model.dart';
+part 'src/mongo/_mongo_item_type_model.dart';
 part 'src/mongo/_mongo_item_model.dart';
 
 
@@ -32,7 +32,7 @@ class Model {
 
   static AFieldModel fields = new _MongoFieldModel();
 
-  static ATemplateModel templates = new _MongoTemplateModel();
+  static AItemTypeModel templates = new _MongoItemTypeModel();
 
   static OptionsFile get options {
     return _AModel.options;

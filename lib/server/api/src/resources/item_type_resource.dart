@@ -1,9 +1,9 @@
 part of api;
 
-class TemplateResource {
-  static final Logger _log = new Logger('TemplateResource');
+class ItemTypeResource {
+  static final Logger _log = new Logger('ItemTypeResource');
 
-  @ApiMethod(path: 'templates/')
+  @ApiMethod(path: 'item_types/')
   Future<Map<String,Template>> getAll() async {
     try {
       Map<String,Template> output = await Model.templates.getAll();
@@ -14,10 +14,10 @@ class TemplateResource {
     }
   }
 
-  @ApiMethod(path: 'templates/{uuid}/')
-  Future<TemplateResponse> get(String uuid) async {
+  @ApiMethod(path: 'item_types/{uuid}/')
+  Future<ItemTypeResponse> get(String uuid) async {
     try {
-      TemplateResponse output = new TemplateResponse();
+      ItemTypeResponse output = new ItemTypeResponse();
       output.template = await Model.templates.get(uuid);
       output.fields = await Model.fields.getAllForIDs(output.template.fields);
       return output;
@@ -27,7 +27,7 @@ class TemplateResource {
     }
   }
 
-  @ApiMethod(method: 'POST', path: 'templates/')
+  @ApiMethod(method: 'POST', path: 'item_types/')
   Future<VoidMessage> create(Template template) async {
     try {
       template.validate();
@@ -38,7 +38,7 @@ class TemplateResource {
     }
   }
 
-  @ApiMethod(method: 'PUT', path: 'templates/{uuid}/')
+  @ApiMethod(method: 'PUT', path: 'item_types/{uuid}/')
   Future<VoidMessage> update(String uuid, Template template) async {
     try {
       template.validate();

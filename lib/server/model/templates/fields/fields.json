@@ -1,0 +1,22 @@
+{
+  "000000000000000000000001": {
+    "name": "Title",
+    "type": "string",
+    "format": ""
+  },
+  "000000000000000000000002": {
+    "name": "UPC",
+    "type": "string",
+    "format": ""
+  },
+  "000000000000000000000003": {
+    "name": "Release Date",
+    "type": "date",
+    "format": ""
+  },
+  "000000000000000000000004": {
+    "name": "ISBN",
+    "type": "string",
+    "format": ""
+  }
+}

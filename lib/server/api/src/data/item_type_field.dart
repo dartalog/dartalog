@@ -1,6 +1,6 @@
 part of api;
 
-class TemplateField {
+class ItemTypeField {
   String id;
 
 }

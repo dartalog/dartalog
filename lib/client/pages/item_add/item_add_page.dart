@@ -74,7 +74,7 @@ class ItemAddPage extends APage with ARefreshablePage  {
   templateClicked(event, detail, target) async {
     try {
       String id = target.dataset["id"];
-      API.Template template = await api.tem
+      API.Template template = await api.
 
       this.templates[id];
       this.fieldValues.clear();

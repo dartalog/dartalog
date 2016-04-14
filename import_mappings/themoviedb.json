@@ -1,0 +1,6 @@
+{
+  "item_type" : {
+    "movie": "movie",
+    "tv": "tv_series"
+  }
+}

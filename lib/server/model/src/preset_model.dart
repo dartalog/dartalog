@@ -5,19 +5,14 @@ class PresetModel extends _AModel {
 
   PresetModel();
 
-  Future<Map> _loadJSONFile(String path) async {
-    File dir = new File(path);
-    String contents = await dir.readAsString();
-    Map output = JSON.decode(contents);
-    return output;
-  }
+
 
   Future<Map> _getItemTypePresets() async {
-    return _loadJSONFile("presets/item_types.json");
+    return loadJSONFile("presets/item_types.json");
   }
 
   Future<Map> _getFieldPresets() async {
-    return _loadJSONFile("presets/fields.json");
+    return loadJSONFile("presets/fields.json");
   }
 
   Future<Map<String,String>> getAll() async {

@@ -16,4 +16,8 @@ abstract class AImportProvider {
 
     return body.body.toString();
  }
+
+  void _attemptAutoMapping(dynamic output, Map data) {
+
+  }
 }

@@ -29,3 +29,4 @@ part 'src/data/field.dart';
 part 'src/data/item.dart';
 part 'src/data/item_type.dart';
 part 'src/data/item_type_field.dart';
+part 'src/data/import_settings.dart';

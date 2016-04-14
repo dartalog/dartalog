@@ -27,7 +27,7 @@ class TheMovieDbImportProvider extends AImportProvider {
       }
       result.id = mdbr.id;
 
-      result.thumbnail = "thumb.google.com";
+      result.thumbnail = mdbr.getPosterUrl(mdbr.config.posterSizes[0]);
       results.results.add(result);
     }
     return results;

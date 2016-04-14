@@ -1,52 +1,45 @@
 part of api;
 
-class PresetResource {
-  static final Logger _log = new Logger('TemplateResource');
+class PresetResource extends AResource {
+  static final Logger _log = new Logger('PresetResource');
 
-  @ApiMethod(path: 'templates/')
-  Future<Map<String,Template>> getAll() async {
+  Logger _GetLogger() {
+    return _log;
+  }
+
+  @ApiMethod(path: 'presets/')
+  Future<Map<String,String>> getAll() async {
     try {
-      Map<String,Template> output = await Model.templates.getAll();
+      Map<String,String> output = await Model.presets.getAll();
       return output;
     } catch (e, st) {
-      _log.severe(e, st);
-      throw e;
+      _HandleException(e, st);
     }
   }
 
-  @ApiMethod(path: 'templates/{uuid}/')
-  Future<TemplateResponse> get(String uuid) async {
+  @ApiMethod(path: 'presets/{uuid}/')
+  Future<ItemTypeResponse> get(String uuid) async {
     try {
-      TemplateResponse output = new TemplateResponse();
-      output.template = await Model.templates.get(uuid);
-      output.fields = await Model.fields.getAllForIDs(output.template.fields);
+      ItemTypeResponse output = new ItemTypeResponse();
+      output.itemType = await Model.presets.getPreset(uuid);
+      if(output.itemType==null) {
+        throw new NotFoundException("Could not find specified preset");
+      }
+      output.fields = await Model.presets.getFields(output.itemType.fields);
       return output;
     } catch (e, st) {
-      _log.severe(e, st);
-      throw e;
+      _HandleException(e, st);
     }
   }
 
-  @ApiMethod(method: 'POST', path: 'templates/')
-  Future<VoidMessage> create(Template template) async {
+  @ApiMethod(method: 'POST', path: 'presets/{uuid}/')
+  Future<VoidMessage> install(String uuid, VoidMessage blank) async {
     try {
-      template.validate();
-      await Model.templates.write(template);
-    } catch (e, st) {
-      _log.severe(e, st);
-      throw e;
+      await Model.presets.install(uuid);
+      return null;
+    } catch(e,st) {
+      _HandleException(e, st);
     }
   }
 
-  @ApiMethod(method: 'PUT', path: 'templates/{uuid}/')
-  Future<VoidMessage> update(String uuid, Template template) async {
-    try {
-      template.validate();
-      String output = await Model.templates.write(template, uuid);
-      //return new UuidResponse.fromUuid(output);
-    } catch (e, st) {
-      _log.severe(e, st);
-      throw e;
-    }
-  }
 }

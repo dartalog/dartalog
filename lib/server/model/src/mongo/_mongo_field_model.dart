@@ -72,29 +72,32 @@ class _MongoFieldModel extends AFieldModel {
 
   }
 
-  Future write(api.Field field, [String id = null]) async {
+  Future write(api.Field field, [String id = null, bool allowIdInsert = false]) async {
     _MongoDatabase con = await _MongoDatabase.getConnection();
     mongo.DbCollection collection = await con.getFieldsCollection();
 
-
-    if(tools.isNullOrWhitespace(id)) {
-      Map data = _createMap(field);
-      dynamic result = await collection.insert(data);
-      return;
-    } else {
+    Map data;
+    if(!tools.isNullOrWhitespace(id)) {
       mongo.ObjectId obj_id = mongo.ObjectId.parse(id);
+      data = await collection.findOne({"_id": obj_id});
 
-      var data = await collection.findOne({"_id": obj_id});
-      if(data==null) {
+      if(!allowIdInsert&&data==null) {
         throw new Exception("Field not found ${field}");
       }
-
-      _updateMap(field, data);
-      await collection.save(data);
-      con.release();
+    }
+    if(data==null) {
+      data = _createMap(field);
+      if(allowIdInsert&&!tools.isNullOrWhitespace(id)) {
+        data["_id"] = mongo.ObjectId.parse(id);
+      }
+      dynamic result = await collection.insert(data);
       return;
     }
 
+    _updateMap(field, data);
+    await collection.save(data);
+    con.release();
+    return;
   }
 
   api.Field _createField(Map data) {

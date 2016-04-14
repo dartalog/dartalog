@@ -35,7 +35,7 @@ class ItemPage extends APage with ARefreshablePage {
   @observable String currentItemId = null;
   @observable Map fields = new ObservableMap();
 
-  API.Item currentItem = null;
+  API.ItemResponse currentItem = null;
 
   /// Constructor used to create instance of MainApp.
   ItemPage.created() : super.created("Item View");
@@ -79,7 +79,7 @@ class ItemPage extends APage with ARefreshablePage {
   templateClicked(event, detail, target) async {
     try {
       String id = target.dataset["id"];
-      API.Template template = this.templates[id];
+      API.Template template = this.itemTypes[id];
 
       this.current_id = id;
       this.current_name = template.name;

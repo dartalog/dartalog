@@ -78,7 +78,7 @@ class _MongoItemModel extends AItemModel  {
   }
 
   void _updateMap(api.Item item, Map data) {
-    data["template"] = new mongo.DbRef(_MongoDatabase._TEMPLATES_MONGO_COLLECTION,mongo.ObjectId.parse(item.template));
+    data["template"] = new mongo.DbRef(_MongoDatabase._ITEM_TYPES_MONGO_COLLECTION,mongo.ObjectId.parse(item.template));
 
     Map values = new Map();
     for(String field_id in item.fieldValues.keys) {
@@ -87,4 +87,7 @@ class _MongoItemModel extends AItemModel  {
     }
     data["values"] = values;
   }
+
+
+
 }

@@ -1,16 +1,19 @@
 part of api;
 
-class ImportResource {
+class ImportResource extends AResource {
   static final Logger _log = new Logger('ImportResource');
+
+  Logger _GetLogger() {
+    return _log;
+  }
 
   @ApiMethod(path: 'import/')
   Future<Map<String,List<String>>> listProviders() async {
     try {
-      return { "providers": ["amazon"]};
+      return { "providers": ["amazon", "themoviedb"]};
 
     } catch(e,st) {
-      _log.severe(e,st);
-      throw e;
+      _HandleException(e, st);
     }
   }
 
@@ -28,16 +31,22 @@ class ImportResource {
 //  }
 
   @ApiMethod(path: 'import/{provider}/search/{query}')
-  Future<Map<String,Item>> search(String provider, String query, {String template}) async {
+  Future<SearchResults> search(String provider, String query, {String template}) async {
     try {
-      if(provider!="amazon") {
-        throw new Exception("Only provider allowed now is ""amazon""");
+      AImportProvider importer;
+      switch(provider) {
+        case "amazon":
+          importer = new AmazonImportProvider();
+          break;
+        case "themoviedb":
+          importer = new TheMovieDbImportProvider();
+          break;
+        default:
+          throw new Exception("Unknown import provider");
       }
-      AImportProvider import = new AmazonImportProvider();
-      //return await import.search(provider);
+      return await importer.search(query,"dvd");
     } catch(e,st) {
-     _log.severe(e,st);
-      throw e;
+      _HandleException(e, st);
     }
   }
 }

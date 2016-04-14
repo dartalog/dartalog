@@ -1,11 +1,12 @@
 part of model;
 
-class _MongoDatabase {
+class _MongoDatabase extends ADatabase {
+  static final Logger _log = new Logger('_MongoDatabase');
   static _MongoDbConnectionPool _pool;
 
   static const String _ITEMS_MONGO_COLLECTION = "items";
   static const String _FIELDS_MONGO_COLLECTION = "fields";
-  static const String _TEMPLATES_MONGO_COLLECTION = "templates";
+  static const String _ITEM_TYPES_MONGO_COLLECTION = "itemTypes";
 
   ManagedConnection<mongo.Db> con;
   bool released = false;
@@ -38,6 +39,7 @@ class _MongoDatabase {
     return new _MongoDatabase(con);
   }
 
+
   void release({bool dispose: false}) {
     if(released)
       return;
@@ -65,7 +67,7 @@ class _MongoDatabase {
   }
   Future<mongo.DbCollection> getTemplatesCollection() async {
     _checkConnection();
-    return await con.conn.collection(_TEMPLATES_MONGO_COLLECTION);
+    return await con.conn.collection(_ITEM_TYPES_MONGO_COLLECTION);
   }
 
 }

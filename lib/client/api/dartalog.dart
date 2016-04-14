@@ -374,7 +374,7 @@ class TemplatesResourceApi {
 
     _downloadOptions = null;
 
-    _url = 'templates/';
+    _url = 'presets/';
 
     var _response = _requester.request(_url,
                                        "POST",
@@ -411,7 +411,7 @@ class TemplatesResourceApi {
       throw new core.ArgumentError("Parameter uuid is required.");
     }
 
-    _url = 'templates/' + commons.Escaper.ecapeVariable('$uuid') + '/';
+    _url = 'presets/' + commons.Escaper.ecapeVariable('$uuid') + '/';
 
     var _response = _requester.request(_url,
                                        "GET",
@@ -443,7 +443,7 @@ class TemplatesResourceApi {
     var _body = null;
 
 
-    _url = 'templates/';
+    _url = 'presets/';
 
     var _response = _requester.request(_url,
                                        "GET",
@@ -485,7 +485,7 @@ class TemplatesResourceApi {
 
     _downloadOptions = null;
 
-    _url = 'templates/' + commons.Escaper.ecapeVariable('$uuid') + '/';
+    _url = 'presets/' + commons.Escaper.ecapeVariable('$uuid') + '/';
 
     var _response = _requester.request(_url,
                                        "PUT",

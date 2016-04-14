@@ -4,7 +4,7 @@ class _MongoItemTypeModel extends AItemTypeModel {
   static final Logger _log = new Logger('_MongoTemplateModel');
 
   Future<Map<String, api.ItemType>> getAll() async {
-    _log.info("Getting all templates");
+    _log.info("Getting all presets");
 
     return await _getFromDb(null);
   }
@@ -39,26 +39,32 @@ class _MongoItemTypeModel extends AItemTypeModel {
 
   }
 
-  Future write(api.ItemType template, [String id = null]) async {
+  Future write(api.ItemType template, [String id = null, bool allowIdInsert = false]) async {
     _MongoDatabase con = await _MongoDatabase.getConnection();
     mongo.DbCollection collection = await con.getTemplatesCollection();
 
 
-    if (tools.isNullOrWhitespace(id)) {
-      Map data = _createMap(template);
-      dynamic result = collection.insert(data);
-      return result.toString();
-    } else {
+    Map data;
+    if(!tools.isNullOrWhitespace(id)) {
       mongo.ObjectId obj_id = mongo.ObjectId.parse(id);
+      data = await collection.findOne({"_id": obj_id});
 
-      var data = await collection.findOne({"_id": obj_id});
-      if (data == null) {
-        throw new Exception("Template not found ${id}");
+      if(!allowIdInsert&&data==null) {
+        throw new Exception("Item Type not found ${template}");
       }
-      _updateMap(template, data);
-      await collection.save(data);
-      return id;
     }
+    if(data==null) {
+      data = _createMap(template);
+      if(allowIdInsert&&!tools.isNullOrWhitespace(id)) {
+        data["_id"] = mongo.ObjectId.parse(id);
+      }
+      dynamic result = await collection.insert(data);
+      return;
+    }
+
+    _updateMap(template, data);
+    await collection.save(data);
+
     con.release();
   }
 

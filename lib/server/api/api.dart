@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:async';
 import 'package:logging/logging.dart';
 import 'package:rpc/rpc.dart';
+import 'package:stack_trace/stack_trace.dart';
 import 'package:dartalog/dartalog.dart';
 import 'package:dartalog/tools.dart';
 import 'package:dartalog/server/model/model.dart';
@@ -11,14 +12,15 @@ import 'package:dartalog/server/import/import.dart';
 
 part 'src/dartalog_api.dart';
 
+part 'src/resources/a_resource.dart';
 part 'src/resources/field_resource.dart';
 part 'src/resources/item_type_resource.dart';
 part 'src/resources/item_resource.dart';
 part 'src/resources/import_resource.dart';
+part 'src/resources/preset_resource.dart';
 
 part 'src/responses/data_response.dart';
 part 'src/responses/uuid_response.dart';
-part 'src/responses/error_response.dart';
 part 'src/responses/item_response.dart';
 part 'src/responses/item_type_response.dart';
 

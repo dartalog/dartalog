@@ -1,27 +1,29 @@
 part of api;
 
-class FieldResource {
+class FieldResource extends AResource {
   static final Logger _log = new Logger('FieldResource');
 
+  Logger _GetLogger() {
+    return _log;
+  }
+
   @ApiMethod(path: 'fields/')
-  Future<Map<String,Field>> getAll() async {
+  Future<Map<String, Field>> getAll() async {
     try {
       dynamic output = await Model.fields.getAll();
       return output;
-    } catch(e,st) {
-     _log.severe(e,st);
-      throw e;
+    } catch (e, st) {
+      _HandleException(e, st);
     }
   }
 
   @ApiMethod(path: 'fields/{uuid}/')
   Future<Field> get(String uuid) async {
     try {
-    dynamic output = await Model.fields.getByUUID(uuid);
-    return output;
-    } catch(e,st) {
-      _log.severe(e,st);
-      throw e;
+      dynamic output = await Model.fields.get(uuid);
+      return output;
+    } catch (e, st) {
+      _HandleException(e, st);
     }
   }
 
@@ -30,21 +32,19 @@ class FieldResource {
     try {
       field.validate();
       await Model.fields.write(field);
-    } catch(e,st) {
-    _log.severe(e,st);
-    throw e;
+    } catch (e, st) {
+      _HandleException(e, st);
     }
   }
 
   @ApiMethod(method: 'PUT', path: 'fields/{uuid}/')
-  Future<VoidMessage> update(String uuid, Field field) async {
+  Future<UuidResponse> update(String uuid, Field field) async {
     try {
       field.validate();
-    String output = await Model.fields.write(field,uuid);
-    return new UuidResponse.fromUuid(output);
-    } catch(e,st) {
-      _log.severe(e,st);
-      throw e;
+      String output = await Model.fields.write(field, uuid);
+      return new UuidResponse.fromUuid(output);
+    } catch (e, st) {
+      _HandleException(e, st);
     }
   }
 

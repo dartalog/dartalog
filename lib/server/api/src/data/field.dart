@@ -16,4 +16,10 @@ class Field extends AData {
     if(isNullOrWhitespace(this.type))
       throw new BadRequestError("Field ""type"" must have a value");
   }
+
+  Field.fromData(Map data) {
+    name = data["name"];
+    format = data["format"];
+    type = data["type"];
+  }
 }

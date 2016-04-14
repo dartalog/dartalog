@@ -1,7 +1,11 @@
 part of api;
 
-class ItemResource {
+class ItemResource extends AResource {
   static final Logger _log = new Logger('ItemResource');
+
+  Logger _GetLogger() {
+    return _log;
+  }
 
   @ApiMethod(path: 'items/')
   Future<Map<String,Item>> getAll() async {
@@ -9,8 +13,7 @@ class ItemResource {
       dynamic output = await Model.items.getAll();
       return output;
     } catch(e,st) {
-     _log.severe(e,st);
-      throw e;
+      _HandleException(e, st);
     }
   }
 
@@ -22,7 +25,7 @@ class ItemResource {
       if(response.item==null) {
         throw new NotFoundError("Item not found");
       }
-      response.template = await Model.templates.get(response.item.template);
+      response.template = await Model.itemTypes.get(response.item.template);
       if(response.template==null) {
         throw new InternalServerError("Template specified for item not found");
       }
@@ -35,8 +38,7 @@ class ItemResource {
 
       return response;
     } catch(e,st) {
-      _log.severe(e,st);
-      throw e;
+      _HandleException(e, st);
     }
   }
 
@@ -46,8 +48,7 @@ class ItemResource {
       String output = await Model.items.write(item);
       //return new UuidResponse.fromUuid(output);
     } catch(e,st) {
-    _log.severe(e,st);
-    throw e;
+      _HandleException(e, st);
     }
   }
 
@@ -57,8 +58,7 @@ class ItemResource {
     String output = await Model.items.write(item,uuid);
     //return new UuidResponse.fromUuid(output);
     } catch(e,st) {
-      _log.severe(e,st);
-      throw e;
+      _HandleException(e, st);
     }
   }
 

@@ -6,7 +6,7 @@ class AmazonImportProvider extends AImportProvider {
 
   static final List VALID_TYPES = ["music","dvd","videogames","vhs"];
 
-  Future<List<SearchResult>> search(String query, String type_id) async {
+  Future<SearchResults> search(String query, String type_id) async {
     String item_type = "";
     int page = 0;
     String url = "http://${BASE_URL}/exec/obidos/external-search?ie=UTF8&index=${item_type}&keyword=${Uri.encodeComponent(query)}&page=${page}";
@@ -18,7 +18,7 @@ class AmazonImportProvider extends AImportProvider {
     result.id = "1";
     result.thumbnail = "thumb.google.com";
     output.add(result);
-    return output;
+    return null;
   }
 
   Future import(String identifier) async {}

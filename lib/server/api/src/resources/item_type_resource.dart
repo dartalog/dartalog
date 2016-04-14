@@ -1,16 +1,19 @@
 part of api;
 
-class ItemTypeResource {
+class ItemTypeResource extends AResource {
   static final Logger _log = new Logger('ItemTypeResource');
+
+  Logger _GetLogger() {
+    return _log;
+  }
 
   @ApiMethod(path: 'item_types/')
   Future<Map<String,ItemType>> getAll() async {
     try {
-      Map<String,ItemType> output = await Model.templates.getAll();
+      Map<String,ItemType> output = await Model.itemTypes.getAll();
       return output;
     } catch (e, st) {
-      _log.severe(e, st);
-      throw e;
+      _HandleException(e, st);
     }
   }
 
@@ -18,12 +21,11 @@ class ItemTypeResource {
   Future<ItemTypeResponse> get(String uuid) async {
     try {
       ItemTypeResponse output = new ItemTypeResponse();
-      output.itemType = await Model.templates.get(uuid);
+      output.itemType = await Model.itemTypes.get(uuid);
       output.fields = await Model.fields.getAllForIDs(output.itemType.fields);
       return output;
     } catch (e, st) {
-      _log.severe(e, st);
-      throw e;
+      _HandleException(e, st);
     }
   }
 
@@ -31,10 +33,9 @@ class ItemTypeResource {
   Future<VoidMessage> create(ItemType template) async {
     try {
       template.validate();
-      await Model.templates.write(template);
+      await Model.itemTypes.write(template);
     } catch (e, st) {
-      _log.severe(e, st);
-      throw e;
+      _HandleException(e, st);
     }
   }
 
@@ -42,11 +43,10 @@ class ItemTypeResource {
   Future<VoidMessage> update(String uuid, ItemType template) async {
     try {
       template.validate();
-      String output = await Model.templates.write(template, uuid);
+      String output = await Model.itemTypes.write(template, uuid);
       //return new UuidResponse.fromUuid(output);
     } catch (e, st) {
-      _log.severe(e, st);
-      throw e;
+      _HandleException(e, st);
     }
   }
 }

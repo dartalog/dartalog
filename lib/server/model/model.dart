@@ -1,6 +1,8 @@
 library model;
 
 import 'dart:async';
+import 'dart:io';
+import 'dart:convert';
 import 'package:logging/logging.dart';
 
 import 'package:connection_pool/connection_pool.dart';
@@ -11,12 +13,18 @@ import 'package:dartalog/tools.dart' as tools;
 import 'package:dartalog/dartalog.dart' as dartalog;
 import 'package:dartalog/server/api/api.dart' as api;
 
+part 'src/exceptions/invalid_input_exception.dart';
+part 'src/exceptions/not_found_exception.dart';
+part 'src/exceptions/already_exists_exception.dart';
+
 part 'src/_a_model.dart';
 part 'src/a_field_model.dart';
 part 'src/a_item_type_model.dart';
 part 'src/a_item_model.dart';
+part 'src/preset_model.dart';
 // part 'src/settings_model.dart';
 
+part 'src/a_database.dart';
 part 'src/mongo/_mongo_db_connection_pool.dart';
 part 'src/mongo/_mongo_database.dart';
 part 'src/mongo/_mongo_field_model.dart';
@@ -32,7 +40,9 @@ class Model {
 
   static AFieldModel fields = new _MongoFieldModel();
 
-  static AItemTypeModel templates = new _MongoItemTypeModel();
+  static AItemTypeModel itemTypes = new _MongoItemTypeModel();
+
+  static PresetModel presets = new PresetModel();
 
   static OptionsFile get options {
     return _AModel.options;

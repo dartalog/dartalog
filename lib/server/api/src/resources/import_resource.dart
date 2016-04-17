@@ -7,6 +7,17 @@ class ImportResource extends AResource {
     return _log;
   }
 
+  AImportProvider _getProvider(String provider) {
+    switch(provider) {
+      case "amazon":
+        return new AmazonImportProvider();
+      case "themoviedb":
+        return new TheMovieDbImportProvider();
+      default:
+        throw new Exception("Unknown import provider");
+    }
+  }
+
   @ApiMethod(path: 'import/')
   Future<Map<String,List<String>>> listProviders() async {
     try {
@@ -33,20 +44,21 @@ class ImportResource extends AResource {
   @ApiMethod(path: 'import/{provider}/search/{query}')
   Future<SearchResults> search(String provider, String query, {String template}) async {
     try {
-      AImportProvider importer;
-      switch(provider) {
-        case "amazon":
-          importer = new AmazonImportProvider();
-          break;
-        case "themoviedb":
-          importer = new TheMovieDbImportProvider();
-          break;
-        default:
-          throw new Exception("Unknown import provider");
-      }
+      AImportProvider importer = _getProvider(provider);
       return await importer.search(query,"dvd");
     } catch(e,st) {
       _HandleException(e, st);
     }
   }
+
+  @ApiMethod(path: 'import/{provider}/{id}')
+  Future<SearchResults> import(String provider, String id, {String template}) async {
+    try {
+      AImportProvider importer = _getProvider(provider);
+      return await importer.search(query,"dvd");
+    } catch(e,st) {
+      _HandleException(e, st);
+    }
+  }
+
 }

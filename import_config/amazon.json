@@ -1,0 +1,10 @@
+{
+  "base_url": "www.amazon.com/",
+  "search_result_regex": "",
+  "fields": {
+    "music": "music",
+    "dvd": "dvd",
+    "videogames": "videogame",
+    "vhs": "vhs"
+  }
+}

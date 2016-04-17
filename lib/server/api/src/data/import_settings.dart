@@ -9,5 +9,6 @@ class ImportSettings extends AData {
   ImportSettings();
 
   void validate() {
+
   }
 }

@@ -1,8 +1,6 @@
 part of import;
 
-class TheMovieDbImportProvider extends AImportProvider {
-
-  static const String BASE_URL = "www.amazon.com/";
+class TheMovieDbImportProvider extends AAPIImportProvider {
 
   static final List VALID_TYPES = ["movie", "tv"];
 

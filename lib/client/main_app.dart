@@ -29,7 +29,7 @@ import 'package:dartalog/client/pages/item_browse/item_browse_page.dart';
 import 'package:dartalog/client/pages/item_add/item_add_page.dart';
 import 'package:dartalog/client/pages/item/item_page.dart';
 import 'package:dartalog/client/pages/field_admin/field_admin_page.dart';
-import 'package:dartalog/client/pages/template_admin/template_admin_page.dart';
+import 'package:dartalog/client/pages/item_type_admin/item_type_admin_page.dart';
 
 /// A Polymer `<main-app>` element.
 @CustomTag('main-app')
@@ -48,7 +48,7 @@ class MainApp extends PolymerElement {
 
   APage get currentPage => $[visiblePage];
   FieldAdminPage get fieldAdmin=> $['field_admin'];
-  TemplateAdminPage get templateAdmin=> $['template_admin'];
+  TemplateAdminPage get templateAdmin=> $['item_type_admin'];
   ItemAddPage get itemAddAdmin=> $['item_add'];
   ItemBrowsePage get itemBrowse=> $['browse'];
   ItemPage get itemPage=> $['item'];
@@ -82,8 +82,8 @@ class MainApp extends PolymerElement {
         defaultRoute: false,
         enter: enterRoute);
     router.root.addRoute(
-        name: "template_admin",
-        path: "template_admin",
+        name: "item_type_admin",
+        path: "item_type_admin",
         defaultRoute: false,
         enter: enterRoute);
 

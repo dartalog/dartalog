@@ -37,11 +37,11 @@ class ItemAddPage extends APage with ARefreshablePage  {
   /// Constructor used to create instance of MainApp.
   ItemAddPage.created() : super.created("Item Add");
 
-  @observable Map templates = new ObservableMap();
+  @observable Map itemTypes = new ObservableMap();
 
   @published String templateId;
 
-  @observable Map<String,API.Field> templateFields = new ObservableMap<String,API.Field>();
+  @observable Map<String,API.Field> itemTypeFields = new ObservableMap<String,API.Field>();
   @observable Map<String,String> fieldValues = new ObservableMap<String,String>();
 
   void activateInternal(Map args) {
@@ -56,10 +56,10 @@ class ItemAddPage extends APage with ARefreshablePage  {
 
   Future loadTemplates() async {
     try {
-      templates.clear();
-      templateFields.clear();
-      API.MapOfTemplate data = await api.templates.getAll();
-      templates.addAll(data);
+      itemTypes.clear();
+      itemTypeFields.clear();
+      API.MapOfItemType data = await api.itemTypes.getAll();
+      itemTypes.addAll(data);
     } catch(e,st) {
       _log.severe(e, st);
       window.alert(e.toString());
@@ -74,14 +74,14 @@ class ItemAddPage extends APage with ARefreshablePage  {
   templateClicked(event, detail, target) async {
     try {
       String id = target.dataset["id"];
-      API.Template template = await api.
+      API.ItemType template = await api.
 
-      this.templates[id];
+      this.itemTypes[id];
       this.fieldValues.clear();
       for(var field in template.fields) {
         this.fieldValues[field] = ""; // SOme day, default values!
       }
-      this.templateFields.addAll(template.fields);
+      this.itemTypeFields.addAll(template.fields);
       this.templateId = id;
       pages.selected = "field_input";
     } catch(e,st) {

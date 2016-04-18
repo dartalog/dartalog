@@ -1,7 +1,7 @@
 // Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
-@HtmlImport("template_admin_page.html")
+@HtmlImport("item_type_admin_page.html")
 library dartalog.client.pages.template_admin_page;
 
 import 'dart:html';
@@ -37,7 +37,7 @@ class TemplateAdminPage extends APage with ARefreshablePage {
   /// Constructor used to create instance of MainApp.
   TemplateAdminPage.created() : super.created( "Template Admin");
 
-  @observable Map templates = new ObservableMap();
+  @observable Map itemTypes = new ObservableMap();
   @observable Map availableFields = new ObservableMap();
 
   @published String currentId;
@@ -70,9 +70,9 @@ class TemplateAdminPage extends APage with ARefreshablePage {
 
   Future loadTemplates() async {
     try {
-      templates.clear();
-      API.MapOfTemplate data = await api.templates.getAll();
-      templates.addAll(data);
+      itemTypes.clear();
+      API.MapOfItemType data = await api.itemTypes.getAll();
+      itemTypes.addAll(data);
     } catch(e,st) {
       _log.severe(e, st);
       window.alert(e.toString());
@@ -93,12 +93,12 @@ class TemplateAdminPage extends APage with ARefreshablePage {
   templateClicked(event, detail, target) async {
     try {
       String id = target.dataset["id"];
-      API.Template template = this.templates[id];
+      API.ItemType itemType = this.itemTypes[id];
 
       this.currentId = id;
-      this.currentName = template.name;
+      this.currentName = itemType.name;
       this.currentFields.clear();
-      this.currentFields.addAll(template.fields);
+      this.currentFields.addAll(itemType.fields);
     } catch(e,st) {
       _log.severe(e, st);
       window.alert(e.toString());
@@ -135,21 +135,21 @@ class TemplateAdminPage extends APage with ARefreshablePage {
   saveClicked(event, detail, target) async {
     try {
 
-      API.Template template = new API.Template();
+      API.ItemType itemType = new API.ItemType();
 
-      template.name = this.currentName;
-      template.fields = new List<String>();
+      itemType.name = this.currentName;
+      itemType.fields = new List<String>();
       for(String field_id in this.currentFields) {
         if(!this.availableFields.containsKey(field_id)) {
           throw new Exception("Field not found: ${field_id}");
         }
-        template.fields.add(field_id);
+        itemType.fields.add(field_id);
       }
 
       if(this.currentId==null) {
-        await this.api.templates.create(template);
+        await this.api.itemTypes.create(itemType);
       } else {
-        await this.api.templates.update(template, this.currentId);
+        await this.api.itemTypes.update(itemType, this.currentId);
       }
       this.refresh();
     } catch(e,st) {

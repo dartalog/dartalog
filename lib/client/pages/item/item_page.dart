@@ -58,7 +58,6 @@ class ItemPage extends APage with ARefreshablePage {
       this.clear();
 
       this.currentItem = await api.items.get(this.currentItemId);
-      items.addAll(data);
     } catch(e,st) {
       _log.severe(e, st);
       window.alert(e.toString());
@@ -79,7 +78,7 @@ class ItemPage extends APage with ARefreshablePage {
   templateClicked(event, detail, target) async {
     try {
       String id = target.dataset["id"];
-      API.Template template = this.itemTypes[id];
+      API.ItemType template = this.itemTypes[id];
 
       this.current_id = id;
       this.current_name = template.name;
@@ -107,9 +106,9 @@ class ItemPage extends APage with ARefreshablePage {
       template.fields = this.current_fields;
 
       if(this.current_id==null) {
-        await this.api.templates.create(template);
+        await this.api.itemTypes.create(template);
       } else {
-        await this.api.templates.update(template, this.current_id);
+        await this.api.itemTypes.update(template, this.current_id);
       }
     } catch(e,st) {
       _log.severe(e, st);

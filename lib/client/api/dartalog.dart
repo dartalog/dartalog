@@ -21,8 +21,10 @@ class DartalogApi {
   final commons.ApiRequester _requester;
 
   FieldsResourceApi get fields => new FieldsResourceApi(_requester);
+  ImportResourceApi get import => new ImportResourceApi(_requester);
+  ItemTypesResourceApi get itemTypes => new ItemTypesResourceApi(_requester);
   ItemsResourceApi get items => new ItemsResourceApi(_requester);
-  TemplatesResourceApi get templates => new TemplatesResourceApi(_requester);
+  PresetsResourceApi get presets => new PresetsResourceApi(_requester);
 
   DartalogApi(http.Client client, {core.String rootUrl: "http://localhost:8080/", core.String servicePath: "dartalog/0.1/"}) :
       _requester = new commons.ApiRequester(client, rootUrl, servicePath, USER_AGENT);
@@ -148,13 +150,305 @@ class FieldsResourceApi {
    *
    * [uuid] - Path parameter: 'uuid'.
    *
+   * Completes with a [UuidResponse].
+   *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
    *
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future update(Field request, core.String uuid) {
+  async.Future<UuidResponse> update(Field request, core.String uuid) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (request != null) {
+      _body = convert.JSON.encode((request).toJson());
+    }
+    if (uuid == null) {
+      throw new core.ArgumentError("Parameter uuid is required.");
+    }
+
+    _url = 'fields/' + commons.Escaper.ecapeVariable('$uuid') + '/';
+
+    var _response = _requester.request(_url,
+                                       "PUT",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new UuidResponse.fromJson(data));
+  }
+
+}
+
+
+class ImportResourceApi {
+  final commons.ApiRequester _requester;
+
+  ImportResourceApi(commons.ApiRequester client) : 
+      _requester = client;
+
+  /**
+   * Request parameters:
+   *
+   * [provider] - Path parameter: 'provider'.
+   *
+   * [id] - Path parameter: 'id'.
+   *
+   * Completes with a [ImportResult].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<ImportResult> import(core.String provider, core.String id) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (provider == null) {
+      throw new core.ArgumentError("Parameter provider is required.");
+    }
+    if (id == null) {
+      throw new core.ArgumentError("Parameter id is required.");
+    }
+
+    _url = 'import/' + commons.Escaper.ecapeVariable('$provider') + '/' + commons.Escaper.ecapeVariable('$id');
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new ImportResult.fromJson(data));
+  }
+
+  /**
+   * Request parameters:
+   *
+   * Completes with a [MapOfListOfString].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<MapOfListOfString> listProviders() {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+
+    _url = 'import/';
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new MapOfListOfString.fromJson(data));
+  }
+
+  /**
+   * Request parameters:
+   *
+   * [provider] - Path parameter: 'provider'.
+   *
+   * [query] - Path parameter: 'query'.
+   *
+   * [template] - Query parameter: 'template'.
+   *
+   * [page] - Query parameter: 'page'.
+   *
+   * Completes with a [SearchResults].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<SearchResults> search(core.String provider, core.String query, {core.String template, core.int page}) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (provider == null) {
+      throw new core.ArgumentError("Parameter provider is required.");
+    }
+    if (query == null) {
+      throw new core.ArgumentError("Parameter query is required.");
+    }
+    if (template != null) {
+      _queryParams["template"] = [template];
+    }
+    if (page != null) {
+      _queryParams["page"] = ["${page}"];
+    }
+
+    _url = 'import/' + commons.Escaper.ecapeVariable('$provider') + '/search/' + commons.Escaper.ecapeVariable('$query');
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new SearchResults.fromJson(data));
+  }
+
+}
+
+
+class ItemTypesResourceApi {
+  final commons.ApiRequester _requester;
+
+  ItemTypesResourceApi(commons.ApiRequester client) : 
+      _requester = client;
+
+  /**
+   * [request] - The metadata request object.
+   *
+   * Request parameters:
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future create(ItemType request) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (request != null) {
+      _body = convert.JSON.encode((request).toJson());
+    }
+
+    _downloadOptions = null;
+
+    _url = 'item_types/';
+
+    var _response = _requester.request(_url,
+                                       "POST",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => null);
+  }
+
+  /**
+   * Request parameters:
+   *
+   * [uuid] - Path parameter: 'uuid'.
+   *
+   * Completes with a [ItemTypeResponse].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<ItemTypeResponse> get(core.String uuid) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (uuid == null) {
+      throw new core.ArgumentError("Parameter uuid is required.");
+    }
+
+    _url = 'item_types/' + commons.Escaper.ecapeVariable('$uuid') + '/';
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new ItemTypeResponse.fromJson(data));
+  }
+
+  /**
+   * Request parameters:
+   *
+   * Completes with a [MapOfItemType].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<MapOfItemType> getAll() {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+
+    _url = 'item_types/';
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new MapOfItemType.fromJson(data));
+  }
+
+  /**
+   * [request] - The metadata request object.
+   *
+   * Request parameters:
+   *
+   * [uuid] - Path parameter: 'uuid'.
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future update(ItemType request, core.String uuid) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -171,7 +465,7 @@ class FieldsResourceApi {
 
     _downloadOptions = null;
 
-    _url = 'fields/' + commons.Escaper.ecapeVariable('$uuid') + '/';
+    _url = 'item_types/' + commons.Escaper.ecapeVariable('$uuid') + '/';
 
     var _response = _requester.request(_url,
                                        "PUT",
@@ -343,16 +637,18 @@ class ItemsResourceApi {
 }
 
 
-class TemplatesResourceApi {
+class PresetsResourceApi {
   final commons.ApiRequester _requester;
 
-  TemplatesResourceApi(commons.ApiRequester client) : 
+  PresetsResourceApi(commons.ApiRequester client) : 
       _requester = client;
 
   /**
-   * [request] - The metadata request object.
-   *
    * Request parameters:
+   *
+   * [uuid] - Path parameter: 'uuid'.
+   *
+   * Completes with a [ItemTypeResponse].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
@@ -360,7 +656,7 @@ class TemplatesResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future create(Template request) {
+  async.Future<ItemTypeResponse> get(core.String uuid) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -368,127 +664,83 @@ class TemplatesResourceApi {
     var _downloadOptions = commons.DownloadOptions.Metadata;
     var _body = null;
 
-    if (request != null) {
-      _body = convert.JSON.encode((request).toJson());
+    if (uuid == null) {
+      throw new core.ArgumentError("Parameter uuid is required.");
+    }
+
+    _url = 'presets/' + commons.Escaper.ecapeVariable('$uuid') + '/';
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new ItemTypeResponse.fromJson(data));
+  }
+
+  /**
+   * Request parameters:
+   *
+   * Completes with a [MapOfString].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<MapOfString> getAll() {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+
+    _url = 'presets/';
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new MapOfString.fromJson(data));
+  }
+
+  /**
+   * Request parameters:
+   *
+   * [uuid] - Path parameter: 'uuid'.
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future install(core.String uuid) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (uuid == null) {
+      throw new core.ArgumentError("Parameter uuid is required.");
     }
 
     _downloadOptions = null;
 
-    _url = 'presets/';
+    _url = 'presets/' + commons.Escaper.ecapeVariable('$uuid') + '/';
 
     var _response = _requester.request(_url,
                                        "POST",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
-    return _response.then((data) => null);
-  }
-
-  /**
-   * Request parameters:
-   *
-   * [uuid] - Path parameter: 'uuid'.
-   *
-   * Completes with a [TemplateResponse].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
-  async.Future<TemplateResponse> get(core.String uuid) {
-    var _url = null;
-    var _queryParams = new core.Map();
-    var _uploadMedia = null;
-    var _uploadOptions = null;
-    var _downloadOptions = commons.DownloadOptions.Metadata;
-    var _body = null;
-
-    if (uuid == null) {
-      throw new core.ArgumentError("Parameter uuid is required.");
-    }
-
-    _url = 'presets/' + commons.Escaper.ecapeVariable('$uuid') + '/';
-
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
-    return _response.then((data) => new TemplateResponse.fromJson(data));
-  }
-
-  /**
-   * Request parameters:
-   *
-   * Completes with a [MapOfTemplate].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
-  async.Future<MapOfTemplate> getAll() {
-    var _url = null;
-    var _queryParams = new core.Map();
-    var _uploadMedia = null;
-    var _uploadOptions = null;
-    var _downloadOptions = commons.DownloadOptions.Metadata;
-    var _body = null;
-
-
-    _url = 'presets/';
-
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
-    return _response.then((data) => new MapOfTemplate.fromJson(data));
-  }
-
-  /**
-   * [request] - The metadata request object.
-   *
-   * Request parameters:
-   *
-   * [uuid] - Path parameter: 'uuid'.
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
-  async.Future update(Template request, core.String uuid) {
-    var _url = null;
-    var _queryParams = new core.Map();
-    var _uploadMedia = null;
-    var _uploadOptions = null;
-    var _downloadOptions = commons.DownloadOptions.Metadata;
-    var _body = null;
-
-    if (request != null) {
-      _body = convert.JSON.encode((request).toJson());
-    }
-    if (uuid == null) {
-      throw new core.ArgumentError("Parameter uuid is required.");
-    }
-
-    _downloadOptions = null;
-
-    _url = 'presets/' + commons.Escaper.ecapeVariable('$uuid') + '/';
-
-    var _response = _requester.request(_url,
-                                       "PUT",
                                        body: _body,
                                        queryParams: _queryParams,
                                        uploadOptions: _uploadOptions,
@@ -535,6 +787,54 @@ class Field {
   }
 }
 
+class ImportResult {
+  core.String debug;
+  core.String itemId;
+  core.String itemSource;
+  core.String itemUrl;
+  core.Map<core.String, core.String> values;
+
+  ImportResult();
+
+  ImportResult.fromJson(core.Map _json) {
+    if (_json.containsKey("debug")) {
+      debug = _json["debug"];
+    }
+    if (_json.containsKey("itemId")) {
+      itemId = _json["itemId"];
+    }
+    if (_json.containsKey("itemSource")) {
+      itemSource = _json["itemSource"];
+    }
+    if (_json.containsKey("itemUrl")) {
+      itemUrl = _json["itemUrl"];
+    }
+    if (_json.containsKey("values")) {
+      values = _json["values"];
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (debug != null) {
+      _json["debug"] = debug;
+    }
+    if (itemId != null) {
+      _json["itemId"] = itemId;
+    }
+    if (itemSource != null) {
+      _json["itemSource"] = itemSource;
+    }
+    if (itemUrl != null) {
+      _json["itemUrl"] = itemUrl;
+    }
+    if (values != null) {
+      _json["values"] = values;
+    }
+    return _json;
+  }
+}
+
 class Item {
   core.Map<core.String, core.String> fieldValues;
   core.String template;
@@ -565,7 +865,7 @@ class Item {
 class ItemResponse {
   core.Map<core.String, Field> fields;
   Item item;
-  Template template;
+  ItemType template;
 
   ItemResponse();
 
@@ -577,7 +877,7 @@ class ItemResponse {
       item = new Item.fromJson(_json["item"]);
     }
     if (_json.containsKey("template")) {
-      template = new Template.fromJson(_json["template"]);
+      template = new ItemType.fromJson(_json["template"]);
     }
   }
 
@@ -591,6 +891,60 @@ class ItemResponse {
     }
     if (template != null) {
       _json["template"] = (template).toJson();
+    }
+    return _json;
+  }
+}
+
+class ItemType {
+  core.List<core.String> fields;
+  core.String name;
+
+  ItemType();
+
+  ItemType.fromJson(core.Map _json) {
+    if (_json.containsKey("fields")) {
+      fields = _json["fields"];
+    }
+    if (_json.containsKey("name")) {
+      name = _json["name"];
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (fields != null) {
+      _json["fields"] = fields;
+    }
+    if (name != null) {
+      _json["name"] = name;
+    }
+    return _json;
+  }
+}
+
+class ItemTypeResponse {
+  core.Map<core.String, Field> fields;
+  ItemType itemType;
+
+  ItemTypeResponse();
+
+  ItemTypeResponse.fromJson(core.Map _json) {
+    if (_json.containsKey("fields")) {
+      fields = commons.mapMap(_json["fields"], (item) => new Field.fromJson(item));
+    }
+    if (_json.containsKey("itemType")) {
+      itemType = new ItemType.fromJson(_json["itemType"]);
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (fields != null) {
+      _json["fields"] = commons.mapMap(fields, (item) => (item).toJson());
+    }
+    if (itemType != null) {
+      _json["itemType"] = (itemType).toJson();
     }
     return _json;
   }
@@ -668,15 +1022,15 @@ class MapOfItem
   Item remove(core.Object key) => _innerMap.remove(key);
 }
 
-class MapOfTemplate
-    extends collection.MapBase<core.String, Template> {
+class MapOfItemType
+    extends collection.MapBase<core.String, ItemType> {
   final core.Map _innerMap = {};
 
-  MapOfTemplate();
+  MapOfItemType();
 
-  MapOfTemplate.fromJson(core.Map _json) {
+  MapOfItemType.fromJson(core.Map _json) {
     _json.forEach((core.String key, value) {
-      this[key] = new Template.fromJson(value);
+      this[key] = new ItemType.fromJson(value);
     });
   }
 
@@ -688,10 +1042,10 @@ class MapOfTemplate
     return _json;
   }
 
-  Template operator [](core.Object key)
+  ItemType operator [](core.Object key)
       => _innerMap[key];
 
-  operator []=(core.String key, Template value) {
+  operator []=(core.String key, ItemType value) {
     _innerMap[key] = value;
   }
 
@@ -701,58 +1055,199 @@ class MapOfTemplate
 
   core.Iterable<core.String> get keys => _innerMap.keys;
 
-  Template remove(core.Object key) => _innerMap.remove(key);
+  ItemType remove(core.Object key) => _innerMap.remove(key);
 }
 
-class Template {
-  core.List<core.String> fields;
-  core.String name;
+class MapOfListOfString
+    extends collection.MapBase<core.String, core.List<core.String>> {
+  final core.Map _innerMap = {};
 
-  Template();
+  MapOfListOfString();
 
-  Template.fromJson(core.Map _json) {
-    if (_json.containsKey("fields")) {
-      fields = _json["fields"];
+  MapOfListOfString.fromJson(core.Map _json) {
+    _json.forEach((core.String key, value) {
+      this[key] = value;
+    });
+  }
+
+  core.Map toJson() {
+    var _json = {};
+    this.forEach((core.String key, value) {
+      _json[key] = value;
+    });
+    return _json;
+  }
+
+  core.List<core.String> operator [](core.Object key)
+      => _innerMap[key];
+
+  operator []=(core.String key, core.List<core.String> value) {
+    _innerMap[key] = value;
+  }
+
+  void clear() {
+    _innerMap.clear();
+  }
+
+  core.Iterable<core.String> get keys => _innerMap.keys;
+
+  core.List<core.String> remove(core.Object key) => _innerMap.remove(key);
+}
+
+class MapOfString
+    extends collection.MapBase<core.String, core.String> {
+  final core.Map _innerMap = {};
+
+  MapOfString();
+
+  MapOfString.fromJson(core.Map _json) {
+    _json.forEach((core.String key, value) {
+      this[key] = value;
+    });
+  }
+
+  core.Map toJson() {
+    var _json = {};
+    this.forEach((core.String key, value) {
+      _json[key] = value;
+    });
+    return _json;
+  }
+
+  core.String operator [](core.Object key)
+      => _innerMap[key];
+
+  operator []=(core.String key, core.String value) {
+    _innerMap[key] = value;
+  }
+
+  void clear() {
+    _innerMap.clear();
+  }
+
+  core.Iterable<core.String> get keys => _innerMap.keys;
+
+  core.String remove(core.Object key) => _innerMap.remove(key);
+}
+
+class SearchResult {
+  core.String debug;
+  core.String id;
+  core.String thumbnail;
+  core.String title;
+  core.String url;
+
+  SearchResult();
+
+  SearchResult.fromJson(core.Map _json) {
+    if (_json.containsKey("debug")) {
+      debug = _json["debug"];
     }
-    if (_json.containsKey("name")) {
-      name = _json["name"];
+    if (_json.containsKey("id")) {
+      id = _json["id"];
+    }
+    if (_json.containsKey("thumbnail")) {
+      thumbnail = _json["thumbnail"];
+    }
+    if (_json.containsKey("title")) {
+      title = _json["title"];
+    }
+    if (_json.containsKey("url")) {
+      url = _json["url"];
     }
   }
 
   core.Map toJson() {
     var _json = new core.Map();
-    if (fields != null) {
-      _json["fields"] = fields;
+    if (debug != null) {
+      _json["debug"] = debug;
     }
-    if (name != null) {
-      _json["name"] = name;
+    if (id != null) {
+      _json["id"] = id;
+    }
+    if (thumbnail != null) {
+      _json["thumbnail"] = thumbnail;
+    }
+    if (title != null) {
+      _json["title"] = title;
+    }
+    if (url != null) {
+      _json["url"] = url;
     }
     return _json;
   }
 }
 
-class TemplateResponse {
-  core.Map<core.String, Field> fields;
-  Template template;
+class SearchResults {
+  core.int currentPage;
+  core.Map<core.String, core.String> data;
+  core.List<SearchResult> results;
+  core.String searchUrl;
+  core.int totalPages;
+  core.int totalResults;
 
-  TemplateResponse();
+  SearchResults();
 
-  TemplateResponse.fromJson(core.Map _json) {
-    if (_json.containsKey("fields")) {
-      fields = commons.mapMap(_json["fields"], (item) => new Field.fromJson(item));
+  SearchResults.fromJson(core.Map _json) {
+    if (_json.containsKey("currentPage")) {
+      currentPage = _json["currentPage"];
     }
-    if (_json.containsKey("template")) {
-      template = new Template.fromJson(_json["template"]);
+    if (_json.containsKey("data")) {
+      data = _json["data"];
+    }
+    if (_json.containsKey("results")) {
+      results = _json["results"].map((value) => new SearchResult.fromJson(value)).toList();
+    }
+    if (_json.containsKey("searchUrl")) {
+      searchUrl = _json["searchUrl"];
+    }
+    if (_json.containsKey("totalPages")) {
+      totalPages = _json["totalPages"];
+    }
+    if (_json.containsKey("totalResults")) {
+      totalResults = _json["totalResults"];
     }
   }
 
   core.Map toJson() {
     var _json = new core.Map();
-    if (fields != null) {
-      _json["fields"] = commons.mapMap(fields, (item) => (item).toJson());
+    if (currentPage != null) {
+      _json["currentPage"] = currentPage;
     }
-    if (template != null) {
-      _json["template"] = (template).toJson();
+    if (data != null) {
+      _json["data"] = data;
+    }
+    if (results != null) {
+      _json["results"] = results.map((value) => (value).toJson()).toList();
+    }
+    if (searchUrl != null) {
+      _json["searchUrl"] = searchUrl;
+    }
+    if (totalPages != null) {
+      _json["totalPages"] = totalPages;
+    }
+    if (totalResults != null) {
+      _json["totalResults"] = totalResults;
+    }
+    return _json;
+  }
+}
+
+class UuidResponse {
+  core.String uuid;
+
+  UuidResponse();
+
+  UuidResponse.fromJson(core.Map _json) {
+    if (_json.containsKey("uuid")) {
+      uuid = _json["uuid"];
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (uuid != null) {
+      _json["uuid"] = uuid;
     }
     return _json;
   }

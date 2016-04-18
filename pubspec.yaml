@@ -28,7 +28,7 @@ dependencies:
   route_hierarchical: 'any'
   _discoveryapis_commons: 'any'
   http_server: 'any'
-
+  discoveryapis_generator: 'any'
 transformers:
 - polymer:
     entry_points: web/index.html

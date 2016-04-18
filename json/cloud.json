@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "f285b56b0c15a16647f9dd88bf420969ead760c2",
+ "etag": "20968b42af7dad876be698158df4ff5ffe76596f",
  "discoveryVersion": "v1",
  "id": "dartalog:0.1",
  "name": "dartalog",
@@ -38,15 +38,24 @@
     }
    }
   },
-  "MapOfTemplate": {
-   "id": "MapOfTemplate",
+  "UuidResponse": {
+   "id": "UuidResponse",
    "type": "object",
-   "additionalProperties": {
-    "$ref": "Template"
+   "properties": {
+    "uuid": {
+     "type": "string"
+    }
    }
   },
-  "Template": {
-   "id": "Template",
+  "MapOfItemType": {
+   "id": "MapOfItemType",
+   "type": "object",
+   "additionalProperties": {
+    "$ref": "ItemType"
+   }
+  },
+  "ItemType": {
+   "id": "ItemType",
    "type": "object",
    "properties": {
     "name": {
@@ -62,12 +71,12 @@
     }
    }
   },
-  "TemplateResponse": {
-   "id": "TemplateResponse",
+  "ItemTypeResponse": {
+   "id": "ItemTypeResponse",
    "type": "object",
    "properties": {
-    "template": {
-     "$ref": "Template"
+    "itemType": {
+     "$ref": "ItemType"
     },
     "fields": {
      "type": "object",
@@ -108,7 +117,7 @@
      "$ref": "Item"
     },
     "template": {
-     "$ref": "Template"
+     "$ref": "ItemType"
     },
     "fields": {
      "type": "object",
@@ -116,6 +125,101 @@
       "$ref": "Field"
      }
     }
+   }
+  },
+  "MapOfListOfString": {
+   "id": "MapOfListOfString",
+   "type": "object",
+   "additionalProperties": {
+    "type": "array",
+    "items": {
+     "type": "string"
+    }
+   }
+  },
+  "SearchResults": {
+   "id": "SearchResults",
+   "type": "object",
+   "properties": {
+    "currentPage": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "totalPages": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "totalResults": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "searchUrl": {
+     "type": "string"
+    },
+    "data": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "string"
+     }
+    },
+    "results": {
+     "type": "array",
+     "items": {
+      "$ref": "SearchResult"
+     }
+    }
+   }
+  },
+  "SearchResult": {
+   "id": "SearchResult",
+   "type": "object",
+   "properties": {
+    "url": {
+     "type": "string"
+    },
+    "id": {
+     "type": "string"
+    },
+    "thumbnail": {
+     "type": "string"
+    },
+    "title": {
+     "type": "string"
+    },
+    "debug": {
+     "type": "string"
+    }
+   }
+  },
+  "ImportResult": {
+   "id": "ImportResult",
+   "type": "object",
+   "properties": {
+    "itemUrl": {
+     "type": "string"
+    },
+    "itemId": {
+     "type": "string"
+    },
+    "itemSource": {
+     "type": "string"
+    },
+    "values": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "string"
+     }
+    },
+    "debug": {
+     "type": "string"
+    }
+   }
+  },
+  "MapOfString": {
+   "id": "MapOfString",
+   "type": "object",
+   "additionalProperties": {
+    "type": "string"
    }
   }
  },
@@ -179,26 +283,29 @@
      ],
      "request": {
       "$ref": "Field"
+     },
+     "response": {
+      "$ref": "UuidResponse"
      }
     }
    },
    "resources": {}
   },
-  "templates": {
+  "item_types": {
    "methods": {
     "getAll": {
-     "id": "DartalogApi.templates.getAll",
-     "path": "templates/",
+     "id": "DartalogApi.item_types.getAll",
+     "path": "item_types/",
      "httpMethod": "GET",
      "parameters": {},
      "parameterOrder": [],
      "response": {
-      "$ref": "MapOfTemplate"
+      "$ref": "MapOfItemType"
      }
     },
     "get": {
-     "id": "DartalogApi.templates.get",
-     "path": "templates/{uuid}/",
+     "id": "DartalogApi.item_types.get",
+     "path": "item_types/{uuid}/",
      "httpMethod": "GET",
      "parameters": {
       "uuid": {
@@ -212,22 +319,22 @@
       "uuid"
      ],
      "response": {
-      "$ref": "TemplateResponse"
+      "$ref": "ItemTypeResponse"
      }
     },
     "create": {
-     "id": "DartalogApi.templates.create",
-     "path": "templates/",
+     "id": "DartalogApi.item_types.create",
+     "path": "item_types/",
      "httpMethod": "POST",
      "parameters": {},
      "parameterOrder": [],
      "request": {
-      "$ref": "Template"
+      "$ref": "ItemType"
      }
     },
     "update": {
-     "id": "DartalogApi.templates.update",
-     "path": "templates/{uuid}/",
+     "id": "DartalogApi.item_types.update",
+     "path": "item_types/{uuid}/",
      "httpMethod": "PUT",
      "parameters": {
       "uuid": {
@@ -241,7 +348,7 @@
       "uuid"
      ],
      "request": {
-      "$ref": "Template"
+      "$ref": "ItemType"
      }
     }
    },
@@ -306,6 +413,135 @@
      "request": {
       "$ref": "Item"
      }
+    }
+   },
+   "resources": {}
+  },
+  "import": {
+   "methods": {
+    "listProviders": {
+     "id": "DartalogApi.import.listProviders",
+     "path": "import/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "MapOfListOfString"
+     }
+    },
+    "search": {
+     "id": "DartalogApi.import.search",
+     "path": "import/{provider}/search/{query}",
+     "httpMethod": "GET",
+     "parameters": {
+      "provider": {
+       "type": "string",
+       "description": "Path parameter: 'provider'.",
+       "required": true,
+       "location": "path"
+      },
+      "query": {
+       "type": "string",
+       "description": "Path parameter: 'query'.",
+       "required": true,
+       "location": "path"
+      },
+      "template": {
+       "type": "string",
+       "description": "Query parameter: 'template'.",
+       "required": false,
+       "location": "query"
+      },
+      "page": {
+       "type": "integer",
+       "description": "Query parameter: 'page'.",
+       "required": false,
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "provider",
+      "query"
+     ],
+     "response": {
+      "$ref": "SearchResults"
+     }
+    },
+    "import": {
+     "id": "DartalogApi.import.import",
+     "path": "import/{provider}/{id}",
+     "httpMethod": "GET",
+     "parameters": {
+      "provider": {
+       "type": "string",
+       "description": "Path parameter: 'provider'.",
+       "required": true,
+       "location": "path"
+      },
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "provider",
+      "id"
+     ],
+     "response": {
+      "$ref": "ImportResult"
+     }
+    }
+   },
+   "resources": {}
+  },
+  "presets": {
+   "methods": {
+    "getAll": {
+     "id": "DartalogApi.presets.getAll",
+     "path": "presets/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "MapOfString"
+     }
+    },
+    "get": {
+     "id": "DartalogApi.presets.get",
+     "path": "presets/{uuid}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "uuid": {
+       "type": "string",
+       "description": "Path parameter: 'uuid'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "uuid"
+     ],
+     "response": {
+      "$ref": "ItemTypeResponse"
+     }
+    },
+    "install": {
+     "id": "DartalogApi.presets.install",
+     "path": "presets/{uuid}/",
+     "httpMethod": "POST",
+     "parameters": {
+      "uuid": {
+       "type": "string",
+       "description": "Path parameter: 'uuid'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "uuid"
+     ]
     }
    },
    "resources": {}

@@ -33,6 +33,8 @@ main() async {
         serveFilesOutsidePath: true);
 
     _apiServer.addApi(new DartalogApi());
+    _apiServer.enableDiscoveryApi();
+
     var api_handler = shelf_rpc.createRpcHandler(_apiServer);
 
     var handler = new shelf.Cascade()

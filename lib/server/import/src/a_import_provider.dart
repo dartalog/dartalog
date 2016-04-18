@@ -1,10 +1,10 @@
 part of import;
 
 abstract class AImportProvider {
-  Future<SearchResults> search(String query, String type_id);
-  Future import(String identifier);
+  Future<SearchResults> search(String query, String type_id, {int page: 0});
+  Future<ImportResult> import(String id);
 
-  Future<String> _downloadPage(String url) async {
+  Future<String> _downloadPage(String url, {bool stripNewlines: false}) async {
     HttpClient http = new HttpClient();
     Uri uri = Uri.parse(url);
 
@@ -12,9 +12,14 @@ abstract class AImportProvider {
     HttpClientResponse response = await request.close();
 
     HttpClientResponseBody body =
-      await HttpBodyHandler.processResponse(response);
+    await HttpBodyHandler.processResponse(response);
 
-    return body.body.toString();
+    String output =body.body.toString();
+    if(stripNewlines) {
+      output = output.replaceAll("\r","");
+      output = output.replaceAll("\n","");
+    }
+    return output;
  }
 
   void _attemptAutoMapping(dynamic output, Map data) {

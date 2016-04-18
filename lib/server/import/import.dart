@@ -14,7 +14,7 @@ import 'package:dartalog/server/server.dart';
 part 'src/import_object_type.dart';
 part 'src/search_result.dart';
 part 'src/search_results.dart';
-
+part 'src/import_result.dart';
 part 'src/a_import_provider.dart';
 part 'src/a_scraping_import_provider.dart';
 part 'src/a_api_import_provider.dart';

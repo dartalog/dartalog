@@ -11,18 +11,22 @@ class AmazonImportProvider extends AScrapingImportProvider {
   static final RegExp title_reg = new RegExp(r'<h2[^>]+>([^<]+)</h2>', multiLine: true, caseSensitive: false);
   static final RegExp image_reg = new RegExp(r'<img src="([^"+"]+)"[^>]+class="s-access-image[^"]+"[^>]+>', multiLine: true, caseSensitive: false);
 
-  Future<SearchResults> search(String query, String type_id) async {
+  static final String NAME = "amazon";
+
+
+
+  String _getItemURL(String id) {
+    return "http://${BASE_URL}/dp/${id}";
+  }
+
+  Future<SearchResults> search(String query, String type_id, {int page: 0}) async {
     String item_type = "";
-    int page = 0;
     String url = "http://${BASE_URL}/exec/obidos/external-search?ie=UTF8&index=${item_type}&keyword=${Uri.encodeComponent(query)}&page=${page}";
-    String contents = await this._downloadPage(url);
-    contents = contents.replaceAll("\r","");
-    contents = contents.replaceAll("\n","");
+    String contents = await this._downloadPage(url, stripNewlines: true);
     SearchResults output = new SearchResults();
     output.searchUrl = url;
 
     Iterable<Match> top_matches = top_reg.allMatches(contents);
-
 
     for(Match top_m in top_matches) {
       String sub_content = top_m.group(0);
@@ -32,7 +36,7 @@ class AmazonImportProvider extends AScrapingImportProvider {
       if(sub_matches.length>0) {
         String image_url = null;
         if(image_match!=null) {
-          image_url = image_match.group(1);
+          image_url =  image_match.group(1);
         }
 
         for(Match sub_match in sub_matches) {
@@ -42,7 +46,7 @@ class AmazonImportProvider extends AScrapingImportProvider {
             output.results.remove(result);
           }
           result = new SearchResult();
-          result.url = "http://${BASE_URL}/dp/${id}";
+          result.url = this._getItemURL(id);
           if(sub_matches.length==1) {
             result.title = title_match.group(1);
           } else {
@@ -60,7 +64,31 @@ class AmazonImportProvider extends AScrapingImportProvider {
     return output;
   }
 
-  Future import(String identifier) async {
+  Map<String,String> valueRegex = {
+    "title": '<span id="productTitle"[^>]*>([^<]+)</span>',
+    "cover": 'data-old-hires="([^"]+)"'
+  };
 
+  Future<ImportResult> import(String id) async {
+    String itemUrl = _getItemURL(id);
+
+
+    ImportResult output = new ImportResult();
+    output.itemUrl = itemUrl;
+    output.itemId = id;
+    output.itemSource = NAME;
+
+    String contents = await this._downloadPage(itemUrl, stripNewlines: true);
+
+    for(String field in valueRegex.keys) {
+      RegExp reg = new RegExp(valueRegex[field]);
+      Match m = reg.firstMatch(contents);
+      if(m!=null) {
+        output.values[field] = m.group(1);
+      }
+    }
+    //output.debug = contents;
+
+    return output;
   }
 }

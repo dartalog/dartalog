@@ -42,20 +42,21 @@ class ImportResource extends AResource {
 //  }
 
   @ApiMethod(path: 'import/{provider}/search/{query}')
-  Future<SearchResults> search(String provider, String query, {String template}) async {
+  Future<SearchResults> search(String provider, String query, {String template, int page: 0}) async {
     try {
       AImportProvider importer = _getProvider(provider);
-      return await importer.search(query,"dvd");
+      query = Uri.decodeFull(query);
+      return await importer.search(query, template, page: page);
     } catch(e,st) {
       _HandleException(e, st);
     }
   }
 
   @ApiMethod(path: 'import/{provider}/{id}')
-  Future<SearchResults> import(String provider, String id, {String template}) async {
+  Future<ImportResult> import(String provider, String id) async {
     try {
       AImportProvider importer = _getProvider(provider);
-      return await importer.search(query,"dvd");
+      return await importer.import(id);
     } catch(e,st) {
       _HandleException(e, st);
     }

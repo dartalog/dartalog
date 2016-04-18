@@ -34,7 +34,6 @@ main() async {
 
     _apiServer.addApi(new DartalogApi());
     var api_handler = shelf_rpc.createRpcHandler(_apiServer);
-    io.serve(api_handler, 'localhost',  Model.options.getInt("rpc_port"));
 
     var handler = new shelf.Cascade()
         .add(static_handler)

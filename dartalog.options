@@ -1,7 +1,5 @@
 # server options
-port=80
-# rpc options
-rpc_port=8888
+port=8080
 # mysql options
 mysql_user=dartalog
 mysql_password=rRJPnQUttLPqAxUA
@@ -9,4 +7,5 @@ mysql_port=3306
 mysql_db=dartalog
 mysql_host=localhost
 # mongo options
-mongo=mongodb://localhost:27017/dartalogmongo=mongodb://localhost:27017/dartalog# themoviedb optionsmongo=mongodb://localhost:27017/dartalogmongo=mongodb://localhost:27017/dartalog# themoviedb options
+mongo=mongodb://localhost:27017/dartalog
+# themoviedb options

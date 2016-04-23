@@ -1,6 +1,9 @@
 part of api;
 
-class ItemTypeField {
-  String id;
+class ItemTypeField extends AData {
+
+  void validate() {
+
+  }
 
 }

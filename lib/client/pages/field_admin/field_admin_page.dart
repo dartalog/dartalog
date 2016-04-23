@@ -1,8 +1,7 @@
 // Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
 
 // is governed by a BSD-style license that can be found in the LICENSE file.
-
-@HtmlImport("field_admin_page.html")
+@HtmlImport('field_admin_page.html')
 library dartalog.client.pages.field_admin_page;
 
 import 'dart:html';
@@ -10,16 +9,14 @@ import 'dart:async';
 import 'package:logging/logging.dart';
 
 import 'package:polymer/polymer.dart';
-import 'package:paper_elements/paper_input.dart';
-import 'package:paper_elements/paper_button.dart';
-import 'package:paper_elements/paper_action_dialog.dart';
-import 'package:paper_elements/paper_shadow.dart';
-import 'package:paper_elements/paper_item.dart';
-import 'package:paper_elements/paper_dropdown.dart';
-import 'package:paper_elements/paper_dropdown_menu.dart';
-import 'package:core_elements/core_selector.dart';
-import 'package:core_elements/core_menu.dart';
-
+import 'package:web_components/web_components.dart';
+import 'package:polymer_elements/paper_input.dart';
+import 'package:polymer_elements/paper_button.dart';
+import 'package:polymer_elements/paper_dropdown_menu.dart';
+import 'package:polymer_elements/paper_listbox.dart';
+import 'package:polymer_elements/paper_card.dart';
+import 'package:polymer_elements/paper_dialog.dart';
+import 'package:polymer_elements/iron_flex_layout.dart';
 
 import 'package:dartalog/dartalog.dart' as dartalog;
 import 'package:dartalog/client/pages/pages.dart';
@@ -28,80 +25,109 @@ import 'package:dartalog/client/client.dart';
 import '../../api/dartalog.dart' as API;
 
 /// A Polymer `<field-admin-page>` element.
-@CustomTag('field-admin-page')
-class FieldAdminPage extends APage with ARefreshablePage {
+@PolymerRegister('field-admin-page')
+class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   static final Logger _log = new Logger("FieldAdminPage");
 
-  Map fields = new ObservableMap();
+  @Property(notify: true)
+  List fieldIds = new List();
+  @reflectable API.Field getFieldName(String key) => fields[key].name;
+
+  Map fields = new Map();
 
   /// Constructor used to create instance of MainApp.
   FieldAdminPage.created() : super.created("Field Admin");
 
-  @published String currentUuid;
-  @published String currentName;
-  @published String currentType;
-  @published String currentFormat;
+  @Property(notify: true) String currentUuid;
+  @Property(notify: true) String currentName;
+  @Property(notify: true) String currentType;
+  @Property(notify: true) String currentFormat;
 
-  Map<String, String> get FIELD_TYPES => dartalog.FIELD_TYPES;
+  @Property(notify: true) Iterable get FIELD_TYPE_KEYS => dartalog.FIELD_TYPES.keys;
+  @reflectable String getFieldType(String key) => dartalog.FIELD_TYPES[key];
+
+  PaperDialog get editDialog =>  $['editDialog'];
 
   void activateInternal(Map args) {
     this.refresh();
   }
 
+  @reflectable
   Future refresh() async {
     try {
-      this.clear();
-
+      this.reset();
+      clear("fieldIds");
       fields.clear();
 
       API.MapOfField data = await api.fields.getAll();
 
       fields.addAll(data);
+
+      addAll("fieldIds",data.keys);
     } catch (e, st) {
       _log.severe(e, st);
       window.alert(e.toString());
     }
   }
 
-  void clear() {
-    this.currentUuid = null;
-    this.currentFormat = "";
-    this.currentType = "";
-    this.currentName = "";
+  @reflectable
+  Future newItem() async {
+    try {
+      this.reset();
+      editDialog.open();
+    } catch (e, st) {
+      _log.severe(e, st);
+      window.alert(e.toString());
+    }
   }
 
-  showModal(event, detail, target) {
-    String uuid = target.dataset['uuid'];
+  @reflectable
+  void reset() {
+    set('currentUuid', null);
+    set('currentFormat', "");
+    set('currentType', "");
+    set('currentName', "");
+  }
+
+  showModal(event, [_]) {
+    //String uuid = target.dataset['uuid'];
   }
 
   @override
   addItem() {
   }
 
-  fieldClicked(event, detail, target) async {
+  @reflectable
+  fieldClicked(event, [_]) async {
     try {
-      String id = target.dataset["id"];
+      String id = event.target.dataset["id"];
       API.Field field = this.fields[id];
 
-      this.currentFormat = field.format;
-      this.currentName = field.name;
-      this.currentType = field.type;
-      this.currentUuid = id;
+      set('currentUuid', id);
+      set('currentFormat', field.format);
+      set('currentType', field.type);
+      set('currentName', field.name);
+
+      editDialog.open();
     } catch (e, st) {
       _log.severe(e, st);
       window.alert(e.toString());
     }
   }
 
-  validateField(event, detail, target) {
+  @reflectable
+  validateField(event, [_]) {
     _log.info("Validating");
   }
 
-  clearClicked(event, detail, target) {
-    this.clear();
+  @reflectable
+  cancelClicked(event, [_]) {
+    editDialog.cancel();
+    this.reset();
   }
 
-  saveClicked(event, detail, target) async {
+  @reflectable
+  saveClicked(event, [_]) async {
     try {
       API.Field field = new API.Field();
       field.name = this.currentName;
@@ -115,6 +141,7 @@ class FieldAdminPage extends APage with ARefreshablePage {
       }
 
       refresh();
+      editDialog.close();
     } catch (e, st) {
       _log.severe(e, st);
       window.alert(e.toString());

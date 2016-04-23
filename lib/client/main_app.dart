@@ -1,62 +1,59 @@
-// Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
+// Copyright (c) 2016, <your name>. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
-
 @HtmlImport('main_app.html')
 library dartalog.client.main_app;
 
 import 'dart:html';
 import 'package:http/browser_client.dart' as http;
-
+import 'package:route_hierarchical/client.dart';
 import 'package:logging/logging.dart';
 import 'package:logging_handlers/browser_logging_handlers.dart';
-import 'package:route_hierarchical/client.dart';
 
+import 'package:polymer_elements/paper_input.dart';
 import 'package:polymer/polymer.dart';
-import 'package:core_elements/core_scaffold.dart';
-import 'package:core_elements/core_pages.dart';
-import 'package:core_elements/core_toolbar.dart';
-import 'package:core_elements/core_icon.dart';
-import 'package:core_elements/core_animated_pages.dart';
-import 'package:core_elements/core_animated_pages/transitions/slide_from_right.dart';
-import 'package:paper_elements/paper_item.dart';
-import 'package:paper_elements/paper_icon_button.dart';
-import 'package:paper_elements/paper_input.dart';
-import 'package:paper_elements/paper_progress.dart';
 
-import 'api/dartalog.dart';
+import 'package:web_components/web_components.dart';
+
+import 'package:polymer_elements/iron_flex_layout.dart';
+import 'package:polymer_elements/paper_drawer_panel.dart';
+import 'package:polymer_elements/paper_header_panel.dart';
+import 'package:polymer_elements/paper_icon_button.dart';
+import 'package:polymer_elements/paper_toolbar.dart';
+import 'package:polymer_elements/paper_item.dart';
+import 'package:polymer_elements/iron_pages.dart';
+import 'package:polymer_elements/iron_icons.dart';
+
+import 'package:dartalog/client/api/dartalog.dart';
 import 'package:dartalog/client/pages/pages.dart';
-import 'package:dartalog/client/pages/item_browse/item_browse_page.dart';
-import 'package:dartalog/client/pages/item_add/item_add_page.dart';
-import 'package:dartalog/client/pages/item/item_page.dart';
+//import 'package:dartalog/client/pages/item_browse/item_browse_page.dart';
+//import 'package:dartalog/client/pages/item_add/item_add_page.dart';
+//import 'package:dartalog/client/pages/item/item_page.dart';
 import 'package:dartalog/client/pages/field_admin/field_admin_page.dart';
-import 'package:dartalog/client/pages/item_type_admin/item_type_admin_page.dart';
+//import 'package:dartalog/client/pages/item_type_admin/item_type_admin_page.dart';
 
-/// A Polymer `<main-app>` element.
-@CustomTag('main-app')
+
+/// Uses [PaperInput]
+@PolymerRegister('main-app')
 class MainApp extends PolymerElement {
-  @observable String reversed = '';
-
-  @observable String visiblePageTitle = "Field Admin";
-  @observable String visiblePage = "field_admin";
-  @observable bool visiblePageRefreshable = false;
+  @property String visiblePageTitle = "Field Admin";
+  @property String visiblePage = "field_admin";
+  @property bool visiblePageRefreshable = false;
 
   final Router router = new Router(useFragment: true);
 
-  CoreScaffold get scaffold => $['scaffold'];
-
-  final DartalogApi api = new DartalogApi(new http.BrowserClient(), rootUrl: "http://localhost:8888/", servicePath: "api/dartalog/0.1/");
+  final DartalogApi api = new DartalogApi(new http.BrowserClient(), rootUrl: "http://localhost:8080/", servicePath: "api/dartalog/0.1/");
 
   APage get currentPage => $[visiblePage];
+  PaperDrawerPanel get drawerPanel => $["drawerPanel"];
+
   FieldAdminPage get fieldAdmin=> $['field_admin'];
-  TemplateAdminPage get templateAdmin=> $['item_type_admin'];
-  ItemAddPage get itemAddAdmin=> $['item_add'];
-  ItemBrowsePage get itemBrowse=> $['browse'];
-  ItemPage get itemPage=> $['item'];
+//  TemplateAdminPage get templateAdmin=> $['item_type_admin'];
+//  ItemAddPage get itemAddAdmin=> $['item_add'];
+//  ItemBrowsePage get itemBrowse=> $['browse'];
+//  ItemPage get itemPage=> $['item'];
 
   /// Constructor used to create instance of MainApp.
-  MainApp.created() : super.created();
-
-  domReady() {
+  MainApp.created() : super.created() {
     Logger.root.level = Level.INFO;
     Logger.root.onRecord.listen(new LogPrintHandler());
 
@@ -64,7 +61,7 @@ class MainApp extends PolymerElement {
     router.root.addRoute(
         name: "browse",
         path: "browse",
-        defaultRoute: true,
+        defaultRoute: false,
         enter: enterRoute);
     router.root.addRoute(
         name: "item",
@@ -79,7 +76,7 @@ class MainApp extends PolymerElement {
     router.root.addRoute(
         name: "field_admin",
         path: "field_admin",
-        defaultRoute: false,
+        defaultRoute: true,
         enter: enterRoute);
     router.root.addRoute(
         name: "item_type_admin",
@@ -96,13 +93,11 @@ class MainApp extends PolymerElement {
   }
 
   void enterRoute(RouteEvent e) {
-
-    visiblePage = e.route.name;
-
-    this.visiblePageRefreshable = false;
+    set("visiblePage", e.route.name);
+    set("visiblePageRefreshable", false);
 
     if(this.currentPage==null) {
-      this.visiblePageTitle = "PAGE MISSING";
+      set("visiblePageTitle", "PAGE MISSING");
       throw new Exception("Page not found: ${this.visiblePage}");
     }
 
@@ -112,14 +107,22 @@ class MainApp extends PolymerElement {
       this.visiblePageRefreshable = true;
     }
 
-    this.visiblePageTitle = this.currentPage.title;
-
+    set("visiblePageTitle", this.currentPage.title);
   }
 
-  refreshClicked(event, detail, target) async {
-    if(currentPage is ARefreshablePage) {
+  @reflectable
+  refreshClicked(event, [_]) async {
+    if (currentPage is ARefreshablePage) {
       dynamic page = currentPage;
       page.refresh();
+    }
+  }
+
+  @reflectable
+  addClicked(event, [_]) async {
+    if (currentPage is ACollectionPage) {
+      ACollectionPage page = currentPage as ACollectionPage;
+      page.newItem();
     }
   }
   // Optional lifecycle methods - uncomment if needed.
@@ -137,12 +140,11 @@ class MainApp extends PolymerElement {
 //  /// Called when an attribute (such as a class) of an instance of
 //  /// main-app is added, changed, or removed.
 //  attributeChanged(String name, String oldValue, String newValue) {
-//    super.attributeChanges(name, oldValue, newValue);
+//    super.attributeChanged(name, oldValue, newValue);
 //  }
 
 //  /// Called when main-app has been fully prepared (Shadow DOM created,
 //  /// property observers set up, event listeners attached).
 //  ready() {
-//    super.ready();
 //  }
 }

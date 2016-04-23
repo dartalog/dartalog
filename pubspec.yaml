@@ -1,34 +1,41 @@
 name: 'dartalog'
 version: 0.0.1
 description: A web app built using polymer.dart.
-#author: <your name> <email@example.com>
+#author: Your Name <email@example.com>
 #homepage: https://www.example.com
+
 environment:
-  sdk: '>=1.0.0 <2.0.0'
+  sdk: '>=1.9.0 <2.0.0'
+
 dependencies:
-  args: 'any'
-  browser: 'any'
-  paper_elements: 'any'
-  core_elements: 'any'
-  polymer: 'any'
-  rpc: 'any'
-  logging: 'any'
-  logging_handlers: 'any'
-  shelf: 'any'
-  shelf_static: 'any'
-  shelf_rpc: 'any'
-  shelf_auth: 'any'
-  shelf_oauth: 'any'
-  mongo_dart: 'any'
-  connection_pool: 'any'
-  options_file: 'any'
-  uuid: 'any'
-  http: 'any'
-  crypto: 'any'
-  route_hierarchical: 'any'
-  _discoveryapis_commons: 'any'
-  http_server: 'any'
-  discoveryapis_generator: 'any'
+  browser: ^0.10.0
+  polymer_elements: ^1.0.0-rc.8
+  polymer: ^1.0.0-rc.16
+  web_components: ^0.12.0
+  route_hierarchical: ^0.7.0
+
+  rpc: ^0.5.6
+  shelf: ^0.6.5
+  shelf_static: ^0.2.3
+  shelf_rpc: ^0.0.3
+  discoveryapis_generator: any
+  crypto: '>=0.9.0 <0.10.0'
+  _discoveryapis_commons: '>=0.1.0 <0.2.0'
+
+  mongo_dart: ^0.2.5
+  connection_pool: ^0.1.0
+
+  http: ^0.11.3
+  http_server: ^0.9.5
+  uuid: ^0.5.1
+  options_file: ^0.11.0
+  logging_handlers: ^0.8.0
+
 transformers:
 - polymer:
     entry_points: web/index.html
+- $dart2js:
+    minify: true
+    commandLineOptions:
+    - --trust-type-annotations
+    - --trust-primitives

@@ -1,6 +1,7 @@
 part of api;
 
 class Item extends AData {
+
   String template;
 
   @ApiProperty(required: true)

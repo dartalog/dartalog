@@ -1,6 +1,7 @@
 part of api;
 
 class ItemType extends AData {
+
   @ApiProperty(required: true)
   String name;
 

@@ -4,28 +4,37 @@
 -->
 
 <!-- import polymer-element's definition -->
-<polymer-element name="field-admin-page">
+<dom-module name="field-admin-page">
+    <link rel="stylesheet" href="field_admin_page.css">
+    <style include="iron-flex"></style>
+
     <template>
-        <link rel="stylesheet" href="field_admin_page.css">
+        <paper-card heading="Fields" style="margin:8px;" class="fit">
+            <div class="card-content">
+                <template is="dom-repeat" items="{{fieldIds}}" as="id">
+                    <paper-item horizontal on-tap="fieldClicked" data-id$="{{id}}" class="flex">{{getFieldName(id)}}
+                    </paper-item>
+                </template>
+            </div>
+        </paper-card>
 
-        <template repeat="{{field in fields.keys}}">
-            <paper-item horizontal on-click="{{fieldClicked}}" data-id="{{field}}">{{fields[field].name}}</paper-item>
-        </template>
-
-<div layout vertical>
-        <paper-input floatinglabel label="Name" value="{{currentName}}"></paper-input>
-        <paper-dropdown-menu floatinglabel label="Type">
-            <paper-dropdown class="dropdown">
-                <core-menu valueattr="value" selected="{{currentType}}">
-                    <template repeat="{{field_type in FIELD_TYPES.keys}}">
-                        <paper-item value="{{field_type}}">{{FIELD_TYPES[field_type]}}</paper-item>
-                    </template>
-                </core-menu>
-            </paper-dropdown>
-        </paper-dropdown-menu>
-        <paper-input floatinglabel label="Format" value="{{currentFormat}}"></paper-input>
-    <paper-button raised on-click="{{saveClicked}}">Save</paper-button>
-    <paper-button raised on-click="{{clearClicked}}">Clear</paper-button>
-</div>
+        <paper-dialog id="editDialog" modal="true">
+            <h2>Edit Field</h2>
+            <div class="vertical">
+                <paper-input floatinglabel label="Name" value="{{currentName}}"></paper-input>
+                <paper-dropdown-menu floatinglabel label="Type">
+                    <paper-listbox class="dropdown-content" attr-for-selected="value" selected="{{currentType}}">
+                        <template is="dom-repeat" items="{{FIELD_TYPE_KEYS}}">
+                            <paper-item value="{{item}}">{{getFieldType(item)}}</paper-item>
+                        </template>
+                    </paper-listbox>
+                </paper-dropdown-menu>
+                <paper-input floatinglabel label="Format" value="{{currentFormat}}"></paper-input>
+            </div>
+            <div class="buttons">
+                <paper-button on-tap="saveClicked">Save</paper-button>
+                <paper-button on-tap="cancelClicked">Cancel</paper-button>
+            </div>
+        </paper-dialog>
     </template>
-</polymer-element>
+</dom-module>

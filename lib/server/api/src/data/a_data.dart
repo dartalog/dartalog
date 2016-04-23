@@ -1,6 +1,8 @@
 part of api;
 
 abstract class AData {
+  String id;
+
   void validate();
   //void setData(dynamic data);
 

@@ -9,15 +9,14 @@ import 'dart:async';
 import 'package:logging/logging.dart';
 
 import 'package:polymer/polymer.dart';
-import 'package:paper_elements/paper_input.dart';
-import 'package:paper_elements/paper_button.dart';
-import 'package:paper_elements/paper_action_dialog.dart';
-import 'package:paper_elements/paper_shadow.dart';
-import 'package:paper_elements/paper_item.dart';
-import 'package:paper_elements/paper_dropdown.dart';
-import 'package:paper_elements/paper_dropdown_menu.dart';
-import 'package:core_elements/core_selector.dart';
-import 'package:core_elements/core_menu.dart';
+import 'package:web_components/web_components.dart';
+import 'package:polymer_elements/paper_input.dart';
+import 'package:polymer_elements/paper_button.dart';
+import 'package:polymer_elements/paper_dropdown_menu.dart';
+import 'package:polymer_elements/paper_listbox.dart';
+import 'package:polymer_elements/paper_card.dart';
+import 'package:polymer_elements/paper_dialog.dart';
+import 'package:polymer_elements/iron_flex_layout.dart';
 
 
 import 'package:dartalog/dartalog.dart' as dartalog;
@@ -28,23 +27,24 @@ import '../../api/dartalog.dart' as API;
 import '../../../tools.dart';
 
 /// A Polymer `<template-admin-page>` element.
-@CustomTag('template-admin-page')
-class TemplateAdminPage extends APage with ARefreshablePage {
+@PolymerRegister('template-admin-page')
+class TemplateAdminPage extends APage with ARefreshablePage, ACollectionPage {
   static final Logger _log = new Logger("TemplateAdminPage");
 
-  Map fields = new ObservableMap();
 
   /// Constructor used to create instance of MainApp.
   TemplateAdminPage.created() : super.created( "Template Admin");
 
-  @observable Map itemTypes = new ObservableMap();
-  @observable Map availableFields = new ObservableMap();
+  Map fields = new Map();
+  @property Map itemTypes = new Map();
+  @property Map availableFields = new Map();
 
-  @published String currentId;
-  @published String currentName;
-  @published List currentFields = new ObservableList();
+  @property String currentId;
+  @property String currentName;
+  @property List currentFields = new List();
 
-  CoreMenu get fieldDropdown=> $['field_dropdown'];
+  PaperDialog get editDialog =>  $['editDialog'];
+
 
   void activateInternal(Map args) {
     this.refresh();
@@ -52,7 +52,7 @@ class TemplateAdminPage extends APage with ARefreshablePage {
 
 
   Future refresh() async {
-    this.clear();
+    this.reset();
     await loadAvailableFields();
     await loadTemplates();
   }
@@ -79,7 +79,7 @@ class TemplateAdminPage extends APage with ARefreshablePage {
     }
   }
 
-  void clear() {
+  void reset() {
     this.currentId = null;
     this.currentName ="";
     this.currentFields .clear();
@@ -105,7 +105,7 @@ class TemplateAdminPage extends APage with ARefreshablePage {
     }
   }
 
-  addFieldClicked(event, detail, target) async {
+  Future newItem() async {
     try {
       String id = this.fieldDropdown.selected;
 
@@ -125,14 +125,16 @@ class TemplateAdminPage extends APage with ARefreshablePage {
       window.alert(e.toString());
     }
   }
-  validateField(event, detail, target) {
+  validateField(event, [_]) {
     _log.info("Validating");
   }
 
-  clearClicked(event, detail, target) async {
-    this.clear();
+  @reflectable
+  cancelClicked(event, [_]) async {
+    this.reset();
   }
-  saveClicked(event, detail, target) async {
+  @reflectable
+  saveClicked(event, [_]) async {
     try {
 
       API.ItemType itemType = new API.ItemType();

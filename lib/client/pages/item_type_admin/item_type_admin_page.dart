@@ -39,6 +39,8 @@ class TemplateAdminPage extends APage with ARefreshablePage, ACollectionPage {
   @property Map itemTypes = new Map();
   @property Map availableFields = new Map();
 
+  @property String selectedType;
+
   @property String currentId;
   @property String currentName;
   @property List currentFields = new List();
@@ -107,7 +109,7 @@ class TemplateAdminPage extends APage with ARefreshablePage, ACollectionPage {
 
   Future newItem() async {
     try {
-      String id = this.fieldDropdown.selected;
+      String id = this.selectedType;
 
       if(isNullOrWhitespace(id))
         throw new Exception("Please select a field");

@@ -10,7 +10,7 @@ class FieldResource extends AResource {
   @ApiMethod(path: 'fields/')
   Future<Map<String, Field>> getAll() async {
     try {
-      dynamic output = await Model.fields.getAll();
+      dynamic output = await model.fields.getAll();
       return output;
     } catch (e, st) {
       _HandleException(e, st);
@@ -20,7 +20,7 @@ class FieldResource extends AResource {
   @ApiMethod(path: 'fields/{uuid}/')
   Future<Field> get(String uuid) async {
     try {
-      dynamic output = await Model.fields.get(uuid);
+      dynamic output = await model.fields.get(uuid);
       return output;
     } catch (e, st) {
       _HandleException(e, st);
@@ -31,7 +31,7 @@ class FieldResource extends AResource {
   Future<VoidMessage> create(Field field) async {
     try {
       field.validate();
-      await Model.fields.write(field);
+      await model.fields.write(field);
     } catch (e, st) {
       _HandleException(e, st);
     }
@@ -41,7 +41,7 @@ class FieldResource extends AResource {
   Future<UuidResponse> update(String uuid, Field field) async {
     try {
       field.validate();
-      String output = await Model.fields.write(field, uuid);
+      String output = await model.fields.write(field, uuid);
       return new UuidResponse.fromUuid(output);
     } catch (e, st) {
       _HandleException(e, st);

@@ -8,7 +8,7 @@ import 'dart:convert';
 import 'package:http_server/http_server.dart';
 
 import 'package:dartalog/the_movie_db/the_movie_db.dart' as themoviedb;
-import 'package:dartalog/server/model/model.dart';
+import 'package:dartalog/server/model/model.dart' as model;
 import 'package:dartalog/server/server.dart';
 
 part 'src/import_object_type.dart';

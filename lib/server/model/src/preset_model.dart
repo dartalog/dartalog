@@ -38,7 +38,7 @@ class PresetModel extends _AModel {
 
   Future<Map<String,api.Field>> getFields(List<String> ids) async {
     Map field_presets = await _getFieldPresets();
-    Map<String,api.Field> db_fields = await Model.fields.getAllForIDs(ids);
+    Map<String,api.Field> db_fields = await fields.getAllForIDs(ids);
     Map<String,api.Field> output = new Map<String, api.Field>();
 
     for(String field_id in ids) {
@@ -56,20 +56,20 @@ class PresetModel extends _AModel {
   }
 
   Future install(String id) async {
-    var dbitem = await Model.items.get(id);
+    var dbitem = await items.get(id);
     if(dbitem!=null) {
       throw new InvalidInputException("Preset is already installed");
     }
     api.ItemType itemType = await this.getPreset(id);
 
     Map field_presets = await _getFieldPresets();
-    Map<String,api.Field> db_fields = await Model.fields.getAllForIDs(itemType.fields);
+    Map<String,api.Field> db_fields = await fields.getAllForIDs(itemType.fields);
 
     for(String field_id in itemType.fields) {
       if(!db_fields.containsKey(field_id)) {
         if(field_presets.containsKey(field_id)) {
         api.Field field = new api.Field.fromData(field_presets[field_id]);
-        await Model.fields.write(field, field_id, true);
+        await fields.write(field, field_id, true);
       } else {
         throw new Exception(
             "Field ID ${field_id} not found in database or field presets");
@@ -77,7 +77,7 @@ class PresetModel extends _AModel {
       }
     }
 
-    await Model.itemTypes.write(itemType, id, true);
+    await itemTypes.write(itemType, id, true);
 
   }
 }

@@ -10,7 +10,7 @@ class PresetResource extends AResource {
   @ApiMethod(path: 'presets/')
   Future<Map<String,String>> getAll() async {
     try {
-      Map<String,String> output = await Model.presets.getAll();
+      Map<String,String> output = await model.presets.getAll();
       return output;
     } catch (e, st) {
       _HandleException(e, st);
@@ -21,11 +21,11 @@ class PresetResource extends AResource {
   Future<ItemTypeResponse> get(String uuid) async {
     try {
       ItemTypeResponse output = new ItemTypeResponse();
-      output.itemType = await Model.presets.getPreset(uuid);
+      output.itemType = await model.presets.getPreset(uuid);
       if(output.itemType==null) {
-        throw new NotFoundException("Could not find specified preset");
+        throw new model.NotFoundException("Could not find specified preset");
       }
-      output.fields = await Model.presets.getFields(output.itemType.fields);
+      output.fields = await model.presets.getFields(output.itemType.fields);
       return output;
     } catch (e, st) {
       _HandleException(e, st);
@@ -35,7 +35,7 @@ class PresetResource extends AResource {
   @ApiMethod(method: 'POST', path: 'presets/{uuid}/')
   Future<VoidMessage> install(String uuid, VoidMessage blank) async {
     try {
-      await Model.presets.install(uuid);
+      await model.presets.install(uuid);
       return null;
     } catch(e,st) {
       _HandleException(e, st);

@@ -13,7 +13,7 @@ import 'package:stack_trace/stack_trace.dart';
 import 'package:options_file/options_file.dart';
 
 import 'package:dartalog/server/api/api.dart';
-import 'package:dartalog/server/model/model.dart';
+import 'package:dartalog/server/model/model.dart' as model;
 
 const String _API_PREFIX = '/api';
 final ApiServer _apiServer = new ApiServer(apiPrefix: _API_PREFIX, prettyPrint: true);
@@ -42,7 +42,7 @@ main() async {
         .add(api_handler)
         .handler;
 
-    io.serve(handler, 'localhost', Model.options.getInt("port")).then((server) {
+    io.serve(handler, 'localhost', model.options.getInt("port")).then((server) {
       print('Serving at http://${server.address.host}:${server.port}');
     });
   } catch(e,s) {

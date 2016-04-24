@@ -13,6 +13,7 @@ import 'package:web_components/web_components.dart';
 import 'package:polymer_elements/paper_input.dart';
 import 'package:polymer_elements/paper_button.dart';
 import 'package:polymer_elements/paper_dropdown_menu.dart';
+import 'package:polymer_elements/paper_dialog_scrollable.dart';
 import 'package:polymer_elements/paper_listbox.dart';
 import 'package:polymer_elements/paper_card.dart';
 import 'package:polymer_elements/paper_dialog.dart';
@@ -52,6 +53,14 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
     this.refresh();
   }
 
+  @override
+  void clearValidation() {
+    $['input_name'].invalid = false;
+    $['input_type'].invalid = false;
+    $['input_format'].invalid = false;
+
+  }
+
   @reflectable
   Future refresh() async {
     try {
@@ -83,6 +92,7 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
 
   @reflectable
   void reset() {
+    clearValidation();
     set('currentUuid', null);
     set('currentFormat', "");
     set('currentType', "");
@@ -142,6 +152,14 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
 
       refresh();
       editDialog.close();
+    } on API.DetailedApiRequestError catch  ( e, st) {
+      try {
+      API.DetailedApiRequestError ex = e as API.DetailedApiRequestError;
+      setErrorMesage(ex.errors);
+      } catch (e, st) {
+        _log.severe(e, st);
+        window.alert(e.toString());
+      }
     } catch (e, st) {
       _log.severe(e, st);
       window.alert(e.toString());

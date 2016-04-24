@@ -11,12 +11,15 @@ class ItemType extends AData {
   ItemType();
 
   void validate() {
+    Map<String,String> field_errors = new Map<String,String>();
     if(isNullOrWhitespace(this.name))
-      throw new BadRequestError("Field ""name"" must have a value");
-    if(fields==null)
-      throw new BadRequestError("Map ""fields"" is required");
-    if(fields.length==0)
-      throw new BadRequestError("Map ""fields"" requires at least one field");
+      field_errors["name"] = "Required";
+    if(this.fields==null||this.fields.length==0)
+      field_errors["fields"] = "Required";
+
+    if(field_errors.length>0) {
+      throw new DataValidationException.WithFieldErrors("Invalid item type data", field_errors);
+    }
   }
 
 }

@@ -6,10 +6,12 @@ import 'package:rpc/rpc.dart';
 import 'package:stack_trace/stack_trace.dart';
 
 import 'package:dartalog/tools.dart';
-import 'package:dartalog/server/model/model.dart';
+import 'package:dartalog/server/model/model.dart' as model;
 import 'package:dartalog/server/import/import.dart';
 
 part 'src/dartalog_api.dart';
+
+part 'src/exceptions/data_validation_exception.dart';
 
 part 'src/resources/a_resource.dart';
 part 'src/resources/field_resource.dart';

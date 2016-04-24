@@ -29,7 +29,7 @@ import 'package:dartalog/client/pages/pages.dart';
 //import 'package:dartalog/client/pages/item_add/item_add_page.dart';
 //import 'package:dartalog/client/pages/item/item_page.dart';
 import 'package:dartalog/client/pages/field_admin/field_admin_page.dart';
-//import 'package:dartalog/client/pages/item_type_admin/item_type_admin_page.dart';
+import 'package:dartalog/client/pages/item_type_admin/item_type_admin_page.dart';
 
 
 /// Uses [PaperInput]
@@ -47,6 +47,7 @@ class MainApp extends PolymerElement {
   PaperDrawerPanel get drawerPanel => $["drawerPanel"];
 
   FieldAdminPage get fieldAdmin=> $['field_admin'];
+  ItemTypeAdminPage get itemTypeAdmin=> $['item_type_admin'];
 //  TemplateAdminPage get templateAdmin=> $['item_type_admin'];
 //  ItemAddPage get itemAddAdmin=> $['item_add'];
 //  ItemBrowsePage get itemBrowse=> $['browse'];
@@ -93,21 +94,28 @@ class MainApp extends PolymerElement {
   }
 
   void enterRoute(RouteEvent e) {
-    set("visiblePage", e.route.name);
-    set("visiblePageRefreshable", false);
+    try {
+      set("visiblePage", e.route.name);
+      set("visiblePageRefreshable", false);
 
-    if(this.currentPage==null) {
-      set("visiblePageTitle", "PAGE MISSING");
-      throw new Exception("Page not found: ${this.visiblePage}");
+      if (this.currentPage == null) {
+        set("visiblePageTitle", "PAGE MISSING");
+        throw new Exception("Page not found: ${this.visiblePage}");
+      }
+      if(!(this.currentPage is APage)) {
+        throw new Exception("Unknown element type: ${this.currentPage.runtimeType.toString()}");
+      }
+
+      this.currentPage.activate(this.api, e.parameters);
+
+      if (currentPage is ARefreshablePage) {
+        this.visiblePageRefreshable = true;
+      }
+
+      set("visiblePageTitle", this.currentPage.title);
+    } catch(e,st) {
+      window.alert(e.toString());
     }
-
-    this.currentPage.activate(this.api,e.parameters);
-
-    if(currentPage is ARefreshablePage) {
-      this.visiblePageRefreshable = true;
-    }
-
-    set("visiblePageTitle", this.currentPage.title);
   }
 
   @reflectable

@@ -10,7 +10,7 @@ class ItemResource extends AResource {
   @ApiMethod(path: 'items/')
   Future<Map<String,Item>> getAll() async {
     try {
-      dynamic output = await Model.items.getAll();
+      dynamic output = await model.items.getAll();
       return output;
     } catch(e,st) {
       _HandleException(e, st);
@@ -21,15 +21,15 @@ class ItemResource extends AResource {
   Future<ItemResponse> get(String uuid) async {
     try {
       ItemResponse response = new ItemResponse();
-      response.item = await Model.items.get(uuid);
+      response.item = await model.items.get(uuid);
       if(response.item==null) {
         throw new NotFoundError("Item not found");
       }
-      response.template = await Model.itemTypes.get(response.item.template);
+      response.template = await model.itemTypes.get(response.item.template);
       if(response.template==null) {
         throw new InternalServerError("Template specified for item not found");
       }
-      response.fields = await Model.fields.getAllForIDs(response.template.fields);
+      response.fields = await model.fields.getAllForIDs(response.template.fields);
       for(String field in response.template.fields) {
         if(!response.fields.containsKey(field)) {
           throw new InternalServerError("Field specified for template not found");
@@ -45,7 +45,7 @@ class ItemResource extends AResource {
   @ApiMethod(method: 'POST', path: 'items/')
   Future<VoidMessage> create(Item item) async {
     try {
-      String output = await Model.items.write(item);
+      String output = await model.items.write(item);
       //return new UuidResponse.fromUuid(output);
     } catch(e,st) {
       _HandleException(e, st);
@@ -55,7 +55,7 @@ class ItemResource extends AResource {
   @ApiMethod(method: 'PUT', path: 'items/{uuid}/')
   Future<VoidMessage> update(String uuid, Item item) async {
     try {
-    String output = await Model.items.write(item,uuid);
+    String output = await model.items.write(item,uuid);
     //return new UuidResponse.fromUuid(output);
     } catch(e,st) {
       _HandleException(e, st);

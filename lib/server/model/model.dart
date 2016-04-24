@@ -32,20 +32,16 @@ part 'src/mongo/_mongo_field_model.dart';
 part 'src/mongo/_mongo_item_type_model.dart';
 part 'src/mongo/_mongo_item_model.dart';
 
+final Logger _log = new Logger('Model');
 
+AItemModel items = new _MongoItemModel();
 
-class Model {
-  static final Logger _log = new Logger('Model');
+AFieldModel fields = new _MongoFieldModel();
 
-  static AItemModel items = new _MongoItemModel();
+AItemTypeModel itemTypes = new _MongoItemTypeModel();
 
-  static AFieldModel fields = new _MongoFieldModel();
+PresetModel presets = new PresetModel();
 
-  static AItemTypeModel itemTypes = new _MongoItemTypeModel();
-
-  static PresetModel presets = new PresetModel();
-
-  static OptionsFile get options {
-    return _AModel.options;
-  }
+OptionsFile get options {
+  return _AModel.options;
 }

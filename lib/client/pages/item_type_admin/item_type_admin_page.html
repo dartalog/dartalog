@@ -4,11 +4,11 @@
 -->
 
 <!-- import polymer-element's definition -->
-<dom-module name="template-admin-page">
+<dom-module name="item-type-admin-page">
     <link rel="stylesheet" href="item_type_admin_page.css">
 
     <template>
-        <paper-card heading="Fields" style="margin:8px;" class="fit">
+        <paper-card heading="Item Types" style="margin:8px;" class="fit">
             <div class="card-content">
                 <template is="dom-repeat" items="{{fieldIds}}" as="id">
                     <paper-item horizontal on-tap="fieldClicked" data-id$="{{id}}" class="flex">{{getFieldName(id)}}

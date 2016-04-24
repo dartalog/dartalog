@@ -27,13 +27,13 @@ import '../../api/dartalog.dart' as API;
 import '../../../tools.dart';
 
 /// A Polymer `<template-admin-page>` element.
-@PolymerRegister('template-admin-page')
-class TemplateAdminPage extends APage with ARefreshablePage, ACollectionPage {
-  static final Logger _log = new Logger("TemplateAdminPage");
+@PolymerRegister('item-type-admin-page')
+class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
+  static final Logger _log = new Logger("ItemTypeAdminPage");
 
 
   /// Constructor used to create instance of MainApp.
-  TemplateAdminPage.created() : super.created( "Template Admin");
+  ItemTypeAdminPage.created() : super.created( "Item Type Admin");
 
   Map fields = new Map();
   @property Map itemTypes = new Map();
@@ -56,7 +56,7 @@ class TemplateAdminPage extends APage with ARefreshablePage, ACollectionPage {
   Future refresh() async {
     this.reset();
     await loadAvailableFields();
-    await loadTemplates();
+    await loadItemTypes();
   }
 
   Future loadAvailableFields() async {
@@ -70,7 +70,7 @@ class TemplateAdminPage extends APage with ARefreshablePage, ACollectionPage {
     }
   }
 
-  Future loadTemplates() async {
+  Future loadItemTypes() async {
     try {
       itemTypes.clear();
       API.MapOfItemType data = await api.itemTypes.getAll();

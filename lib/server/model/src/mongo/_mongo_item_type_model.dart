@@ -29,11 +29,11 @@ class _MongoItemTypeModel extends AItemTypeModel {
     Map<String, api.ItemType> output = new Map<String, api.ItemType>();
     con.release(); // Release the connection before calling another model function, so that we don't end up opening multiple connections unnecessarily
 
-    Map<String, api.Field> fields = await Model.fields.getAll();
+    Map<String, api.Field> availableFields = await fields.getAll();
     for (var result in results) {
       mongo.ObjectId id = result["_id"];
       String str_id = id.toJson();
-      output[str_id] = _createTemplate(result, fields);
+      output[str_id] = _createTemplate(result, availableFields);
     }
     return output;
 

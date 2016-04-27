@@ -87,6 +87,23 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
     this.currentFields .clear();
   }
 
+  @override
+  Future newItem() async {
+    try {
+      this.reset();
+      editDialog.open();
+    } catch (e, st) {
+      _log.severe(e, st);
+      window.alert(e.toString());
+    }
+  }
+
+  @reflectable
+  cancelClicked(event, [_]) {
+    editDialog.cancel();
+    this.reset();
+  }
+
   showModal(event, detail, target) {
     String uuid = target.dataset['uuid'];
   }
@@ -107,7 +124,7 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
     }
   }
 
-  Future newItem() async {
+  Future addField() async {
     try {
       String id = this.selectedType;
 

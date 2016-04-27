@@ -79,16 +79,6 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
     }
   }
 
-  @reflectable
-  Future newItem() async {
-    try {
-      this.reset();
-      editDialog.open();
-    } catch (e, st) {
-      _log.severe(e, st);
-      window.alert(e.toString());
-    }
-  }
 
   @reflectable
   void reset() {
@@ -104,7 +94,14 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   }
 
   @override
-  addItem() {
+  Future newItem() async {
+    try {
+      this.reset();
+      editDialog.open();
+    } catch (e, st) {
+      _log.severe(e, st);
+      window.alert(e.toString());
+    }
   }
 
   @reflectable

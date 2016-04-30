@@ -11,6 +11,11 @@ import 'package:dartalog/the_movie_db/the_movie_db.dart' as themoviedb;
 import 'package:dartalog/server/model/model.dart' as model;
 import 'package:dartalog/server/server.dart';
 
+import 'package:html/parser.dart' show parse;
+import 'package:html/dom.dart';
+
+import 'package:dartalog/tools.dart';
+
 part 'src/import_object_type.dart';
 part 'src/search_result.dart';
 part 'src/search_results.dart';

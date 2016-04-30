@@ -51,6 +51,18 @@ class ImportResource extends AResource {
       _HandleException(e, st);
     }
   }
+//
+//  @ApiMethod(path: 'import/{provider}/settings/')
+//  Future<ImportSettings> getSettings(String provider) async {
+//    try {
+//      return
+//      AImportProvider importer = _getProvider(provider);
+//      query = Uri.decodeFull(query);
+//      return await importer.search(query, template, page: page);
+//    } catch(e,st) {
+//      _HandleException(e, st);
+//    }
+//  }
 
   @ApiMethod(path: 'import/{provider}/{id}')
   Future<ImportResult> import(String provider, String id) async {

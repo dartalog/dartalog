@@ -1,6 +1,6 @@
 part of model;
 
-abstract class AImportSettingsModel extends _AModel {
+abstract class ASettingsModel extends _AModel {
   static final Logger _log = new Logger('AImportSettingsModel');
 
   AFieldModel();

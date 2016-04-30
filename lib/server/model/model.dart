@@ -21,7 +21,7 @@ part 'src/_a_model.dart';
 part 'src/a_field_model.dart';
 part 'src/a_item_type_model.dart';
 part 'src/a_item_model.dart';
-part 'src/a_import_settings_model.dart';
+part 'src/a_settings_model.dart';
 part 'src/preset_model.dart';
 // part 'src/settings_model.dart';
 

@@ -1,7 +1,7 @@
 part of api;
 
 class ImportSettings extends AData {
-  String provider;
+  String name;
 
   @ApiProperty(required: true)
   Map<String, String> fieldValues = new Map<String, String>();

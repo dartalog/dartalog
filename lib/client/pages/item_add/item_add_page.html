@@ -4,12 +4,16 @@
 -->
 
 <!-- import polymer-element's definition -->
-<polymer-element name="item-add-page">
+<dom-module name="item-add-page">
+    <link rel="stylesheet" href="item_add_page.css">
+    <style include="iron-flex"></style>
     <template>
-        <link rel="stylesheet" href="item_add_page.css">
+        <iron-pages id="item_add_pages" attr-for-selected="id" selected="import_item">
+            <div id="import_item">
+                <paper-input value="{{searchQuery}}" label="search"/>
+                <paper-button raised on-click="{{searchClicked}}">Search</paper-button>
 
-
-        <core-pages id="item_add_pages" valueattr="id" selected="type_select">
+            </div>
             <core-menu id="type_select" valueattr="data-id" selected="{{templateId}}">
                 <template repeat="{{template in templates.keys}}">
                     <paper-item horizontal on-click="{{templateClicked}}" data-id="{{template}}">{{templates[template].name}}</paper-item>
@@ -26,9 +30,6 @@
                 <paper-button raised on-click="{{saveClicked}}">Save</paper-button>
             </div>
             </div>
-
-
-        </core-pages>
-
+        </iron-pages>
     </template>
-</polymer-element>
+</dom-module>

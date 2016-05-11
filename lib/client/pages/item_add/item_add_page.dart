@@ -28,7 +28,7 @@ import '../../api/dartalog.dart' as API;
 
 /// A Polymer `<template-admin-page>` element.
 @PolymerRegister('item-add-page')
-class ItemAddPage extends APage with ARefreshablePage  {
+class ItemAddPage extends APage with ARefreshablePage {
   static final Logger _log = new Logger("ItemAddPage");
 
   IronPages get pages => $['item_add_pages'];
@@ -38,10 +38,16 @@ class ItemAddPage extends APage with ARefreshablePage  {
 
 //  @observable Map itemTypes = new ObservableMap();
 //
-  @property String searchQuery;
-  @property String templateId;
+  @property
+  String searchQuery;
+  @property
+  String templateId;
 
+  @Property(notify: true)
+  API.SearchResults results;
 
+  @Property(notify: true)
+  List<String> resultIDs = new List<String>();
 
 //
 //  @observable Map<String,API.Field> itemTypeFields = new ObservableMap<String,API.Field>();
@@ -63,7 +69,7 @@ class ItemAddPage extends APage with ARefreshablePage  {
 //      itemTypeFields.clear();
 //      API.MapOfItemType data = await api.itemTypes.getAll();
 //      itemTypes.addAll(data);
-    } catch(e,st) {
+    } catch (e, st) {
       _log.severe(e, st);
       window.alert(e.toString());
     }
@@ -72,7 +78,6 @@ class ItemAddPage extends APage with ARefreshablePage  {
   showModal(event, detail, target) {
     String uuid = target.dataset['uuid'];
   }
-
 
   templateClicked(event, detail, target) async {
 //    try {
@@ -110,10 +115,33 @@ class ItemAddPage extends APage with ARefreshablePage  {
 //    }
   }
 
+  API.SearchResult getSearchResult(String id) {
+    for(API.SearchResult result in this.results.results) {
+      if(result.id==id) {
+        return result;
+      }
+    }
+    return new API.SearchResult();
+  }
+
+  @reflectable String getSearchResultThumbnail(String id) => this.getSearchResult(id).thumbnail;
+  @reflectable String getSearchResultTitle(String id) => this.getSearchResult(id).title;
+
+
   @reflectable
-  Future searchClicked(event, [_]) async {
-    API.SearchResults results = await api.import.search("amazon", this.searchQuery);
-    results.results
+  searchClicked(event, [_]) async {
+    try {
+      API.SearchResults results =
+          await api.import.search("amazon", this.searchQuery);
+      this.results = results;
+      this.clear("resultIDs");
+      for(API.SearchResult result in results.results) {
+        this.add("resultIDs", result.id);
+      }
+    } catch (e, st) {
+      _log.severe(e, st);
+      window.alert(e.toString());
+    }
   }
 
   validateField(event, detail, target) {
@@ -124,6 +152,4 @@ class ItemAddPage extends APage with ARefreshablePage  {
     this.templateId = "";
     pages.selected = "type_select";
   }
-
-
 }

@@ -26,7 +26,7 @@ import 'package:polymer_elements/iron_icons.dart';
 import 'package:dartalog/client/api/dartalog.dart';
 import 'package:dartalog/client/pages/pages.dart';
 //import 'package:dartalog/client/pages/item_browse/item_browse_page.dart';
-//import 'package:dartalog/client/pages/item_add/item_add_page.dart';
+import 'package:dartalog/client/pages/item_add/item_add_page.dart';
 //import 'package:dartalog/client/pages/item/item_page.dart';
 import 'package:dartalog/client/pages/field_admin/field_admin_page.dart';
 import 'package:dartalog/client/pages/item_type_admin/item_type_admin_page.dart';
@@ -41,7 +41,7 @@ class MainApp extends PolymerElement {
 
   final Router router = new Router(useFragment: true);
 
-  final DartalogApi api = new DartalogApi(new http.BrowserClient(), rootUrl: "http://localhost:8080/", servicePath: "api/dartalog/0.1/");
+  final DartalogApi api = new DartalogApi(new http.BrowserClient(), rootUrl: "http://localhost:8888/", servicePath: "api/dartalog/0.1/");
 
   APage get currentPage => $[visiblePage];
   PaperDrawerPanel get drawerPanel => $["drawerPanel"];
@@ -49,7 +49,7 @@ class MainApp extends PolymerElement {
   FieldAdminPage get fieldAdmin=> $['field_admin'];
   ItemTypeAdminPage get itemTypeAdmin=> $['item_type_admin'];
 //  TemplateAdminPage get templateAdmin=> $['item_type_admin'];
-//  ItemAddPage get itemAddAdmin=> $['item_add'];
+  ItemAddPage get itemAddAdmin=> $['item_add'];
 //  ItemBrowsePage get itemBrowse=> $['browse'];
 //  ItemPage get itemPage=> $['item'];
 

@@ -38,16 +38,16 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
   /// Constructor used to create instance of MainApp.
   ItemTypeAdminPage.created() : super.created( "Item Type Admin");
 
-  Map itemTypes = new Map();
+  Map<String,API.ItemType> itemTypes = new Map<String,API.ItemType>();
   @Property(notify: true)
   List itemTypeIds = new List();
-  @reflectable API.Field getItemTypeName(String key) => itemTypes[key].name;
+  @reflectable String getItemTypeName(String key) => itemTypes[key].name;
 
 
   Map fields = new Map();
   @Property(notify: true)
   List fieldIds = new List();
-  @reflectable API.Field getFieldName(String key) => fields[key].name;
+  @reflectable String getFieldName(String key) => fields[key].name;
 
   @property String selectedType;
 

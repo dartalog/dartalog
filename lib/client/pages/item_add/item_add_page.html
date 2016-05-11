@@ -10,25 +10,15 @@
     <template>
         <iron-pages id="item_add_pages" attr-for-selected="id" selected="import_item">
             <div id="import_item">
-                <paper-input value="{{searchQuery}}" label="search"/>
-                <paper-button raised on-click="{{searchClicked}}">Search</paper-button>
+                <paper-input value="{{searchQuery}}" label="search"></paper-input>
+                <paper-button raised on-tap="searchClicked">Search</paper-button>
 
-            </div>
-            <core-menu id="type_select" valueattr="data-id" selected="{{templateId}}">
-                <template repeat="{{template in templates.keys}}">
-                    <paper-item horizontal on-click="{{templateClicked}}" data-id="{{template}}">{{templates[template].name}}</paper-item>
+
+                <template is="dom-repeat" items="{{resultIDs}}" as="id">
+                    <paper-card  >
+                        <div class="card-content"><img src="{{getSearchResultThumbnail(id)}}" /><span>{{getSearchResultTitle(id)}}</span></div>
+                    </paper-card>
                 </template>
-            </core-menu>
-            <div id="field_input">
-            <div layout vertical>
-                <paper-button raised on-click="{{backClicked}}">Back</paper-button>
-
-                <template repeat="{{templateField in templateFields.keys}}">
-                    <paper-input horizontal floatinglabel label="{{templateFields[templateField].name}}" value="{{fieldValues[templateField]}}"></paper-input>
-                </template>
-
-                <paper-button raised on-click="{{saveClicked}}">Save</paper-button>
-            </div>
             </div>
         </iron-pages>
     </template>

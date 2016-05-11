@@ -1,5 +1,5 @@
 # server options
-port=8080
+port=8888
 # mysql options
 mysql_user=dartalog
 mysql_password=rRJPnQUttLPqAxUA

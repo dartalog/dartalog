@@ -135,9 +135,24 @@ class ItemAddPage extends APage with ARefreshablePage {
           await api.import.search("amazon", this.searchQuery);
       this.results = results;
       this.clear("resultIDs");
+      if(results.results==null) {
+        return;
+      }
       for(API.SearchResult result in results.results) {
         this.add("resultIDs", result.id);
       }
+    } catch (e, st) {
+      _log.severe(e, st);
+      window.alert(e.toString());
+    }
+  }
+
+  @reflectable
+  searchResultClicked(event, [_]) async {
+    try {
+      String id = event.target.dataset["id"];
+      API.ImportResult result = await api.import.import("amazon", id);
+
     } catch (e, st) {
       _log.severe(e, st);
       window.alert(e.toString());

@@ -14,11 +14,20 @@
                 <paper-button raised on-tap="searchClicked">Search</paper-button>
 
 
+                <paper-card >
+                    <div class="card-content">
                 <template is="dom-repeat" items="{{resultIDs}}" as="id">
-                    <paper-card  >
-                        <div class="card-content"><img src="{{getSearchResultThumbnail(id)}}" /><span>{{getSearchResultTitle(id)}}</span></div>
-                    </paper-card>
+                    <paper-item on-tap="searchResultClicked" data-id="{{id}}">
+                        <table>
+                            <tr>
+                                <td rowspan="3"><img src="{{getSearchResultThumbnail(id)}}" /></td>
+                                <td>{{getSearchResultTitle(id)}}</td>
+                            </tr>
+                        </table>
+                    </paper-item>
                 </template>
+                    </div>
+                </paper-card>
             </div>
         </iron-pages>
     </template>

@@ -48,7 +48,7 @@ class ImportResource extends AResource {
       query = Uri.decodeFull(query);
       return await importer.search(query, template, page: page);
     } catch(e,st) {
-      _HandleException(e, st);
+      _HandleException (e, st);
     }
   }
 //

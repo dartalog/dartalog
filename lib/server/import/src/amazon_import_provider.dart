@@ -1,6 +1,7 @@
 part of import;
 
 class AmazonImportProvider extends AScrapingImportProvider {
+  static final Logger _log = new Logger('AmazonImportProvider');
 
   static const String BASE_URL = "www.amazon.com";
 
@@ -91,14 +92,20 @@ class AmazonImportProvider extends AScrapingImportProvider {
     return output;
   }
 
-  Map<String,String> valueRegex = {
-    "title": '<span id="productTitle"[^>]*>([^<]+)</span>',
-    "cover": 'data-old-hires="([^"]+)"'
-  };
+  static List<ImportFieldCriteria> fieldCriteria = [
+    new ImportFieldCriteria(
+        field: "title",
+        elementSelector: 'span#productTitle'
+    ),
+    new ImportFieldCriteria(
+        field: "cover",
+        elementSelector: 'img#landingImage',
+        elementAttribute: 'data-old-hires'
+    )
+  ];
 
   Future<ImportResult> import(String id) async {
     String itemUrl = _getItemURL(id);
-
 
     ImportResult output = new ImportResult();
     output.itemUrl = itemUrl;
@@ -107,14 +114,11 @@ class AmazonImportProvider extends AScrapingImportProvider {
 
     String contents = await this._downloadPage(itemUrl, stripNewlines: true);
 
-    for(String field in valueRegex.keys) {
-      RegExp reg = new RegExp(valueRegex[field]);
-      Match m = reg.firstMatch(contents);
-      if(m!=null) {
-        output.values[field] = m.group(1);
-      }
+    Document doc = parse(contents);
+
+    for(ImportFieldCriteria field in fieldCriteria) {
+      output.values[field.field] = field.getFieldValue(doc);
     }
-    //output.debug = contents;
 
     return output;
   }

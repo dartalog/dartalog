@@ -5,6 +5,6 @@ class ImportResult {
   String itemId;
   String itemSource;
   String itemType;
-  Map<String,String> values = new Map<String,String>();
+  Map<String,List<String>> values = new Map<String,List<String>>();
   String debug;
 }

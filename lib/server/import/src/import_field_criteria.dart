@@ -12,7 +12,7 @@ class ImportFieldCriteria {
 
   }
 
-  String getFieldValue(Document doc) {
+  List<String> getFieldValues(Document doc) {
 
   }
 }

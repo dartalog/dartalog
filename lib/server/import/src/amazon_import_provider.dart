@@ -101,9 +101,17 @@ class AmazonImportProvider extends AScrapingImportProvider {
         field: "cover",
         elementSelector: 'img#landingImage',
         elementAttribute: 'data-old-hires'
+    ),
+    new ImportFieldCriteria(
+        field: "director",
+        elementSelector: 'div#detail-bullets ul li',
+        elementAttribute: 'innerHtml',
+        contentsRegex: '<b>Directors:</b>(.+)',
+        contentsRegexGroup: 1
     )
   ];
 
+  //
   Future<ImportResult> import(String id) async {
     String itemUrl = _getItemURL(id);
 
@@ -117,7 +125,7 @@ class AmazonImportProvider extends AScrapingImportProvider {
     Document doc = parse(contents);
 
     for(ImportFieldCriteria field in fieldCriteria) {
-      output.values[field.field] = field.getFieldValue(doc);
+      output.values[field.field] = field.getFieldValues(doc);
     }
 
     return output;

@@ -4,9 +4,6 @@ library dartalog;
 
 // JSON-schema-related stuff
 
-// Reserved field names
-const String FIELD_UUID = "x_uuid";
-
 // Constants to define the json hyper schema link names
 // Field-related links
 const String SCHEMA_LINK_GET_PROPERTIES = "get_properties";
@@ -25,7 +22,12 @@ const String SCHEMA_LINK_GET_OBJECTS = "get_objects";
 const String SCHEMA_LINK_GET_SETTINGS = "get_settings";
 const String SCHEMA_LINK_NUKE = "nuke";
 
-final Map<String,String> FIELD_TYPES = {'numeric': 'Numeric', 'string': 'String', 'date': 'Date', 'image': 'Image'};
+final Map<String,String> FIELD_TYPES = {
+  'numeric': 'Numeric',
+  'string': 'String',
+  'date': 'Date',
+  'image': 'Image',
+  'hidden': 'Hidden'};
 
 class ValidationException implements  Exception {
   String message;

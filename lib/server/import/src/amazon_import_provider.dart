@@ -95,7 +95,9 @@ class AmazonImportProvider extends AScrapingImportProvider {
   static List<ImportFieldCriteria> fieldCriteria = [
     new ImportFieldCriteria(
         field: "title",
-        elementSelector: 'span#productTitle'
+        elementSelector: 'span#productTitle',
+        contentsRegex: r'(.+?)(\[[^\]]+\])',
+        contentsRegexGroup: 1
     ),
     new ImportFieldCriteria(
         field: "cover",
@@ -107,27 +109,19 @@ class AmazonImportProvider extends AScrapingImportProvider {
         elementSelector: 'div#detail-bullets ul li',
         elementAttribute: 'innerHtml',
         contentsRegex: '<b>Directors:</b>(.+)',
-        contentsRegexGroup: 1
+        contentsRegexGroup: 1,
+        multipleValues: true
     )
   ];
 
-  //
+  List<ImportFieldCriteria> _getFieldCriteria() => fieldCriteria;
+  String _getImportProviderName() => NAME;
+
   Future<ImportResult> import(String id) async {
-    String itemUrl = _getItemURL(id);
+    ImportResult result = await super.import(id);
 
-    ImportResult output = new ImportResult();
-    output.itemUrl = itemUrl;
-    output.itemId = id;
-    output.itemSource = NAME;
+    result.values["asin"] = [id];
 
-    String contents = await this._downloadPage(itemUrl, stripNewlines: true);
-
-    Document doc = parse(contents);
-
-    for(ImportFieldCriteria field in fieldCriteria) {
-      output.values[field.field] = field.getFieldValues(doc);
-    }
-
-    return output;
+    return result;
   }
 }

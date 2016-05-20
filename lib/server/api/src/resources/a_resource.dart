@@ -4,6 +4,11 @@ abstract class AResource {
 
   Logger _GetLogger();
 
+  void sendRedirect(String target) {
+    context.responseStatusCode = HttpStatus.MOVED_PERMANENTLY;
+    context.responseHeaders[HttpHeaders.LOCATION] =  target;
+  }
+
   void _HandleException(e, st) {
     _GetLogger().severe(e, st);
     RpcError output;

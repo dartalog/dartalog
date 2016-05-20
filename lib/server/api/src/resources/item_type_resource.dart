@@ -8,20 +8,20 @@ class ItemTypeResource extends AResource {
   }
 
   @ApiMethod(path: 'item_types/')
-  Future<Map<String,ItemType>> getAll() async {
+  Future<List<ItemType>> getAll() async {
     try {
-      Map<String,ItemType> output = await model.itemTypes.getAll();
+      List<ItemType> output = await model.itemTypes.getAll();
       return output;
     } catch (e, st) {
       _HandleException(e, st);
     }
   }
 
-  @ApiMethod(path: 'item_types/{uuid}/')
-  Future<ItemTypeResponse> get(String uuid) async {
+  @ApiMethod(path: 'item_types/{id}/')
+  Future<ItemTypeResponse> get(String id) async {
     try {
       ItemTypeResponse output = new ItemTypeResponse();
-      output.itemType = await model.itemTypes.get(uuid);
+      output.itemType = await model.itemTypes.get(id);
       output.fields = await model.fields.getAllForIDs(output.itemType.fields);
       return output;
     } catch (e, st) {
@@ -30,20 +30,20 @@ class ItemTypeResource extends AResource {
   }
 
   @ApiMethod(method: 'POST', path: 'item_types/')
-  Future<VoidMessage> create(ItemType template) async {
+  Future<VoidMessage> create(ItemType itemType) async {
     try {
-      template.validate();
-      await model.itemTypes.write(template);
+      await itemType.validate(true);
+      await model.itemTypes.write(itemType);
     } catch (e, st) {
       _HandleException(e, st);
     }
   }
 
-  @ApiMethod(method: 'PUT', path: 'item_types/{uuid}/')
-  Future<VoidMessage> update(String uuid, ItemType template) async {
+  @ApiMethod(method: 'PUT', path: 'item_types/{id}/')
+  Future<VoidMessage> update(String id, ItemType itemType) async {
     try {
-      template.validate();
-      String output = await model.itemTypes.write(template, uuid);
+      await itemType.validate(id!=itemType.id);
+      String output = await model.itemTypes.write(itemType, id);
       //return new UuidResponse.fromUuid(output);
     } catch (e, st) {
       _HandleException(e, st);

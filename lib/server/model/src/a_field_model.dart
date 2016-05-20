@@ -5,10 +5,10 @@ abstract class AFieldModel extends _AModel {
 
   AFieldModel();
 
-  Future<Map<String, api.Field>> getAll();
-  Future<Map<String, api.Field>> getAllForIDs(List<String> ids);
+  Future<List<api.Field>> getAll();
+  Future<List<api.Field>> getAllForIDs(List<String> ids);
   Future<api.Field> get(String id);
 
-  Future write(api.Field field, [String id = null, bool allowIdInsert = false]);
+  Future write(api.Field field, [String id = null]);
 
 }

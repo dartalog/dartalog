@@ -4,6 +4,7 @@ class _MongoDatabase extends ADatabase {
   static final Logger _log = new Logger('_MongoDatabase');
   static _MongoDbConnectionPool _pool;
 
+  static const String _SETTINGS_MONGO_COLLECTION = "settings";
   static const String _ITEMS_MONGO_COLLECTION = "items";
   static const String _FIELDS_MONGO_COLLECTION = "fields";
   static const String _ITEM_TYPES_MONGO_COLLECTION = "itemTypes";
@@ -57,17 +58,47 @@ class _MongoDatabase extends ADatabase {
       throw new Exception("Connection has already been released");
   }
 
+  static String REDIRECT_ENTRY_NAME = "redirect";
+
+  void checkForRedirectMap(Map data) {
+    if(data.containsKey(REDIRECT_ENTRY_NAME)) {
+      throw new api.RedirectingException(data["id"], data[REDIRECT_ENTRY_NAME]);
+    }
+  }
+
+  Map createRedirectMap(String old_id, String new_id) {
+    return {"id": old_id, REDIRECT_ENTRY_NAME: new_id};
+  }
+
   Future<mongo.DbCollection> getItemsCollection() async {
     _checkConnection();
-    return await con.conn.collection(_ITEMS_MONGO_COLLECTION);
+    dynamic output = await con.conn.collection(_ITEMS_MONGO_COLLECTION);
+    await con.conn.createIndex(_ITEMS_MONGO_COLLECTION,
+        key: "id", unique: true);
+    return output;
   }
   Future<mongo.DbCollection> getFieldsCollection() async {
     _checkConnection();
-    return await con.conn.collection(_FIELDS_MONGO_COLLECTION);
-  }
-  Future<mongo.DbCollection> getTemplatesCollection() async {
-    _checkConnection();
-    return await con.conn.collection(_ITEM_TYPES_MONGO_COLLECTION);
-  }
 
+    dynamic output = await con.conn.collection(_FIELDS_MONGO_COLLECTION);
+    await con.conn.createIndex(_FIELDS_MONGO_COLLECTION,
+        key: "id", unique: true);
+    return output;
+  }
+  Future<mongo.DbCollection> getItemTypesCollection() async {
+    _checkConnection();
+
+    dynamic output = await con.conn.collection(_ITEM_TYPES_MONGO_COLLECTION);
+    await con.conn.createIndex(_ITEM_TYPES_MONGO_COLLECTION,
+        key: "id", unique: true);
+    return output;
+  }
+  Future<mongo.DbCollection> getSettingsCollection() async {
+    _checkConnection();
+
+    dynamic output = await con.conn.collection(_SETTINGS_MONGO_COLLECTION);
+    await con.conn.createIndex(_SETTINGS_MONGO_COLLECTION,
+        key: "id", unique: true);
+    return output;
+  }
 }

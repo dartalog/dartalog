@@ -3,6 +3,8 @@ part of api;
 class Field extends AData {
 
   @ApiProperty(required: true)
+  String id;
+  @ApiProperty(required: true)
   String name;
   @ApiProperty(required: true)
   String type;
@@ -11,10 +13,20 @@ class Field extends AData {
 
   Field();
 
-  void validate() {
+  Future validate(bool verifyId) async {
     Map<String,String> field_errors = new Map<String,String>();
+    if(isNullOrWhitespace(this.id))
+      field_errors["id"] = "Required";
+    else if(verifyId) {
+      Field f = await model.fields.get(this.id);
+      if(f!=null)
+        field_errors["id"] = "Already in use";
+    }
+
     if(isNullOrWhitespace(this.name))
       field_errors["name"] = "Required";
+    if(this.name.trim()=="name")
+      field_errors["name"] = "Cannot be named ""name""";
     if(isNullOrWhitespace(this.type))
       field_errors["type"] = "Required";
     if(!isNullOrWhitespace(this.format)) {

@@ -25,6 +25,7 @@ import 'package:polymer_elements/iron_flex_layout.dart';
 import 'package:dartalog/dartalog.dart' as dartalog;
 import 'package:dartalog/client/pages/pages.dart';
 import 'package:dartalog/client/client.dart';
+import 'package:dartalog/client/data/data.dart';
 
 import '../../api/dartalog.dart' as API;
 import '../../../tools.dart';
@@ -34,34 +35,24 @@ import '../../../tools.dart';
 class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
   static final Logger _log = new Logger("ItemTypeAdminPage");
 
-
-  /// Constructor used to create instance of MainApp.
   ItemTypeAdminPage.created() : super.created( "Item Type Admin");
 
-  Map<String,API.ItemType> itemTypes = new Map<String,API.ItemType>();
   @Property(notify: true)
-  List itemTypeIds = new List();
-  @reflectable String getItemTypeName(String key) => itemTypes[key].name;
+  List<ItemType> itemTypes = new List<ItemType>();
 
-
-  Map fields = new Map();
   @Property(notify: true)
-  List fieldIds = new List();
-  @reflectable String getFieldName(String key) => fields[key].name;
+  List<Field> fields = new List<Field>();
 
-  @property String selectedType;
+  @property ItemType currentItemType = new ItemType();
+  String currentItemId = "";
 
-  @property String currentId;
-  @property String currentName;
-  @property List currentFields = new List();
+  @property String selectedField = "";
 
   PaperDialog get editDialog =>  $['editDialog'];
-
 
   void activateInternal(Map args) {
     this.refresh();
   }
-
 
   Future refresh() async {
     this.reset();
@@ -71,13 +62,13 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
 
   Future loadAvailableFields() async {
     try {
-      clear("fieldIds");
-      fields.clear();
+      clear("fields");
 
-      API.MapOfField data = await api.fields.getAll();
+      API.ListOfField data = await api.fields.getAll();
 
-      fields.addAll(data);
-      addAll("fieldIds", fields.keys);
+      for(API.Field f in data) {
+        add("fields", new Field.copy(f));
+      }
     } catch(e,st) {
       _log.severe(e, st);
       window.alert(e.toString());
@@ -86,11 +77,11 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
 
   Future loadItemTypes() async {
     try {
-      clear("itemTypeIds");
-      itemTypes.clear();
-      API.MapOfItemType data = await api.itemTypes.getAll();
-      itemTypes.addAll(data);
-      addAll("itemTypeIds", itemTypes.keys);
+      clear("itemTypes");
+      API.ListOfItemType data = await api.itemTypes.getAll();
+      for(API.ItemType it in data) {
+        add("itemTypes", new ItemType.copy(it));
+      }
     } catch(e,st) {
       _log.severe(e, st);
       window.alert(e.toString());
@@ -98,9 +89,33 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
   }
 
   void reset() {
-    set("currentId", null);
-    set("currentName", "");
-    clear("currentFields");
+    set("currentItemType", new ItemType());
+    currentItemId = "";
+    clearValidation();
+  }
+
+  Field getField(String id) {
+    for(Field f in this.fields) {
+      if(f.id == id)
+        return f;
+    }
+    return null;
+  }
+
+  ItemType getItemType(String id) {
+    for(ItemType it in this.itemTypes) {
+      if(it.id == id)
+        return it;
+    }
+    return null;
+  }
+
+  @override
+  void clearValidation() {
+    $['input_id'].invalid = false;
+    $['input_name'].invalid = false;
+    $['input_fields'].invalid = false;
+    $['output_error'].text = "";
   }
 
   @override
@@ -120,20 +135,17 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
     this.reset();
   }
 
-  showModal(event, detail, target) {
-    String uuid = target.dataset['uuid'];
-  }
-
   @reflectable
   itemTypeClicked(event, [_]) async {
     try {
       String id = event.target.dataset["id"];
-      API.ItemType itemType = this.itemTypes[id];
+      ItemType itemType = this.getItemType(id);
 
-      set("currentId", id);
-      set("currentName", itemType.name);
-      clear("currentFields");
-      addAll("currentFields",itemType.fields);
+      if(itemType==null)
+        return;
+
+      currentItemId = id;
+      set("currentItemType", new ItemType.copy(itemType));
       editDialog.open();
     } catch(e,st) {
       _log.severe(e, st);
@@ -144,26 +156,28 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
   @reflectable
   Future addFieldClicked(event, [_]) async {
     try {
-      String id = this.selectedType;
+      String id = this.selectedField;
 
       if(isNullOrWhitespace(id))
         throw new Exception("Please select a field");
 
-      if(!this.fields.containsKey(id))
-        throw new Exception("Invalid field selected: ${id}");
-
-      if(currentFields.contains(id)){
+      if(this.currentItemType.fields.contains(id)){
         throw new Exception("Field has already been added");
       }
 
-      add("currentFields",id);
+      Field f = this.getField(id);
+      if(f==null)
+        throw new Exception("Invalid field selected: ${id}");
+
+
+      add("currentItemType.fields",id);
     } catch(e,st) {
       _log.severe(e, st);
       window.alert(e.toString());
     }
   }
   @reflectable
-  Future deleteClicked(event, [_]) async {
+  Future removeFieldClicked(event, [_]) async {
     try {
       dynamic ele = event.target;
       while(isNullOrWhitespace(ele.dataset["id"])) {
@@ -171,11 +185,11 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
       }
       String id = ele.dataset["id"];
 
-
       if(id==null){
         throw new Exception("null id");
       }
-      removeItem("currentFields", id);
+
+      removeItem("currentItemType.fields", id);
     } catch(e,st) {
       _log.severe(e, st);
       window.alert(e.toString());
@@ -186,25 +200,23 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
   @reflectable
   saveClicked(event, [_]) async {
     try {
-
       API.ItemType itemType = new API.ItemType();
+      this.currentItemType.copyTo(itemType);
 
-      itemType.name = this.currentName;
-      itemType.fields = new List<String>();
-      for(String field_id in this.currentFields) {
-        if(!this.fields.containsKey(field_id)) {
-          throw new Exception("Field not found: ${field_id}");
-        }
-        itemType.fields.add(field_id);
-      }
-
-      if(this.currentId==null) {
+      if(isNullOrWhitespace(this.currentItemId)) {
         await this.api.itemTypes.create(itemType);
       } else {
-        await this.api.itemTypes.update(itemType, this.currentId);
+        await this.api.itemTypes.update(itemType, this.currentItemId);
       }
       this.refresh();
       this.editDialog.close();
+    } on API.DetailedApiRequestError catch  ( e, st) {
+      try {
+        handleApiError(e, generalErrorField: "output_error");
+      } catch (e, st) {
+        _log.severe(e, st);
+        window.alert(e.toString());
+      }
     } catch(e,st) {
       _log.severe(e, st);
       window.alert(e.toString());

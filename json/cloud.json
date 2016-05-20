@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "20968b42af7dad876be698158df4ff5ffe76596f",
+ "etag": "511178fa3615a4b61c12a359137441c3d5ec851c",
  "discoveryVersion": "v1",
  "id": "dartalog:0.1",
  "name": "dartalog",
@@ -14,10 +14,10 @@
  "servicePath": "dartalog/0.1/",
  "parameters": {},
  "schemas": {
-  "MapOfField": {
-   "id": "MapOfField",
-   "type": "object",
-   "additionalProperties": {
+  "ListOfField": {
+   "id": "ListOfField",
+   "type": "array",
+   "items": {
     "$ref": "Field"
    }
   },
@@ -25,6 +25,10 @@
    "id": "Field",
    "type": "object",
    "properties": {
+    "id": {
+     "type": "string",
+     "required": true
+    },
     "name": {
      "type": "string",
      "required": true
@@ -38,19 +42,19 @@
     }
    }
   },
-  "UuidResponse": {
-   "id": "UuidResponse",
+  "IdResponse": {
+   "id": "IdResponse",
    "type": "object",
    "properties": {
-    "uuid": {
+    "id": {
      "type": "string"
     }
    }
   },
-  "MapOfItemType": {
-   "id": "MapOfItemType",
-   "type": "object",
-   "additionalProperties": {
+  "ListOfItemType": {
+   "id": "ListOfItemType",
+   "type": "array",
+   "items": {
     "$ref": "ItemType"
    }
   },
@@ -58,6 +62,10 @@
    "id": "ItemType",
    "type": "object",
    "properties": {
+    "id": {
+     "type": "string",
+     "required": true
+    },
     "name": {
      "type": "string",
      "required": true
@@ -65,6 +73,18 @@
     "fields": {
      "type": "array",
      "required": true,
+     "items": {
+      "type": "string"
+     }
+    },
+    "subTypes": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "itemNameFields": {
+     "type": "array",
      "items": {
       "type": "string"
      }
@@ -79,17 +99,17 @@
      "$ref": "ItemType"
     },
     "fields": {
-     "type": "object",
-     "additionalProperties": {
+     "type": "array",
+     "items": {
       "$ref": "Field"
      }
     }
    }
   },
-  "MapOfItem": {
-   "id": "MapOfItem",
-   "type": "object",
-   "additionalProperties": {
+  "ListOfItem": {
+   "id": "ListOfItem",
+   "type": "array",
+   "items": {
     "$ref": "Item"
    }
   },
@@ -97,8 +117,17 @@
    "id": "Item",
    "type": "object",
    "properties": {
-    "template": {
-     "type": "string"
+    "type": {
+     "type": "string",
+     "required": true
+    },
+    "id": {
+     "type": "string",
+     "required": true
+    },
+    "name": {
+     "type": "string",
+     "required": true
     },
     "fieldValues": {
      "type": "object",
@@ -116,13 +145,13 @@
     "item": {
      "$ref": "Item"
     },
-    "template": {
+    "type": {
      "$ref": "ItemType"
     },
-    "fields": {
+    "values": {
      "type": "object",
      "additionalProperties": {
-      "$ref": "Field"
+      "type": "string"
      }
     }
    }
@@ -204,10 +233,16 @@
     "itemSource": {
      "type": "string"
     },
+    "itemType": {
+     "type": "string"
+    },
     "values": {
      "type": "object",
      "additionalProperties": {
-      "type": "string"
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
      }
     },
     "debug": {
@@ -234,23 +269,23 @@
      "parameters": {},
      "parameterOrder": [],
      "response": {
-      "$ref": "MapOfField"
+      "$ref": "ListOfField"
      }
     },
     "get": {
      "id": "DartalogApi.fields.get",
-     "path": "fields/{uuid}/",
+     "path": "fields/{id}/",
      "httpMethod": "GET",
      "parameters": {
-      "uuid": {
+      "id": {
        "type": "string",
-       "description": "Path parameter: 'uuid'.",
+       "description": "Path parameter: 'id'.",
        "required": true,
        "location": "path"
       }
      },
      "parameterOrder": [
-      "uuid"
+      "id"
      ],
      "response": {
       "$ref": "Field"
@@ -268,24 +303,24 @@
     },
     "update": {
      "id": "DartalogApi.fields.update",
-     "path": "fields/{uuid}/",
+     "path": "fields/{id}/",
      "httpMethod": "PUT",
      "parameters": {
-      "uuid": {
+      "id": {
        "type": "string",
-       "description": "Path parameter: 'uuid'.",
+       "description": "Path parameter: 'id'.",
        "required": true,
        "location": "path"
       }
      },
      "parameterOrder": [
-      "uuid"
+      "id"
      ],
      "request": {
       "$ref": "Field"
      },
      "response": {
-      "$ref": "UuidResponse"
+      "$ref": "IdResponse"
      }
     }
    },
@@ -300,23 +335,23 @@
      "parameters": {},
      "parameterOrder": [],
      "response": {
-      "$ref": "MapOfItemType"
+      "$ref": "ListOfItemType"
      }
     },
     "get": {
      "id": "DartalogApi.item_types.get",
-     "path": "item_types/{uuid}/",
+     "path": "item_types/{id}/",
      "httpMethod": "GET",
      "parameters": {
-      "uuid": {
+      "id": {
        "type": "string",
-       "description": "Path parameter: 'uuid'.",
+       "description": "Path parameter: 'id'.",
        "required": true,
        "location": "path"
       }
      },
      "parameterOrder": [
-      "uuid"
+      "id"
      ],
      "response": {
       "$ref": "ItemTypeResponse"
@@ -334,18 +369,18 @@
     },
     "update": {
      "id": "DartalogApi.item_types.update",
-     "path": "item_types/{uuid}/",
+     "path": "item_types/{id}/",
      "httpMethod": "PUT",
      "parameters": {
-      "uuid": {
+      "id": {
        "type": "string",
-       "description": "Path parameter: 'uuid'.",
+       "description": "Path parameter: 'id'.",
        "required": true,
        "location": "path"
       }
      },
      "parameterOrder": [
-      "uuid"
+      "id"
      ],
      "request": {
       "$ref": "ItemType"
@@ -363,23 +398,23 @@
      "parameters": {},
      "parameterOrder": [],
      "response": {
-      "$ref": "MapOfItem"
+      "$ref": "ListOfItem"
      }
     },
     "get": {
      "id": "DartalogApi.items.get",
-     "path": "items/{uuid}/",
+     "path": "items/{id}/",
      "httpMethod": "GET",
      "parameters": {
-      "uuid": {
+      "id": {
        "type": "string",
-       "description": "Path parameter: 'uuid'.",
+       "description": "Path parameter: 'id'.",
        "required": true,
        "location": "path"
       }
      },
      "parameterOrder": [
-      "uuid"
+      "id"
      ],
      "response": {
       "$ref": "ItemResponse"
@@ -397,18 +432,18 @@
     },
     "update": {
      "id": "DartalogApi.items.update",
-     "path": "items/{uuid}/",
+     "path": "items/{id}/",
      "httpMethod": "PUT",
      "parameters": {
-      "uuid": {
+      "id": {
        "type": "string",
-       "description": "Path parameter: 'uuid'.",
+       "description": "Path parameter: 'id'.",
        "required": true,
        "location": "path"
       }
      },
      "parameterOrder": [
-      "uuid"
+      "id"
      ],
      "request": {
       "$ref": "Item"
@@ -548,5 +583,3 @@
   }
  }
 }
-
-

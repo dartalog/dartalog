@@ -12,31 +12,36 @@ class _MongoFieldModel extends AFieldModel {
 
     Map<String,String> output = new Map<String,String>();
     for (var result in results) {
-      output[result["_id"]] = result["name"];
+      output[result["id"]] = result["name"];
     }
 
     con.release();
     return output;
   }
 
-  Future<Map<String,api.Field>> getAll() async {
+  Future<List<api.Field>> getAll() async {
     _log.info("Getting all fields");
     return await _getFromDb(null);
   }
 
   Future<api.Field> get(String id) async {
-    _log.info("Getting specific field by ID: ${id}");
-    Map results = await _getFromDb(mongo.where.id(mongo.ObjectId.parse(id)));
+    _log.info("Getting specific field by id: ${id}");
+
+
+    dynamic criteria;
+    criteria = mongo.where.eq("id", id);
+
+    List results = await _getFromDb(criteria);
 
     if(results.length==0) {
       return null;
     }
 
-    return results[results.keys.first];
+    return results.first;
   }
 
 
-  Future<Map<String,api.Field>> getAllForIDs(List<String> ids) async {
+  Future<List<api.Field>> getAllForIDs(List<String> ids) async {
     _log.info("Getting all fields for IDs");
 
     mongo.SelectorBuilder query = null;
@@ -50,46 +55,38 @@ class _MongoFieldModel extends AFieldModel {
       }
     }
 
-    Map results = await _getFromDb(query);
+    List results = await _getFromDb(query);
 
     return results;
   }
 
-  Future<Map<String, api.Field>> _getFromDb(dynamic selector) async {
+  Future<List<api.Field>> _getFromDb(dynamic selector) async {
     _MongoDatabase con = await _MongoDatabase.getConnection();
     mongo.DbCollection collection = await con.getFieldsCollection();
 
     List results = await collection.find(selector).toList();
 
-    Map<String,api.Field> output = new Map<String,api.Field>();
+    List<api.Field> output = new List<api.Field>();
     for (var result in results) {
-      mongo.ObjectId id = result["_id"];
-      String str_id = id.toJson();
-      output[str_id] = _createField(result);
+      //mongo.ObjectId id = result["_id"];
+      //String str_id = id.toJson();
+      output.add(_createField(result));
     }
     con.release();
     return output;
 
   }
 
-  Future write(api.Field field, [String id = null, bool allowIdInsert = false]) async {
+  Future write(api.Field field, [String id = null]) async {
     _MongoDatabase con = await _MongoDatabase.getConnection();
     mongo.DbCollection collection = await con.getFieldsCollection();
 
     Map data;
     if(!tools.isNullOrWhitespace(id)) {
-      mongo.ObjectId obj_id = mongo.ObjectId.parse(id);
-      data = await collection.findOne({"_id": obj_id});
-
-      if(!allowIdInsert&&data==null) {
-        throw new Exception("Field not found ${field}");
-      }
+      data = await collection.findOne({"id": id});
     }
     if(data==null) {
       data = _createMap(field);
-      if(allowIdInsert&&!tools.isNullOrWhitespace(id)) {
-        data["_id"] = mongo.ObjectId.parse(id);
-      }
       dynamic result = await collection.insert(data);
       return;
     }
@@ -102,6 +99,7 @@ class _MongoFieldModel extends AFieldModel {
 
   api.Field _createField(Map data) {
     api.Field output = new api.Field();
+    output.id = data["id"];
     output.name = data["name"];
     output.type = data["type"];
     output.format = data["format"];
@@ -115,6 +113,7 @@ class _MongoFieldModel extends AFieldModel {
   }
 
   void _updateMap(api.Field field, Map data) {
+    data["id"] = field.id;
     data["name"] = field.name;
     data["type"] = field.type;
     data["format"] = field.format;

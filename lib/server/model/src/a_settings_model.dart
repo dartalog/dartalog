@@ -1,13 +1,13 @@
 part of model;
 
 abstract class ASettingsModel extends _AModel {
-  static final Logger _log = new Logger('AImportSettingsModel');
+  static final Logger _log = new Logger('ASettingsModel');
 
   AFieldModel();
 
-  Future<Map<String, api.Field>> getAll();
-  Future<api.Field> get(String id);
+  Future<Map<String, String>> getAll();
+  Future<api.Field> get(Settings setting);
 
-  Future write(api.Field field, [String id = null, bool allowIdInsert = false]);
+  Future write(Settings setting, String value);
 
 }

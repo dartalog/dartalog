@@ -133,6 +133,7 @@ class MainApp extends PolymerElement {
       page.newItem();
     }
   }
+
   // Optional lifecycle methods - uncomment if needed.
 
 //  /// Called when an instance of main-app is inserted into the DOM.
@@ -155,4 +156,14 @@ class MainApp extends PolymerElement {
 //  /// property observers set up, event listeners attached).
 //  ready() {
 //  }
+}
+
+class Employee extends JsProxy {
+  @reflectable
+  String first;
+
+  @reflectable
+  String last;
+
+  Employee(this.first, this.last);
 }

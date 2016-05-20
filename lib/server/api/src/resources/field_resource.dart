@@ -8,19 +8,19 @@ class FieldResource extends AResource {
   }
 
   @ApiMethod(path: 'fields/')
-  Future<Map<String, Field>> getAll() async {
+  Future<List<Field>> getAll() async {
     try {
-      dynamic output = await model.fields.getAll();
+      List<Field> output = await model.fields.getAll();
       return output;
     } catch (e, st) {
       _HandleException(e, st);
     }
   }
 
-  @ApiMethod(path: 'fields/{uuid}/')
-  Future<Field> get(String uuid) async {
+  @ApiMethod(path: 'fields/{id}/')
+  Future<Field> get(String id) async {
     try {
-      dynamic output = await model.fields.get(uuid);
+      Field output = await model.fields.get(id);
       return output;
     } catch (e, st) {
       _HandleException(e, st);
@@ -30,22 +30,31 @@ class FieldResource extends AResource {
   @ApiMethod(method: 'POST', path: 'fields/')
   Future<VoidMessage> create(Field field) async {
     try {
-      field.validate();
+      await field.validate(true);
       await model.fields.write(field);
     } catch (e, st) {
       _HandleException(e, st);
     }
   }
 
-  @ApiMethod(method: 'PUT', path: 'fields/{uuid}/')
-  Future<UuidResponse> update(String uuid, Field field) async {
+  @ApiMethod(method: 'PUT', path: 'fields/{id}/')
+  Future<IdResponse> update(String id, Field field) async {
     try {
-      field.validate();
-      String output = await model.fields.write(field, uuid);
-      return new UuidResponse.fromUuid(output);
+      await field.validate(id!=field.id);
+      String output = await model.fields.write(field, id);
+      return new IdResponse.fromId(output);
     } catch (e, st) {
       _HandleException(e, st);
     }
   }
 
+
+  void _HandleException(e, st) {
+    if (e is model.DataMovedException) {
+      model.DataMovedException dme = e as model.DataMovedException;
+      sendRedirect("http://localhost:8888/fields/${dme.newId}");
+    } else {
+      super._HandleException(e, st);
+    }
+  }
 }

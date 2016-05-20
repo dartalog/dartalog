@@ -1,6 +1,7 @@
 library api;
 
 import 'dart:async';
+import 'dart:io';
 import 'package:logging/logging.dart';
 import 'package:rpc/rpc.dart';
 import 'package:stack_trace/stack_trace.dart';
@@ -11,6 +12,7 @@ import 'package:dartalog/server/import/import.dart';
 
 part 'src/dartalog_api.dart';
 
+part 'src/exceptions/redirecting_exception.dart';
 part 'src/exceptions/data_validation_exception.dart';
 
 part 'src/resources/a_resource.dart';
@@ -21,7 +23,7 @@ part 'src/resources/import_resource.dart';
 part 'src/resources/preset_resource.dart';
 
 part 'src/responses/data_response.dart';
-part 'src/responses/uuid_response.dart';
+part 'src/responses/id_response.dart';
 part 'src/responses/item_response.dart';
 part 'src/responses/item_type_response.dart';
 

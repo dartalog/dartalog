@@ -2,7 +2,7 @@ part of api;
 
 class ItemTypeField extends AData {
 
-  void validate() {
+  Future validate(bool verifyId) async {
 
   }
 

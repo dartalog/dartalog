@@ -22,6 +22,7 @@ import 'package:polymer_elements/iron_flex_layout.dart';
 import 'package:dartalog/dartalog.dart' as dartalog;
 import 'package:dartalog/client/pages/pages.dart';
 import 'package:dartalog/client/client.dart';
+import 'package:dartalog/client/data/data.dart';
 
 import '../../api/dartalog.dart' as API;
 
@@ -30,19 +31,16 @@ import '../../api/dartalog.dart' as API;
 class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   static final Logger _log = new Logger("FieldAdminPage");
 
-  @Property(notify: true)
-  List fieldIds = new List();
-  @reflectable API.Field getFieldName(String key) => fields[key].name;
+  @property
+  List<Field> fields = new List<Field>();
 
-  Map fields = new Map();
+  String currentId = "";
+  @property Field currentField = new Field();
 
   /// Constructor used to create instance of MainApp.
   FieldAdminPage.created() : super.created("Field Admin");
 
-  @Property(notify: true) String currentUuid;
-  @Property(notify: true) String currentName;
-  @Property(notify: true) String currentType;
-  @Property(notify: true) String currentFormat;
+  bool newField = true;
 
   @Property(notify: true) Iterable get FIELD_TYPE_KEYS => dartalog.FIELD_TYPES.keys;
   @reflectable String getFieldType(String key) => dartalog.FIELD_TYPES[key];
@@ -55,24 +53,24 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
 
   @override
   void clearValidation() {
+    $['input_id'].invalid = false;
     $['input_name'].invalid = false;
     $['input_type'].invalid = false;
     $['input_format'].invalid = false;
-
+    $['output_field_error'].text = "";
   }
 
   @reflectable
   Future refresh() async {
     try {
       this.reset();
-      clear("fieldIds");
-      fields.clear();
+      clear("fields");
 
-      API.MapOfField data = await api.fields.getAll();
+      API.ListOfField data = await api.fields.getAll();
 
-      fields.addAll(data);
-
-      addAll("fieldIds",data.keys);
+      for(API.Field f in data) {
+        add("fields", new Field.copy(f));
+      }
     } catch (e, st) {
       _log.severe(e, st);
       window.alert(e.toString());
@@ -83,10 +81,9 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   @reflectable
   void reset() {
     clearValidation();
-    set('currentUuid', null);
-    set('currentFormat', "");
-    set('currentType', "");
-    set('currentName', "");
+    newField = true;
+    currentId = "";
+    set('currentField', new Field());
   }
 
   showModal(event, [_]) {
@@ -97,6 +94,7 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   Future newItem() async {
     try {
       this.reset();
+      newField = true;
       editDialog.open();
     } catch (e, st) {
       _log.severe(e, st);
@@ -108,12 +106,24 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   fieldClicked(event, [_]) async {
     try {
       String id = event.target.dataset["id"];
-      API.Field field = this.fields[id];
+      if(id==null)
+        return;
 
-      set('currentUuid', id);
-      set('currentFormat', field.format);
-      set('currentType', field.type);
-      set('currentName', field.name);
+      Field field;
+      for(Field f in fields) {
+        if(f.id==id) {
+          field = f;
+          break;
+        }
+      }
+      if(field==null)
+        return;
+
+      this.newField = false;
+
+      currentId = id;
+
+      set("currentField", new Field.copy(field));
 
       editDialog.open();
     } catch (e, st) {
@@ -137,22 +147,18 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   saveClicked(event, [_]) async {
     try {
       API.Field field = new API.Field();
-      field.name = this.currentName;
-      field.type = this.currentType;
-      field.format = this.currentFormat;
-
-      if (this.currentUuid == null) {
+      currentField.copyTo(field);
+      if (this.newField) {
         await this.api.fields.create(field);
       } else {
-        await this.api.fields.update(field, this.currentUuid);
+        await this.api.fields.update(field, this.currentId);
       }
 
       refresh();
       editDialog.close();
     } on API.DetailedApiRequestError catch  ( e, st) {
       try {
-      API.DetailedApiRequestError ex = e as API.DetailedApiRequestError;
-      setErrorMesage(ex.errors);
+        handleApiError(e, generalErrorField: "output_field_error");
       } catch (e, st) {
         _log.severe(e, st);
         window.alert(e.toString());

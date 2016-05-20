@@ -3,7 +3,7 @@ part of api;
 abstract class AData {
   String id;
 
-  void validate();
+  Future validate(bool verifyId);
   //void setData(dynamic data);
 
 //  Map<String, dynamic> toMap() {

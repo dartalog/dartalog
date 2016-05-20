@@ -18,9 +18,27 @@ abstract class APage extends PolymerElement {
 
   }
 
-  void setErrorMesage(List<ApiRequestErrorDetail> fieldErrors, {String prefix: "input_"}) {
+  void handleApiError(DetailedApiRequestError error, {String generalErrorField: "", String prefix: "input_"}) {
     clearValidation();
+    if(generalErrorField.length>0) {
+      dynamic input = $[generalErrorField];
+      if(input!=null) {
+        input.text = error.message;
+      } else {
+        window.alert(error.message);
+      }
+    } else {
+      window.alert(error.message);
+    }
+    setErrorMesage(error.errors, prefix: prefix);
+  }
+
+  void setErrorMesage(List<ApiRequestErrorDetail> fieldErrors, {String prefix: "input_"}) {
     for(ApiRequestErrorDetail detail in fieldErrors) {
+      if(detail.message==null||detail.message.length==0)
+        continue;
+
+
       if(detail.locationType=="field") {
         dynamic input = $[prefix + detail.location];
 
@@ -36,7 +54,11 @@ abstract class APage extends PolymerElement {
           } else {
             window.alert("Unknown control: " + input.runtimeType.toString());
           }
+        } else {
+          window.alert(detail.message);
         }
+      } else {
+        window.alert(detail.message);
       }
     }
 

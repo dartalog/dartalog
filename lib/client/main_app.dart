@@ -41,7 +41,7 @@ class MainApp extends PolymerElement {
 
   final Router router = new Router(useFragment: true);
 
-  final DartalogApi api = new DartalogApi(new http.BrowserClient(), rootUrl: "http://localhost:8888/", servicePath: "api/dartalog/0.1/");
+  final DartalogApi api = new DartalogApi(new http.BrowserClient(), rootUrl: "http://localhost:3278/", servicePath: "api/dartalog/0.1/");
 
   APage get currentPage => $[visiblePage];
   PaperDrawerPanel get drawerPanel => $["drawerPanel"];

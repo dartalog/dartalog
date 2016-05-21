@@ -10,7 +10,7 @@
     <template>
         <iron-pages id="item_add_pages" attr-for-selected="id" selected="import_item">
             <div id="import_item">
-                <paper-dropdown-menu id="input_type" floatinglabel label="Provider" required auto-validate >
+                <paper-dropdown-menu id="input_provider" floatinglabel label="Provider" required auto-validate >
                     <paper-listbox class="dropdown-content" attr-for-selected="value">
                         <paper-item value="amazon">Amazon</paper-item>
                     </paper-listbox>
@@ -23,7 +23,7 @@
                 <paper-card >
                     <div class="card-content">
                 <template is="dom-repeat" items="{{results}}">
-                    <paper-item on-tap="searchResultClicked" data-id="{{item.id}}">
+                    <paper-item on-tap="searchResultClicked" data-id$="{{item.id}}">
                         <table>
                             <tr>
                                 <td rowspan="3"><img src="{{item.thumbnail}}" /></td>
@@ -34,6 +34,23 @@
                 </template>
                     </div>
                 </paper-card>
+            </div>
+
+
+            <div id="choose_type">
+                <paper-dropdown-menu id="input_type" floatinglabel label="Item Type" required auto-validate >
+                    <template is="dom-repeat" items="{{itemTypes}}">
+                    <paper-listbox class="dropdown-content" attr-for-selected="value">
+                        <paper-item value="{{item.id}}">{{item.name}}</paper-item>
+                    </paper-listbox>
+                    </template>
+                </paper-dropdown-menu>
+                <paper-button raised on-tap="createClicked">Create</paper-button>
+            </div>
+
+            <div id="item_entry">
+                <template is="dom-repeat" items="{{itemTypeFields}}">
+                </template>
             </div>
         </iron-pages>
     </template>

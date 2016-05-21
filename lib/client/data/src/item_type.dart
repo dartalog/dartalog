@@ -29,4 +29,12 @@ class ItemType extends JsProxy {
     to.subTypes = from.subTypes;
     to.itemNameFields = from.itemNameFields;
   }
+
+  static List<ItemType> convertList(Iterable input) {
+    List<ItemType> output = new List<ItemType>();
+    for(dynamic obj in input) {
+      output.add(new ItemType.copy(obj));
+    }
+    return output;
+  }
 }

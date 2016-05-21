@@ -46,10 +46,12 @@ class ItemAddPage extends APage with ARefreshablePage {
   @Property(notify: true)
   List<ImportSearchResult> results = new List<ImportSearchResult>();
 
-//
-//  @observable Map<String,API.Field> itemTypeFields = new ObservableMap<String,API.Field>();
-//  @observable Map<String,String> fieldValues = new ObservableMap<String,String>();
+  @Property(notify: true)
+  List<ItemType> itemTypes= new List<ItemType>();
 
+  @Property(notify: true)
+  List<Field> itemTypeFields= new List<Field>();
+//
   void activateInternal(Map args) {
     this.refresh();
   }
@@ -57,15 +59,15 @@ class ItemAddPage extends APage with ARefreshablePage {
   @override
   Future refresh() async {
     //this.clear();
-    await loadTemplates();
+    pages.selected = "import_item";
+    await loadItemTypes();
   }
 
-  Future loadTemplates() async {
+  Future loadItemTypes() async {
     try {
-//      itemTypes.clear();
-//      itemTypeFields.clear();
-//      API.MapOfItemType data = await api.itemTypes.getAll();
-//      itemTypes.addAll(data);
+      clear("itemTypes");
+      API.ListOfItemType data = await api.itemTypes.getAll();
+      addAll("itemTypes", ItemType.convertList(data));
     } catch (e, st) {
       _log.severe(e, st);
       window.alert(e.toString());
@@ -141,9 +143,12 @@ class ItemAddPage extends APage with ARefreshablePage {
   @reflectable
   searchResultClicked(event, [_]) async {
     try {
-      String id = event.target.dataset["id"];
+
+      dynamic ele = getParentElement(event.target,"paper-item");
+      String id = ele.dataset["id"];
       API.ImportResult result = await api.import.import("amazon", id);
 
+      pages.selected = "choose_type";
     } catch (e, st) {
       _log.severe(e, st);
       window.alert(e.toString());

@@ -18,6 +18,23 @@ abstract class APage extends PolymerElement {
 
   }
 
+  Element getParentElement(Element start, String tagName) {
+    if(start==null)
+      return null;
+    if(start.tagName==tagName)
+      return start;
+    if(start.parent==null)
+      return null;
+
+    Element ele = start.parent;
+    while(ele!=null) {
+      if(ele.tagName.toLowerCase()==tagName.toLowerCase())
+        return ele;
+      ele = ele.parent;
+    }
+    return null;
+  }
+
   void handleApiError(DetailedApiRequestError error, {String generalErrorField: "", String prefix: "input_"}) {
     clearValidation();
     if(generalErrorField.length>0) {

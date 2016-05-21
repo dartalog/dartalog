@@ -30,21 +30,22 @@ class ItemTypeResource extends AResource {
   }
 
   @ApiMethod(method: 'POST', path: 'item_types/')
-  Future<VoidMessage> create(ItemType itemType) async {
+  Future<IdResponse> create(ItemType itemType) async {
     try {
       await itemType.validate(true);
-      await model.itemTypes.write(itemType);
+      String output = await model.itemTypes.write(itemType);
+      return new IdResponse.fromId(output);
     } catch (e, st) {
       _HandleException(e, st);
     }
   }
 
   @ApiMethod(method: 'PUT', path: 'item_types/{id}/')
-  Future<VoidMessage> update(String id, ItemType itemType) async {
+  Future<IdResponse> update(String id, ItemType itemType) async {
     try {
       await itemType.validate(id!=itemType.id);
       String output = await model.itemTypes.write(itemType, id);
-      //return new UuidResponse.fromUuid(output);
+      return new IdResponse.fromId(output);
     } catch (e, st) {
       _HandleException(e, st);
     }

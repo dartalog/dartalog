@@ -5,13 +5,18 @@ class Item extends AData {
   String type;
 
   @ApiProperty(required: true)
-  String id;
+  String id = "";
 
   @ApiProperty(required: true)
-  String name;
+  String name = "";
+
+  String parent = "";
+
+  List<String> children = new List<String>();
 
   @ApiProperty(required: true)
   Map<String, String> fieldValues = new Map<String, String>();
+
 
   Item();
 

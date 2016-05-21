@@ -23,8 +23,8 @@ import 'package:polymer_elements/iron_pages.dart';
 import 'package:dartalog/dartalog.dart' as dartalog;
 import 'package:dartalog/client/pages/pages.dart';
 import 'package:dartalog/client/client.dart';
-
-import '../../api/dartalog.dart' as API;
+import 'package:dartalog/client/data/data.dart';
+import 'package:dartalog/client/api/dartalog.dart' as API;
 
 /// A Polymer `<template-admin-page>` element.
 @PolymerRegister('item-add-page')
@@ -44,10 +44,7 @@ class ItemAddPage extends APage with ARefreshablePage {
   String templateId;
 
   @Property(notify: true)
-  API.SearchResults results;
-
-  @Property(notify: true)
-  List<String> resultIDs = new List<String>();
+  List<ImportSearchResult> results = new List<ImportSearchResult>();
 
 //
 //  @observable Map<String,API.Field> itemTypeFields = new ObservableMap<String,API.Field>();
@@ -115,32 +112,26 @@ class ItemAddPage extends APage with ARefreshablePage {
 //    }
   }
 
-  API.SearchResult getSearchResult(String id) {
-    for(API.SearchResult result in this.results.results) {
+  ImportSearchResult getSearchResult(String id) {
+    for(ImportSearchResult result in this.results) {
       if(result.id==id) {
         return result;
       }
     }
-    return new API.SearchResult();
+    return null;
   }
-
-  @reflectable String getSearchResultThumbnail(String id) => this.getSearchResult(id).thumbnail;
-  @reflectable String getSearchResultTitle(String id) => this.getSearchResult(id).title;
-
 
   @reflectable
   searchClicked(event, [_]) async {
     try {
+      clear("results");
+
       API.SearchResults results =
           await api.import.search("amazon", this.searchQuery);
-      this.results = results;
-      this.clear("resultIDs");
-      if(results.results==null) {
-        return;
+      for(API.SearchResult sr in results.results) {
+        add("results", new ImportSearchResult.copy(sr));
       }
-      for(API.SearchResult result in results.results) {
-        this.add("resultIDs", result.id);
-      }
+
     } catch (e, st) {
       _log.severe(e, st);
       window.alert(e.toString());

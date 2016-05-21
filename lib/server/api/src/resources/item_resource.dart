@@ -37,20 +37,20 @@ class ItemResource extends AResource {
   }
 
   @ApiMethod(method: 'POST', path: 'items/')
-  Future<VoidMessage> create(Item item) async {
+  Future<IdResponse> create(Item item) async {
     try {
       String output = await model.items.write(item);
-      //return new UuidResponse.fromUuid(output);
+      return new IdResponse.fromId(output);
     } catch(e,st) {
       _HandleException(e, st);
     }
   }
 
   @ApiMethod(method: 'PUT', path: 'items/{id}/')
-  Future<VoidMessage> update(String id, Item item) async {
+  Future<IdResponse> update(String id, Item item) async {
     try {
     String output = await model.items.write(item,id);
-    //return new UuidResponse.fromUuid(output);
+    return new IdResponse.fromId(output);
     } catch(e,st) {
       _HandleException(e, st);
     }

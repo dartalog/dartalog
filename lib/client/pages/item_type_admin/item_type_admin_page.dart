@@ -26,9 +26,8 @@ import 'package:dartalog/dartalog.dart' as dartalog;
 import 'package:dartalog/client/pages/pages.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/data/data.dart';
-
-import '../../api/dartalog.dart' as API;
-import '../../../tools.dart';
+import 'package:dartalog/client/api/dartalog.dart' as API;
+import 'package:dartalog/tools.dart';
 
 /// A Polymer `<template-admin-page>` element.
 @PolymerRegister('item-type-admin-page')

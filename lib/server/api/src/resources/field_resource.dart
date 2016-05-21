@@ -28,10 +28,11 @@ class FieldResource extends AResource {
   }
 
   @ApiMethod(method: 'POST', path: 'fields/')
-  Future<VoidMessage> create(Field field) async {
+  Future<IdResponse> create(Field field) async {
     try {
       await field.validate(true);
-      await model.fields.write(field);
+      String output = await model.fields.write(field);
+      return new IdResponse.fromId(output);
     } catch (e, st) {
       _HandleException(e, st);
     }

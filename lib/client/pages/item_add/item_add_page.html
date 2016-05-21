@@ -10,18 +10,24 @@
     <template>
         <iron-pages id="item_add_pages" attr-for-selected="id" selected="import_item">
             <div id="import_item">
+                <paper-dropdown-menu id="input_type" floatinglabel label="Provider" required auto-validate >
+                    <paper-listbox class="dropdown-content" attr-for-selected="value">
+                        <paper-item value="amazon">Amazon</paper-item>
+                    </paper-listbox>
+                </paper-dropdown-menu>
+
                 <paper-input value="{{searchQuery}}" label="search"></paper-input>
                 <paper-button raised on-tap="searchClicked">Search</paper-button>
 
 
                 <paper-card >
                     <div class="card-content">
-                <template is="dom-repeat" items="{{resultIDs}}" as="id">
-                    <paper-item on-tap="searchResultClicked" data-id="{{id}}">
+                <template is="dom-repeat" items="{{results}}">
+                    <paper-item on-tap="searchResultClicked" data-id="{{item.id}}">
                         <table>
                             <tr>
-                                <td rowspan="3"><img src="{{getSearchResultThumbnail(id)}}" /></td>
-                                <td>{{getSearchResultTitle(id)}}</td>
+                                <td rowspan="3"><img src="{{item.thumbnail}}" /></td>
+                                <td>{{item.title}}</td>
                             </tr>
                         </table>
                     </paper-item>

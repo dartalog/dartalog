@@ -6,16 +6,23 @@ class ItemType extends JsProxy {
   @reflectable
   String name = "";
   @reflectable
-  List<String> fields = new List<String>();
+  List<String> fieldIds = new List<String>();
   @reflectable
   List<String> subTypes = new List<String>();
   @reflectable
   List<String> itemNameFields = new List<String>();
 
+  @reflectable
+  List<Field> fields;
+
   ItemType();
 
   ItemType.copy(dynamic field) {
     _copy(field,this);
+    if(this.fieldIds==null)
+      this.fieldIds = new List<String>();
+    if(field.fields!=null)
+      this.fields = Field.convertList(field.fields);
   }
 
   void copyTo(dynamic output) {
@@ -25,9 +32,9 @@ class ItemType extends JsProxy {
   void _copy(dynamic from, dynamic to) {
     to.id = from.id;
     to.name = from.name;
-    to.fields = from.fields;
-    to.subTypes = from.subTypes;
-    to.itemNameFields = from.itemNameFields;
+    to.fieldIds = from.fieldIds;
+//    to.subTypes = from.subTypes;
+//    to.itemNameFields = from.itemNameFields;
   }
 
   static List<ItemType> convertList(Iterable input) {

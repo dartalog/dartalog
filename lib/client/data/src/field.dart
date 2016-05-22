@@ -10,10 +10,24 @@ class Field extends JsProxy {
   @reflectable
   String type = "";
 
+  @Property(notify: true) String value = "";
+
+  @reflectable bool isTypeString = false;
+  @reflectable bool isTypeImage = false;
+
   Field();
 
   Field.copy(dynamic field) {
     _copy(field,this);
+    switch(this.type) {
+      case "string":
+      case "hidden":
+        isTypeString = true;
+        break;
+      case "image":
+        isTypeImage = true;
+        break;
+    }
   }
 
   void copyTo(dynamic output) {
@@ -26,4 +40,13 @@ class Field extends JsProxy {
     to.name = from.name;
     to.type = from.type;
   }
+
+  static List<Field> convertList(Iterable input) {
+    List<Field> output = new List<Field>();
+    for(dynamic obj in input) {
+      output.add(new Field.copy(obj));
+    }
+    return output;
+  }
+
 }

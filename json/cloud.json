@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "f328c444fe9721a2c50197161d00741565c30bda",
+ "etag": "9af71a4082e9163dd29d7931da344dddb1fd2515",
  "discoveryVersion": "v1",
  "id": "dartalog:0.1",
  "name": "dartalog",
@@ -65,21 +65,6 @@
     }
    }
   },
-  "ItemTypeResponse": {
-   "id": "ItemTypeResponse",
-   "type": "object",
-   "properties": {
-    "itemType": {
-     "$ref": "ItemType"
-    },
-    "fields": {
-     "type": "array",
-     "items": {
-      "$ref": "Field"
-     }
-    }
-   }
-  },
   "ItemType": {
    "id": "ItemType",
    "type": "object",
@@ -92,11 +77,17 @@
      "type": "string",
      "required": true
     },
-    "fields": {
+    "fieldIds": {
      "type": "array",
      "required": true,
      "items": {
       "type": "string"
+     }
+    },
+    "fields": {
+     "type": "array",
+     "items": {
+      "$ref": "Field"
      }
     },
     "subTypes": {
@@ -113,18 +104,36 @@
     }
    }
   },
-  "ListOfItem": {
-   "id": "ListOfItem",
+  "ListOfItemListing": {
+   "id": "ListOfItemListing",
    "type": "array",
    "items": {
-    "$ref": "Item"
+    "$ref": "ItemListing"
+   }
+  },
+  "ItemListing": {
+   "id": "ItemListing",
+   "type": "object",
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "typeId": {
+     "type": "string"
+    },
+    "thumbnail": {
+     "type": "string"
+    }
    }
   },
   "Item": {
    "id": "Item",
    "type": "object",
    "properties": {
-    "type": {
+    "typeId": {
      "type": "string",
      "required": true
     },
@@ -136,39 +145,15 @@
      "type": "string",
      "required": true
     },
-    "parent": {
-     "type": "string"
-    },
-    "children": {
-     "type": "array",
-     "items": {
-      "type": "string"
-     }
-    },
-    "fieldValues": {
+    "values": {
      "type": "object",
      "required": true,
      "additionalProperties": {
       "type": "string"
      }
-    }
-   }
-  },
-  "ItemResponse": {
-   "id": "ItemResponse",
-   "type": "object",
-   "properties": {
-    "item": {
-     "$ref": "Item"
     },
     "type": {
      "$ref": "ItemType"
-    },
-    "values": {
-     "type": "object",
-     "additionalProperties": {
-      "type": "string"
-     }
     }
    }
   },
@@ -367,13 +352,19 @@
        "description": "Path parameter: 'id'.",
        "required": true,
        "location": "path"
+      },
+      "expand": {
+       "type": "string",
+       "description": "Query parameter: 'expand'.",
+       "required": false,
+       "location": "query"
       }
      },
      "parameterOrder": [
       "id"
      ],
      "response": {
-      "$ref": "ItemTypeResponse"
+      "$ref": "ItemType"
      }
     },
     "create": {
@@ -423,7 +414,7 @@
      "parameters": {},
      "parameterOrder": [],
      "response": {
-      "$ref": "ListOfItem"
+      "$ref": "ListOfItemListing"
      }
     },
     "get": {
@@ -436,13 +427,19 @@
        "description": "Path parameter: 'id'.",
        "required": true,
        "location": "path"
+      },
+      "expand": {
+       "type": "string",
+       "description": "Query parameter: 'expand'.",
+       "required": false,
+       "location": "query"
       }
      },
      "parameterOrder": [
       "id"
      ],
      "response": {
-      "$ref": "ItemResponse"
+      "$ref": "Item"
      }
     },
     "create": {
@@ -573,41 +570,6 @@
      "response": {
       "$ref": "MapOfString"
      }
-    },
-    "get": {
-     "id": "DartalogApi.presets.get",
-     "path": "presets/{uuid}/",
-     "httpMethod": "GET",
-     "parameters": {
-      "uuid": {
-       "type": "string",
-       "description": "Path parameter: 'uuid'.",
-       "required": true,
-       "location": "path"
-      }
-     },
-     "parameterOrder": [
-      "uuid"
-     ],
-     "response": {
-      "$ref": "ItemTypeResponse"
-     }
-    },
-    "install": {
-     "id": "DartalogApi.presets.install",
-     "path": "presets/{uuid}/",
-     "httpMethod": "POST",
-     "parameters": {
-      "uuid": {
-       "type": "string",
-       "description": "Path parameter: 'uuid'.",
-       "required": true,
-       "location": "path"
-      }
-     },
-     "parameterOrder": [
-      "uuid"
-     ]
     }
    },
    "resources": {}

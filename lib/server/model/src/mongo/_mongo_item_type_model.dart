@@ -33,11 +33,8 @@ class _MongoItemTypeModel extends AItemTypeModel {
     List<api.ItemType> output = new List<api.ItemType>();
     con.release(); // Release the connection before calling another model function, so that we don't end up opening multiple connections unnecessarily
 
-    List<api.Field> availableFields = await fields.getAll();
     for (var result in results) {
-      //mongo.ObjectId id = result["_id"];
-      //String str_id = id.toJson();
-      output.add(_createTemplate(result, availableFields));
+      output.add(_createItemType(result));
     }
     return output;
 
@@ -63,11 +60,11 @@ class _MongoItemTypeModel extends AItemTypeModel {
     con.release();
   }
 
-  api.ItemType _createTemplate(Map data, List<api.Field> fields) {
+  api.ItemType _createItemType(Map data) {
     api.ItemType template = new api.ItemType();
     template.id= data["id"];
     template.name = data["name"];
-    template.fields = data["fields"];
+    template.fieldIds = data["fieldIds"];
     return template;
   }
 
@@ -80,7 +77,7 @@ class _MongoItemTypeModel extends AItemTypeModel {
   void _updateMap(api.ItemType template, Map data) {
     data["id"] = template.id;
     data["name"] = template.name;
-    data["fields"] = template.fields;
+    data["fieldIds"] = template.fieldIds;
   }
 
 }

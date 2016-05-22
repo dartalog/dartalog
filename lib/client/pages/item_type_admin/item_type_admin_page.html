@@ -22,7 +22,7 @@
                 <paper-input floatinglabel id="input_id" label="ID" value="{{currentItemType.id}}"></paper-input>
                 <paper-input floatinglabel id="input_name" label="Name" value="{{currentItemType.name}}"></paper-input>
 
-                <template is="dom-repeat" items="{{currentItemType.fields}}">
+                <template is="dom-repeat" items="{{currentItemType.fieldIds}}">
                     <paper-item class="container flex-horizontal" data-id$="{{item}}">
                         <div class="flexchild">{{item}}</div>
                         <paper-icon-button icon="arrow-upward" on-tap="upClicked"></paper-icon-button>
@@ -31,7 +31,7 @@
                     </paper-item>
                 </template>
 
-                <paper-dropdown-menu id="input_fields" floatinglabel label="Field">
+                <paper-dropdown-menu id="input_fieldIds" floatinglabel label="Field">
                     <paper-listbox class="dropdown-content " attr-for-selected="value" selected="{{selectedField}}">
                         <template is="dom-repeat" items="{{fields}}">
                             <paper-item value="{{item.id}}">{{item.name}}</paper-item>

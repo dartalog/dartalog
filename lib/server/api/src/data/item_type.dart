@@ -9,7 +9,9 @@ class ItemType extends AData {
   String name;
 
   @ApiProperty(required: true)
-  List<String> fields = new List<String>();
+  List<String> fieldIds = new List<String>();
+
+  List<Field> fields = null;
 
   List<String> subTypes = new List<String>();
 
@@ -30,8 +32,8 @@ class ItemType extends AData {
       field_errors["name"] = "Required";
     if(this.name.trim()=="name")
       field_errors["name"] = "Cannot be named ""name""";
-    if(this.fields==null||this.fields.length==0)
-      field_errors["fields"] = "Required";
+    if(this.fieldIds==null||this.fieldIds.length==0)
+      field_errors["fieldIds"] = "Required";
 
     if(field_errors.length>0) {
       throw new DataValidationException.WithFieldErrors("Invalid item type data", field_errors);

@@ -1,31 +1,41 @@
 part of api;
 
 class Item extends AData {
-  @ApiProperty(required: true)
-  String type;
-
-  @ApiProperty(required: true)
+  @ApiProperty(required: false)
   String id = "";
 
   @ApiProperty(required: true)
   String name = "";
 
-  String parent = "";
-
-  List<String> children = new List<String>();
+  @ApiProperty(required: true)
+  String typeId;
 
   @ApiProperty(required: true)
-  Map<String, String> fieldValues = new Map<String, String>();
+  Map<String, String> values = new Map<String, String>();
 
+  ItemType type;
 
   Item();
 
   Future validate(bool verifyId) async {
-    if(isNullOrWhitespace(this.type))
-      throw new BadRequestError("Field ""template"" must have a value");
-    if(fieldValues==null)
-      throw new BadRequestError("Map ""fieldValues"" is required");
-    if(fieldValues.length==0)
-      throw new BadRequestError("Map ""fieldValues"" requires at least one field");
+    Map<String,String> field_errors = new Map<String,String>();
+
+    if(!isNullOrWhitespace(this.id)) {
+      Item f = await model.items.get(id);
+      if(f!=null)
+        field_errors["id"] = "Already in use";
+    }
+
+    if(isNullOrWhitespace(this.name))
+      field_errors["name"] = "Required";
+    if(this.name.trim()=="name")
+      field_errors["name"] = "Cannot be named ""name""";
+
+    if(isNullOrWhitespace(this.typeId))
+      field_errors["typeId"] = "Required";
+
+    if(field_errors.length>0) {
+      throw new DataValidationException.WithFieldErrors("Invalid item data", field_errors);
+    }
   }
 }

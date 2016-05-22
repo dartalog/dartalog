@@ -36,27 +36,34 @@ abstract class APage extends PolymerElement {
     return null;
   }
 
+  Element getChildElement(Element start, String tagName) {
+    if(start==null)
+      return null;
+    if(start.tagName==tagName)
+      return start;
+    if(start.parent==null)
+      return null;
+
+    for(Element child in start.children) {
+      if(child.tagName.toLowerCase()==tagName.toLowerCase())
+        return child;
+    }
+    for(Element child in start.children) {
+      Element candidate = getChildElement(child,tagName);
+      if(candidate!=null)
+        return candidate;
+    }
+    return null;
+  }
+
   void handleException(e, st) {
     showMessage(e.toString(), "error");
   }
 
   void showMessage(String message, [String severity]) {
-    PaperToast toastElement = document.querySelector('#global_toast');
+    PaperToastQueue toastElement = document.querySelector('#global_toast');
+    toastElement.enqueueMessage(message, severity);
 
-    if (toastElement == null) return;
-
-    if (toastElement.opened) toastElement.opened = false;
-
-    new Timer(new Duration(milliseconds: 300), () {
-      if (severity == "important") {
-        toastElement.classes.add("important");
-      } else {
-        toastElement.classes.remove("important");
-      }
-
-      toastElement.text = "$message";
-      toastElement.show();
-    });
   }
 
   void handleApiError(DetailedApiRequestError error, {String generalErrorField: "", String prefix: "input_"}) {
@@ -96,10 +103,10 @@ abstract class APage extends PolymerElement {
             window.alert("Unknown control: " + input.runtimeType.toString());
           }
         } else {
-          window.alert(detail.message);
+          showMessage(detail.message, "error");
         }
       } else {
-        window.alert(detail.message);
+        showMessage(detail.message, "error");
       }
     }
 

@@ -36,24 +36,17 @@ class ItemAddPage extends APage with ARefreshablePage {
   /// Constructor used to create instance of MainApp.
   ItemAddPage.created() : super.created("Item Add");
 
-//  @observable Map itemTypes = new ObservableMap();
-//
   @property
   String searchQuery;
-  @property
-  String templateId;
 
   @Property(notify: true)
   List<ImportSearchResult> results = new List<ImportSearchResult>();
 
   @Property(notify: true)
-  List<ItemType> itemTypes= new List<ItemType>();
-
-  @property
-  ItemType currentItemType = null;
+  List<IdNamePair> itemTypes= new List<IdNamePair>();
 
   @Property(notify: true)
-  List<Field> itemTypeFields= new List<Field>();
+  Item currentItem = new Item();
 
   API.ImportResult importResult = null;
 
@@ -80,8 +73,8 @@ class ItemAddPage extends APage with ARefreshablePage {
   Future loadItemTypes() async {
     try {
       clear("itemTypes");
-      API.ListOfItemType data = await api.itemTypes.getAll();
-      addAll("itemTypes", ItemType.convertList(data));
+      API.ListOfIdNamePair data = await api.itemTypes.getAll();
+      addAll("itemTypes", IdNamePair.convertList(data));
     } catch (e, st) {
       _log.severe(e, st);
       this.handleException(e,st);
@@ -135,30 +128,46 @@ class ItemAddPage extends APage with ARefreshablePage {
   @reflectable
   createClicked(event, [_]) async {
     try {
-      dynamic ele = $['input_type'];
-      String value = ele.value;
-      ItemType it;
-      for(ItemType a in this.itemTypes) {
-        if(a.id==value) {
-          it = a;
-        }
-      }
+      dynamic ele = getChildElement($['input_type'],'paper-listbox');
+
+      String value = ele.selected;
+      API.ItemType it = await api.itemTypes.get(value, expand: "fields");
+
       if(it==null)
-        return;
+        throw new Exception("Specified Item Type not found on server");
 
-      set("currentItemType", it);
+      Item newItem = new Item.forType(new ItemType.copy(it));
 
+      for(Field field in newItem.fields) {
+        field.value = this.getImportResultValue(field.id);
+      }
 
-      API.Field field = await api.fields.get(value);
+      newItem.name = this.getImportResultValue("name");
+      newItem.name = "TESTSADASDA";
 
+      set("currentItem", newItem);
+      set("currentItem.fields",newItem.fields);
+      set("currentItem.name",newItem.name);
 
-      API.ImportResult result = await api.import.import("amazon", id);
-      importResult = result;
-      pages.selected = "choose_type";
+      pages.selected = "item_entry";
     } catch (e, st) {
       _log.severe(e, st);
       this.handleException(e,st);
     }
   }
 
+  @reflectable
+  saveClicked(event, [_]) async {
+    try {
+      API.Item newItem = new API.Item();
+
+      currentItem.copyTo(newItem);
+      await api.items.create(newItem);
+
+      showMessage("Item created succesfully");
+    } catch (e, st) {
+      _log.severe(e, st);
+      this.handleException(e,st);
+    }
+  }
 }

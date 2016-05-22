@@ -18,11 +18,14 @@ class ItemTypeResource extends AResource {
   }
 
   @ApiMethod(path: 'item_types/{id}/')
-  Future<ItemTypeResponse> get(String id) async {
+  Future<ItemType> get(String id, {String expand}) async {
     try {
-      ItemTypeResponse output = new ItemTypeResponse();
-      output.itemType = await model.itemTypes.get(id);
-      output.fields = await model.fields.getAllForIDs(output.itemType.fields);
+      ItemType output = await model.itemTypes.get(id);
+      if(output==null)
+        throw new NotFoundError("Item type '${id}' not found");
+      if(expand=="fields") {
+        output.fields = await model.fields.getAllForIDs(output.fieldIds);
+      }
       return output;
     } catch (e, st) {
       _HandleException(e, st);

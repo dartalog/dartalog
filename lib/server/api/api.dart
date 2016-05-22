@@ -24,12 +24,11 @@ part 'src/resources/preset_resource.dart';
 
 part 'src/responses/data_response.dart';
 part 'src/responses/id_response.dart';
-part 'src/responses/item_response.dart';
-part 'src/responses/item_type_response.dart';
 
 part 'src/data/a_data.dart';
 part 'src/data/field.dart';
 part 'src/data/item.dart';
+part 'src/data/item_listing.dart';
 part 'src/data/item_type.dart';
 part 'src/data/item_type_field.dart';
 part 'src/data/settings.dart';

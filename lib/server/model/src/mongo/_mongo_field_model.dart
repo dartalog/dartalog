@@ -44,10 +44,13 @@ class _MongoFieldModel extends AFieldModel {
   Future<List<api.Field>> getAllForIDs(List<String> ids) async {
     _log.info("Getting all fields for IDs");
 
+    if(ids==null)
+      return new List<api.Field>();
+
     mongo.SelectorBuilder query = null;
 
     for(String id in ids) {
-      mongo.SelectorBuilder sb =mongo.where.id(mongo.ObjectId.parse(id));
+      mongo.SelectorBuilder sb = mongo.where.eq("id", id);
       if(query==null) {
         query = sb;
       } else {

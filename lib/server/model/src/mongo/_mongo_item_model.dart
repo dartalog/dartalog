@@ -11,7 +11,7 @@ class _MongoItemModel extends AItemModel  {
 
   Future<api.Item> get(String id) async {
     _log.info("Getting specific item by ID: ${id}");
-    List results = await _getFromDb(mongo.where.id(mongo.ObjectId.parse(id)));
+    List results = await _getFromDb(mongo.where.eq("id", id));
 
     if(results.length==0) {
       return null;
@@ -57,14 +57,12 @@ class _MongoItemModel extends AItemModel  {
 
   api.Item _createItem(Map data) {
     api.Item output = new api.Item();
-    mongo.DbRef template_ref = data["template"];
 
+    output.id = data['id'];
+    output.name = data['name'];
+    output.typeId = data['typeId'];
 
-    output.id = template_ref.id.toJson();
-    output.name = template_ref.id.toJson();
-    output.type = template_ref.id.toJson();
-
-    output.fieldValues = data["values"];
+    output.values = data["values"];
 
     return output;
   }
@@ -78,8 +76,8 @@ class _MongoItemModel extends AItemModel  {
   void _updateMap(api.Item item, Map data) {
     data["id"] = item.id;
     data["name"] = item.name;
-    data["type"] = item.type;
-    data["values"] = item.fieldValues;
+    data["typeId"] = item.typeId;
+    data["values"] = item.values;
   }
 
 

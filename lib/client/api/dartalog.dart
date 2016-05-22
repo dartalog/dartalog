@@ -11,7 +11,7 @@ import 'package:_discoveryapis_commons/_discoveryapis_commons.dart' as commons;
 import 'package:http/http.dart' as http;
 
 export 'package:_discoveryapis_commons/_discoveryapis_commons.dart' show
-    ApiRequestError, DetailedApiRequestError, ApiRequestErrorDetail;
+    ApiRequestError, DetailedApiRequestError;
 
 const core.String USER_AGENT = 'dart-api-client dartalog/0.1';
 
@@ -371,7 +371,9 @@ class ItemTypesResourceApi {
    *
    * [id] - Path parameter: 'id'.
    *
-   * Completes with a [ItemTypeResponse].
+   * [expand] - Query parameter: 'expand'.
+   *
+   * Completes with a [ItemType].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
@@ -379,7 +381,7 @@ class ItemTypesResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ItemTypeResponse> get(core.String id) {
+  async.Future<ItemType> get(core.String id, {core.String expand}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -389,6 +391,9 @@ class ItemTypesResourceApi {
 
     if (id == null) {
       throw new core.ArgumentError("Parameter id is required.");
+    }
+    if (expand != null) {
+      _queryParams["expand"] = [expand];
     }
 
     _url = 'item_types/' + commons.Escaper.ecapeVariable('$id') + '/';
@@ -400,7 +405,7 @@ class ItemTypesResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new ItemTypeResponse.fromJson(data));
+    return _response.then((data) => new ItemType.fromJson(data));
   }
 
   /**
@@ -528,7 +533,9 @@ class ItemsResourceApi {
    *
    * [id] - Path parameter: 'id'.
    *
-   * Completes with a [ItemResponse].
+   * [expand] - Query parameter: 'expand'.
+   *
+   * Completes with a [Item].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
@@ -536,7 +543,7 @@ class ItemsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ItemResponse> get(core.String id) {
+  async.Future<Item> get(core.String id, {core.String expand}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -546,6 +553,9 @@ class ItemsResourceApi {
 
     if (id == null) {
       throw new core.ArgumentError("Parameter id is required.");
+    }
+    if (expand != null) {
+      _queryParams["expand"] = [expand];
     }
 
     _url = 'items/' + commons.Escaper.ecapeVariable('$id') + '/';
@@ -557,13 +567,13 @@ class ItemsResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new ItemResponse.fromJson(data));
+    return _response.then((data) => new Item.fromJson(data));
   }
 
   /**
    * Request parameters:
    *
-   * Completes with a [ListOfItem].
+   * Completes with a [ListOfItemListing].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
@@ -571,7 +581,7 @@ class ItemsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ListOfItem> getAll() {
+  async.Future<ListOfItemListing> getAll() {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -589,7 +599,7 @@ class ItemsResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new ListOfItem.fromJson(data));
+    return _response.then((data) => new ListOfItemListing.fromJson(data));
   }
 
   /**
@@ -646,43 +656,6 @@ class PresetsResourceApi {
   /**
    * Request parameters:
    *
-   * [uuid] - Path parameter: 'uuid'.
-   *
-   * Completes with a [ItemTypeResponse].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
-  async.Future<ItemTypeResponse> get(core.String uuid) {
-    var _url = null;
-    var _queryParams = new core.Map();
-    var _uploadMedia = null;
-    var _uploadOptions = null;
-    var _downloadOptions = commons.DownloadOptions.Metadata;
-    var _body = null;
-
-    if (uuid == null) {
-      throw new core.ArgumentError("Parameter uuid is required.");
-    }
-
-    _url = 'presets/' + commons.Escaper.ecapeVariable('$uuid') + '/';
-
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
-    return _response.then((data) => new ItemTypeResponse.fromJson(data));
-  }
-
-  /**
-   * Request parameters:
-   *
    * Completes with a [MapOfString].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
@@ -710,43 +683,6 @@ class PresetsResourceApi {
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
     return _response.then((data) => new MapOfString.fromJson(data));
-  }
-
-  /**
-   * Request parameters:
-   *
-   * [uuid] - Path parameter: 'uuid'.
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
-  async.Future install(core.String uuid) {
-    var _url = null;
-    var _queryParams = new core.Map();
-    var _uploadMedia = null;
-    var _uploadOptions = null;
-    var _downloadOptions = commons.DownloadOptions.Metadata;
-    var _body = null;
-
-    if (uuid == null) {
-      throw new core.ArgumentError("Parameter uuid is required.");
-    }
-
-    _downloadOptions = null;
-
-    _url = 'presets/' + commons.Escaper.ecapeVariable('$uuid') + '/';
-
-    var _response = _requester.request(_url,
-                                       "POST",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
-    return _response.then((data) => null);
   }
 
 }
@@ -897,73 +833,26 @@ class ImportResult {
 }
 
 class Item {
-  core.List<core.String> children;
-  core.Map<core.String, core.String> fieldValues;
   core.String id;
   core.String name;
-  core.String parent;
-  core.String type;
+  ItemType type;
+  core.String typeId;
+  core.Map<core.String, core.String> values;
 
   Item();
 
   Item.fromJson(core.Map _json) {
-    if (_json.containsKey("children")) {
-      children = _json["children"];
-    }
-    if (_json.containsKey("fieldValues")) {
-      fieldValues = _json["fieldValues"];
-    }
     if (_json.containsKey("id")) {
       id = _json["id"];
     }
     if (_json.containsKey("name")) {
       name = _json["name"];
     }
-    if (_json.containsKey("parent")) {
-      parent = _json["parent"];
-    }
-    if (_json.containsKey("type")) {
-      type = _json["type"];
-    }
-  }
-
-  core.Map toJson() {
-    var _json = new core.Map();
-    if (children != null) {
-      _json["children"] = children;
-    }
-    if (fieldValues != null) {
-      _json["fieldValues"] = fieldValues;
-    }
-    if (id != null) {
-      _json["id"] = id;
-    }
-    if (name != null) {
-      _json["name"] = name;
-    }
-    if (parent != null) {
-      _json["parent"] = parent;
-    }
-    if (type != null) {
-      _json["type"] = type;
-    }
-    return _json;
-  }
-}
-
-class ItemResponse {
-  Item item;
-  ItemType type;
-  core.Map<core.String, core.String> values;
-
-  ItemResponse();
-
-  ItemResponse.fromJson(core.Map _json) {
-    if (_json.containsKey("item")) {
-      item = new Item.fromJson(_json["item"]);
-    }
     if (_json.containsKey("type")) {
       type = new ItemType.fromJson(_json["type"]);
+    }
+    if (_json.containsKey("typeId")) {
+      typeId = _json["typeId"];
     }
     if (_json.containsKey("values")) {
       values = _json["values"];
@@ -972,11 +861,17 @@ class ItemResponse {
 
   core.Map toJson() {
     var _json = new core.Map();
-    if (item != null) {
-      _json["item"] = (item).toJson();
+    if (id != null) {
+      _json["id"] = id;
+    }
+    if (name != null) {
+      _json["name"] = name;
     }
     if (type != null) {
       _json["type"] = (type).toJson();
+    }
+    if (typeId != null) {
+      _json["typeId"] = typeId;
     }
     if (values != null) {
       _json["values"] = values;
@@ -985,8 +880,50 @@ class ItemResponse {
   }
 }
 
+class ItemListing {
+  core.String id;
+  core.String name;
+  core.String thumbnail;
+  core.String typeId;
+
+  ItemListing();
+
+  ItemListing.fromJson(core.Map _json) {
+    if (_json.containsKey("id")) {
+      id = _json["id"];
+    }
+    if (_json.containsKey("name")) {
+      name = _json["name"];
+    }
+    if (_json.containsKey("thumbnail")) {
+      thumbnail = _json["thumbnail"];
+    }
+    if (_json.containsKey("typeId")) {
+      typeId = _json["typeId"];
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (id != null) {
+      _json["id"] = id;
+    }
+    if (name != null) {
+      _json["name"] = name;
+    }
+    if (thumbnail != null) {
+      _json["thumbnail"] = thumbnail;
+    }
+    if (typeId != null) {
+      _json["typeId"] = typeId;
+    }
+    return _json;
+  }
+}
+
 class ItemType {
-  core.List<core.String> fields;
+  core.List<core.String> fieldIds;
+  core.List<Field> fields;
   core.String id;
   core.List<core.String> itemNameFields;
   core.String name;
@@ -995,8 +932,11 @@ class ItemType {
   ItemType();
 
   ItemType.fromJson(core.Map _json) {
+    if (_json.containsKey("fieldIds")) {
+      fieldIds = _json["fieldIds"];
+    }
     if (_json.containsKey("fields")) {
-      fields = _json["fields"];
+      fields = _json["fields"].map((value) => new Field.fromJson(value)).toList();
     }
     if (_json.containsKey("id")) {
       id = _json["id"];
@@ -1014,8 +954,11 @@ class ItemType {
 
   core.Map toJson() {
     var _json = new core.Map();
+    if (fieldIds != null) {
+      _json["fieldIds"] = fieldIds;
+    }
     if (fields != null) {
-      _json["fields"] = fields;
+      _json["fields"] = fields.map((value) => (value).toJson()).toList();
     }
     if (id != null) {
       _json["id"] = id;
@@ -1028,33 +971,6 @@ class ItemType {
     }
     if (subTypes != null) {
       _json["subTypes"] = subTypes;
-    }
-    return _json;
-  }
-}
-
-class ItemTypeResponse {
-  core.List<Field> fields;
-  ItemType itemType;
-
-  ItemTypeResponse();
-
-  ItemTypeResponse.fromJson(core.Map _json) {
-    if (_json.containsKey("fields")) {
-      fields = _json["fields"].map((value) => new Field.fromJson(value)).toList();
-    }
-    if (_json.containsKey("itemType")) {
-      itemType = new ItemType.fromJson(_json["itemType"]);
-    }
-  }
-
-  core.Map toJson() {
-    var _json = new core.Map();
-    if (fields != null) {
-      _json["fields"] = fields.map((value) => (value).toJson()).toList();
-    }
-    if (itemType != null) {
-      _json["itemType"] = (itemType).toJson();
     }
     return _json;
   }
@@ -1086,22 +1002,22 @@ class ListOfIdNamePair
   }
 }
 
-class ListOfItem
-    extends collection.ListBase<Item> {
-  final core.List<Item> _inner;
+class ListOfItemListing
+    extends collection.ListBase<ItemListing> {
+  final core.List<ItemListing> _inner;
 
-  ListOfItem() : _inner = [];
+  ListOfItemListing() : _inner = [];
 
-  ListOfItem.fromJson(core.List json)
-      : _inner = json.map((value) => new Item.fromJson(value)).toList();
+  ListOfItemListing.fromJson(core.List json)
+      : _inner = json.map((value) => new ItemListing.fromJson(value)).toList();
 
   core.List toJson() {
     return _inner.map((value) => (value).toJson()).toList();
   }
 
-  Item operator [](core.int key) => _inner[key];
+  ItemListing operator [](core.int key) => _inner[key];
 
-  void operator []=(core.int key, Item value) {
+  void operator []=(core.int key, ItemListing value) {
     _inner[key] = value;
   }
 

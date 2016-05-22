@@ -39,18 +39,27 @@
 
             <div id="choose_type">
                 <paper-dropdown-menu id="input_type" floatinglabel label="Item Type" required auto-validate >
-                    <template is="dom-repeat" items="{{itemTypes}}">
                     <paper-listbox class="dropdown-content" attr-for-selected="value">
+                    <template is="dom-repeat" items="{{itemTypes}}">
                         <paper-item value="{{item.id}}">{{item.name}}</paper-item>
-                    </paper-listbox>
                     </template>
+                    </paper-listbox>
                 </paper-dropdown-menu>
                 <paper-button raised on-tap="createClicked">Create</paper-button>
             </div>
 
             <div id="item_entry">
-                <template is="dom-repeat" items="{{itemTypeFields}}">
-                    <paper-input  value="{{getImportResultValue(item.id)}}" label="{{item.name}}"></paper-input>
+                <paper-input  value="{{currentItem.name}}" label="Name"></paper-input>
+                <template is="dom-repeat" items="{{currentItem.fields}}">
+                    <template is="dom-if" if="{{item.isTypeString}}" restamp="true">
+                        <paper-input  value="{{item.value}}" label="{{item.name}}" data-type$="{{item.type}}"></paper-input>
+                    </template>
+                    <template is="dom-if" if="{{item.isTypeImage}}" restamp="true">
+                        <paper-item>
+                            <paper-input  value="{{item.value}}" label="{{item.name}}" data-type$="{{item.type}}"></paper-input>
+                            <img src="[[item.value]]" />
+                        </paper-item>
+                    </template>
                 </template>
                 <paper-button raised on-tap="saveClicked">Save</paper-button>
             </div>

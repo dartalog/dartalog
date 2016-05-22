@@ -93,7 +93,7 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
   void clearValidation() {
     $['input_id'].invalid = false;
     $['input_name'].invalid = false;
-    $['input_fields'].invalid = false;
+    $['input_fieldIds'].invalid = false;
     $['output_error'].text = "";
   }
 
@@ -140,11 +140,11 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
       if(isNullOrWhitespace(id))
         throw new Exception("Please select a field");
 
-      if(this.currentItemType.fields.contains(id)){
+      if(this.currentItemType.fieldIds.contains(id)){
         throw new Exception("Field has already been added");
       }
 
-      add("currentItemType.fields",id);
+      add("currentItemType.fieldIds",id);
     } catch(e,st) {
       _log.severe(e, st);
       this.handleException(e,st);
@@ -163,7 +163,7 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
         throw new Exception("null id");
       }
 
-      removeItem("currentItemType.fields", id);
+      removeItem("currentItemType.fieldIds", id);
     } catch(e,st) {
       _log.severe(e, st);
       this.handleException(e,st);

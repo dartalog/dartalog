@@ -49,9 +49,23 @@ class ItemAddPage extends APage with ARefreshablePage {
   @Property(notify: true)
   List<ItemType> itemTypes= new List<ItemType>();
 
+  @property
+  ItemType currentItemType = null;
+
   @Property(notify: true)
   List<Field> itemTypeFields= new List<Field>();
-//
+
+  API.ImportResult importResult = null;
+
+  @reflectable
+  String getImportResultValue(String name) {
+    if(importResult==null
+        ||!importResult.values.containsKey(name)
+        ||importResult.values[name].length==0)
+      return "";
+    return importResult.values[name][0];
+  }
+
   void activateInternal(Map args) {
     this.refresh();
   }
@@ -70,48 +84,12 @@ class ItemAddPage extends APage with ARefreshablePage {
       addAll("itemTypes", ItemType.convertList(data));
     } catch (e, st) {
       _log.severe(e, st);
-      window.alert(e.toString());
+      this.handleException(e,st);
     }
   }
 
   showModal(event, detail, target) {
     String uuid = target.dataset['uuid'];
-  }
-
-  templateClicked(event, detail, target) async {
-//    try {
-//      String id = target.dataset["id"];
-//      API.ItemType template = await api.
-//
-//      this.itemTypes[id];
-//      this.fieldValues.clear();
-//      for(var field in template.fields) {
-//        this.fieldValues[field] = ""; // SOme day, default values!
-//      }
-//      this.itemTypeFields.addAll(template.fields);
-//      this.templateId = id;
-//      pages.selected = "field_input";
-//    } catch(e,st) {
-//      _log.severe(e, st);
-//      window.alert(e.toString());
-//    }
-  }
-
-  saveClicked(event, detail, target) {
-//    try {
-//      if(this.templateId==null) {
-//        throw new Exception("Template not selected");
-//      }
-//      API.Item item = new API.Item();
-//      item.template = this.templateId;
-//
-//      item.fieldValues = this.fieldValues;
-//
-//      api.items.create(item);
-//    } catch(e,st) {
-//      _log.severe(e, st);
-//      window.alert(e.toString());
-//    }
   }
 
   ImportSearchResult getSearchResult(String id) {
@@ -136,31 +114,51 @@ class ItemAddPage extends APage with ARefreshablePage {
 
     } catch (e, st) {
       _log.severe(e, st);
-      window.alert(e.toString());
+      this.handleException(e,st);
     }
   }
 
   @reflectable
   searchResultClicked(event, [_]) async {
     try {
-
       dynamic ele = getParentElement(event.target,"paper-item");
       String id = ele.dataset["id"];
       API.ImportResult result = await api.import.import("amazon", id);
-
+      importResult = result;
       pages.selected = "choose_type";
     } catch (e, st) {
       _log.severe(e, st);
-      window.alert(e.toString());
+      this.handleException(e,st);
     }
   }
 
-  validateField(event, detail, target) {
-    _log.info("Validating");
+  @reflectable
+  createClicked(event, [_]) async {
+    try {
+      dynamic ele = $['input_type'];
+      String value = ele.value;
+      ItemType it;
+      for(ItemType a in this.itemTypes) {
+        if(a.id==value) {
+          it = a;
+        }
+      }
+      if(it==null)
+        return;
+
+      set("currentItemType", it);
+
+
+      API.Field field = await api.fields.get(value);
+
+
+      API.ImportResult result = await api.import.import("amazon", id);
+      importResult = result;
+      pages.selected = "choose_type";
+    } catch (e, st) {
+      _log.severe(e, st);
+      this.handleException(e,st);
+    }
   }
 
-  backClicked(event, detail, target) async {
-    this.templateId = "";
-    pages.selected = "type_select";
-  }
 }

@@ -23,6 +23,7 @@ import 'package:dartalog/dartalog.dart' as dartalog;
 import 'package:dartalog/client/pages/pages.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/data/data.dart';
+import 'package:dartalog/tools.dart';
 import 'package:dartalog/client/api/dartalog.dart' as API;
 
 /// A Polymer `<field-admin-page>` element.
@@ -31,15 +32,13 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   static final Logger _log = new Logger("FieldAdminPage");
 
   @property
-  List<Field> fields = new List<Field>();
+  List<IdNamePair> fields = new List<IdNamePair>();
 
   String currentId = "";
   @property Field currentField = new Field();
 
   /// Constructor used to create instance of MainApp.
   FieldAdminPage.created() : super.created("Field Admin");
-
-  bool newField = true;
 
   @Property(notify: true) Iterable get FIELD_TYPE_KEYS => dartalog.FIELD_TYPES.keys;
   @reflectable String getFieldType(String key) => dartalog.FIELD_TYPES[key];
@@ -65,14 +64,14 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
       this.reset();
       clear("fields");
 
-      API.ListOfField data = await api.fields.getAll();
+      API.ListOfIdNamePair data = await api.fields.getAll();
 
-      for(API.Field f in data) {
-        add("fields", new Field.copy(f));
+      for(API.IdNamePair pair  in data) {
+        add("fields", new IdNamePair.copy(pair));
       }
     } catch (e, st) {
       _log.severe(e, st);
-      window.alert(e.toString());
+      this.handleException(e,st);
     }
   }
 
@@ -80,7 +79,6 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   @reflectable
   void reset() {
     clearValidation();
-    newField = true;
     currentId = "";
     set('currentField', new Field());
   }
@@ -93,11 +91,10 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   Future newItem() async {
     try {
       this.reset();
-      newField = true;
       editDialog.open();
     } catch (e, st) {
       _log.severe(e, st);
-      window.alert(e.toString());
+      this.handleException(e,st);
     }
   }
 
@@ -108,17 +105,10 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
       if(id==null)
         return;
 
-      Field field;
-      for(Field f in fields) {
-        if(f.id==id) {
-          field = f;
-          break;
-        }
-      }
-      if(field==null)
-        return;
+      API.Field field = await api.fields.get(id);
 
-      this.newField = false;
+      if(field==null)
+        throw new Exception("Selected field not found");
 
       currentId = id;
 
@@ -127,7 +117,7 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
       editDialog.open();
     } catch (e, st) {
       _log.severe(e, st);
-      window.alert(e.toString());
+      this.handleException(e,st);
     }
   }
 
@@ -147,7 +137,7 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
     try {
       API.Field field = new API.Field();
       currentField.copyTo(field);
-      if (this.newField) {
+      if (isNullOrWhitespace(this.currentId)) {
         await this.api.fields.create(field);
       } else {
         await this.api.fields.update(field, this.currentId);
@@ -155,16 +145,17 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
 
       refresh();
       editDialog.close();
+      showMessage("Field saved");
     } on API.DetailedApiRequestError catch  ( e, st) {
       try {
         handleApiError(e, generalErrorField: "output_field_error");
       } catch (e, st) {
         _log.severe(e, st);
-        window.alert(e.toString());
+        this.handleException(e,st);
       }
     } catch (e, st) {
       _log.severe(e, st);
-      window.alert(e.toString());
+      this.handleException(e,st);
     } finally {
     }
   }

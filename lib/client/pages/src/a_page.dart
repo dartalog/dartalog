@@ -8,6 +8,7 @@ abstract class APage extends PolymerElement {
 
   @property String title;
 
+
   void activate(DartalogApi api, Map args) {
     this.api = api;
     activateInternal(args);
@@ -33,6 +34,29 @@ abstract class APage extends PolymerElement {
       ele = ele.parent;
     }
     return null;
+  }
+
+  void handleException(e, st) {
+    showMessage(e.toString(), "error");
+  }
+
+  void showMessage(String message, [String severity]) {
+    PaperToast toastElement = document.querySelector('#global_toast');
+
+    if (toastElement == null) return;
+
+    if (toastElement.opened) toastElement.opened = false;
+
+    new Timer(new Duration(milliseconds: 300), () {
+      if (severity == "important") {
+        toastElement.classes.add("important");
+      } else {
+        toastElement.classes.remove("important");
+      }
+
+      toastElement.text = "$message";
+      toastElement.show();
+    });
   }
 
   void handleApiError(DetailedApiRequestError error, {String generalErrorField: "", String prefix: "input_"}) {

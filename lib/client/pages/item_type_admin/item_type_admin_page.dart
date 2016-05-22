@@ -37,10 +37,10 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
   ItemTypeAdminPage.created() : super.created( "Item Type Admin");
 
   @Property(notify: true)
-  List<ItemType> itemTypes = new List<ItemType>();
+  List<IdNamePair> itemTypes = new List<IdNamePair>();
 
   @Property(notify: true)
-  List<Field> fields = new List<Field>();
+  List<IdNamePair> fields = new List<IdNamePair>();
 
   @property ItemType currentItemType = new ItemType();
   String currentItemId = "";
@@ -63,27 +63,23 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
     try {
       clear("fields");
 
-      API.ListOfField data = await api.fields.getAll();
+      API.ListOfIdNamePair data = await api.fields.getAll();
 
-      for(API.Field f in data) {
-        add("fields", new Field.copy(f));
-      }
+      set("fields", IdNamePair.convertList(data));
     } catch(e,st) {
       _log.severe(e, st);
-      window.alert(e.toString());
+      this.handleException(e,st);
     }
   }
 
   Future loadItemTypes() async {
     try {
       clear("itemTypes");
-      API.ListOfItemType data = await api.itemTypes.getAll();
-      for(API.ItemType it in data) {
-        add("itemTypes", new ItemType.copy(it));
-      }
+      API.ListOfIdNamePair data = await api.itemTypes.getAll();
+      set("itemTypes", IdNamePair.convertList(data));
     } catch(e,st) {
       _log.severe(e, st);
-      window.alert(e.toString());
+      this.handleException(e,st);
     }
   }
 
@@ -91,22 +87,6 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
     set("currentItemType", new ItemType());
     currentItemId = "";
     clearValidation();
-  }
-
-  Field getField(String id) {
-    for(Field f in this.fields) {
-      if(f.id == id)
-        return f;
-    }
-    return null;
-  }
-
-  ItemType getItemType(String id) {
-    for(ItemType it in this.itemTypes) {
-      if(it.id == id)
-        return it;
-    }
-    return null;
   }
 
   @override
@@ -124,7 +104,7 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
       editDialog.open();
     } catch (e, st) {
       _log.severe(e, st);
-      window.alert(e.toString());
+      this.handleException(e,st);
     }
   }
 
@@ -138,7 +118,7 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
   itemTypeClicked(event, [_]) async {
     try {
       String id = event.target.dataset["id"];
-      ItemType itemType = this.getItemType(id);
+      API.ItemType itemType = await api.itemTypes.get(id);
 
       if(itemType==null)
         return;
@@ -148,7 +128,7 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
       editDialog.open();
     } catch(e,st) {
       _log.severe(e, st);
-      window.alert(e.toString());
+      this.handleException(e,st);
     }
   }
 
@@ -164,15 +144,10 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
         throw new Exception("Field has already been added");
       }
 
-      Field f = this.getField(id);
-      if(f==null)
-        throw new Exception("Invalid field selected: ${id}");
-
-
       add("currentItemType.fields",id);
     } catch(e,st) {
       _log.severe(e, st);
-      window.alert(e.toString());
+      this.handleException(e,st);
     }
   }
   @reflectable
@@ -191,7 +166,7 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
       removeItem("currentItemType.fields", id);
     } catch(e,st) {
       _log.severe(e, st);
-      window.alert(e.toString());
+      this.handleException(e,st);
     }
 
   }
@@ -214,11 +189,11 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
         handleApiError(e, generalErrorField: "output_error");
       } catch (e, st) {
         _log.severe(e, st);
-        window.alert(e.toString());
+        this.handleException(e,st);
       }
     } catch(e,st) {
       _log.severe(e, st);
-      window.alert(e.toString());
+      this.handleException(e,st);
     } finally {
     }
 

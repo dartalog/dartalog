@@ -50,7 +50,9 @@
 
             <div id="item_entry">
                 <template is="dom-repeat" items="{{itemTypeFields}}">
+                    <paper-input  value="{{getImportResultValue(item.id)}}" label="{{item.name}}"></paper-input>
                 </template>
+                <paper-button raised on-tap="saveClicked">Save</paper-button>
             </div>
         </iron-pages>
     </template>

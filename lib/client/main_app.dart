@@ -20,6 +20,7 @@ import 'package:polymer_elements/paper_header_panel.dart';
 import 'package:polymer_elements/paper_icon_button.dart';
 import 'package:polymer_elements/paper_toolbar.dart';
 import 'package:polymer_elements/paper_item.dart';
+import 'package:polymer_elements/paper_toast.dart';
 import 'package:polymer_elements/iron_pages.dart';
 import 'package:polymer_elements/iron_icons.dart';
 

@@ -8,10 +8,10 @@ class FieldResource extends AResource {
   }
 
   @ApiMethod(path: 'fields/')
-  Future<List<Field>> getAll() async {
+  Future<List<IdNamePair>> getAll() async {
     try {
       List<Field> output = await model.fields.getAll();
-      return output;
+      return IdNamePair.convertList(output);
     } catch (e, st) {
       _HandleException(e, st);
     }

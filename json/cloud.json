@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "511178fa3615a4b61c12a359137441c3d5ec851c",
+ "etag": "f328c444fe9721a2c50197161d00741565c30bda",
  "discoveryVersion": "v1",
  "id": "dartalog:0.1",
  "name": "dartalog",
@@ -14,11 +14,25 @@
  "servicePath": "dartalog/0.1/",
  "parameters": {},
  "schemas": {
-  "ListOfField": {
-   "id": "ListOfField",
+  "ListOfIdNamePair": {
+   "id": "ListOfIdNamePair",
    "type": "array",
    "items": {
-    "$ref": "Field"
+    "$ref": "IdNamePair"
+   }
+  },
+  "IdNamePair": {
+   "id": "IdNamePair",
+   "type": "object",
+   "properties": {
+    "id": {
+     "type": "string",
+     "required": true
+    },
+    "name": {
+     "type": "string",
+     "required": true
+    }
    }
   },
   "Field": {
@@ -51,11 +65,19 @@
     }
    }
   },
-  "ListOfItemType": {
-   "id": "ListOfItemType",
-   "type": "array",
-   "items": {
-    "$ref": "ItemType"
+  "ItemTypeResponse": {
+   "id": "ItemTypeResponse",
+   "type": "object",
+   "properties": {
+    "itemType": {
+     "$ref": "ItemType"
+    },
+    "fields": {
+     "type": "array",
+     "items": {
+      "$ref": "Field"
+     }
+    }
    }
   },
   "ItemType": {
@@ -91,21 +113,6 @@
     }
    }
   },
-  "ItemTypeResponse": {
-   "id": "ItemTypeResponse",
-   "type": "object",
-   "properties": {
-    "itemType": {
-     "$ref": "ItemType"
-    },
-    "fields": {
-     "type": "array",
-     "items": {
-      "$ref": "Field"
-     }
-    }
-   }
-  },
   "ListOfItem": {
    "id": "ListOfItem",
    "type": "array",
@@ -128,6 +135,15 @@
     "name": {
      "type": "string",
      "required": true
+    },
+    "parent": {
+     "type": "string"
+    },
+    "children": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
     },
     "fieldValues": {
      "type": "object",
@@ -269,7 +285,7 @@
      "parameters": {},
      "parameterOrder": [],
      "response": {
-      "$ref": "ListOfField"
+      "$ref": "ListOfIdNamePair"
      }
     },
     "get": {
@@ -299,6 +315,9 @@
      "parameterOrder": [],
      "request": {
       "$ref": "Field"
+     },
+     "response": {
+      "$ref": "IdResponse"
      }
     },
     "update": {
@@ -335,7 +354,7 @@
      "parameters": {},
      "parameterOrder": [],
      "response": {
-      "$ref": "ListOfItemType"
+      "$ref": "ListOfIdNamePair"
      }
     },
     "get": {
@@ -365,6 +384,9 @@
      "parameterOrder": [],
      "request": {
       "$ref": "ItemType"
+     },
+     "response": {
+      "$ref": "IdResponse"
      }
     },
     "update": {
@@ -384,6 +406,9 @@
      ],
      "request": {
       "$ref": "ItemType"
+     },
+     "response": {
+      "$ref": "IdResponse"
      }
     }
    },
@@ -428,6 +453,9 @@
      "parameterOrder": [],
      "request": {
       "$ref": "Item"
+     },
+     "response": {
+      "$ref": "IdResponse"
      }
     },
     "update": {
@@ -447,6 +475,9 @@
      ],
      "request": {
       "$ref": "Item"
+     },
+     "response": {
+      "$ref": "IdResponse"
      }
     }
    },

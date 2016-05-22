@@ -8,10 +8,10 @@ class ItemTypeResource extends AResource {
   }
 
   @ApiMethod(path: 'item_types/')
-  Future<List<ItemType>> getAll() async {
+  Future<List<IdNamePair>> getAll() async {
     try {
       List<ItemType> output = await model.itemTypes.getAll();
-      return output;
+      return IdNamePair.convertList(output);
     } catch (e, st) {
       _HandleException(e, st);
     }

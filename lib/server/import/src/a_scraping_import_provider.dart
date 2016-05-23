@@ -19,7 +19,9 @@ abstract class AScrapingImportProvider extends AImportProvider {
     Document doc = parse(contents);
 
     for(ImportFieldCriteria field in _getFieldCriteria()) {
-      output.values[field.field] = field.getFieldValues(doc);
+      List<String> values = field.getFieldValues(doc);
+      if(values.length>0)
+        output.values[field.field] = field.getFieldValues(doc);
     }
 
     return output;

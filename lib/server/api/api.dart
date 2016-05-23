@@ -6,6 +6,7 @@ import 'package:logging/logging.dart';
 import 'package:rpc/rpc.dart';
 import 'package:stack_trace/stack_trace.dart';
 
+import 'package:dartalog/dartalog.dart';
 import 'package:dartalog/tools.dart';
 import 'package:dartalog/server/model/model.dart' as model;
 import 'package:dartalog/server/import/import.dart';

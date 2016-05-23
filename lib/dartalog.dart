@@ -29,6 +29,10 @@ final Map<String,String> FIELD_TYPES = {
   'image': 'Image',
   'hidden': 'Hidden'};
 
+final List<String> RESERVED_WORDS = [
+  'id', 'name'
+];
+
 class ValidationException implements  Exception {
   String message;
   ValidationException(this.message);

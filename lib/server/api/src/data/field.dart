@@ -23,10 +23,17 @@ class Field extends AData {
         field_errors["id"] = "Already in use";
     }
 
+    if(RESERVED_WORDS.contains(this.id.trim())) {
+      field_errors["id"] = "Cannot use '${this.id}' as ID";
+    }
+
     if(isNullOrWhitespace(this.name))
       field_errors["name"] = "Required";
-    if(this.name.trim()=="name")
-      field_errors["name"] = "Cannot be named ""name""";
+
+    if(RESERVED_WORDS.contains(this.id.trim())) {
+      field_errors["id"] = "Cannot use '${this.id}' as name";
+    }
+
     if(isNullOrWhitespace(this.type))
       field_errors["type"] = "Required";
     if(!isNullOrWhitespace(this.format)) {

@@ -143,7 +143,6 @@ class ItemAddPage extends APage with ARefreshablePage {
       }
 
       newItem.name = this.getImportResultValue("name");
-      newItem.name = "TESTSADASDA";
 
       set("currentItem", newItem);
       set("currentItem.fields",newItem.fields);

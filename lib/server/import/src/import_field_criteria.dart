@@ -13,15 +13,24 @@ class ImportFieldCriteria {
   final bool contentsRegexMultiline;
   final int contentsRegexGroup;
 
+  final Map<String,String> replaceRegex;
+  final Map<RegExp,String> _replaceRegex = new Map<RegExp,String>();
+
   final bool multipleValues;
 
   ImportFieldCriteria({this.field, this.elementSelector, this.elementAttribute,  this.multipleValues: false,
                         this.trimValues: true,
-                        this.contentsRegex, this.contentsRegexGroup: 0, this.contentsRegexCaseSensitive: false, this.contentsRegexMultiline: true}) {
+                        this.contentsRegex, this.contentsRegexGroup: 0, this.contentsRegexCaseSensitive: false, this.contentsRegexMultiline: true,
+                        this.replaceRegex}) {
     if(!isNullOrWhitespace(contentsRegex)) {
       _contentsRegex = new RegExp(
           contentsRegex, multiLine: this.contentsRegexMultiline,
           caseSensitive: this.contentsRegexCaseSensitive);
+    }
+    if(this.replaceRegex!=null) {
+      for(String regex in this.replaceRegex.keys) {
+        this._replaceRegex[new RegExp(regex)] = this.replaceRegex[regex];
+      }
     }
   }
 
@@ -69,17 +78,23 @@ class ImportFieldCriteria {
 
     if(this._contentsRegex==null) {
       output.add(data);
-      return output;
-    }
-
-    Iterable<Match> matches = this._contentsRegex.allMatches(data);
-    if(matches!=null) {
-      for (Match m in matches) {
-        output.add(m.group(this.contentsRegexGroup));
-        if(!multipleValues)
-          return output;
+    } else {
+      Iterable<Match> matches = this._contentsRegex.allMatches(data);
+      if (matches != null) {
+        for (Match m in matches) {
+          output.add(m.group(this.contentsRegexGroup));
+          if (!multipleValues)
+            break;
+        }
       }
     }
+
+    for(RegExp regex in this._replaceRegex.keys) {
+      for(int i = 0; i < output.length; i++) {
+        output[i] = output[i].replaceAll(regex, this._replaceRegex[regex]);
+      }
+    }
+
 
     return output;
   }

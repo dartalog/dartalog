@@ -9,62 +9,52 @@ import 'dart:async';
 import 'package:logging/logging.dart';
 
 import 'package:polymer/polymer.dart';
-import 'package:paper_elements/paper_input.dart';
-import 'package:paper_elements/paper_button.dart';
-import 'package:paper_elements/paper_action_dialog.dart';
-import 'package:paper_elements/paper_shadow.dart';
-import 'package:paper_elements/paper_item.dart';
-import 'package:paper_elements/paper_dropdown.dart';
-import 'package:paper_elements/paper_dropdown_menu.dart';
-import 'package:core_elements/core_selector.dart';
-import 'package:core_elements/core_menu.dart';
+import 'package:web_components/web_components.dart';
+import 'package:polymer_elements/paper_icon_button.dart';
+import 'package:polymer_elements/iron_icon.dart';
+import 'package:polymer_elements/paper_input.dart';
+import 'package:polymer_elements/paper_button.dart';
+import 'package:polymer_elements/paper_dropdown_menu.dart';
+import 'package:polymer_elements/paper_listbox.dart';
+import 'package:polymer_elements/paper_card.dart';
+import 'package:polymer_elements/paper_dialog.dart';
+import 'package:polymer_elements/paper_dialog_scrollable.dart';
+import 'package:polymer_elements/iron_flex_layout.dart';
 
 
 import 'package:dartalog/dartalog.dart' as dartalog;
 import 'package:dartalog/client/pages/pages.dart';
+import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/client.dart';
 
 import '../../api/dartalog.dart' as API;
 
-/// A Polymer `<template-admin-page>` element.
-@CustomTag('item-browse-page')
+@PolymerRegister('item-browse-page')
 class ItemBrowsePage extends APage with ARefreshablePage {
   static final Logger _log = new Logger("ItemBrowsePage");
 
-  Map fields = new ObservableMap();
+  List<Item> items = new List<Item>();
 
-  /// Constructor used to create instance of MainApp.
   ItemBrowsePage.created() : super.created("Item Browse");
-
-  @observable Map items = new ObservableMap();
 
   void activateInternal(Map args) {
     this.refresh();
   }
 
   Future refresh() async {
-    this.clear();
     await loadItems();
   }
 
   Future loadItems() async {
     try {
-      items.clear();
-      API.MapOfItem data = await api.items.getAll();
-      items.addAll(data);
+      clear("items");
+      API.ListOfItemListing data = await api.items.getAll();
+      set("items", ItemListing.convertList(data));
     } catch(e,st) {
       _log.severe(e, st);
-      window.alert(e.toString());
+      this.handleException(e,st);
     }
   }
-
-  void clear() {
-  }
-
-  showModal(event, detail, target) {
-    String uuid = target.dataset['uuid'];
-  }
-
 
   itemClicked(event, detail, target) async {
     try {
@@ -72,7 +62,7 @@ class ItemBrowsePage extends APage with ARefreshablePage {
       window.location.hash = "item/${id}";
     } catch(e,st) {
       _log.severe(e, st);
-      window.alert(e.toString());
+      this.handleException(e,st);
     }
   }
 

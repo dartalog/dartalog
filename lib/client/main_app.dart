@@ -27,7 +27,7 @@ import 'package:polymer_elements/iron_icons.dart';
 import 'package:dartalog/client/api/dartalog.dart';
 import 'package:dartalog/client/controls/paper_toast_queue/paper_toast_queue.dart';
 import 'package:dartalog/client/pages/pages.dart';
-//import 'package:dartalog/client/pages/item_browse/item_browse_page.dart';
+import 'package:dartalog/client/pages/item_browse/item_browse_page.dart';
 import 'package:dartalog/client/pages/item_add/item_add_page.dart';
 //import 'package:dartalog/client/pages/item/item_page.dart';
 import 'package:dartalog/client/pages/field_admin/field_admin_page.dart';
@@ -37,8 +37,8 @@ import 'package:dartalog/client/pages/item_type_admin/item_type_admin_page.dart'
 /// Uses [PaperInput]
 @PolymerRegister('main-app')
 class MainApp extends PolymerElement {
-  @property String visiblePageTitle = "Field Admin";
-  @property String visiblePage = "field_admin";
+  @property String visiblePageTitle = "Dartalog";
+  @property String visiblePage = "item_browse";
   @property bool visiblePageRefreshable = false;
 
   final Router router = new Router(useFragment: true);
@@ -64,9 +64,9 @@ class MainApp extends PolymerElement {
 
     // Set up the routes for all the pages.
     router.root.addRoute(
-        name: "browse",
+        name: "item_browse",
         path: "browse",
-        defaultRoute: false,
+        defaultRoute: true,
         enter: enterRoute);
     router.root.addRoute(
         name: "item",
@@ -81,7 +81,7 @@ class MainApp extends PolymerElement {
     router.root.addRoute(
         name: "field_admin",
         path: "field_admin",
-        defaultRoute: true,
+        defaultRoute: false,
         enter: enterRoute);
     router.root.addRoute(
         name: "item_type_admin",

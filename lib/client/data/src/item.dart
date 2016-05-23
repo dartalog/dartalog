@@ -20,6 +20,15 @@ class Item {
     return output;
   }
 
+  void set values(Map<String,String> newValues) {
+    for(String key in newValues.keys) {
+      Field f = getField(key);
+      if(f==null)
+        continue;
+      f.value = newValues[key];
+    }
+  }
+
   Item();
 
   Item.forType(ItemType type) {
@@ -32,6 +41,14 @@ class Item {
     if(input.type!=null)
       this.type  = new ItemType.copy(input.type);
     _copy(input,this);
+  }
+
+  Field getField(String id) {
+    for(Field f in this.fields) {
+      if(f.id==id)
+        return f;
+    }
+    return null;
   }
 
   String getFieldValue(String id) {
@@ -49,4 +66,11 @@ class Item {
     to.values = from.values;
   }
 
+  static List<Item> convertList(Iterable input) {
+    List<Item> output = new List<Item>();
+    for(dynamic obj in input) {
+      output.add(new Item.copy(obj));
+    }
+    return output;
+  }
 }

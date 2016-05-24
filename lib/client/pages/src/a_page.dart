@@ -7,17 +7,26 @@ abstract class APage extends PolymerElement {
 
   DartalogApi api;
 
-  @property String title;
+  @Property(notify: true)
+  String title;
 
 
   void activate(DartalogApi api, Map args) {
     this.api = api;
     activateInternal(args);
   }
+
   void activateInternal(Map args);
 
   void clearValidation() {
+  }
 
+  void setTitle(String newTitle) {
+    this.title = newTitle;
+    set("title", newTitle);
+    dynamic parent = getParentElement(this,"main-app");
+    if(parent!=null)
+      parent.notifyTitleUpdate();
   }
 
   Element getParentElement(Element start, String tagName) {

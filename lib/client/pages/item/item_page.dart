@@ -9,35 +9,36 @@ import 'dart:async';
 import 'package:logging/logging.dart';
 
 import 'package:polymer/polymer.dart';
-import 'package:paper_elements/paper_input.dart';
-import 'package:paper_elements/paper_button.dart';
-import 'package:paper_elements/paper_action_dialog.dart';
-import 'package:paper_elements/paper_shadow.dart';
-import 'package:paper_elements/paper_item.dart';
-import 'package:paper_elements/paper_dropdown.dart';
-import 'package:paper_elements/paper_dropdown_menu.dart';
-import 'package:core_elements/core_selector.dart';
-import 'package:core_elements/core_menu.dart';
+import 'package:web_components/web_components.dart';
+import 'package:polymer_elements/paper_icon_button.dart';
+import 'package:polymer_elements/iron_icon.dart';
+import 'package:polymer_elements/paper_input.dart';
+import 'package:polymer_elements/paper_button.dart';
+import 'package:polymer_elements/paper_dropdown_menu.dart';
+import 'package:polymer_elements/paper_listbox.dart';
+import 'package:polymer_elements/paper_card.dart';
+import 'package:polymer_elements/paper_dialog.dart';
+import 'package:polymer_elements/paper_dialog_scrollable.dart';
+import 'package:polymer_elements/iron_flex_layout.dart';
 
 
 import 'package:dartalog/dartalog.dart' as dartalog;
-import 'package:dartalog/tools.dart';
 import 'package:dartalog/client/pages/pages.dart';
+import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/client.dart';
+import 'package:dartalog/tools.dart';
 
 import '../../api/dartalog.dart' as API;
 
-/// A Polymer `<template-admin-page>` element.
-@CustomTag('item-page')
+@PolymerRegister('item-page')
 class ItemPage extends APage with ARefreshablePage {
   static final Logger _log = new Logger("ItemPage");
 
-  @observable String currentItemId = null;
-  @observable Map fields = new ObservableMap();
+  String currentItemId = "";
 
-  API.ItemResponse currentItem = null;
+  @Property(notify: true)
+  Item currentItem = new Item();
 
-  /// Constructor used to create instance of MainApp.
   ItemPage.created() : super.created("Item View");
 
   @override
@@ -55,68 +56,16 @@ class ItemPage extends APage with ARefreshablePage {
 
   Future loadItem() async {
     try {
-      this.clear();
-
-      this.currentItem = await api.items.get(this.currentItemId);
+      API.Item item = await api.items.get(this.currentItemId, expand: "type,type.fields");
+      Item newItem = new Item.copy(item);
+      set("currentItem", newItem);
+      set("currentItem.fields",newItem.fields);
+      setTitle(newItem.name);
     } catch(e,st) {
       _log.severe(e, st);
-      window.alert(e.toString());
+      this.handleException(e,st);
     }
   }
 
-  void clear() {
-    this.currentItem = null;
-    this.currentItemId = null;
-    this.fields.clear();
-  }
-
-  showModal(event, detail, target) {
-    String uuid = target.dataset['uuid'];
-  }
-
-
-  templateClicked(event, detail, target) async {
-    try {
-      String id = target.dataset["id"];
-      API.ItemType template = this.itemTypes[id];
-
-      this.current_id = id;
-      this.current_name = template.name;
-      this.current_fields.clear();
-      this.current_fields.addAll(template.fields);
-    } catch(e,st) {
-      _log.severe(e, st);
-      window.alert(e.toString());
-    }
-  }
-
-  validateField(event, detail, target) {
-    _log.info("Validating");
-  }
-
-  clearClicked(event, detail, target) async {
-    this.clear();
-  }
-  saveClicked(event, detail, target) async {
-    try {
-
-      API.Template template = new API.Template();
-
-      template.name = this.current_name;
-      template.fields = this.current_fields;
-
-      if(this.current_id==null) {
-        await this.api.itemTypes.create(template);
-      } else {
-        await this.api.itemTypes.update(template, this.current_id);
-      }
-    } catch(e,st) {
-      _log.severe(e, st);
-      window.alert(e.toString());
-    } finally {
-      this.refresh();
-    }
-
-  }
 
 }

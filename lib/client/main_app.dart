@@ -29,7 +29,7 @@ import 'package:dartalog/client/controls/paper_toast_queue/paper_toast_queue.dar
 import 'package:dartalog/client/pages/pages.dart';
 import 'package:dartalog/client/pages/item_browse/item_browse_page.dart';
 import 'package:dartalog/client/pages/item_add/item_add_page.dart';
-//import 'package:dartalog/client/pages/item/item_page.dart';
+import 'package:dartalog/client/pages/item/item_page.dart';
 import 'package:dartalog/client/pages/field_admin/field_admin_page.dart';
 import 'package:dartalog/client/pages/item_type_admin/item_type_admin_page.dart';
 
@@ -37,15 +37,18 @@ import 'package:dartalog/client/pages/item_type_admin/item_type_admin_page.dart'
 /// Uses [PaperInput]
 @PolymerRegister('main-app')
 class MainApp extends PolymerElement {
-  @property String visiblePageTitle = "Dartalog";
   @property String visiblePage = "item_browse";
   @property bool visiblePageRefreshable = false;
+  @property bool visiblePageSearchable = false;
+  @property bool visiblePageAddable = false;
 
   final Router router = new Router(useFragment: true);
 
   final DartalogApi api = new DartalogApi(new http.BrowserClient(), rootUrl: "http://localhost:3278/", servicePath: "api/dartalog/0.1/");
 
-  APage get currentPage => $[visiblePage];
+  @Property(notify: true)
+  APage currentPage = null;
+
   PaperDrawerPanel get drawerPanel => $["drawerPanel"];
 
   FieldAdminPage get fieldAdmin=> $['field_admin'];
@@ -69,7 +72,7 @@ class MainApp extends PolymerElement {
         defaultRoute: true,
         enter: enterRoute);
     router.root.addRoute(
-        name: "item",
+        name: "item_view",
         path: "item/:itemId",
         defaultRoute: false,
         enter: enterRoute);
@@ -92,6 +95,15 @@ class MainApp extends PolymerElement {
     router.listen();
   }
 
+  void setCurrentPage(APage page) {
+    set("currentPage", page);
+    notifyTitleUpdate();
+  }
+
+  void notifyTitleUpdate() {
+    set("currentPage.title", currentPage.title);
+  }
+
   void routeChanged() {
     if (visiblePage is! String) return;
     router.go("field_admin", {});
@@ -101,19 +113,31 @@ class MainApp extends PolymerElement {
     try {
       set("visiblePage", e.route.name);
       set("visiblePageRefreshable", false);
+      set("visiblePageAddable", false);
+      set("visiblePageSearchable", false);
 
-      if (this.currentPage == null) {
-        set("visiblePageTitle", "PAGE MISSING");
+      dynamic page = $[e.route.name];
+
+      if (page == null) {
         throw new Exception("Page not found: ${this.visiblePage}");
       }
-      if(!(this.currentPage is APage)) {
-        throw new Exception("Unknown element type: ${this.currentPage.runtimeType.toString()}");
+
+      if(!(page is APage)) {
+        throw new Exception("Unknown element type: ${page.runtimeType.toString()}");
       }
+
+      setCurrentPage(page);
 
       this.currentPage.activate(this.api, e.parameters);
 
       if (currentPage is ARefreshablePage) {
-        this.visiblePageRefreshable = true;
+        set("visiblePageRefreshable", true);
+      }
+      if (currentPage is ACollectionPage) {
+        set("visiblePageAddable", true);
+      }
+      if (currentPage is ASearchablePage) {
+        set("visiblePageSearchable", true);
       }
 
       set("visiblePageTitle", this.currentPage.title);

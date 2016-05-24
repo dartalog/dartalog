@@ -1,6 +1,6 @@
 part of data;
 
-class ItemListing {
+class ItemListing extends JsProxy {
   @reflectable
   String id;
   @reflectable

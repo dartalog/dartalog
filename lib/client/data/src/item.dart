@@ -38,12 +38,17 @@ class Item {
   }
 
   Item.copy(dynamic input) {
-    if(input.type!=null)
-      this.type  = new ItemType.copy(input.type);
+    if(input.type!=null) {
+      this.type = new ItemType.copy(input.type);
+      if(this.type.fields!=null)
+        this.fields = this.type.fields;
+    }
     _copy(input,this);
   }
 
   Field getField(String id) {
+    if(this.fields==null)
+      return null;
     for(Field f in this.fields) {
       if(f.id==id)
         return f;

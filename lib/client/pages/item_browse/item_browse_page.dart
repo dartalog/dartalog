@@ -26,6 +26,7 @@ import 'package:dartalog/dartalog.dart' as dartalog;
 import 'package:dartalog/client/pages/pages.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/client.dart';
+import 'package:dartalog/tools.dart';
 
 import '../../api/dartalog.dart' as API;
 
@@ -33,7 +34,8 @@ import '../../api/dartalog.dart' as API;
 class ItemBrowsePage extends APage with ARefreshablePage {
   static final Logger _log = new Logger("ItemBrowsePage");
 
-  List<Item> items = new List<Item>();
+  @Property(notify: true)
+  List<Item> itemsList = new List<Item>();
 
   ItemBrowsePage.created() : super.created("Item Browse");
 
@@ -47,18 +49,23 @@ class ItemBrowsePage extends APage with ARefreshablePage {
 
   Future loadItems() async {
     try {
-      clear("items");
+      clear("itemsList");
       API.ListOfItemListing data = await api.items.getAll();
-      set("items", ItemListing.convertList(data));
+      set("itemsList", ItemListing.convertList(data));
     } catch(e,st) {
       _log.severe(e, st);
       this.handleException(e,st);
     }
   }
 
-  itemClicked(event, detail, target) async {
+  @reflectable
+  itemClicked(event, [_]) async {
     try {
-      String id = target.dataset["id"];
+      dynamic ele = getParentElement(event.target, "paper-card");
+      String id = ele.dataset["id"];
+      if(isNullOrWhitespace(id))
+        return;
+
       window.location.hash = "item/${id}";
     } catch(e,st) {
       _log.severe(e, st);

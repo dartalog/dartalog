@@ -4,15 +4,17 @@
 -->
 
 <!-- import polymer-element's definition -->
-    <dom-module name="item-browse-page">
+<dom-module name="item-browse-page">
     <link rel="stylesheet" href="item_browse_page.css">
 
     <template>
-
-
-
-    <template is="dom-repeat" items="{{items}}">
-        <paper-item data-id="{{item.id}}" on-tap="itemClicked">{{item.name}}</paper-item>
+    <template is="dom-repeat" items="{{itemsList}}">
+        <paper-card class="rate" data-id$="{{item.id}}" on-tap="itemClicked">
+            <div class="card-content">
+                <img class="item_thumbnail" image="{{item.thumbnail}}" />
+                <span>{{item.name}}</span>
+            </div>
+        </paper-card>
     </template>
     </template>
 </dom-module>

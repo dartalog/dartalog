@@ -3,18 +3,23 @@
   is governed by a BSD-style license that can be found in the LICENSE file.
 -->
 
-<!-- import polymer-element's definition -->
-<polymer-element name="item-page">
+<dom-module name="item-page">
+    <link rel="stylesheet" href="item_page.css">
     <template>
-        <link rel="stylesheet" href="item_page.css">
-
-
-        <core-selector>
-            <template repeat="{{item in items.keys}}">
-                <paper-shadow z="1">
-                    <paper-item data-id="{{item}}">{{item}}</paper-item>
-                </paper-shadow>
+        <paper-item style="background-color: black">
+            <template is="dom-repeat" items="{{currentItem.fields}}">
+                <template is="dom-if" if="{{item.isTypeImage}}" restamp="true">
+                    <a href="[[item.value]]" ><img src="[[item.value]]" height="100" /></a>
+                </template>
             </template>
-        </core-selector>
+        </paper-item>
+        <template is="dom-repeat" items="{{currentItem.fields}}">
+            <template is="dom-if" if="{{item.isTypeString}}" restamp="true">
+                <paper-item data-id="[[item.id]]">
+                    <span>[[item.name]]</span>:
+                    <span>[[item.value]]</span>
+                </paper-item>
+            </template>
+        </template>
     </template>
-</polymer-element>
+</dom-module>

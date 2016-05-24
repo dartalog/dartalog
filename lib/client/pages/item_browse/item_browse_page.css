@@ -4,3 +4,7 @@
 paper-item {
     background-color: white;
 }
+
+img.item_thumbnail {
+    height:100px;
+}

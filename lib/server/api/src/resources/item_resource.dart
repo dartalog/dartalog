@@ -26,14 +26,18 @@ class ItemResource extends AResource {
         throw new NotFoundError("Item '${id}' not found");
       }
 
-      List<String> expands = expand.split(",");
-      if(expands.contains("type")) {
-        output.type = await model.itemTypes.get(output.typeId);
-        if(output.type==null) {
-          throw new InternalServerError("Item type '${output.typeId}' specified for item not found");
-        }
-        if(expands.contains("type.fields")) {
-          output.type.fields = await model.fields.getAllForIDs(output.type.fieldIds);
+      if(!isNullOrWhitespace(expand)) {
+        List<String> expands = expand.split(",");
+        if (expands.contains("type")) {
+          output.type = await model.itemTypes.get(output.typeId);
+          if (output.type == null) {
+            throw new InternalServerError(
+                "Item type '${output.typeId}' specified for item not found");
+          }
+          if (expands.contains("type.fields")) {
+            output.type.fields =
+            await model.fields.getAllForIDs(output.type.fieldIds);
+          }
         }
       }
       return output;

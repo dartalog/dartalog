@@ -19,6 +19,7 @@ ApiRequestError, DetailedApiRequestError, ApiRequestErrorDetail;
 
 part 'src/a_page.dart';
 part 'src/a_refreshable_page.dart';
+part 'src/a_searchable_page.dart';
 part 'src/a_collection_page.dart';
 
 class Paths {

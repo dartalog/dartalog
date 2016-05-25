@@ -22,6 +22,7 @@ import 'package:polymer_elements/iron_pages.dart';
 
 import 'package:dartalog/dartalog.dart' as dartalog;
 import 'package:dartalog/client/pages/pages.dart';
+import 'package:dartalog/client/controls/item_edit/item_edit.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/api/dartalog.dart' as API;
@@ -45,8 +46,6 @@ class ItemAddPage extends APage with ARefreshablePage {
   @Property(notify: true)
   List<IdNamePair> itemTypes= new List<IdNamePair>();
 
-  @Property(notify: true)
-  Item currentItem = new Item();
 
   API.ImportResult importResult = null;
 
@@ -59,8 +58,8 @@ class ItemAddPage extends APage with ARefreshablePage {
     return importResult.values[name][0];
   }
 
-  void activateInternal(Map args) {
-    this.refresh();
+  Future activateInternal(Map args) async {
+    await this.refresh();
   }
 
   @override
@@ -158,10 +157,6 @@ class ItemAddPage extends APage with ARefreshablePage {
   @reflectable
   saveClicked(event, [_]) async {
     try {
-      API.Item newItem = new API.Item();
-
-      currentItem.copyTo(newItem);
-      await api.items.create(newItem);
 
       showMessage("Item created succesfully");
     } catch (e, st) {

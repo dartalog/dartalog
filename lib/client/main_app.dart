@@ -4,6 +4,7 @@
 library dartalog.client.main_app;
 
 import 'dart:html';
+import 'dart:async';
 import 'package:http/browser_client.dart' as http;
 import 'package:route_hierarchical/client.dart';
 import 'package:logging/logging.dart';
@@ -24,6 +25,7 @@ import 'package:polymer_elements/paper_toast.dart';
 import 'package:polymer_elements/iron_pages.dart';
 import 'package:polymer_elements/iron_icons.dart';
 
+import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/api/dartalog.dart';
 import 'package:dartalog/client/controls/paper_toast_queue/paper_toast_queue.dart';
 import 'package:dartalog/client/pages/pages.dart';
@@ -38,9 +40,14 @@ import 'package:dartalog/client/pages/item_type_admin/item_type_admin_page.dart'
 @PolymerRegister('main-app')
 class MainApp extends PolymerElement {
   @property String visiblePage = "item_browse";
-  @property bool visiblePageRefreshable = false;
-  @property bool visiblePageSearchable = false;
-  @property bool visiblePageAddable = false;
+
+  @property bool showRefresh = false;
+  @property bool showSearch= false;
+  @property bool showAdd = false;
+  @property bool showEdit = false;
+  @property bool showDelete = false;
+
+  @property bool showBack = false;
 
   final Router router = new Router(useFragment: true);
 
@@ -66,55 +73,70 @@ class MainApp extends PolymerElement {
     Logger.root.onRecord.listen(new LogPrintHandler());
 
     // Set up the routes for all the pages.
-    router.root.addRoute(
-        name: "item_browse",
-        path: "browse",
+
+    router.root
+
+    ..addRoute(
+        name: BROWSE_ROUTE_NAME,
+        path: "items",
         defaultRoute: true,
-        enter: enterRoute);
-    router.root.addRoute(
-        name: "item_view",
-        path: "item/:itemId",
-        defaultRoute: false,
-        enter: enterRoute);
-    router.root.addRoute(
+        enter: enterRoute,
+        mount: (router) => router.addRoute(
+          name: ITEM_VIEW_ROUTE_NAME,
+          path: "/:${ITEM_VIEW_ROUTE_ARG_ITEM_ID_NAME}",
+          defaultRoute: false,
+          enter: enterRoute)
+    )
+    ..addRoute(
         name: "item_add",
-        path: "item_add",
+        path: "new",
         defaultRoute: false,
-        enter: enterRoute);
-    router.root.addRoute(
+        enter: enterRoute)
+    ..addRoute(
         name: "field_admin",
-        path: "field_admin",
+        path: "fields",
         defaultRoute: false,
-        enter: enterRoute);
-    router.root.addRoute(
-        name: "item_type_admin",
-        path: "item_type_admin",
-        defaultRoute: false,
-        enter: enterRoute);
+        enter: enterRoute)
+      ..addRoute(
+          name: "item_type_admin",
+          path: "item_types",
+          defaultRoute: false,
+          enter: enterRoute)
+      ..addRoute(
+          name: "logging_output",
+          path: "logging_output",
+          defaultRoute: false,
+          enter: enterRoute);
 
     router.listen();
   }
 
-  void setCurrentPage(APage page) {
-    set("currentPage", page);
-    notifyTitleUpdate();
+  @reflectable
+  drawerItemClicked(event, [_]) async {
+    Element ele = getParentElement(event.target, "paper-item");
+    if(ele!=null) {
+      String route = ele.dataset["route"];
+      activateRoute(route);
+    }
   }
 
-  void notifyTitleUpdate() {
-    set("currentPage.title", currentPage.title);
+  activateRoute(String route, {Map<String,String> arguments}) {
+    if(arguments==null)
+      arguments = new Map<String,String>();
+    router.go(route,arguments);
   }
+
 
   void routeChanged() {
     if (visiblePage is! String) return;
     router.go("field_admin", {});
   }
 
-  void enterRoute(RouteEvent e) {
+  Future enterRoute(RouteEvent e) async {
     try {
       set("visiblePage", e.route.name);
-      set("visiblePageRefreshable", false);
-      set("visiblePageAddable", false);
-      set("visiblePageSearchable", false);
+
+      set("showBack", (router.activePath.length>1));
 
       dynamic page = $[e.route.name];
 
@@ -126,24 +148,38 @@ class MainApp extends PolymerElement {
         throw new Exception("Unknown element type: ${page.runtimeType.toString()}");
       }
 
-      setCurrentPage(page);
-
-      this.currentPage.activate(this.api, e.parameters);
-
-      if (currentPage is ARefreshablePage) {
-        set("visiblePageRefreshable", true);
-      }
-      if (currentPage is ACollectionPage) {
-        set("visiblePageAddable", true);
-      }
-      if (currentPage is ASearchablePage) {
-        set("visiblePageSearchable", true);
-      }
-
-      set("visiblePageTitle", this.currentPage.title);
+      set("currentPage", page);
+      evaluatePage();
+      await this.currentPage.activate(this.api, e.parameters);
     } catch(e,st) {
       window.alert(e.toString());
     }
+  }
+
+  void handleException(e, st) {
+    showMessage(e.toString(), "error");
+  }
+
+  void showMessage(String message, [String severity]) {
+    PaperToastQueue toastElement = $['global_toast'];
+    if(toastElement!=null)
+      toastElement.enqueueMessage(message, severity);
+  }
+
+  void evaluatePage() {
+    set("currentPage.title", currentPage.title);
+
+    //set("showBack", currentPage.showBackButton);
+
+    set("showRefresh", currentPage is ARefreshablePage);
+
+    set("showAdd", currentPage is ACollectionPage);
+
+    set("showSearch", currentPage is ASearchablePage);
+
+    set("showDelete", currentPage is ADeletablePage);
+
+    set("showEdit", currentPage is AEditablePage);
   }
 
   @reflectable
@@ -160,6 +196,25 @@ class MainApp extends PolymerElement {
       ACollectionPage page = currentPage as ACollectionPage;
       page.newItem();
     }
+  }
+
+
+  @reflectable
+  deleteClicked(event, [_]) async {
+    if (currentPage is ADeletablePage) {
+      dynamic page = currentPage;
+      page.delete();
+    }
+  }
+
+
+  @reflectable
+  backClicked(event, [_]) async {
+    if(router.activePath.length==1)
+      return;
+    Route r = router.activePath[router.activePath.length-2];
+
+    router.go(r.name, r.parameters);
   }
 
   // Optional lifecycle methods - uncomment if needed.

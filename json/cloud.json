@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "9af71a4082e9163dd29d7931da344dddb1fd2515",
+ "etag": "1c889ed14adc811ec51c34925c4a96766556c155",
  "discoveryVersion": "v1",
  "id": "dartalog:0.1",
  "name": "dartalog",
@@ -133,15 +133,14 @@
    "id": "Item",
    "type": "object",
    "properties": {
-    "typeId": {
-     "type": "string",
-     "required": true
-    },
     "id": {
-     "type": "string",
-     "required": true
+     "type": "string"
     },
     "name": {
+     "type": "string",
+     "required": true
+    },
+    "typeId": {
      "type": "string",
      "required": true
     },
@@ -476,6 +475,22 @@
      "response": {
       "$ref": "IdResponse"
      }
+    },
+    "delete": {
+     "id": "DartalogApi.items.delete",
+     "path": "items/{id}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ]
     }
    },
    "resources": {}

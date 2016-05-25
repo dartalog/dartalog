@@ -11,7 +11,7 @@ import 'package:_discoveryapis_commons/_discoveryapis_commons.dart' as commons;
 import 'package:http/http.dart' as http;
 
 export 'package:_discoveryapis_commons/_discoveryapis_commons.dart' show
-    ApiRequestError, DetailedApiRequestError, ApiRequestErrorDetail;
+    ApiRequestError, DetailedApiRequestError;
 
 const core.String USER_AGENT = 'dart-api-client dartalog/0.1';
 
@@ -526,6 +526,43 @@ class ItemsResourceApi {
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
     return _response.then((data) => new IdResponse.fromJson(data));
+  }
+
+  /**
+   * Request parameters:
+   *
+   * [id] - Path parameter: 'id'.
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future delete(core.String id) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (id == null) {
+      throw new core.ArgumentError("Parameter id is required.");
+    }
+
+    _downloadOptions = null;
+
+    _url = 'items/' + commons.Escaper.ecapeVariable('$id') + '/';
+
+    var _response = _requester.request(_url,
+                                       "DELETE",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => null);
   }
 
   /**

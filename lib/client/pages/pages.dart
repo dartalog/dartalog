@@ -16,10 +16,14 @@ import 'package:_discoveryapis_commons/_discoveryapis_commons.dart' as commons;
 export 'package:_discoveryapis_commons/_discoveryapis_commons.dart' show
 ApiRequestError, DetailedApiRequestError, ApiRequestErrorDetail;
 
+import 'package:dartalog/client/main_app.dart';
+
 
 part 'src/a_page.dart';
 part 'src/a_refreshable_page.dart';
 part 'src/a_searchable_page.dart';
+part 'src/a_deletable_page.dart';
+part 'src/a_editable_page.dart';
 part 'src/a_collection_page.dart';
 
 class Paths {

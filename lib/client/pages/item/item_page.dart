@@ -31,7 +31,7 @@ import 'package:dartalog/tools.dart';
 import '../../api/dartalog.dart' as API;
 
 @PolymerRegister('item-page')
-class ItemPage extends APage with ARefreshablePage {
+class ItemPage extends APage with ARefreshablePage, ADeletablePage, AEditablePage {
   static final Logger _log = new Logger("ItemPage");
 
   String currentItemId = "";
@@ -39,15 +39,17 @@ class ItemPage extends APage with ARefreshablePage {
   @Property(notify: true)
   Item currentItem = new Item();
 
-  ItemPage.created() : super.created("Item View");
+  ItemPage.created() : super.created("Item View") {
+    this.showBackButton = true;
+  }
 
   @override
-  void activateInternal(Map args) {
+  Future activateInternal(Map args) async {
     if(isNullOrWhitespace(args["itemId"])) {
       throw new Exception("itemId is required");
     }
     this.currentItemId = args["itemId"];
-    this.refresh();
+    await this.refresh();
   }
 
   Future refresh() async {
@@ -66,6 +68,20 @@ class ItemPage extends APage with ARefreshablePage {
       this.handleException(e,st);
     }
   }
+
+  Future delete() async {
+    try {
+      if(!window.confirm("Are you sure you want to delete this item?"))
+        return;
+      await api.items.delete(currentItem.id);
+      showMessage("Item deleted");
+      mainApp.activateRoute(BROWSE_ROUTE_NAME);
+    } catch(e,st) {
+      _log.severe(e, st);
+      this.handleException(e,st);
+    }
+  }
+
 
 
 }

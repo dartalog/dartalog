@@ -53,6 +53,18 @@ class _MongoItemModel extends AItemModel  {
       return id;
     }
   }
+  Future delete(String id) async {
+    _MongoDatabase con = await _MongoDatabase.getConnection();
+    mongo.DbCollection collection = await con.getItemsCollection();
+    if(tools.isNullOrWhitespace(id)) {
+      throw new InvalidInputException("ID is required");
+    }
+    dynamic criteria;
+    criteria = mongo.where.eq("id", id);
+    await collection.remove(criteria);
+
+  }
+
 
 
   api.Item _createItem(Map data) {

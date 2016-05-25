@@ -16,60 +16,69 @@
                     <span class="title">Dartalog</span>
                 </paper-toolbar>
                 <div>
-                    <paper-item>
+                    <paper-item on-tap="drawerItemClicked" data-route="log_in">
                         <iron-icon icon="label-outline"></iron-icon>
-                        <paper-item-body>
-                            <a href="#browse">Log In</a>
-                        </paper-item-body>
+                        <paper-item-body>Log In</paper-item-body>
                     </paper-item>
-                    <paper-item>
+                    <paper-item on-tap="drawerItemClicked" data-route="browse">
                         <iron-icon icon="label-outline"></iron-icon>
-                        <paper-item-body>
-                            <a href="#browse">Browse Items</a>
-                        </paper-item-body>
+                        <paper-item-body>Browse Items</paper-item-body>
                     </paper-item>
-                    <paper-item>
+                    <paper-item on-tap="drawerItemClicked" data-route="item_add">
                         <iron-icon icon="label-outline"></iron-icon>
-                        <paper-item-body>
-                            <a href="#item_add">Add Item</a>
-                        </paper-item-body>
+                        <paper-item-body>Add Item</paper-item-body>
                     </paper-item>
-                    <paper-item>
+                    <paper-item on-tap="drawerItemClicked" data-route="field_admin">
                         <iron-icon icon="label-outline"></iron-icon>
-                        <paper-item-body>
-                            <a href="#field_admin">Fields</a>
-                        </paper-item-body>
+                        <paper-item-body>Fields</paper-item-body>
                     </paper-item>
-                    <paper-item>
+                    <paper-item on-tap="drawerItemClicked" data-route="item_type_admin">
                         <iron-icon icon="label-outline"></iron-icon>
-                        <paper-item-body>
-                            <a href="#item_type_admin">Item Types</a>
-                        </paper-item-body>
+                        <paper-item-body>Item Types</paper-item-body>
+                    </paper-item>
+                    <paper-item on-tap="drawerItemClicked" data-route="logging_output">
+                        <iron-icon icon="label-outline"></iron-icon>
+                        <paper-item-body>Logging Output</paper-item-body>
                     </paper-item>
                 </div>
             </paper-header-panel>
             <paper-header-panel class="main" main mode="waterfall">
                 <!-- Main Toolbar -->
                 <paper-toolbar>
-                    <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
+                    <template is="dom-if" if="[[!showBack]]">
+                        <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
+                    </template>
+                    <template is="dom-if" if="[[showBack]]">
+                        <paper-icon-button icon="chevron-left" on-tap="backClicked"></paper-icon-button>
+                    </template>
+
                     <span class="title">[[currentPage.title]]</span>
-                    <template is="dom-if" if="[[visiblePageRefreshable]]" restamp="true">
+                    <template is="dom-if" if="[[showRefresh]]">
                         <paper-icon-button icon="refresh" on-tap="refreshClicked"></paper-icon-button>
                     </template>
-                    <template is="dom-if" if="[[visiblePageAddable]]" restamp="true">
+                    <template is="dom-if" if="[[showDelete]]">
+                        <paper-icon-button icon="delete" on-tap="deleteClicked"></paper-icon-button>
+                    </template>
+                    <template is="dom-if" if="[[showEdit]]">
+                        <paper-icon-button icon="create" on-tap="addClicked"></paper-icon-button>
+                    </template>
+                    <template is="dom-if" if="[[showAdd]]">
                         <paper-icon-button icon="add" on-tap="addClicked"></paper-icon-button>
                     </template>
                 </paper-toolbar>
                 <!-- Main Content -->
                 <div class="content fit">
-                    <paper-toast-queue id="global_toast" ></paper-toast-queue>
                     <iron-pages  attr-for-selected="id" selected="[[visiblePage]]">
-                        <item-browse-page id="item_browse"  class="fit"></item-browse-page>
+                        <item-browse-page id="browse"  class="fit"></item-browse-page>
                         <item-page id="item_view"  class="fit"></item-page>
                         <item-add-page id="item_add"  class="fit"></item-add-page>
                         <field-admin-page id="field_admin"  class="fit"></field-admin-page>
                         <item-type-admin-page id="item_type_admin"  class="fit"></item-type-admin-page>
+                        <div class="fit" id="logging_output">
+
+                        </div>
                     </iron-pages>
+                    <paper-toast-queue id="global_toast" ></paper-toast-queue>
                 </div>
             </paper-header-panel>
         </paper-drawer-panel>

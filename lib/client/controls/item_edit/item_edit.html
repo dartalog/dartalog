@@ -9,8 +9,17 @@
     <style include="iron-flex"></style>
 
     <template>
-        <paper-toast id="toaster">
-        <paper-button on-tap="closeToast" class="white-button">Close</paper-button>
-        </paper-toast>
+        <paper-input  value="{{currentItem.name}}" label="Name"></paper-input>
+        <template is="dom-repeat" items="{{currentItem.fields}}">
+            <template is="dom-if" if="{{item.isTypeString}}" restamp="true">
+                <paper-input  value="{{item.value}}" label="{{item.name}}" data-type$="{{item.type}}"></paper-input>
+            </template>
+            <template is="dom-if" if="{{item.isTypeImage}}" restamp="true">
+                <paper-item>
+                    <paper-input  value="{{item.value}}" label="{{item.name}}" data-type$="{{item.type}}"></paper-input>
+                    <img src="[[item.value]]" />
+                </paper-item>
+            </template>
+        </template>
     </template>
 </dom-module>

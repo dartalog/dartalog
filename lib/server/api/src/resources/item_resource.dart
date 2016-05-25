@@ -71,6 +71,15 @@ class ItemResource extends AResource {
     }
   }
 
+  @ApiMethod(method: 'DELETE', path: 'items/{id}/')
+  Future<VoidMessage> delete(String id) async {
+    try {
+      await model.items.delete(id);
+    } catch(e,st) {
+      _HandleException(e, st);
+    }
+  }
+
 
   static final RegExp LEGAL_ID_CHARACTERS = new RegExp("[a-zA-Z0-9_]");
   static Future<String> generateUniqueId(Item item) async {

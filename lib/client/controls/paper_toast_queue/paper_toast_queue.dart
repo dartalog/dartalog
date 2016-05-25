@@ -20,7 +20,7 @@ class PaperToastQueue extends PolymerElement  {
 
   PaperToastQueue.created() : super.created();
 
-  PaperToast get toastElement => $['toaster'];
+  PaperToast get toastElement => document.getElementById('toaster');
 
   @reflectable
   closeToast(event, [_]) async {
@@ -28,7 +28,10 @@ class PaperToastQueue extends PolymerElement  {
   }
   void enqueueMessage(String message, [String severity]) {
 
-    if (toastElement == null) return;
+    PaperToast toastElement = document.getElementById('toaster_element');
+
+    if(toastElement==null)
+      return;
 
     if (toastElement.opened) toastElement.opened = false;
 

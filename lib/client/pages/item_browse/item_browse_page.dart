@@ -39,8 +39,8 @@ class ItemBrowsePage extends APage with ARefreshablePage {
 
   ItemBrowsePage.created() : super.created("Item Browse");
 
-  void activateInternal(Map args) {
-    this.refresh();
+  Future activateInternal(Map args) async {
+    await this.refresh();
   }
 
   Future refresh() async {
@@ -66,7 +66,7 @@ class ItemBrowsePage extends APage with ARefreshablePage {
       if(isNullOrWhitespace(id))
         return;
 
-      window.location.hash = "item/${id}";
+      mainApp.activateRoute(ITEM_VIEW_ROUTE_PATH, arguments: {ITEM_VIEW_ROUTE_ARG_ITEM_ID_NAME: id});
     } catch(e,st) {
       _log.severe(e, st);
       this.handleException(e,st);

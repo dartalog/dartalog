@@ -10,13 +10,25 @@ abstract class APage extends PolymerElement {
   @Property(notify: true)
   String title;
 
+  bool showBackButton = false;
 
-  void activate(DartalogApi api, Map args) {
-    this.api = api;
-    activateInternal(args);
+  MainApp _mainApp = null;
+  MainApp get mainApp  {
+    if(_mainApp==null) {
+      _mainApp = getParentElement(this.parent, "main-app");
+      if(_mainApp==null)
+        throw new Exception("Main app element could not be found");
+    }
+    return _mainApp;
   }
 
-  void activateInternal(Map args);
+
+  Future activate(DartalogApi api, Map args) async {
+    this.api = api;
+    await activateInternal(args);
+  }
+
+  Future activateInternal(Map args);
 
   void clearValidation() {
   }
@@ -24,56 +36,15 @@ abstract class APage extends PolymerElement {
   void setTitle(String newTitle) {
     this.title = newTitle;
     set("title", newTitle);
-    dynamic parent = getParentElement(this,"main-app");
-    if(parent!=null)
-      parent.notifyTitleUpdate();
-  }
-
-  Element getParentElement(Element start, String tagName) {
-    if(start==null)
-      return null;
-    if(start.tagName==tagName)
-      return start;
-    if(start.parent==null)
-      return null;
-
-    Element ele = start.parent;
-    while(ele!=null) {
-      if(ele.tagName.toLowerCase()==tagName.toLowerCase())
-        return ele;
-      ele = ele.parent;
-    }
-    return null;
-  }
-
-  Element getChildElement(Element start, String tagName) {
-    if(start==null)
-      return null;
-    if(start.tagName==tagName)
-      return start;
-    if(start.parent==null)
-      return null;
-
-    for(Element child in start.children) {
-      if(child.tagName.toLowerCase()==tagName.toLowerCase())
-        return child;
-    }
-    for(Element child in start.children) {
-      Element candidate = getChildElement(child,tagName);
-      if(candidate!=null)
-        return candidate;
-    }
-    return null;
+    mainApp.evaluatePage();
   }
 
   void handleException(e, st) {
-    showMessage(e.toString(), "error");
+    mainApp.handleException(e,st);
   }
 
   void showMessage(String message, [String severity]) {
-    PaperToastQueue toastElement = document.querySelector('#global_toast');
-    toastElement.enqueueMessage(message, severity);
-
+    mainApp.showMessage(message, severity);;
   }
 
   void handleApiError(DetailedApiRequestError error, {String generalErrorField: "", String prefix: "input_"}) {
@@ -83,10 +54,10 @@ abstract class APage extends PolymerElement {
       if(input!=null) {
         input.text = error.message;
       } else {
-        window.alert(error.message);
+        showMessage(error.message, "error");
       }
     } else {
-      window.alert(error.message);
+      showMessage(error.message, "error");
     }
     setErrorMesage(error.errors, prefix: prefix);
   }

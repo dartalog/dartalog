@@ -9,4 +9,5 @@ abstract class AItemModel extends _AModel {
   Future<api.Item> get(String id);
 
   Future write(api.Item item, [String id = null]);
+  Future delete(String id);
 }

@@ -49,8 +49,8 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
 
   PaperDialog get editDialog =>  $['editDialog'];
 
-  void activateInternal(Map args) {
-    this.refresh();
+  Future activateInternal(Map args) async {
+    await this.refresh();
   }
 
   Future refresh() async {

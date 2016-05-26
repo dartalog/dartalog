@@ -85,7 +85,14 @@ class MainApp extends PolymerElement {
           name: ITEM_VIEW_ROUTE_NAME,
           path: "/:${ITEM_VIEW_ROUTE_ARG_ITEM_ID_NAME}",
           defaultRoute: false,
-          enter: enterRoute)
+          enter: enterRoute,
+          mount: (router) => router.addRoute(
+              name: ITEM_EDIT_ROUTE_NAME,
+              path: "/edit",
+              defaultRoute: false,
+              enter: enterRoute
+          )
+        )
     )
     ..addRoute(
         name: "item_add",
@@ -204,6 +211,14 @@ class MainApp extends PolymerElement {
     if (currentPage is ADeletablePage) {
       dynamic page = currentPage;
       page.delete();
+    }
+  }
+
+  @reflectable
+  editClicked(event, [_]) async {
+    if (currentPage is AEditablePage) {
+      AEditablePage page = currentPage as AEditablePage;
+      page.edit();
     }
   }
 

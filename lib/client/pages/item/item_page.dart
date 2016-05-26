@@ -52,6 +52,7 @@ class ItemPage extends APage with ARefreshablePage, ADeletablePage, AEditablePag
     await this.refresh();
   }
 
+  @override
   Future refresh() async {
     await loadItem();
   }
@@ -69,6 +70,7 @@ class ItemPage extends APage with ARefreshablePage, ADeletablePage, AEditablePag
     }
   }
 
+  @override
   Future delete() async {
     try {
       if(!window.confirm("Are you sure you want to delete this item?"))
@@ -82,6 +84,15 @@ class ItemPage extends APage with ARefreshablePage, ADeletablePage, AEditablePag
     }
   }
 
+  @override
+  Future edit() async {
+    try {
+      mainApp.activateRoute(ITEM_EDIT_ROUTE_NAME);
+    } catch(e,st) {
+      _log.severe(e, st);
+      this.handleException(e,st);
+    }
+  }
 
 
 }

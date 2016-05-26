@@ -60,7 +60,7 @@
                         <paper-icon-button icon="delete" on-tap="deleteClicked"></paper-icon-button>
                     </template>
                     <template is="dom-if" if="[[showEdit]]">
-                        <paper-icon-button icon="create" on-tap="addClicked"></paper-icon-button>
+                        <paper-icon-button icon="create" on-tap="editClicked"></paper-icon-button>
                     </template>
                     <template is="dom-if" if="[[showAdd]]">
                         <paper-icon-button icon="add" on-tap="addClicked"></paper-icon-button>
@@ -72,6 +72,7 @@
                         <item-browse-page id="browse"  class="fit"></item-browse-page>
                         <item-page id="item_view"  class="fit"></item-page>
                         <item-add-page id="item_add"  class="fit"></item-add-page>
+                        <item-edit-page id="item_edit"  class="fit"></item-edit-page>
                         <field-admin-page id="field_admin"  class="fit"></field-admin-page>
                         <item-type-admin-page id="item_type_admin"  class="fit"></item-type-admin-page>
                         <div class="fit" id="logging_output">

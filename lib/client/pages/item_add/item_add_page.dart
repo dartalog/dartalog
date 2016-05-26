@@ -22,7 +22,7 @@ import 'package:polymer_elements/iron_pages.dart';
 
 import 'package:dartalog/dartalog.dart' as dartalog;
 import 'package:dartalog/client/pages/pages.dart';
-import 'package:dartalog/client/controls/item_edit/item_edit.dart';
+import 'package:dartalog/client/controls/item_edit/item_edit_control.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/api/dartalog.dart' as API;

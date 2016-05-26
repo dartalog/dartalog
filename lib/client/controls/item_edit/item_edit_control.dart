@@ -1,7 +1,7 @@
 // Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
 
 // is governed by a BSD-style license that can be found in the LICENSE file.
-@HtmlImport('item_edit.html')
+@HtmlImport('item_edit_control.html')
 library dartalog.client.controls.item_edit;
 
 import 'dart:html';
@@ -14,14 +14,14 @@ import 'package:polymer_elements/paper_toast.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/api/dartalog.dart' as API;
 
-@PolymerRegister('item-edit')
-class ItemEdit extends PolymerElement  {
+@PolymerRegister('item-edit-control')
+class ItemEditControl extends PolymerElement  {
   static final Logger _log = new Logger("ItemEdit");
 
   @Property(notify: true)
   Item currentItem = new Item();
 
-  ItemEdit.created() : super.created();
+  ItemEditControl.created() : super.created();
 
   Future importData() async {
 

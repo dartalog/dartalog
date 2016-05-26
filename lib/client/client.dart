@@ -4,8 +4,10 @@ import 'dart:html';
 
 const String BROWSE_ROUTE_NAME = "browse";
 const String ITEM_VIEW_ROUTE_NAME = "item_view";
-const String ITEM_VIEW_ROUTE_PATH = "${BROWSE_ROUTE_NAME}.item_view";
+const String ITEM_VIEW_ROUTE_PATH = "${BROWSE_ROUTE_NAME}.${ITEM_VIEW_ROUTE_NAME}";
 const String ITEM_VIEW_ROUTE_ARG_ITEM_ID_NAME = "itemId";
+const String ITEM_EDIT_ROUTE_NAME = "item_edit";
+const String ITEM_EDIT_ROUTE_PATH = "${ITEM_VIEW_ROUTE_PATH}.${ITEM_EDIT_ROUTE_NAME}";
 
 void handleException(dynamic e) {
   if(e is ValidationException) {

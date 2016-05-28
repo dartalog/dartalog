@@ -24,10 +24,6 @@
                         <iron-icon icon="label-outline"></iron-icon>
                         <paper-item-body>Browse Items</paper-item-body>
                     </paper-item>
-                    <paper-item on-tap="drawerItemClicked" data-route="item_add">
-                        <iron-icon icon="label-outline"></iron-icon>
-                        <paper-item-body>Add Item</paper-item-body>
-                    </paper-item>
                     <paper-item on-tap="drawerItemClicked" data-route="field_admin">
                         <iron-icon icon="label-outline"></iron-icon>
                         <paper-item-body>Fields</paper-item-body>
@@ -65,6 +61,9 @@
                     <template is="dom-if" if="[[showAdd]]">
                         <paper-icon-button icon="add" on-tap="addClicked"></paper-icon-button>
                     </template>
+                    <template is="dom-if" if="[[showSave]]">
+                        <paper-icon-button icon="save" on-tap="saveClicked"></paper-icon-button>
+                    </template>
                 </paper-toolbar>
                 <!-- Main Content -->
                 <div class="content fit">
@@ -72,6 +71,7 @@
                         <item-browse-page id="browse"  class="fit"></item-browse-page>
                         <item-page id="item_view"  class="fit"></item-page>
                         <item-add-page id="item_add"  class="fit"></item-add-page>
+                        <item-import-page id="item_import"  class="fit"></item-import-page>
                         <item-edit-page id="item_edit"  class="fit"></item-edit-page>
                         <field-admin-page id="field_admin"  class="fit"></field-admin-page>
                         <item-type-admin-page id="item_type_admin"  class="fit"></item-type-admin-page>
@@ -79,9 +79,11 @@
 
                         </div>
                     </iron-pages>
-                    <paper-toast-queue id="global_toast" ></paper-toast-queue>
                 </div>
             </paper-header-panel>
         </paper-drawer-panel>
+        <paper-toast id="global_toast" >
+            <paper-button on-tap="closeToast" class="white-button">Close</paper-button>
+        </paper-toast>
     </template>
 </dom-module>

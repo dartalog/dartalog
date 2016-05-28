@@ -31,7 +31,7 @@ import 'package:dartalog/tools.dart';
 import '../../api/dartalog.dart' as API;
 
 @PolymerRegister('item-page')
-class ItemPage extends APage with ARefreshablePage, ADeletablePage, AEditablePage {
+class ItemPage extends APage with ARefreshablePage, ADeletablePage, AEditablePage, ASubPage {
   static final Logger _log = new Logger("ItemPage");
 
   String currentItemId = "";
@@ -45,11 +45,16 @@ class ItemPage extends APage with ARefreshablePage, ADeletablePage, AEditablePag
 
   @override
   Future activateInternal(Map args) async {
-    if(isNullOrWhitespace(args["itemId"])) {
-      throw new Exception("itemId is required");
+    if(isNullOrWhitespace(args[ROUTE_ARG_ITEM_ID_NAME])) {
+      throw new Exception("${ROUTE_ARG_ITEM_ID_NAME} is required");
     }
-    this.currentItemId = args["itemId"];
+    this.currentItemId = args[ROUTE_ARG_ITEM_ID_NAME];
     await this.refresh();
+  }
+
+  @override
+  Future goBack() async {
+    this.mainApp.activateRoute(BROWSE_ROUTE_PATH);
   }
 
   @override
@@ -87,7 +92,7 @@ class ItemPage extends APage with ARefreshablePage, ADeletablePage, AEditablePag
   @override
   Future edit() async {
     try {
-      mainApp.activateRoute(ITEM_EDIT_ROUTE_NAME);
+      mainApp.activateRoute(ITEM_EDIT_ROUTE_PATH, arguments: {ROUTE_ARG_ITEM_ID_NAME: currentItemId});
     } catch(e,st) {
       _log.severe(e, st);
       this.handleException(e,st);

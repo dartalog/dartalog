@@ -1,4 +1,4 @@
-part of server;
+part of dartalog.server;
 
 enum SettingNames {
 

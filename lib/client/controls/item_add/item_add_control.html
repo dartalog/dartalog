@@ -1,0 +1,53 @@
+<!--
+  Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
+  is governed by a BSD-style license that can be found in the LICENSE file.
+-->
+
+<!-- import polymer-element's definition -->
+<dom-module name="item-add-control">
+    <link rel="stylesheet" href="item_add_control.css">
+    <style include="iron-flex"></style>
+
+    <template>
+        <div class="fabContainer">
+        <paper-fab id="addFab" icon="add" on-tap="addClicked"></paper-fab>
+
+        <paper-fab id="addManualFab" on-tap="manualClicked" mini icon="create" title="Add Manual Item"></paper-fab>
+        <paper-tooltip for="addManualFab"  position="left" >Add Manual Item</paper-tooltip>
+
+            <paper-fab id="importFab" icon="search" on-tap="importClicked" title="Import Item"></paper-fab>
+            <paper-tooltip for="importFab" position="left">Import Item</paper-tooltip>
+        </div>
+
+        <paper-dialog id="addItemMethodDialog" modal="true">
+            <h2>How do you want to add an item?</h2>
+            <div class="buttons">
+                <paper-button on-tap="manualClicked">Manual</paper-button>
+                <paper-button on-tap="importClicked">Import</paper-button>
+                <paper-button on-tap="paperDialogCancelClicked">Cancel</paper-button>
+            </div>
+        </paper-dialog>
+        <paper-dialog id="importSourceDialog" modal="true">
+            <h2>Select a source to import an item from</h2>
+            <div class="vertical">
+                <paper-item data-id="amazon" on-tap="importSourceClicked">Amazon</paper-item>
+            </div>
+            <div class="buttons">
+                <paper-button on-tap="paperDialogCancelClicked">Cancel</paper-button>
+            </div>
+        </paper-dialog>
+
+        <paper-dialog id="selectItemTypeDialog" modal="true">
+            <h2>What type of item do you want to create?</h2>
+            <div class="vertical">
+                <template is="dom-repeat" items="[[itemTypes]]">
+                    <paper-item data-id$="[[item.id]]" on-tap="itemTypeClicked">[[item.name]]</paper-item>
+                </template>
+            </div>
+            <div class="buttons">
+                <paper-button on-tap="paperDialogCancelClicked">Cancel</paper-button>
+            </div>
+        </paper-dialog>
+
+    </template>
+</dom-module>

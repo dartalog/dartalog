@@ -25,17 +25,46 @@ import 'package:dartalog/client/pages/pages.dart';
 import 'package:dartalog/client/controls/item_edit/item_edit_control.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/data/data.dart';
+import 'package:dartalog/tools.dart';
 import 'package:dartalog/client/api/dartalog.dart' as API;
 
 /// A Polymer `<template-admin-page>` element.
 @PolymerRegister('item-add-page')
-class ItemAddPage extends APage with ARefreshablePage {
+class ItemAddPage extends APage with ASaveablePage {
   static final Logger _log = new Logger("ItemAddPage");
+
+  String currentItemTypeId = "";
+
+  ItemAddPage.created() : super.created("Add Item");
+
+  ItemEditControl get itemAddControl => document.getElementById('item_add_page_edit_control');
+
+  @override
+  Future activateInternal(Map args) async {
+    if(isNullOrWhitespace(args[ROUTE_ARG_ITEM_TYPE_ID_NAME])) {
+      throw new Exception("{$ROUTE_ARG_ITEM_TYPE_ID_NAME} is required");
+    }
+    this.currentItemTypeId = args[ROUTE_ARG_ITEM_TYPE_ID_NAME];
+
+    await itemAddControl.activate(this.api, args);
+  }
+
+  @override
+  Future save() async {
+    String id = await itemAddControl.save();
+    if(!isNullOrWhitespace(id)) {
+      showMessage("Item created succesfully");
+      this.mainApp.activateRoute(ITEM_VIEW_ROUTE_PATH, arguments: {ROUTE_ARG_ITEM_ID_NAME: id});
+    }
+
+  }
+
+
+
+
 
   IronPages get pages => $['item_add_pages'];
 
-  /// Constructor used to create instance of MainApp.
-  ItemAddPage.created() : super.created("Item Add");
 
   @property
   String searchQuery;
@@ -43,8 +72,6 @@ class ItemAddPage extends APage with ARefreshablePage {
   @Property(notify: true)
   List<ImportSearchResult> results = new List<ImportSearchResult>();
 
-  @Property(notify: true)
-  List<IdNamePair> itemTypes= new List<IdNamePair>();
 
 
   API.ImportResult importResult = null;
@@ -58,27 +85,7 @@ class ItemAddPage extends APage with ARefreshablePage {
     return importResult.values[name][0];
   }
 
-  Future activateInternal(Map args) async {
-    await this.refresh();
-  }
 
-  @override
-  Future refresh() async {
-    //this.clear();
-    pages.selected = "import_item";
-    await loadItemTypes();
-  }
-
-  Future loadItemTypes() async {
-    try {
-      clear("itemTypes");
-      API.ListOfIdNamePair data = await api.itemTypes.getAll();
-      addAll("itemTypes", IdNamePair.convertList(data));
-    } catch (e, st) {
-      _log.severe(e, st);
-      this.handleException(e,st);
-    }
-  }
 
   showModal(event, detail, target) {
     String uuid = target.dataset['uuid'];
@@ -154,14 +161,4 @@ class ItemAddPage extends APage with ARefreshablePage {
     }
   }
 
-  @reflectable
-  saveClicked(event, [_]) async {
-    try {
-
-      showMessage("Item created succesfully");
-    } catch (e, st) {
-      _log.severe(e, st);
-      this.handleException(e,st);
-    }
-  }
 }

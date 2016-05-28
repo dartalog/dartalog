@@ -22,6 +22,10 @@ const String SCHEMA_LINK_GET_OBJECTS = "get_objects";
 const String SCHEMA_LINK_GET_SETTINGS = "get_settings";
 const String SCHEMA_LINK_NUKE = "nuke";
 
+const String HOSTED_IMAGE_PREFIX = "image:";
+const String FILE_UPLOAD_PREFIX = "upload:";
+final RegExp FILE_UPLOAD_REGEX = new RegExp("${FILE_UPLOAD_REGEX}(\\d+)");
+
 final Map<String,String> FIELD_TYPES = {
   'numeric': 'Numeric',
   'string': 'String',

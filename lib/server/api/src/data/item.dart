@@ -13,6 +13,8 @@ class Item extends AData {
   @ApiProperty(required: true)
   Map<String, String> values = new Map<String, String>();
 
+  List<String> fileUploads = new List<String>();
+
   ItemType type;
 
   Item();
@@ -20,7 +22,7 @@ class Item extends AData {
   Future validate(bool verifyId) async {
     Map<String,String> field_errors = new Map<String,String>();
 
-    if(!isNullOrWhitespace(this.id)) {
+    if(!isNullOrWhitespace(this.id)&&verifyId) {
       Item f = await model.items.get(id);
       if(f!=null)
         field_errors["id"] = "Already in use";

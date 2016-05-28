@@ -19,11 +19,13 @@ import 'package:polymer_elements/paper_listbox.dart';
 import 'package:polymer_elements/paper_card.dart';
 import 'package:polymer_elements/paper_dialog.dart';
 import 'package:polymer_elements/paper_dialog_scrollable.dart';
+import 'package:polymer_elements/paper_fab.dart';
 import 'package:polymer_elements/iron_flex_layout.dart';
 
 
 import 'package:dartalog/dartalog.dart' as dartalog;
 import 'package:dartalog/client/pages/pages.dart';
+import 'package:dartalog/client/controls/item_add/item_add_control.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/tools.dart';
@@ -37,14 +39,24 @@ class ItemBrowsePage extends APage with ARefreshablePage {
   @Property(notify: true)
   List<Item> itemsList = new List<Item>();
 
+  ItemAddControl get browseItemAddControl =>  $['browse_item_add_control'];
+
   ItemBrowsePage.created() : super.created("Item Browse");
 
+  @override
   Future activateInternal(Map args) async {
+    await browseItemAddControl.activate(this.api,null);
     await this.refresh();
   }
 
+  @override
   Future refresh() async {
     await loadItems();
+  }
+
+  @override
+  Future newItem() async {
+    browseItemAddControl.start();
   }
 
   Future loadItems() async {
@@ -66,12 +78,11 @@ class ItemBrowsePage extends APage with ARefreshablePage {
       if(isNullOrWhitespace(id))
         return;
 
-      mainApp.activateRoute(ITEM_VIEW_ROUTE_PATH, arguments: {ITEM_VIEW_ROUTE_ARG_ITEM_ID_NAME: id});
+      mainApp.activateRoute(ITEM_VIEW_ROUTE_PATH, arguments: {ROUTE_ARG_ITEM_ID_NAME: id});
     } catch(e,st) {
       _log.severe(e, st);
       this.handleException(e,st);
     }
   }
-
 
 }

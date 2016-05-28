@@ -20,7 +20,7 @@ import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/api/dartalog.dart' as API;
 
 @PolymerRegister('item-edit-page')
-class ItemEditPage extends APage {
+class ItemEditPage extends APage with ASaveablePage, ASubPage {
   static final Logger _log = new Logger("ItemEditPage");
 
   /// Constructor used to create instance of MainApp.
@@ -28,12 +28,31 @@ class ItemEditPage extends APage {
 
   String currentItemId;
 
+  ItemEditControl get itemEditControl => $['itemEditPageItemEditControl'];
+
   @override
   Future activateInternal(Map args) async {
-    if(isNullOrWhitespace(args["itemId"])) {
-      throw new Exception("itemId is required");
+    if(isNullOrWhitespace(args[ROUTE_ARG_ITEM_ID_NAME])) {
+      throw new Exception("{$ROUTE_ARG_ITEM_ID_NAME} is required");
     }
-    this.currentItemId = args["itemId"];
+    this.currentItemId = args[ROUTE_ARG_ITEM_ID_NAME];
+
+    await itemEditControl.activate(this.api, args);
   }
 
+
+  @override
+  Future goBack() async {
+    this.mainApp.activateRoute(ITEM_VIEW_ROUTE_PATH, arguments: {ROUTE_ARG_ITEM_ID_NAME: this.currentItemId});
+  }
+
+  @override
+  Future save() async {
+    String id = await itemEditControl.save();
+    if(!isNullOrWhitespace(id)) {
+      showMessage("Item saved");
+      this.mainApp.activateRoute(ITEM_VIEW_ROUTE_PATH,
+          arguments: {ROUTE_ARG_ITEM_ID_NAME: id});
+    }
+  }
 }

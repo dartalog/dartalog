@@ -1,4 +1,5 @@
 part of model;
+
 /**
  * A MongoDB connection pool
  *

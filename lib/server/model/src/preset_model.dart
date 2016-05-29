@@ -38,7 +38,7 @@ class PresetModel extends _AModel {
 
   Future<Map<String,api.Field>> getFields(List<String> ids) async {
     Map field_presets = await _getFieldPresets();
-    Map<String,api.Field> db_fields = await fields.getAllForIDs(ids);
+    List<api.Field> db_fields = await fields.getByIds(ids);
     Map<String,api.Field> output = new Map<String, api.Field>();
 
     for(String field_id in ids) {

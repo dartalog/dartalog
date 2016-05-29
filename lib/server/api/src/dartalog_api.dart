@@ -2,21 +2,23 @@ part of api;
 
 @ApiClass(version: '0.1', name: 'dartalog', description: 'Dartalog REST API')
 class DartalogApi {
+  @ApiResource()
+  final FieldResource fields = new FieldResource();
 
-    DartalogApi();
+  @ApiResource()
+  final ItemTypeResource itemTypes = new ItemTypeResource();
 
-    @ApiResource()
-    final FieldResource fields = new FieldResource();
+  @ApiResource()
+  final ItemResource items = new ItemResource();
 
-    @ApiResource()
-    final ItemTypeResource item_types = new ItemTypeResource();
+  @ApiResource()
+  final ImportResource import = new ImportResource();
 
-    @ApiResource()
-    final ItemResource items = new ItemResource();
+  @ApiResource()
+  final PresetResource presets = new PresetResource();
 
-    @ApiResource()
-    final ImportResource import = new ImportResource();
+  @ApiResource()
+  final CollectionResource collections = new CollectionResource();
 
-    @ApiResource()
-    final PresetResource presets = new PresetResource();
+  DartalogApi();
 }

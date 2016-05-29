@@ -14,9 +14,11 @@ class IdNamePair {
     this.name = o.name;
   }
 
+  IdNamePair.from(this.id, this.name);
+
   static List<IdNamePair> convertList(Iterable i) {
     List<IdNamePair> output = new List<IdNamePair>();
-    for(dynamic o in i) {
+    for (dynamic o in i) {
       output.add(new IdNamePair.copy(o));
     }
     return output;

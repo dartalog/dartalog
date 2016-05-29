@@ -1,14 +1,19 @@
 part of api;
 
 abstract class AData {
-  String id;
+  void cleanUp();
 
-  Future validate(bool verifyId);
-  //void setData(dynamic data);
+  Future validate(bool creating) async {
+    Map<String, String> field_errors = new Map<String, String>();
 
-//  Map<String, dynamic> toMap() {
-//    Map<String, dynamic> output = new Map<String, dynamic>();
-//    setData(output);
-//    return output;
-//  }
+    field_errors.addAll(await _validateFields(creating));
+
+    if (field_errors.length > 0) {
+      throw new DataValidationException.WithFieldErrors(
+          "Invalid data", field_errors);
+    }
+  }
+
+  Future<Map<String, String>> _validateFields(bool creating);
+
 }

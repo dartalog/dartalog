@@ -33,8 +33,11 @@ final Map<String,String> FIELD_TYPES = {
   'image': 'Image',
   'hidden': 'Hidden'};
 
+final Map<String,String> ITEM_COPY_STATUSES = {
+  'withdrawn': 'Withdrawn'};
+
 final List<String> RESERVED_WORDS = [
-  'id', 'name'
+  'id', 'name', 'title'
 ];
 
 class ValidationException implements  Exception {

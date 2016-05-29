@@ -77,6 +77,38 @@ class FieldsResourceApi {
   /**
    * Request parameters:
    *
+   * Completes with a [ListOfIdNamePair].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<ListOfIdNamePair> getAllIdsAndNames() {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+
+    _url = 'fields/';
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new ListOfIdNamePair.fromJson(data));
+  }
+
+  /**
+   * Request parameters:
+   *
    * [id] - Path parameter: 'id'.
    *
    * Completes with a [Field].
@@ -87,7 +119,7 @@ class FieldsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<Field> get(core.String id) {
+  async.Future<Field> getById(core.String id) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -109,38 +141,6 @@ class FieldsResourceApi {
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
     return _response.then((data) => new Field.fromJson(data));
-  }
-
-  /**
-   * Request parameters:
-   *
-   * Completes with a [ListOfIdNamePair].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
-  async.Future<ListOfIdNamePair> getAll() {
-    var _url = null;
-    var _queryParams = new core.Map();
-    var _uploadMedia = null;
-    var _uploadOptions = null;
-    var _downloadOptions = commons.DownloadOptions.Metadata;
-    var _body = null;
-
-
-    _url = 'fields/';
-
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
-    return _response.then((data) => new ListOfIdNamePair.fromJson(data));
   }
 
   /**
@@ -369,6 +369,38 @@ class ItemTypesResourceApi {
   /**
    * Request parameters:
    *
+   * Completes with a [ListOfIdNamePair].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<ListOfIdNamePair> getAllIdsAndNames() {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+
+    _url = 'item_types/';
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new ListOfIdNamePair.fromJson(data));
+  }
+
+  /**
+   * Request parameters:
+   *
    * [id] - Path parameter: 'id'.
    *
    * [expand] - Query parameter: 'expand'.
@@ -381,7 +413,7 @@ class ItemTypesResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ItemType> get(core.String id, {core.String expand}) {
+  async.Future<ItemType> getById(core.String id, {core.String expand}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -406,38 +438,6 @@ class ItemTypesResourceApi {
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
     return _response.then((data) => new ItemType.fromJson(data));
-  }
-
-  /**
-   * Request parameters:
-   *
-   * Completes with a [ListOfIdNamePair].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
-  async.Future<ListOfIdNamePair> getAll() {
-    var _url = null;
-    var _queryParams = new core.Map();
-    var _uploadMedia = null;
-    var _uploadOptions = null;
-    var _downloadOptions = commons.DownloadOptions.Metadata;
-    var _body = null;
-
-
-    _url = 'item_types/';
-
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
-    return _response.then((data) => new ListOfIdNamePair.fromJson(data));
   }
 
   /**
@@ -568,6 +568,38 @@ class ItemsResourceApi {
   /**
    * Request parameters:
    *
+   * Completes with a [ListOfItemListing].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<ListOfItemListing> getAllListings() {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+
+    _url = 'items/';
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new ListOfItemListing.fromJson(data));
+  }
+
+  /**
+   * Request parameters:
+   *
    * [id] - Path parameter: 'id'.
    *
    * [expand] - Query parameter: 'expand'.
@@ -580,7 +612,7 @@ class ItemsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<Item> get(core.String id, {core.String expand}) {
+  async.Future<Item> getById(core.String id, {core.String expand}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -605,38 +637,6 @@ class ItemsResourceApi {
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
     return _response.then((data) => new Item.fromJson(data));
-  }
-
-  /**
-   * Request parameters:
-   *
-   * Completes with a [ListOfItemListing].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
-  async.Future<ListOfItemListing> getAll() {
-    var _url = null;
-    var _queryParams = new core.Map();
-    var _uploadMedia = null;
-    var _uploadOptions = null;
-    var _downloadOptions = commons.DownloadOptions.Metadata;
-    var _body = null;
-
-
-    _url = 'items/';
-
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
-    return _response.then((data) => new ListOfItemListing.fromJson(data));
   }
 
   /**
@@ -870,6 +870,7 @@ class ImportResult {
 }
 
 class Item {
+  core.List<core.String> fileUploads;
   core.String id;
   core.String name;
   ItemType type;
@@ -879,6 +880,9 @@ class Item {
   Item();
 
   Item.fromJson(core.Map _json) {
+    if (_json.containsKey("fileUploads")) {
+      fileUploads = _json["fileUploads"];
+    }
     if (_json.containsKey("id")) {
       id = _json["id"];
     }
@@ -898,6 +902,9 @@ class Item {
 
   core.Map toJson() {
     var _json = new core.Map();
+    if (fileUploads != null) {
+      _json["fileUploads"] = fileUploads;
+    }
     if (id != null) {
       _json["id"] = id;
     }

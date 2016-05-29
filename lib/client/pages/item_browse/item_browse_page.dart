@@ -62,7 +62,7 @@ class ItemBrowsePage extends APage with ARefreshablePage {
   Future loadItems() async {
     try {
       clear("itemsList");
-      API.ListOfItemListing data = await api.items.getAll();
+      API.ListOfItemListing data = await api.items.getAllListings();
       set("itemsList", ItemListing.convertList(data));
     } catch(e,st) {
       _log.severe(e, st);

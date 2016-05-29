@@ -8,7 +8,5 @@ class ImportSettings extends AData {
 
   ImportSettings();
 
-  Future validate() async {
-
-  }
+  Future validate() async {}
 }

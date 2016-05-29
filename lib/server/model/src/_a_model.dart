@@ -14,5 +14,4 @@ abstract class _AModel {
     }
     return _options;
   }
-
 }

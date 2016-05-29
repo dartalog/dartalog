@@ -51,7 +51,7 @@ class ItemAddControl extends AControl  {
   Future loadItemTypes() async {
     try {
       clear("itemTypes");
-      API.ListOfIdNamePair data = await api.itemTypes.getAll();
+      API.ListOfIdNamePair data = await api.itemTypes.getAllIdsAndNames();
       addAll("itemTypes", IdNamePair.convertList(data));
     } catch (e, st) {
       _log.severe(e, st);

@@ -2,32 +2,9 @@ part of api;
 
 class FieldResource extends AResource {
   static final Logger _log = new Logger('FieldResource');
+  Logger get _logger => _log;
 
-  Logger _GetLogger() {
-    return _log;
-  }
-
-  @ApiMethod(path: 'fields/')
-  Future<List<IdNamePair>> getAll() async {
-    try {
-      List<Field> output = await model.fields.getAll();
-      return IdNamePair.convertList(output);
-    } catch (e, st) {
-      _HandleException(e, st);
-    }
-  }
-
-  @ApiMethod(path: 'fields/{id}/')
-  Future<Field> get(String id) async {
-    try {
-      Field output = await model.fields.get(id);
-      return output;
-    } catch (e, st) {
-      _HandleException(e, st);
-    }
-  }
-
-  @ApiMethod(method: 'POST', path: 'fields/')
+  @ApiMethod(method: 'POST', path: '${API_FIELDS_PATH}/')
   Future<IdResponse> create(Field field) async {
     try {
       await field.validate(true);
@@ -38,10 +15,29 @@ class FieldResource extends AResource {
     }
   }
 
-  @ApiMethod(method: 'PUT', path: 'fields/{id}/')
+  @ApiMethod(path: '${API_FIELDS_PATH}/')
+  Future<List<IdNamePair>> getAllIdsAndNames() async {
+    try {
+      return await model.fields.getAllIdsAndNames();
+    } catch (e, st) {
+      _HandleException(e, st);
+    }
+  }
+
+  @ApiMethod(path: '${API_FIELDS_PATH}/{id}/')
+  Future<Field> getById(String id) async {
+    try {
+      Field output = await model.fields.getById(id);
+      return output;
+    } catch (e, st) {
+      _HandleException(e, st);
+    }
+  }
+
+  @ApiMethod(method: 'PUT', path: '${API_FIELDS_PATH}/{id}/')
   Future<IdResponse> update(String id, Field field) async {
     try {
-      await field.validate(id!=field.id);
+      await field.validate(id != field.id);
       String output = await model.fields.write(field, id);
       return new IdResponse.fromId(output);
     } catch (e, st) {
@@ -49,13 +45,6 @@ class FieldResource extends AResource {
     }
   }
 
-
-  void _HandleException(e, st) {
-    if (e is model.DataMovedException) {
-      model.DataMovedException dme = e as model.DataMovedException;
-      sendRedirect("http://localhost:8888/fields/${dme.newId}");
-    } else {
-      super._HandleException(e, st);
-    }
-  }
+  String _generateRedirect(String newId) =>
+      "${SERVER_API_ROOT}${API_FIELDS_PATH}/${newId}";
 }

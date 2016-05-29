@@ -10,6 +10,9 @@ part 'src/setting_names.dart';
 
 final String ROOT_DIRECTORY = join(dirname(Platform.script.toFilePath()),'..');
 
+String SERVER_ROOT, SERVER_API_ROOT;
+
+
 Future<Map> loadJSONFile(String path) async {
   File dir = new File(path);
   String contents = await dir.readAsString();

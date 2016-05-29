@@ -63,7 +63,7 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
     try {
       clear("fields");
 
-      API.ListOfIdNamePair data = await api.fields.getAll();
+      API.ListOfIdNamePair data = await api.fields.getAllIdsAndNames();
 
       set("fields", IdNamePair.convertList(data));
     } catch(e,st) {
@@ -75,7 +75,7 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
   Future loadItemTypes() async {
     try {
       clear("itemTypes");
-      API.ListOfIdNamePair data = await api.itemTypes.getAll();
+      API.ListOfIdNamePair data = await api.itemTypes.getAllIdsAndNames();
       set("itemTypes", IdNamePair.convertList(data));
     } catch(e,st) {
       _log.severe(e, st);
@@ -118,7 +118,7 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
   itemTypeClicked(event, [_]) async {
     try {
       String id = event.target.dataset["id"];
-      API.ItemType itemType = await api.itemTypes.get(id);
+      API.ItemType itemType = await api.itemTypes.getById(id);
 
       if(itemType==null)
         return;

@@ -63,7 +63,9 @@ main(List<String> args) async {
 
     final HttpServer server = await io.serve(root.handler, 'localhost', model.options.getInt("port"));
 
-    print('Serving at http://${server.address.host}:${server.port}');
+    SERVER_ROOT = "http://${server.address.host}:${server.port}/";
+    SERVER_API_ROOT = "${SERVER_ROOT}api/dartalog/0.1/";
+    print('Serving at ${SERVER_ROOT}');
   } catch(e,s) {
     _log.severe("Error while starting server",e,s);
   }

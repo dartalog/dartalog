@@ -101,7 +101,7 @@ class ItemImportPage extends APage with ASaveablePage {
   Future loadItemTypes() async {
     try {
       clear("itemTypes");
-      API.ListOfIdNamePair data = await api.itemTypes.getAll();
+      API.ListOfIdNamePair data = await api.itemTypes.getAllIdsAndNames();
       addAll("itemTypes", IdNamePair.convertList(data));
     } catch (e, st) {
       _log.severe(e, st);
@@ -150,7 +150,7 @@ class ItemImportPage extends APage with ASaveablePage {
       API.ImportResult result = await api.import.import("amazon", id);
       importResult = result;
 
-      API.ItemType it = await api.itemTypes.get(selectedItemType, expand: "fields");
+      API.ItemType it = await api.itemTypes.getById(selectedItemType, expand: "fields");
 
       if (it == null)
         throw new Exception("Specified Item Type not found on server");

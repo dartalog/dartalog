@@ -137,7 +137,7 @@ class ItemAddPage extends APage with ASaveablePage {
       dynamic ele = getChildElement($['input_type'],'paper-listbox');
 
       String value = ele.selected;
-      API.ItemType it = await api.itemTypes.get(value, expand: "fields");
+      API.ItemType it = await api.itemTypes.getById(value, expand: "fields");
 
       if(it==null)
         throw new Exception("Specified Item Type not found on server");

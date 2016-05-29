@@ -1,11 +1,10 @@
 part of api;
 
-class Item extends AData {
+class Item extends AIdData {
+
+  @override
   @ApiProperty(required: false)
   String id = "";
-
-  @ApiProperty(required: true)
-  String name = "";
 
   @ApiProperty(required: true)
   String typeId;
@@ -15,29 +14,28 @@ class Item extends AData {
 
   List<String> fileUploads = new List<String>();
 
+  @ApiProperty(ignore: true)
+  int copyCount = 0;
+
+  List<ItemCopy> copies;
   ItemType type;
 
   Item();
 
-  Future validate(bool verifyId) async {
-    Map<String,String> field_errors = new Map<String,String>();
+  Future _getById(String id) => model.items.getById(id);
 
-    if(!isNullOrWhitespace(this.id)&&verifyId) {
-      Item f = await model.items.get(id);
-      if(f!=null)
-        field_errors["id"] = "Already in use";
-    }
+  @override
+  Future _validateFieldsInternal() async {
+    Map<String, String> field_errors = new Map<String, String>();
 
-    if(isNullOrWhitespace(this.name))
-      field_errors["name"] = "Required";
-    if(this.name.trim()=="name")
-      field_errors["name"] = "Cannot be named ""name""";
-
-    if(isNullOrWhitespace(this.typeId))
+    if (isNullOrWhitespace(this.typeId))
       field_errors["typeId"] = "Required";
-
-    if(field_errors.length>0) {
-      throw new DataValidationException.WithFieldErrors("Invalid item data", field_errors);
+    else {
+      dynamic test  = model.itemTypes.getById(this.typeId);
+      if(test==null)
+        field_errors["typeId"] = "Not found";
     }
+
+    return field_errors;
   }
 }

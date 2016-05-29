@@ -64,7 +64,7 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
       this.reset();
       clear("fields");
 
-      API.ListOfIdNamePair data = await api.fields.getAll();
+      API.ListOfIdNamePair data = await api.fields.getAllIdsAndNames();
 
       for(API.IdNamePair pair  in data) {
         add("fields", new IdNamePair.copy(pair));
@@ -105,7 +105,7 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
       if(id==null)
         return;
 
-      API.Field field = await api.fields.get(id);
+      API.Field field = await api.fields.getById(id);
 
       if(field==null)
         throw new Exception("Selected field not found");

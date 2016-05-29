@@ -263,10 +263,7 @@ class MainApp extends PolymerElement {
     });
   }
 
-  @reflectable
-  closeToast(event, [_]) async {
-    toastElement.toggle();
-  }
+
   // Optional lifecycle methods - uncomment if needed.
 
 //  /// Called when an instance of main-app is inserted into the DOM.

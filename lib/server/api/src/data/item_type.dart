@@ -1,43 +1,26 @@
 part of api;
 
-class ItemType extends AData {
-
-  @ApiProperty(required: true)
-  String id;
-
-  @ApiProperty(required: true)
-  String name;
-
+class ItemType extends AIdData {
   @ApiProperty(required: true)
   List<String> fieldIds = new List<String>();
 
   List<Field> fields = null;
 
-  List<String> subTypes = new List<String>();
-
-  List<String> itemNameFields = new List<String>();
-
   ItemType();
 
-  Future validate(bool verifyId) async {
-    Map<String,String> field_errors = new Map<String,String>();
-    if(isNullOrWhitespace(this.id))
-      field_errors["id"] = "Required";
-    else if(verifyId) {
-      ItemType it = await model.itemTypes.get(this.id);
-      if(it!=null)
-        field_errors["id"] = "Already in use";
-    }
-    if(isNullOrWhitespace(this.name))
-      field_errors["name"] = "Required";
-    if(this.name.trim()=="name")
-      field_errors["name"] = "Cannot be named ""name""";
-    if(this.fieldIds==null||this.fieldIds.length==0)
+  Future _getById(String id) => model.itemTypes.getById(id);
+
+  Future _validateFieldsInternal() async {
+    Map<String, String> field_errors = new Map<String, String>();
+
+    if (this.fieldIds == null || this.fieldIds.length == 0)
       field_errors["fieldIds"] = "Required";
-
-    if(field_errors.length>0) {
-      throw new DataValidationException.WithFieldErrors("Invalid item type data", field_errors);
+    else {
+      List test = await model.fields.getByIds(this.fieldIds);
+      if(test.length==this.fieldIds.length)
+        field_errors["fieldIds"] = "Not found";
     }
-  }
 
+    return field_errors;
+  }
 }

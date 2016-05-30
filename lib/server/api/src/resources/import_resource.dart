@@ -5,36 +5,28 @@ class ImportResource extends AResource {
   Logger get _logger => _log;
 
   @ApiMethod(path: '${API_IMPORT_PATH}/{provider}/{id}')
-  Future<ImportResult> import(String provider, String id) async {
-    try {
+  Future<ImportResult> import(String provider, String id) => _catchExceptions(_import(provider, id));
+  Future<ImportResult> _import(String provider, String id) async {
       AImportProvider importer = _getProvider(provider);
       return await importer.import(id);
-    } catch (e, st) {
-      _HandleException(e, st);
-    }
   }
 
   @ApiMethod(path: '${API_IMPORT_PATH}/')
-  Future<Map<String, List<String>>> listProviders() async {
-    try {
+  Future<Map<String, List<String>>> listProviders() => _catchExceptions(_listProviders());
+  Future<Map<String, List<String>>> _listProviders() async {
       return {
         "providers": ["amazon", "themoviedb"]
       };
-    } catch (e, st) {
-      _HandleException(e, st);
-    }
   }
 
   @ApiMethod(path: '${API_IMPORT_PATH}/{provider}/search/{query}')
   Future<SearchResults> search(String provider, String query,
+      {String template, int page: 0}) => _catchExceptions(_search(provider, query, template: template, page: page));
+    Future<SearchResults> _search(String provider, String query,
       {String template, int page: 0}) async {
-    try {
       AImportProvider importer = _getProvider(provider);
       query = Uri.decodeFull(query);
       return await importer.search(query, template, page: page);
-    } catch (e, st) {
-      _HandleException(e, st);
-    }
   }
 
   AImportProvider _getProvider(String provider) {

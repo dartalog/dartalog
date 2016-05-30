@@ -1,15 +1,14 @@
 part of api;
 
 abstract class AIdData extends AData{
-  @ApiProperty(required: false)
-  String id = "";
-
-  @ApiProperty(required: true)
-  String name = "";
+  String get _id;
+  set _id(String value);
+  String get _name;
+  set _name(String value);
 
   void cleanUp() {
-    this.id = this.id.trim().toLowerCase();
-    this.name = this.name.trim();
+    this._id = this._id.trim().toLowerCase();
+    this._name = this._name.trim();
     _cleanUpInternal();
   }
 
@@ -18,22 +17,22 @@ abstract class AIdData extends AData{
   Future _validateFields(bool creating) async {
     Map<String, String> field_errors = new Map<String, String>();
 
-    if (isNullOrWhitespace(this.id))
+    if (isNullOrWhitespace(this._id))
       field_errors["id"] = "Required";
     else {
       if (creating) {
-        dynamic other = await _getById(this.id);
+        dynamic other = await _getById(this._id);
         if (other != null) field_errors["id"] = "Already in use";
       }
-      if (RESERVED_WORDS.contains(this.id.trim().toLowerCase())) {
-        field_errors["id"] = "Cannot use '${this.id}' as ID";
+      if (RESERVED_WORDS.contains(this._id.trim().toLowerCase())) {
+        field_errors["id"] = "Cannot use '${this._id}' as ID";
       }
     }
 
-    if (isNullOrWhitespace(this.name)) {
+    if (isNullOrWhitespace(this._name)) {
       field_errors["name"] = "Required";
-    } else if (RESERVED_WORDS.contains(this.id.trim().toLowerCase())) {
-      field_errors["name"] = "Cannot use '${this.name}' as name";
+    } else if (RESERVED_WORDS.contains(this._id.trim().toLowerCase())) {
+      field_errors["name"] = "Cannot use '${this._name}' as name";
     }
 
     field_errors.addAll(await _validateFieldsInternal());
@@ -43,6 +42,6 @@ abstract class AIdData extends AData{
 
   Future _getById(String id);
 
-  Future<Map<String, String>> _validateFieldsInternal() {}
+  Future<Map<String, String>> _validateFieldsInternal() async => {};
 
 }

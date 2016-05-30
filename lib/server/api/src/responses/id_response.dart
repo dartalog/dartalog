@@ -2,8 +2,9 @@ part of api;
 
 class IdResponse {
   String id;
+  String location;
 
   IdResponse();
 
-  IdResponse.fromId(this.id);
+  IdResponse.fromId(this.id, this.location);
 }

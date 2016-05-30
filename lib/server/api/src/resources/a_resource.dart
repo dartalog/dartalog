@@ -7,46 +7,61 @@ abstract class AResource {
     return "";
   }
 
-  void _HandleException(e, st) {
-    _logger.severe(e, st);
+  Future<dynamic> _catchExceptions(Future toAwait) async {
     RpcError output;
-    if (e is model.DataMovedException) {
-      model.DataMovedException dme = e as model.DataMovedException;
-      String redirect = _generateRedirect(dme.newId);
+    dynamic exception, stackTrace;
+
+    try {
+      return await toAwait;
+    } on model.DataMovedException catch(e, st) {
+      exception = e;
+      stackTrace = st;
+      String redirect = _generateRedirect(e.newId);
       if (isNullOrWhitespace(redirect))
         output = new ApplicationError(
             "Redirect information found, but could not generate new path");
       else {
-        _sendRedirect(redirect);
-        return;
+        _sendRedirectHeader(redirect);
       }
-    } else if (e is model.InvalidInputException) {
+    } on model.InvalidInputException catch(e, st) {
+      exception = e;
+      stackTrace = st;
       output = new BadRequestError(e.toString());
-    } else if (e is DataValidationException) {
-      DataValidationException dve = e as DataValidationException;
+    } on DataValidationException catch(e, st) {
+      exception = e;
+      stackTrace = st;
       output = new BadRequestError(e.message);
       for (String field in e.fieldErrors.keys) {
         output.errors.add(new RpcErrorDetail(
             location: field,
             locationType: "field",
-            message: dve.fieldErrors[field]));
+            message: e.fieldErrors[field]));
       }
-    } else if (e is model.AlreadyExistsException) {
+    } on model.AlreadyExistsException catch(e, st) {
+      exception = e;
+      stackTrace = st;
       output = new RpcError(406, "Conflict", e.toString());
-    } else if (e is model.NotFoundException) {
+    } on model.NotFoundException catch(e, st) {
+      exception = e;
+      stackTrace = st;
       output = new NotFoundError(e.toString());
-    } else if (e is RpcError) {
+    } on RpcError catch(e, st) {
+      _logger.severe(e, st);
       throw e;
-    } else {
+    } catch(e,st) {
+      exception = e;
+      stackTrace = st;
       output = new ApplicationError(e.toString());
     }
+    _logger.severe(exception, stackTrace);
     output.errors.add(new RpcErrorDetail(
-        location: Trace.format(st, terse: true), locationType: "stackTrace"));
+        location: Trace.format(stackTrace, terse: true), locationType: "stackTrace"));
     throw output;
   }
 
-  void _sendRedirect(String target) {
+  void _sendRedirectHeader(String target) {
     context.responseStatusCode = HttpStatus.MOVED_PERMANENTLY;
     context.responseHeaders[HttpHeaders.LOCATION] = target;
+    throw new RpcError(301," Moved Permanently",target);
   }
 }

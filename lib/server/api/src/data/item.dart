@@ -1,10 +1,16 @@
 part of api;
 
 class Item extends AIdData {
-
-  @override
   @ApiProperty(required: false)
   String id = "";
+  String get _id => id;
+  set _id(String value) => id = value;
+
+  @override
+  @ApiProperty(required: true)
+  String name = "";
+  String get _name => name;
+  set _name(String value) => name = value;
 
   @ApiProperty(required: true)
   String typeId;

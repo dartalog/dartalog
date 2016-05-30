@@ -1,54 +1,34 @@
 part of api;
 
-class ItemTypeResource extends AResource {
+class ItemTypeResource extends AIdResource<ItemType> {
   static final Logger _log = new Logger('ItemTypeResource');
   Logger get _logger => _log;
 
+  model.AIdModel<ItemType> get idModel => model.itemTypes;
+
   @ApiMethod(method: 'POST', path: '${API_ITEM_TYPES_PATH}/')
-  Future<IdResponse> create(ItemType itemType) async {
-    try {
-      await itemType.validate(true);
-      String output = await model.itemTypes.write(itemType);
-      return new IdResponse.fromId(output);
-    } catch (e, st) {
-      _HandleException(e, st);
-    }
-  }
+  Future<IdResponse> create(ItemType itemType) => _create(itemType);
 
   @ApiMethod(path: '${API_ITEM_TYPES_PATH}/{id}/')
-  Future<ItemType> getById(String id, {String expand}) async {
-    try {
-      ItemType output = await model.itemTypes.getById(id);
-      if (output == null)
-        throw new NotFoundError("Item type '${id}' not found");
-      if (expand == "fields") {
+  Future<ItemType> getById(String id, {String expand}) => _catchExceptions(_getById(id, expand: expand));
+  Future<ItemType> _getById(String id, {String expand}) async {
+    ItemType output = await _getByIdInternal(id);
+
+    if (expand == "fields") {
         output.fields = await model.fields.getByIds(output.fieldIds);
       }
       return output;
-    } catch (e, st) {
-      _HandleException(e, st);
-    }
   }
 
   @ApiMethod(path: '${API_ITEM_TYPES_PATH}/')
-  Future<List<IdNamePair>> getAllIdsAndNames() async {
-    try {
-      return await model.itemTypes.getAllIdsAndNames();
-    } catch (e, st) {
-      _HandleException(e, st);
-    }
-  }
+  Future<List<IdNamePairResponse>> getAllIdsAndNames() => _getAllIdsAndNames();
 
   @ApiMethod(method: 'PUT', path: '${API_ITEM_TYPES_PATH}/{id}/')
-  Future<IdResponse> update(String id, ItemType itemType) async {
-    try {
-      await itemType.validate(id != itemType.id);
-      String output = await model.itemTypes.write(itemType, id);
-      return new IdResponse.fromId(output);
-    } catch (e, st) {
-      _HandleException(e, st);
-    }
-  }
+  Future<IdResponse> update(String id, ItemType itemType) => _update(id, itemType);
+
+  @ApiMethod(method: 'DELETE', path: '${API_ITEM_TYPES_PATH}/{id}/')
+  Future<VoidMessage> delete(String id) => _delete(id);
+
 
   String _generateRedirect(String newId) =>
       "${SERVER_API_ROOT}${API_ITEM_TYPES_PATH}/${newId}";

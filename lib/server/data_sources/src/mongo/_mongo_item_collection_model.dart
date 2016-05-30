@@ -1,11 +1,11 @@
 part of data_sources;
 
-class _MongoItemCollectionModel extends _AMongoIdModel<api.Collection>
+class _MongoItemCollectionModel extends _AMongoIdModel<Collection>
     with AItemCollectionModel {
   static final Logger _log = new Logger('_MongoCollectionModel');
 
-  api.Collection _createObject(Map data) {
-    api.Collection output = new api.Collection();
+  Collection _createObject(Map data) {
+    Collection output = new Collection();
     output.id = data["id"];
     output.name = data["name"];
     return output;
@@ -14,7 +14,7 @@ class _MongoItemCollectionModel extends _AMongoIdModel<api.Collection>
   Future<mongo.DbCollection> _getCollection(_MongoDatabase con) =>
       con.getCollectionsCollection();
 
-  void _updateMap(api.Collection collection, Map data) {
+  void _updateMap(Collection collection, Map data) {
     data["id"] = collection.id;
     data["name"] = collection.name;
   }

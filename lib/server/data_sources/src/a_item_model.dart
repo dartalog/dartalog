@@ -1,6 +1,6 @@
 part of data_sources;
 
-abstract class AItemModel extends AIdNameBasedDataSource<api.Item> {
+abstract class AItemModel extends AIdNameBasedDataSource<Item> {
   static final Logger _log = new Logger('AItemModel');
 
 }

@@ -1,4 +1,4 @@
-part of data_sources;
+part of dartalog;
 
 class NotFoundException implements Exception {
   String message;

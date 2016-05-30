@@ -1,22 +1,22 @@
 part of data_sources;
 
-abstract class _AMongoIdModel<T extends api.AIdData> extends _AMongoModel<T> {
+abstract class _AMongoIdModel<T extends AIdData> extends _AMongoModel<T> {
   Future<List<T>> getAll() => _getFromDb(null);
 
   Future delete(String id) => _deleteFromDb(mongo.where.eq("id", id));
 
 
-  Future<List<api.IdNamePairResponse>> getAllIdsAndNames() async {
+  Future<List<IdNamePair>> getAllIdsAndNames() async {
     _MongoDatabase con = await _MongoDatabase.getConnection();
     try {
       mongo.DbCollection collection = await _getCollection(con);
 
       List results = await collection.find().toList();
 
-      List<api.IdNamePairResponse> output = new List<api.IdNamePairResponse>();
+      List<IdNamePair> output = new List<IdNamePair>();
 
       for (var result in results) {
-        output.add(new api.IdNamePairResponse.from(result["id"], result["name"]));
+        output.add(new IdNamePair.from(result["id"], result["name"]));
       }
 
       return output;

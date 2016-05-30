@@ -1,5 +1,8 @@
 library dartalog;
 
+part 'src/not_found_exception.dart';
+part 'src/invalid_input_exception.dart';
+
 const String LOGGED_IN_USER = 'sanmadjack';
 
 const String FILE_UPLOAD_PREFIX = "upload:";

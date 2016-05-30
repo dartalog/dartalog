@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "8a152924b3ec19ab6a881b69c87f242d2fbce118",
+ "etag": "7f88af3e675b026f023d758f03df9a393714cb56",
  "discoveryVersion": "v1",
  "id": "dartalog:0.1",
  "name": "dartalog",
@@ -18,17 +18,8 @@
    "id": "Field",
    "type": "object",
    "properties": {
-    "id": {
-     "type": "string",
-     "required": true
-    },
-    "name": {
-     "type": "string",
-     "required": true
-    },
     "type": {
-     "type": "string",
-     "required": true
+     "type": "string"
     },
     "format": {
      "type": "string"
@@ -40,6 +31,9 @@
    "type": "object",
    "properties": {
     "id": {
+     "type": "string"
+    },
+    "location": {
      "type": "string"
     }
    }
@@ -56,12 +50,10 @@
    "type": "object",
    "properties": {
     "id": {
-     "type": "string",
-     "required": true
+     "type": "string"
     },
     "name": {
-     "type": "string",
-     "required": true
+     "type": "string"
     }
    }
   },
@@ -69,17 +61,8 @@
    "id": "ItemType",
    "type": "object",
    "properties": {
-    "id": {
-     "type": "string",
-     "required": true
-    },
-    "name": {
-     "type": "string",
-     "required": true
-    },
     "fieldIds": {
      "type": "array",
-     "required": true,
      "items": {
       "type": "string"
      }
@@ -89,18 +72,50 @@
      "items": {
       "$ref": "Field"
      }
+    }
+   }
+  },
+  "ItemCopy": {
+   "id": "ItemCopy",
+   "type": "object",
+   "properties": {
+    "itemId": {
+     "type": "string"
     },
-    "subTypes": {
-     "type": "array",
-     "items": {
-      "type": "string"
-     }
+    "copy": {
+     "type": "integer",
+     "format": "int32"
     },
-    "itemNameFields": {
-     "type": "array",
-     "items": {
-      "type": "string"
-     }
+    "collectionId": {
+     "type": "string"
+    },
+    "uniqueId": {
+     "type": "string"
+    },
+    "status": {
+     "type": "string"
+    },
+    "collection": {
+     "$ref": "Collection"
+    }
+   }
+  },
+  "ListOfItemCopy": {
+   "id": "ListOfItemCopy",
+   "type": "array",
+   "items": {
+    "$ref": "ItemCopy"
+   }
+  },
+  "ItemActionRequest": {
+   "id": "ItemActionRequest",
+   "type": "object",
+   "properties": {
+    "action": {
+     "type": "string"
+    },
+    "actionerUserId": {
+     "type": "string"
     }
    }
   },
@@ -108,20 +123,11 @@
    "id": "Item",
    "type": "object",
    "properties": {
-    "id": {
-     "type": "string"
-    },
-    "name": {
-     "type": "string",
-     "required": true
-    },
     "typeId": {
-     "type": "string",
-     "required": true
+     "type": "string"
     },
     "values": {
      "type": "object",
-     "required": true,
      "additionalProperties": {
       "type": "string"
      }
@@ -132,20 +138,30 @@
       "type": "string"
      }
     },
+    "copyCount": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "copies": {
+     "type": "array",
+     "items": {
+      "$ref": "ItemCopy"
+     }
+    },
     "type": {
      "$ref": "ItemType"
     }
    }
   },
-  "ListOfItemListing": {
-   "id": "ListOfItemListing",
+  "ListOfItemListingResponse": {
+   "id": "ListOfItemListingResponse",
    "type": "array",
    "items": {
-    "$ref": "ItemListing"
+    "$ref": "ItemListingResponse"
    }
   },
-  "ItemListing": {
-   "id": "ItemListing",
+  "ItemListingResponse": {
+   "id": "ItemListingResponse",
    "type": "object",
    "properties": {
     "id": {
@@ -262,6 +278,29 @@
    "additionalProperties": {
     "type": "string"
    }
+  },
+  "User": {
+   "id": "User",
+   "type": "object",
+   "properties": {
+    "password": {
+     "type": "string"
+    }
+   }
+  },
+  "PasswordChangeRequest": {
+   "id": "PasswordChangeRequest",
+   "type": "object",
+   "properties": {
+    "currentPassword": {
+     "type": "string",
+     "required": true
+    },
+    "newPassword": {
+     "type": "string",
+     "required": true
+    }
+   }
   }
  },
  "methods": {},
@@ -331,14 +370,30 @@
      "response": {
       "$ref": "IdResponse"
      }
+    },
+    "delete": {
+     "id": "DartalogApi.fields.delete",
+     "path": "fields/{id}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ]
     }
    },
    "resources": {}
   },
-  "item_types": {
+  "itemTypes": {
    "methods": {
     "create": {
-     "id": "DartalogApi.item_types.create",
+     "id": "DartalogApi.itemTypes.create",
      "path": "item_types/",
      "httpMethod": "POST",
      "parameters": {},
@@ -351,7 +406,7 @@
      }
     },
     "getById": {
-     "id": "DartalogApi.item_types.getById",
+     "id": "DartalogApi.itemTypes.getById",
      "path": "item_types/{id}/",
      "httpMethod": "GET",
      "parameters": {
@@ -361,9 +416,9 @@
        "required": true,
        "location": "path"
       },
-      "expand": {
-       "type": "string",
-       "description": "Query parameter: 'expand'.",
+      "includeFields": {
+       "type": "boolean",
+       "description": "Query parameter: 'includeFields'.",
        "required": false,
        "location": "query"
       }
@@ -376,7 +431,7 @@
      }
     },
     "getAllIdsAndNames": {
-     "id": "DartalogApi.item_types.getAllIdsAndNames",
+     "id": "DartalogApi.itemTypes.getAllIdsAndNames",
      "path": "item_types/",
      "httpMethod": "GET",
      "parameters": {},
@@ -386,7 +441,7 @@
      }
     },
     "update": {
-     "id": "DartalogApi.item_types.update",
+     "id": "DartalogApi.itemTypes.update",
      "path": "item_types/{id}/",
      "httpMethod": "PUT",
      "parameters": {
@@ -406,6 +461,22 @@
      "response": {
       "$ref": "IdResponse"
      }
+    },
+    "delete": {
+     "id": "DartalogApi.itemTypes.delete",
+     "path": "item_types/{id}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ]
     }
    },
    "resources": {}
@@ -448,7 +519,7 @@
      "parameters": {},
      "parameterOrder": [],
      "response": {
-      "$ref": "ListOfItemListing"
+      "$ref": "ListOfItemListingResponse"
      }
     },
     "getById": {
@@ -462,9 +533,21 @@
        "required": true,
        "location": "path"
       },
-      "expand": {
-       "type": "string",
-       "description": "Query parameter: 'expand'.",
+      "includeType": {
+       "type": "boolean",
+       "description": "Query parameter: 'includeType'.",
+       "required": false,
+       "location": "query"
+      },
+      "includeFields": {
+       "type": "boolean",
+       "description": "Query parameter: 'includeFields'.",
+       "required": false,
+       "location": "query"
+      },
+      "includeCopies": {
+       "type": "boolean",
+       "description": "Query parameter: 'includeCopies'.",
        "required": false,
        "location": "query"
       }
@@ -499,7 +582,135 @@
      }
     }
    },
-   "resources": {}
+   "resources": {
+    "copies": {
+     "methods": {
+      "create": {
+       "id": "DartalogApi.items.copies.create",
+       "path": "items/{itemId}/copies/",
+       "httpMethod": "POST",
+       "parameters": {
+        "itemId": {
+         "type": "string",
+         "description": "Path parameter: 'itemId'.",
+         "required": true,
+         "location": "path"
+        }
+       },
+       "parameterOrder": [
+        "itemId"
+       ],
+       "request": {
+        "$ref": "ItemCopy"
+       },
+       "response": {
+        "$ref": "IdResponse"
+       }
+      },
+      "getAllForItem": {
+       "id": "DartalogApi.items.copies.getAllForItem",
+       "path": "items/{itemId}/copies/",
+       "httpMethod": "GET",
+       "parameters": {
+        "itemId": {
+         "type": "string",
+         "description": "Path parameter: 'itemId'.",
+         "required": true,
+         "location": "path"
+        }
+       },
+       "parameterOrder": [
+        "itemId"
+       ],
+       "response": {
+        "$ref": "ListOfItemCopy"
+       }
+      },
+      "update": {
+       "id": "DartalogApi.items.copies.update",
+       "path": "items/{itemId}/copies/{copy}/",
+       "httpMethod": "PUT",
+       "parameters": {
+        "itemId": {
+         "type": "string",
+         "description": "Path parameter: 'itemId'.",
+         "required": true,
+         "location": "path"
+        },
+        "copy": {
+         "type": "integer",
+         "description": "Path parameter: 'copy'.",
+         "required": true,
+         "location": "path"
+        }
+       },
+       "parameterOrder": [
+        "itemId",
+        "copy"
+       ],
+       "request": {
+        "$ref": "ItemCopy"
+       },
+       "response": {
+        "$ref": "IdResponse"
+       }
+      },
+      "get": {
+       "id": "DartalogApi.items.copies.get",
+       "path": "items/{itemId}/copies/{copy}/",
+       "httpMethod": "GET",
+       "parameters": {
+        "itemId": {
+         "type": "string",
+         "description": "Path parameter: 'itemId'.",
+         "required": true,
+         "location": "path"
+        },
+        "copy": {
+         "type": "integer",
+         "description": "Path parameter: 'copy'.",
+         "required": true,
+         "location": "path"
+        }
+       },
+       "parameterOrder": [
+        "itemId",
+        "copy"
+       ],
+       "response": {
+        "$ref": "ItemCopy"
+       }
+      },
+      "performAction": {
+       "id": "DartalogApi.items.copies.performAction",
+       "path": "items/{itemId}/copies/{copy}/action/",
+       "httpMethod": "PUT",
+       "parameters": {
+        "itemId": {
+         "type": "string",
+         "description": "Path parameter: 'itemId'.",
+         "required": true,
+         "location": "path"
+        },
+        "copy": {
+         "type": "integer",
+         "description": "Path parameter: 'copy'.",
+         "required": true,
+         "location": "path"
+        }
+       },
+       "parameterOrder": [
+        "itemId",
+        "copy"
+       ],
+       "request": {
+        "$ref": "ItemActionRequest"
+       }
+      }
+     },
+     "resources": {}
+    }
+   }
   },
   "import": {
    "methods": {
@@ -591,6 +802,186 @@
      "response": {
       "$ref": "MapOfString"
      }
+    }
+   },
+   "resources": {}
+  },
+  "collections": {
+   "methods": {
+    "create": {
+     "id": "DartalogApi.collections.create",
+     "path": "collections/",
+     "httpMethod": "POST",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "IdResponse"
+     }
+    },
+    "getById": {
+     "id": "DartalogApi.collections.getById",
+     "path": "collections/{id}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ]
+    },
+    "getAllIdsAndNames": {
+     "id": "DartalogApi.collections.getAllIdsAndNames",
+     "path": "collections/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "ListOfIdNamePair"
+     }
+    },
+    "update": {
+     "id": "DartalogApi.collections.update",
+     "path": "collections/{id}/",
+     "httpMethod": "PUT",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "response": {
+      "$ref": "IdResponse"
+     }
+    },
+    "delete": {
+     "id": "DartalogApi.collections.delete",
+     "path": "collections/{id}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ]
+    }
+   },
+   "resources": {}
+  },
+  "users": {
+   "methods": {
+    "create": {
+     "id": "DartalogApi.users.create",
+     "path": "users/",
+     "httpMethod": "POST",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "User"
+     },
+     "response": {
+      "$ref": "IdResponse"
+     }
+    },
+    "getAllIdsAndNames": {
+     "id": "DartalogApi.users.getAllIdsAndNames",
+     "path": "users/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "ListOfIdNamePair"
+     }
+    },
+    "getById": {
+     "id": "DartalogApi.users.getById",
+     "path": "users/{id}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "response": {
+      "$ref": "User"
+     }
+    },
+    "update": {
+     "id": "DartalogApi.users.update",
+     "path": "users/{id}/",
+     "httpMethod": "PUT",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "request": {
+      "$ref": "User"
+     },
+     "response": {
+      "$ref": "IdResponse"
+     }
+    },
+    "changePassword": {
+     "id": "DartalogApi.users.changePassword",
+     "path": "users/{id}/password/",
+     "httpMethod": "PUT",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "request": {
+      "$ref": "PasswordChangeRequest"
+     }
+    },
+    "delete": {
+     "id": "DartalogApi.users.delete",
+     "path": "users/{id}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ]
     }
    },
    "resources": {}

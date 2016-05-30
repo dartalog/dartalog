@@ -1,12 +1,12 @@
 part of data_sources;
 
-class _MongoFieldModel extends _AMongoIdModel<api.Field> with AFieldModel {
+class _MongoFieldModel extends _AMongoIdModel<Field> with AFieldModel {
   static final Logger _log = new Logger('_MongoFieldModel');
 
-  Future<List<api.Field>> getByIds(List<String> ids) async {
+  Future<List<Field>> getByIds(List<String> ids) async {
     _log.info("Getting all fields for IDs");
 
-    if (ids == null) return new List<api.Field>();
+    if (ids == null) return new List<Field>();
 
     mongo.SelectorBuilder query = null;
 
@@ -24,8 +24,8 @@ class _MongoFieldModel extends _AMongoIdModel<api.Field> with AFieldModel {
     return results;
   }
 
-  api.Field _createObject(Map data) {
-    api.Field output = new api.Field();
+  Field _createObject(Map data) {
+    Field output = new Field();
     output.id = data["id"];
     output.name = data["name"];
     output.type = data["type"];
@@ -36,7 +36,7 @@ class _MongoFieldModel extends _AMongoIdModel<api.Field> with AFieldModel {
   Future<mongo.DbCollection> _getCollection(_MongoDatabase con) =>
       con.getFieldsCollection();
 
-  void _updateMap(api.Field field, Map data) {
+  void _updateMap(Field field, Map data) {
     data["id"] = field.id;
     data["name"] = field.name;
     data["type"] = field.type;

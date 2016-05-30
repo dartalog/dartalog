@@ -1,7 +1,7 @@
 part of data_sources;
 
-abstract class AFieldModel extends AIdNameBasedDataSource<api.Field> {
+abstract class AFieldModel extends AIdNameBasedDataSource<Field> {
   static final Logger _log = new Logger('AFieldModel');
   
-  Future<List<api.Field>> getByIds(List<String> ids);
+  Future<List<Field>> getByIds(List<String> ids);
 }

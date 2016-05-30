@@ -13,7 +13,7 @@ abstract class AResource {
 
     try {
       return await toAwait;
-    } on model.DataMovedException catch(e, st) {
+    } on data_source.DataMovedException catch(e, st) {
       exception = e;
       stackTrace = st;
       String redirect = _generateRedirect(e.newId);
@@ -23,7 +23,7 @@ abstract class AResource {
       else {
         _sendRedirectHeader(redirect);
       }
-    } on model.InvalidInputException catch(e, st) {
+    } on InvalidInputException catch(e, st) {
       exception = e;
       stackTrace = st;
       output = new BadRequestError(e.toString());
@@ -37,11 +37,11 @@ abstract class AResource {
             locationType: "field",
             message: e.fieldErrors[field]));
       }
-    } on model.AlreadyExistsException catch(e, st) {
+    } on data_source.AlreadyExistsException catch(e, st) {
       exception = e;
       stackTrace = st;
       output = new RpcError(406, "Conflict", e.toString());
-    } on model.NotFoundException catch(e, st) {
+    } on NotFoundException catch(e, st) {
       exception = e;
       stackTrace = st;
       output = new NotFoundError(e.toString());

@@ -1,18 +1,18 @@
 part of data_sources;
 
-class _MongoItemCopyModel extends _AMongoModel<api.ItemCopy>
+class _MongoItemCopyModel extends _AMongoModel<ItemCopy>
     with AItemCopyModel {
   static final Logger _log = new Logger('_MongoItemCopyModel');
 
-  Future<List<api.ItemCopy>> getAllForItemId(String itemId) => _getFromDb(mongo.where.eq("itemId", itemId));
+  Future<List<ItemCopy>> getAllForItemId(String itemId) => _getFromDb(mongo.where.eq("itemId", itemId));
 
-  Future<api.ItemCopy> getByItemIdAndCopy(String itemId, int copy) => _getForOneFromDb(mongo.where.eq("itemId", itemId).eq("copy",copy));
+  Future<ItemCopy> getByItemIdAndCopy(String itemId, int copy) => _getForOneFromDb(mongo.where.eq("itemId", itemId).eq("copy",copy));
 
-  Future<api.ItemCopy> getByUniqueId(String uniqueId) => _getForOneFromDb(mongo.where.eq("uniqueId", uniqueId));
+  Future<ItemCopy> getByUniqueId(String uniqueId) => _getForOneFromDb(mongo.where.eq("uniqueId", uniqueId));
 
   Future delete(String itemId, int copy) => _deleteFromDb(mongo.where.eq("itemId", itemId).eq("copy",copy));
 
-  Future write(api.ItemCopy itemCopy, [String itemId, int copy]) async {
+  Future write(ItemCopy itemCopy, [String itemId, int copy]) async {
     if(!tools.isNullOrWhitespace(itemId)||copy!=null) {
       if(tools.isNullOrWhitespace(itemId)||copy==null)
         throw new Exception("Both itemId and copy are required");
@@ -22,8 +22,8 @@ class _MongoItemCopyModel extends _AMongoModel<api.ItemCopy>
     }
   }
 
-  api.ItemCopy _createObject(Map data) {
-    api.ItemCopy output = new api.ItemCopy();
+  ItemCopy _createObject(Map data) {
+    ItemCopy output = new ItemCopy();
     output.collectionId = data["collectionId"];
     output.copy = data["copy"];
     output.itemId = data["itemId"];
@@ -38,7 +38,7 @@ class _MongoItemCopyModel extends _AMongoModel<api.ItemCopy>
   Future<mongo.DbCollection> _getCollection(_MongoDatabase con) =>
       con.getItemTypesCollection();
 
-  void _updateMap(api.ItemCopy itemCopy, Map data) {
+  void _updateMap(ItemCopy itemCopy, Map data) {
     data["collectionId"] = itemCopy.collectionId;
     data["copy"] = itemCopy.copy;
     data["itemId"] = itemCopy.itemId;

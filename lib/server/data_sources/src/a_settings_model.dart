@@ -6,7 +6,7 @@ abstract class ASettingsModel extends _ADataSource {
   AFieldModel();
 
   Future<Map<String, String>> getAll();
-  Future<api.Field> get(Settings setting);
+  Future<Field> get(Settings setting);
 
   Future write(Settings setting, String value);
 

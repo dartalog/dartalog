@@ -24,25 +24,25 @@ class PresetModel extends _ADataSource {
     return output;
   }
 
-  Future<api.ItemType> getPreset(String id) async {
+  Future<ItemType> getPreset(String id) async {
     Map map = await _getItemTypePresets();
     if(!map.containsKey(id)) {
       throw new NotFoundException("Specified preset not found");
     }
     map = map[id];
-    api.ItemType output = new api.ItemType();
+    ItemType output = new ItemType();
     output.name = map["name"];
     output.fields = map["fields"];
     return output;
   }
 
-  Future<Map<String,api.Field>> getFields(List<String> ids) async {
+  Future<Map<String,Field>> getFields(List<String> ids) async {
     Map field_presets = await _getFieldPresets();
-    List<api.Field> db_fields = await fields.getByIds(ids);
-    Map<String,api.Field> output = new Map<String, api.Field>();
+    List<Field> db_fields = await fields.getByIds(ids);
+    Map<String,Field> output = new Map<String, Field>();
 
     for(String field_id in ids) {
-      api.Field field;
+      Field field;
       if(db_fields.containsKey(field_id)) {
         field = db_fields[field_id];
       } else if(field_presets.containsKey(field_id)) {

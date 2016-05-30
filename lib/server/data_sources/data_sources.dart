@@ -5,17 +5,15 @@ import 'package:logging/logging.dart';
 
 import 'package:connection_pool/connection_pool.dart';
 import 'package:mongo_dart/mongo_dart.dart' as mongo;
-import 'package:options_file/options_file.dart';
 
 import 'package:dartalog/tools.dart' as tools;
-import 'package:dartalog/dartalog.dart' as dartalog;
+import 'package:dartalog/dartalog.dart';
 import 'package:dartalog/server/server.dart';
+import 'package:dartalog/server/model/model.dart' as model;
 import 'package:dartalog/server/api/api.dart' as api;
+import 'package:dartalog/server/data/data.dart';
 
-
-part 'src/exceptions/invalid_input_exception.dart';
 part 'src/exceptions/data_moved_exception.dart';
-part 'src/exceptions/not_found_exception.dart';
 part 'src/exceptions/already_exists_exception.dart';
 
 part 'src/_a_data_source.dart';
@@ -60,6 +58,3 @@ final AItemCopyHistoryModel itemHistories = new _MongoItemCopyHistoryModel();
 
 final AItemCollectionModel itemCollections = new _MongoItemCollectionModel();
 
-OptionsFile get options {
-  return _ADataSource.options;
-}

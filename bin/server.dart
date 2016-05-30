@@ -6,6 +6,7 @@ import 'package:crypt/crypt.dart';
 import 'package:dartalog/server/api/api.dart';
 import 'package:dartalog/server/model/model.dart' as model;
 import 'package:dartalog/server/server.dart';
+import 'package:dartalog/server/data/data.dart';
 import 'package:logging/logging.dart';
 import 'package:logging_handlers/server_logging_handlers.dart' as serverLogging;
 import 'package:option/option.dart' as option;
@@ -59,7 +60,8 @@ main(List<String> args) async {
         sessionHandler: sessionHandler, allowHttp: true);
 
     final defaultAuthMiddleware = authenticate([],
-        sessionHandler: sessionHandler, allowHttp: true,
+        sessionHandler: sessionHandler,
+        allowHttp: true,
         allowAnonymousAccess: true);
 
     final root = router()
@@ -69,8 +71,7 @@ main(List<String> args) async {
           exactMatch: false)
       ..add('/api/', ['GET', 'PUT', 'POST', 'HEAD', 'OPTIONS', 'DELETE'],
           api_handler,
-          exactMatch: false,
-          middleware: defaultAuthMiddleware)
+          exactMatch: false, middleware: defaultAuthMiddleware)
       ..add('/', ['GET', 'OPTIONS'], staticSiteHandler, exactMatch: false);
 
     var handler = const shelf.Pipeline()

@@ -100,7 +100,7 @@ class AmazonImportProvider extends AScrapingImportProvider {
     new ImportFieldCriteria(
         field: "front_cover",
         elementSelector: 'img#imgBlkFront',
-        elementAttribute: 'data-a-dynamic-image',
+        elementAttribute: 'data_sources-a-dynamic-image',
         contentsRegex: r'"(http://.+?)":',
         contentsRegexGroup: 1,
         replaceRegex: {r"\.[_A-Z0-9,]+\.": "."}

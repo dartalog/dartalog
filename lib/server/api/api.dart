@@ -17,12 +17,12 @@ import 'package:path/path.dart' as path;
 import 'package:rpc/rpc.dart';
 import 'package:stack_trace/stack_trace.dart';
 
-part 'package:dartalog/server/api/src/data/a_validating_data.dart';
+part 'package:dartalog/server/model/src/data/a_validating_data.dart';
 part 'package:dartalog/server/api/src/responses/id_name_pair_response.dart';
 part 'package:dartalog/server/api/src/responses/item_listing_response.dart';
 part 'src/dartalog_api.dart';
-part 'src/data/a_data.dart';
-part 'src/data/a_id_data.dart';
+part 'package:dartalog/server/model/src/data/a_data.dart';
+part 'package:dartalog/server/model/src/data/a_id_data.dart';
 part 'src/data/collection.dart';
 part 'src/data/field.dart';
 part 'src/data/item.dart';

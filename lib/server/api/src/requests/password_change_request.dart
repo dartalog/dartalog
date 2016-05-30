@@ -27,7 +27,7 @@ class PasswordChangeRequest {
 
     if (field_errors.length > 0) {
       throw new DataValidationException.WithFieldErrors(
-          "Invalid data", field_errors);
+          "Invalid data_sources", field_errors);
     }
   }
 }

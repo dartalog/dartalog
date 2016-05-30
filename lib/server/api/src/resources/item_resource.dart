@@ -193,7 +193,7 @@ class ItemResource extends AIdResource<Item> {
       item.values[f.id] = "${HOSTED_IMAGE_PREFIX}${hashString}";
     }
 
-    // Now that the above sections have completed gathering all the file data for saving, we save it all
+    // Now that the above sections have completed gathering all the file data_sources for saving, we save it all
     List<String> filesWritten = new List<String>();
     try {
       for (String key in filesToWrite.keys) {

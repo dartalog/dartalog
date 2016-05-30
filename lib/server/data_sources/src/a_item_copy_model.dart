@@ -1,0 +1,12 @@
+part of data_sources;
+
+abstract class AItemCopyModel extends _ADataSource {
+  static final Logger _log = new Logger('AItemCopyModel');
+
+  Future delete(String itemId, int copy);
+  Future<api.ItemCopy> getByItemIdAndCopy(String itemId, int copy);
+  Future<api.ItemCopy> getByUniqueId(String uniqueId);
+  Future<List<api.ItemCopy>> getAllForItemId(String itemId);
+  Future write(api.ItemCopy itemCopy, [String itemId, int copy]);
+
+}

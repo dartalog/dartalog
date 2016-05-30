@@ -1,7 +1,7 @@
 part of api;
 
 abstract class AIdResource<T extends AIdData> extends AResource {
-  model.AIdModel<T> get idModel;
+  model.AIdNameBasedModel<T> get idModel;
 
   Future<IdResponse> create(T t);
   Future<IdResponse> _create(T t) => _catchExceptions(_createInternal(t));

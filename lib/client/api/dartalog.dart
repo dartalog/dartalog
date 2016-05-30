@@ -1206,8 +1206,8 @@ class SearchResults {
     if (_json.containsKey("currentPage")) {
       currentPage = _json["currentPage"];
     }
-    if (_json.containsKey("data")) {
-      data = _json["data"];
+    if (_json.containsKey("data_sources")) {
+      data = _json["data_sources"];
     }
     if (_json.containsKey("results")) {
       results = _json["results"].map((value) => new SearchResult.fromJson(value)).toList();
@@ -1229,7 +1229,7 @@ class SearchResults {
       _json["currentPage"] = currentPage;
     }
     if (data != null) {
-      _json["data"] = data;
+      _json["data_sources"] = data;
     }
     if (results != null) {
       _json["results"] = results.map((value) => (value).toJson()).toList();

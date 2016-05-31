@@ -24,32 +24,34 @@ abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
   }
 
   Future<String> update(String id, T t) async {
-    await validate(t, id != t.id);
+    await validate(t, id != t.getId);
     return await dataSource.write(t, id);
   }
 
-  Future _validateFields(T t, bool creating) async {
+  @override
+  Future<Map<String, String>> _validateFields(T t, bool creating) async {
     Map<String, String> field_errors = new Map<String, String>();
 
-    t.id = t.id.trim().toLowerCase();
-    t.name = t.name.trim();
+    t.getId = t.getId.trim().toLowerCase();
+    t.getName = t.getName.trim();
 
-    if (isNullOrWhitespace(t.id))
+    if (isNullOrWhitespace(t.getId))
       field_errors["id"] = "Required";
     else {
       if (creating) {
-        dynamic other = await getById(t.id);
-        if (other != null) field_errors["id"] = "Already in use";
+        dynamic other = await getById(t.getId);
+        if (other != null)
+          field_errors["id"] = "Already in use";
       }
-      if (RESERVED_WORDS.contains(t.id.trim().toLowerCase())) {
-        field_errors["id"] = "Cannot use '${t.id}' as ID";
+      if (RESERVED_WORDS.contains(t.getId.trim().toLowerCase())) {
+        field_errors["id"] = "Cannot use '${t.getId}' as ID";
       }
     }
 
-    if (isNullOrWhitespace(t.name)) {
+    if (isNullOrWhitespace(t.getName)) {
       field_errors["name"] = "Required";
-    } else if (RESERVED_WORDS.contains(t.id.trim().toLowerCase())) {
-      field_errors["name"] = "Cannot use '${t.name}' as name";
+    } else if (RESERVED_WORDS.contains(t.getId.trim().toLowerCase())) {
+      field_errors["name"] = "Cannot use '${t.getName}' as name";
     }
 
     field_errors.addAll(await _validateFieldsInternal(t));

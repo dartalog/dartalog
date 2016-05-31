@@ -1,15 +1,16 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:args/args.dart';
+import 'package:args/args.dart' as argsLib;
 import 'package:crypt/crypt.dart';
 import 'package:dartalog/server/api/api.dart';
 import 'package:dartalog/server/model/model.dart' as model;
+import 'package:dartalog/server/data_sources/data_sources.dart'  as data_source;
 import 'package:dartalog/server/server.dart';
 import 'package:dartalog/server/data/data.dart';
 import 'package:logging/logging.dart';
 import 'package:logging_handlers/server_logging_handlers.dart' as serverLogging;
-import 'package:option/option.dart' as option;
+import 'package:option/option.dart' ;
 import 'package:options_file/options_file.dart';
 import 'package:path/path.dart' show join, dirname;
 import 'package:rpc/rpc.dart';
@@ -22,7 +23,7 @@ import 'package:shelf_static/shelf_static.dart';
 import 'package:stack_trace/stack_trace.dart';
 
 main(List<String> args) async {
-  var parser = new ArgParser()
+  var parser = new argsLib.ArgParser()
     ..addOption('port', abbr: 'p', defaultsTo: '8080');
 
   var result = parser.parse(args);
@@ -95,17 +96,18 @@ final ApiServer _apiServer =
 
 final Logger _log = new Logger('main');
 
-Future authenticateUser(String userName, String password) async {
-  User user = await model.users.getById(userName);
-  if (user == null) throw new Exception("Invalid credentials");
-  if (!user.verifyPassword(password))
-    throw new Exception("Invalid credentials");
-  Principal principal = new Principal(user.id);
-  return new option.Option<Principal>(principal);
+Future<Option<Principal>> authenticateUser(String userName, String password) async {
+  User user = await data_source.users.getById(userName);
+  if (user == null) return new None();
+  if (!model.users.verifyPassword(user, password))
+    return new None();
+  Principal principal = new Principal(user.getId);
+  return new Some(principal);
 }
 
-Future getUser(String user) async {
-  User user = await model.users.getById("id");
-  if (user == null) throw new Exception("User not found");
-  return user;
+Future<Option<Principal>> getUser(String userName) async {
+  User user = await data_source.users.getById(userName);
+  if (user == null) return new None();
+  Principal principal = new Principal(user.getId);
+  return new Some(principal);
 }

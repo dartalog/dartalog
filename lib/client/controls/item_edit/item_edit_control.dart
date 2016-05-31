@@ -44,7 +44,7 @@ class ItemEditControl extends AControl  {
   }
 
   Future _loadItem(String id) async {
-    API.Item item = await api.items.getById(id, expand: "type,type.fields");
+    API.Item item = await api.items.getById(id, includeType: true, includeFields: true);
     Item newItem = new Item.copy(item);
 
     originalItemId = id;
@@ -53,7 +53,7 @@ class ItemEditControl extends AControl  {
   }
 
   Future _loadItemType(String id) async {
-    API.ItemType type = await api.itemTypes.getById(id, expand: "fields");
+    API.ItemType type = await api.itemTypes.getById(id, includeFields: true);
     Item newItem = new Item.forType(new ItemType.copy(type));
     originalItemId = "";
     _setCurrentItem(newItem);

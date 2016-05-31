@@ -6,6 +6,19 @@ library dartalog.client.main_app;
 import 'dart:async';
 import 'dart:html';
 
+import 'package:dartalog/tools.dart';
+import 'package:dartalog/client/api/dartalog.dart';
+import 'package:dartalog/client/client.dart';
+import 'package:dartalog/client/controls/paper_toast_queue/paper_toast_queue.dart';
+import 'package:dartalog/client/controls/user_auth/user_auth_control.dart';
+import 'package:dartalog/client/pages/field_admin/field_admin_page.dart';
+import 'package:dartalog/client/pages/item/item_page.dart';
+import 'package:dartalog/client/pages/item_add/item_add_page.dart';
+import 'package:dartalog/client/pages/item_browse/item_browse_page.dart';
+import 'package:dartalog/client/pages/item_edit/item_edit_page.dart';
+import 'package:dartalog/client/pages/item_import/item_import_page.dart';
+import 'package:dartalog/client/pages/item_type_admin/item_type_admin_page.dart';
+import 'package:dartalog/client/pages/pages.dart';
 import 'package:http/browser_client.dart' as http;
 import 'package:logging/logging.dart';
 import 'package:logging_handlers/browser_logging_handlers.dart';
@@ -22,19 +35,6 @@ import 'package:polymer_elements/paper_toast.dart';
 import 'package:polymer_elements/paper_toolbar.dart';
 import 'package:route_hierarchical/client.dart';
 import 'package:web_components/web_components.dart';
-
-
-import 'package:dartalog/client/api/dartalog.dart';
-import 'package:dartalog/client/client.dart';
-import 'package:dartalog/client/controls/paper_toast_queue/paper_toast_queue.dart';
-import 'package:dartalog/client/pages/field_admin/field_admin_page.dart';
-import 'package:dartalog/client/pages/item/item_page.dart';
-import 'package:dartalog/client/pages/item_add/item_add_page.dart';
-import 'package:dartalog/client/pages/item_browse/item_browse_page.dart';
-import 'package:dartalog/client/pages/item_edit/item_edit_page.dart';
-import 'package:dartalog/client/pages/item_import/item_import_page.dart';
-import 'package:dartalog/client/pages/item_type_admin/item_type_admin_page.dart';
-import 'package:dartalog/client/pages/pages.dart';
 
 /// Uses [PaperInput]
 @PolymerRegister('main-app')
@@ -63,7 +63,7 @@ class MainApp extends PolymerElement {
   final Router router = new Router(useFragment: true);
 
   final DartalogApi api = new DartalogApi(new http.BrowserClient(),
-      rootUrl: "http://localhost:3278/", servicePath: "api/dartalog/0.1/");
+      rootUrl: SERVER_ADDRESS, servicePath: "api/dartalog/0.1/");
 
   @Property(notify: true)
   APage currentPage = null;
@@ -160,11 +160,23 @@ class MainApp extends PolymerElement {
 
   @reflectable
   drawerItemClicked(event, [_]) async {
+    try {
     Element ele = getParentElement(event.target, "paper-item");
     if (ele != null) {
       String route = ele.dataset["route"];
-      activateRoute(route);
+      window.alert(route);
+      if (route == "log_in") {
+        UserAuthControl ele = $['userAuthElement'];
+        ele.activateDialog();
+      } else {
+        activateRoute(route);
+      }
     }
+    } catch (e,st) {
+      _log.severe("drawerItemClicked", e,st);
+      handleException(e,st);
+    }
+
   }
 
   @reflectable
@@ -215,11 +227,14 @@ class MainApp extends PolymerElement {
 
     set("showEdit", currentPage is AEditablePage);
 
-    set("showSave", currentPage is ASaveablePage && (currentPage as ASaveablePage).showSaveButton);
+    set(
+        "showSave",
+        currentPage is ASaveablePage &&
+            (currentPage as ASaveablePage).showSaveButton);
   }
 
   void handleException(e, st) {
-    showMessage(e.toString(), "error");
+    showMessage(e.toString(), "error", st.toString());
   }
 
   @reflectable
@@ -243,11 +258,10 @@ class MainApp extends PolymerElement {
     }
   }
 
-  void showMessage(String message, [String severity]) {
+  void showMessage(String message, [String severity, String details]) {
     PaperToast toastElement = $['global_toast'];
 
-    if(toastElement==null)
-      return;
+    if (toastElement == null) return;
 
     if (toastElement.opened) toastElement.opened = false;
 
@@ -258,11 +272,14 @@ class MainApp extends PolymerElement {
         toastElement.classes.remove("error");
       }
 
-      toastElement.text = "$message";
+      if (isNullOrWhitespace(details))
+        toastElement.text = "$message";
+      else
+        toastElement.innerHtml = "<details><summary>${message}</summary><pre>${details}</pre></details>";
+
       toastElement.show();
     });
   }
-
 
   // Optional lifecycle methods - uncomment if needed.
 

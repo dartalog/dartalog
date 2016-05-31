@@ -31,6 +31,10 @@ class ItemCopyModel extends AModel<ItemCopy> {
   }
 
   Future performAction(String itemId, int copy, String action, String actionerUserId) async {
+    if(!userAuthenticated()) {
+      throw new NotAuthorizedException();
+    }
+
     ItemCopy itemCopy = await get(itemId, copy);
 
     await DataValidationException.PerformValidation(
@@ -60,7 +64,7 @@ class ItemCopyModel extends AModel<ItemCopy> {
     historyEntry.actionerUserId = actionerUserId;
     historyEntry.copy = itemCopy.copy;
     historyEntry.itemId = itemCopy.itemId;
-    historyEntry.operatorUserId = LOGGED_IN_USER;
+    historyEntry.operatorUserId = getUserId();
 
     itemCopy.status = ITEM_ACTIONS[action][ITEM_ACTION_RESULTING_STATUS];
 

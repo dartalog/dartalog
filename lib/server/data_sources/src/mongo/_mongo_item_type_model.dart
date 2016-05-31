@@ -6,8 +6,8 @@ class _MongoItemTypeModel extends _AMongoIdModel<ItemType>
 
   ItemType _createObject(Map data) {
     ItemType template = new ItemType();
-    template.id = data["id"];
-    template.name = data["name"];
+    template.getId = data["id"];
+    template.getName = data["name"];
     template.fieldIds = data["fieldIds"];
     return template;
   }
@@ -16,8 +16,8 @@ class _MongoItemTypeModel extends _AMongoIdModel<ItemType>
       con.getItemTypesCollection();
 
   void _updateMap(ItemType template, Map data) {
-    data["id"] = template.id;
-    data["name"] = template.name;
+    data["id"] = template.getId;
+    data["name"] = template.getName;
     data["fieldIds"] = template.fieldIds;
   }
 }

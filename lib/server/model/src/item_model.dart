@@ -37,20 +37,20 @@ class ItemModel extends AIdNameBasedModel<Item> {
 
   @override
   Future<String> create(Item item) async {
-    if(!isNullOrWhitespace(item.name))
-      item.id = await _generateUniqueId(item);
+    if(!isNullOrWhitespace(item.getName))
+      item.getId = await _generateUniqueId(item);
     return await super.create(item);
   }
 
   @override
   Future<String> update(String id, Item item) async {
-    if(!isNullOrWhitespace(item.name)) {
+    if(!isNullOrWhitespace(item.getName)) {
       Item oldItem = await data_sources.items.getById(id);
       if (oldItem == null)
         throw new NotFoundException("Item ${item} not found");
 
-      if (oldItem.name.trim().toLowerCase() != item.name.trim().toLowerCase())
-        item.id = await _generateUniqueId(item);
+      if (oldItem.getName.trim().toLowerCase() != item.getName.trim().toLowerCase())
+        item.getId = await _generateUniqueId(item);
     }
 
     return await super.update(id, item);
@@ -73,13 +73,13 @@ class ItemModel extends AIdNameBasedModel<Item> {
   }
 
   static Future<String> _generateUniqueId(Item item) async {
-    if (isNullOrWhitespace(item.name))
+    if (isNullOrWhitespace(item.getName))
       throw new InvalidInputException(
           "Name required to generate unique ID");
 
     StringBuffer output = new StringBuffer();
     String lastChar = "_";
-    String name = item.name.trim().toLowerCase();
+    String name = item.getName.trim().toLowerCase();
     for (int i = 0; i < name.length; i++) {
       String char = name.substring(i, i + 1);
       switch (char) {
@@ -101,7 +101,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
 
     if (output.length == 0)
       throw new InvalidInputException(
-          "Could not generate safe ID from name '${item.name}'");
+          "Could not generate safe ID from name '${item.getName}'");
 
     String base_name = output.toString();
     String testName = base_name;
@@ -122,12 +122,12 @@ class ItemModel extends AIdNameBasedModel<Item> {
 
     for (Field f in fields) {
       if (f.type != "image" ||
-          !item.values.containsKey(f.id) ||
-          isNullOrWhitespace(item.values[f.id])) continue;
+          !item.values.containsKey(f.getId) ||
+          isNullOrWhitespace(item.values[f.getId])) continue;
 
       //TODO: Old image cleanup
 
-      String value = item.values[f.id];
+      String value = item.values[f.getId];
 
       if (value.startsWith(HOSTED_IMAGE_PREFIX)) {
         // This should indicate that the submitted image is one that is already hosted on the server, so nothing to do here
@@ -141,7 +141,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
         // This is a new file upload
         int filePosition = int.parse(m.group(1));
         if (item.fileUploads.length - 1 < filePosition) {
-          throw new InvalidInputException("Field ${f.id} specifies unprovided upload file at position ${filePosition}");
+          throw new InvalidInputException("Field ${f.getId} specifies unprovided upload file at position ${filePosition}");
         }
         data = BASE64.decode(item.fileUploads[filePosition]);
 
@@ -164,7 +164,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
       Digest hash = sha256.convert(data);
       String hashString = hash.toString();
       filesToWrite[hashString] = data;
-      item.values[f.id] = "${HOSTED_IMAGE_PREFIX}${hashString}";
+      item.values[f.getId] = "${HOSTED_IMAGE_PREFIX}${hashString}";
     }
 
     // Now that the above sections have completed gathering all the file data_sources for saving, we save it all

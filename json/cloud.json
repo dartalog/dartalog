@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "7f88af3e675b026f023d758f03df9a393714cb56",
+ "etag": "368e10308041b1621251827f94af99e357905db3",
  "discoveryVersion": "v1",
  "id": "dartalog:0.1",
  "name": "dartalog",
@@ -18,6 +18,12 @@
    "id": "Field",
    "type": "object",
    "properties": {
+    "id": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
     "type": {
      "type": "string"
     },
@@ -61,6 +67,12 @@
    "id": "ItemType",
    "type": "object",
    "properties": {
+    "id": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
     "fieldIds": {
      "type": "array",
      "items": {
@@ -100,6 +112,18 @@
     }
    }
   },
+  "Collection": {
+   "id": "Collection",
+   "type": "object",
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    }
+   }
+  },
   "ListOfItemCopy": {
    "id": "ListOfItemCopy",
    "type": "array",
@@ -123,6 +147,12 @@
    "id": "Item",
    "type": "object",
    "properties": {
+    "id": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
     "typeId": {
      "type": "string"
     },
@@ -283,6 +313,12 @@
    "id": "User",
    "type": "object",
    "properties": {
+    "id": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
     "password": {
      "type": "string"
     }
@@ -814,6 +850,9 @@
      "httpMethod": "POST",
      "parameters": {},
      "parameterOrder": [],
+     "request": {
+      "$ref": "Collection"
+     },
      "response": {
       "$ref": "IdResponse"
      }
@@ -832,7 +871,10 @@
      },
      "parameterOrder": [
       "id"
-     ]
+     ],
+     "response": {
+      "$ref": "Collection"
+     }
     },
     "getAllIdsAndNames": {
      "id": "DartalogApi.collections.getAllIdsAndNames",
@@ -859,6 +901,9 @@
      "parameterOrder": [
       "id"
      ],
+     "request": {
+      "$ref": "Collection"
+     },
      "response": {
       "$ref": "IdResponse"
      }

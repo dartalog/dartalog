@@ -24,7 +24,7 @@ part 'src/a_item_type_model.dart';
 part 'src/a_item_copy_model.dart';
 part 'src/a_item_copy_history_model.dart';
 part 'src/a_item_model.dart';
-part 'src/a_user_model.dart';
+part 'src/a_user_data_source.dart';
 part 'src/a_settings_model.dart';
 part 'src/preset_model.dart';
 // part 'src/settings_model.dart';
@@ -36,7 +36,7 @@ part 'src/mongo/_mongo_database.dart';
 part 'src/mongo/_a_mongo_model.dart';
 part 'src/mongo/_a_mongo_id_model.dart';
 part 'src/mongo/_mongo_field_model.dart';
-part 'src/mongo/_mongo_user_model.dart';
+part 'src/mongo/_mongo_user_data_source.dart';
 part 'src/mongo/_mongo_item_type_model.dart';
 part 'src/mongo/_mongo_item_copy_model.dart';
 part 'src/mongo/_mongo_item_copy_history_model.dart';
@@ -52,7 +52,7 @@ final AFieldModel fields = new _MongoFieldModel();
 final AItemTypeModel itemTypes = new _MongoItemTypeModel();
 
 final PresetModel presets = new PresetModel();
-final AUserModel users= new _MongoUserModel();
+final AUserDataSource users= new _MongoUserDataSource();
 final AItemCopyModel itemCopies = new _MongoItemCopyModel();
 final AItemCopyHistoryModel itemHistories = new _MongoItemCopyHistoryModel();
 

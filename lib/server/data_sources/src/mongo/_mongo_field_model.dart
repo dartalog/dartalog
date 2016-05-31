@@ -26,8 +26,8 @@ class _MongoFieldModel extends _AMongoIdModel<Field> with AFieldModel {
 
   Field _createObject(Map data) {
     Field output = new Field();
-    output.id = data["id"];
-    output.name = data["name"];
+    output.getId = data["id"];
+    output.getName = data["name"];
     output.type = data["type"];
     output.format = data["format"];
     return output;
@@ -37,8 +37,8 @@ class _MongoFieldModel extends _AMongoIdModel<Field> with AFieldModel {
       con.getFieldsCollection();
 
   void _updateMap(Field field, Map data) {
-    data["id"] = field.id;
-    data["name"] = field.name;
+    data["id"] = field.getId;
+    data["name"] = field.getName;
     data["type"] = field.type;
     data["format"] = field.format;
   }

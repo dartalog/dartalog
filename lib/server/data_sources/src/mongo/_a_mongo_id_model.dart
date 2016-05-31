@@ -34,7 +34,7 @@ abstract class _AMongoIdModel<T extends AIdData> extends _AMongoModel<T> {
       await _insertIntoDb(object);
     }
     dynamic tmp = object;
-    return tmp.id;
+    return tmp.getId;
   }
 
 }

@@ -1,12 +1,12 @@
 part of data_sources;
 
-class _MongoUserModel extends _AMongoIdModel<User> with AUserModel {
-  static final Logger _log = new Logger('_MongoUserModel');
+class _MongoUserDataSource extends _AMongoIdModel<User> with AUserDataSource {
+  static final Logger _log = new Logger('_MongoUserDataSource');
 
   User _createObject(Map data) {
     User output = new User();
-    output.id = data["id"];
-    output.name = data["name"];
+    output.getId = data["id"];
+    output.getName = data["name"];
     output.password = data["password"];
     return output;
   }
@@ -15,8 +15,8 @@ class _MongoUserModel extends _AMongoIdModel<User> with AUserModel {
       con.getUsersCollection();
 
   void _updateMap(User field, Map data) {
-    data["id"] = field.id;
-    data["name"] = field.name;
+    data["id"] = field.getId;
+    data["name"] = field.getName;
     if(!tools.isNullOrWhitespace(field.password))
       data["password"] = field.password;
   }

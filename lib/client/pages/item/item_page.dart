@@ -64,7 +64,7 @@ class ItemPage extends APage with ARefreshablePage, ADeletablePage, AEditablePag
 
   Future loadItem() async {
     try {
-      API.Item item = await api.items.getById(this.currentItemId, expand: "type,type.fields");
+      API.Item item = await api.items.getById(this.currentItemId,includeType: true, includeFields: true );
       Item newItem = new Item.copy(item);
       set("currentItem", newItem);
       set("currentItem.fields",newItem.fields);

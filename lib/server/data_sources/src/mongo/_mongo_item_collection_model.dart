@@ -6,8 +6,8 @@ class _MongoItemCollectionModel extends _AMongoIdModel<Collection>
 
   Collection _createObject(Map data) {
     Collection output = new Collection();
-    output.id = data["id"];
-    output.name = data["name"];
+    output.getId = data["id"];
+    output.getName = data["name"];
     return output;
   }
 
@@ -15,7 +15,7 @@ class _MongoItemCollectionModel extends _AMongoIdModel<Collection>
       con.getCollectionsCollection();
 
   void _updateMap(Collection collection, Map data) {
-    data["id"] = collection.id;
-    data["name"] = collection.name;
+    data["id"] = collection.getId;
+    data["name"] = collection.getName;
   }
 }

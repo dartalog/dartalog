@@ -31,7 +31,7 @@ class PresetModel extends _ADataSource {
     }
     map = map[id];
     ItemType output = new ItemType();
-    output.name = map["name"];
+    output.getName = map["name"];
     output.fields = map["fields"];
     return output;
   }

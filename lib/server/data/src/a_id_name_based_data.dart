@@ -1,8 +1,8 @@
 part of data;
 
 abstract class AIdData extends AData{
-  String get id;
-  set id(String value);
-  String get name;
-  set name(String value);
+  String get getId;
+  set getId(String value);
+  String get getName;
+  set getName(String value);
 }

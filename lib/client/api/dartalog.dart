@@ -3,7 +3,7 @@
 library dartalog.dartalog.D0_1;
 
 import 'dart:core' as core;
-import 'dart:collection' as collection;
+import 'dart:collection' as collection_1;
 import 'dart:async' as async;
 import 'dart:convert' as convert;
 
@@ -20,14 +20,210 @@ class DartalogApi {
 
   final commons.ApiRequester _requester;
 
+  CollectionsResourceApi get collections => new CollectionsResourceApi(_requester);
   FieldsResourceApi get fields => new FieldsResourceApi(_requester);
   ImportResourceApi get import => new ImportResourceApi(_requester);
   ItemTypesResourceApi get itemTypes => new ItemTypesResourceApi(_requester);
   ItemsResourceApi get items => new ItemsResourceApi(_requester);
   PresetsResourceApi get presets => new PresetsResourceApi(_requester);
+  UsersResourceApi get users => new UsersResourceApi(_requester);
 
   DartalogApi(http.Client client, {core.String rootUrl: "http://localhost:8080/", core.String servicePath: "dartalog/0.1/"}) :
       _requester = new commons.ApiRequester(client, rootUrl, servicePath, USER_AGENT);
+}
+
+
+class CollectionsResourceApi {
+  final commons.ApiRequester _requester;
+
+  CollectionsResourceApi(commons.ApiRequester client) : 
+      _requester = client;
+
+  /**
+   * [request] - The metadata request object.
+   *
+   * Request parameters:
+   *
+   * Completes with a [IdResponse].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<IdResponse> create(Collection request) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (request != null) {
+      _body = convert.JSON.encode((request).toJson());
+    }
+
+    _url = 'collections/';
+
+    var _response = _requester.request(_url,
+                                       "POST",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new IdResponse.fromJson(data));
+  }
+
+  /**
+   * Request parameters:
+   *
+   * [id] - Path parameter: 'id'.
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future delete(core.String id) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (id == null) {
+      throw new core.ArgumentError("Parameter id is required.");
+    }
+
+    _downloadOptions = null;
+
+    _url = 'collections/' + commons.Escaper.ecapeVariable('$id') + '/';
+
+    var _response = _requester.request(_url,
+                                       "DELETE",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => null);
+  }
+
+  /**
+   * Request parameters:
+   *
+   * Completes with a [ListOfIdNamePair].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<ListOfIdNamePair> getAllIdsAndNames() {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+
+    _url = 'collections/';
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new ListOfIdNamePair.fromJson(data));
+  }
+
+  /**
+   * Request parameters:
+   *
+   * [id] - Path parameter: 'id'.
+   *
+   * Completes with a [Collection].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<Collection> getById(core.String id) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (id == null) {
+      throw new core.ArgumentError("Parameter id is required.");
+    }
+
+    _url = 'collections/' + commons.Escaper.ecapeVariable('$id') + '/';
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new Collection.fromJson(data));
+  }
+
+  /**
+   * [request] - The metadata request object.
+   *
+   * Request parameters:
+   *
+   * [id] - Path parameter: 'id'.
+   *
+   * Completes with a [IdResponse].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<IdResponse> update(Collection request, core.String id) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (request != null) {
+      _body = convert.JSON.encode((request).toJson());
+    }
+    if (id == null) {
+      throw new core.ArgumentError("Parameter id is required.");
+    }
+
+    _url = 'collections/' + commons.Escaper.ecapeVariable('$id') + '/';
+
+    var _response = _requester.request(_url,
+                                       "PUT",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new IdResponse.fromJson(data));
+  }
+
 }
 
 
@@ -72,6 +268,43 @@ class FieldsResourceApi {
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
     return _response.then((data) => new IdResponse.fromJson(data));
+  }
+
+  /**
+   * Request parameters:
+   *
+   * [id] - Path parameter: 'id'.
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future delete(core.String id) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (id == null) {
+      throw new core.ArgumentError("Parameter id is required.");
+    }
+
+    _downloadOptions = null;
+
+    _url = 'fields/' + commons.Escaper.ecapeVariable('$id') + '/';
+
+    var _response = _requester.request(_url,
+                                       "DELETE",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => null);
   }
 
   /**
@@ -369,6 +602,43 @@ class ItemTypesResourceApi {
   /**
    * Request parameters:
    *
+   * [id] - Path parameter: 'id'.
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future delete(core.String id) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (id == null) {
+      throw new core.ArgumentError("Parameter id is required.");
+    }
+
+    _downloadOptions = null;
+
+    _url = 'item_types/' + commons.Escaper.ecapeVariable('$id') + '/';
+
+    var _response = _requester.request(_url,
+                                       "DELETE",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => null);
+  }
+
+  /**
+   * Request parameters:
+   *
    * Completes with a [ListOfIdNamePair].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
@@ -403,7 +673,7 @@ class ItemTypesResourceApi {
    *
    * [id] - Path parameter: 'id'.
    *
-   * [expand] - Query parameter: 'expand'.
+   * [includeFields] - Query parameter: 'includeFields'.
    *
    * Completes with a [ItemType].
    *
@@ -413,7 +683,7 @@ class ItemTypesResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ItemType> getById(core.String id, {core.String expand}) {
+  async.Future<ItemType> getById(core.String id, {core.bool includeFields}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -424,8 +694,8 @@ class ItemTypesResourceApi {
     if (id == null) {
       throw new core.ArgumentError("Parameter id is required.");
     }
-    if (expand != null) {
-      _queryParams["expand"] = [expand];
+    if (includeFields != null) {
+      _queryParams["includeFields"] = ["${includeFields}"];
     }
 
     _url = 'item_types/' + commons.Escaper.ecapeVariable('$id') + '/';
@@ -487,6 +757,8 @@ class ItemTypesResourceApi {
 
 class ItemsResourceApi {
   final commons.ApiRequester _requester;
+
+  ItemsCopiesResourceApi get copies => new ItemsCopiesResourceApi(_requester);
 
   ItemsResourceApi(commons.ApiRequester client) : 
       _requester = client;
@@ -568,7 +840,7 @@ class ItemsResourceApi {
   /**
    * Request parameters:
    *
-   * Completes with a [ListOfItemListing].
+   * Completes with a [ListOfItemListingResponse].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
@@ -576,7 +848,7 @@ class ItemsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ListOfItemListing> getAllListings() {
+  async.Future<ListOfItemListingResponse> getAllListings() {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -594,7 +866,7 @@ class ItemsResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new ListOfItemListing.fromJson(data));
+    return _response.then((data) => new ListOfItemListingResponse.fromJson(data));
   }
 
   /**
@@ -602,7 +874,11 @@ class ItemsResourceApi {
    *
    * [id] - Path parameter: 'id'.
    *
-   * [expand] - Query parameter: 'expand'.
+   * [includeType] - Query parameter: 'includeType'.
+   *
+   * [includeFields] - Query parameter: 'includeFields'.
+   *
+   * [includeCopies] - Query parameter: 'includeCopies'.
    *
    * Completes with a [Item].
    *
@@ -612,7 +888,7 @@ class ItemsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<Item> getById(core.String id, {core.String expand}) {
+  async.Future<Item> getById(core.String id, {core.bool includeType, core.bool includeFields, core.bool includeCopies}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -623,8 +899,14 @@ class ItemsResourceApi {
     if (id == null) {
       throw new core.ArgumentError("Parameter id is required.");
     }
-    if (expand != null) {
-      _queryParams["expand"] = [expand];
+    if (includeType != null) {
+      _queryParams["includeType"] = ["${includeType}"];
+    }
+    if (includeFields != null) {
+      _queryParams["includeFields"] = ["${includeFields}"];
+    }
+    if (includeCopies != null) {
+      _queryParams["includeCopies"] = ["${includeCopies}"];
     }
 
     _url = 'items/' + commons.Escaper.ecapeVariable('$id') + '/';
@@ -684,6 +966,230 @@ class ItemsResourceApi {
 }
 
 
+class ItemsCopiesResourceApi {
+  final commons.ApiRequester _requester;
+
+  ItemsCopiesResourceApi(commons.ApiRequester client) : 
+      _requester = client;
+
+  /**
+   * [request] - The metadata request object.
+   *
+   * Request parameters:
+   *
+   * [itemId] - Path parameter: 'itemId'.
+   *
+   * Completes with a [IdResponse].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<IdResponse> create(ItemCopy request, core.String itemId) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (request != null) {
+      _body = convert.JSON.encode((request).toJson());
+    }
+    if (itemId == null) {
+      throw new core.ArgumentError("Parameter itemId is required.");
+    }
+
+    _url = 'items/' + commons.Escaper.ecapeVariable('$itemId') + '/copies/';
+
+    var _response = _requester.request(_url,
+                                       "POST",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new IdResponse.fromJson(data));
+  }
+
+  /**
+   * Request parameters:
+   *
+   * [itemId] - Path parameter: 'itemId'.
+   *
+   * [copy] - Path parameter: 'copy'.
+   *
+   * Completes with a [ItemCopy].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<ItemCopy> get(core.String itemId, core.int copy) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (itemId == null) {
+      throw new core.ArgumentError("Parameter itemId is required.");
+    }
+    if (copy == null) {
+      throw new core.ArgumentError("Parameter copy is required.");
+    }
+
+    _url = 'items/' + commons.Escaper.ecapeVariable('$itemId') + '/copies/' + commons.Escaper.ecapeVariable('$copy') + '/';
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new ItemCopy.fromJson(data));
+  }
+
+  /**
+   * Request parameters:
+   *
+   * [itemId] - Path parameter: 'itemId'.
+   *
+   * Completes with a [ListOfItemCopy].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<ListOfItemCopy> getAllForItem(core.String itemId) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (itemId == null) {
+      throw new core.ArgumentError("Parameter itemId is required.");
+    }
+
+    _url = 'items/' + commons.Escaper.ecapeVariable('$itemId') + '/copies/';
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new ListOfItemCopy.fromJson(data));
+  }
+
+  /**
+   * [request] - The metadata request object.
+   *
+   * Request parameters:
+   *
+   * [itemId] - Path parameter: 'itemId'.
+   *
+   * [copy] - Path parameter: 'copy'.
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future performAction(ItemActionRequest request, core.String itemId, core.int copy) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (request != null) {
+      _body = convert.JSON.encode((request).toJson());
+    }
+    if (itemId == null) {
+      throw new core.ArgumentError("Parameter itemId is required.");
+    }
+    if (copy == null) {
+      throw new core.ArgumentError("Parameter copy is required.");
+    }
+
+    _downloadOptions = null;
+
+    _url = 'items/' + commons.Escaper.ecapeVariable('$itemId') + '/copies/' + commons.Escaper.ecapeVariable('$copy') + '/action/';
+
+    var _response = _requester.request(_url,
+                                       "PUT",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => null);
+  }
+
+  /**
+   * [request] - The metadata request object.
+   *
+   * Request parameters:
+   *
+   * [itemId] - Path parameter: 'itemId'.
+   *
+   * [copy] - Path parameter: 'copy'.
+   *
+   * Completes with a [IdResponse].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<IdResponse> update(ItemCopy request, core.String itemId, core.int copy) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (request != null) {
+      _body = convert.JSON.encode((request).toJson());
+    }
+    if (itemId == null) {
+      throw new core.ArgumentError("Parameter itemId is required.");
+    }
+    if (copy == null) {
+      throw new core.ArgumentError("Parameter copy is required.");
+    }
+
+    _url = 'items/' + commons.Escaper.ecapeVariable('$itemId') + '/copies/' + commons.Escaper.ecapeVariable('$copy') + '/';
+
+    var _response = _requester.request(_url,
+                                       "PUT",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new IdResponse.fromJson(data));
+  }
+
+}
+
+
 class PresetsResourceApi {
   final commons.ApiRequester _requester;
 
@@ -725,6 +1231,269 @@ class PresetsResourceApi {
 }
 
 
+class UsersResourceApi {
+  final commons.ApiRequester _requester;
+
+  UsersResourceApi(commons.ApiRequester client) : 
+      _requester = client;
+
+  /**
+   * [request] - The metadata request object.
+   *
+   * Request parameters:
+   *
+   * [id] - Path parameter: 'id'.
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future changePassword(PasswordChangeRequest request, core.String id) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (request != null) {
+      _body = convert.JSON.encode((request).toJson());
+    }
+    if (id == null) {
+      throw new core.ArgumentError("Parameter id is required.");
+    }
+
+    _downloadOptions = null;
+
+    _url = 'users/' + commons.Escaper.ecapeVariable('$id') + '/password/';
+
+    var _response = _requester.request(_url,
+                                       "PUT",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => null);
+  }
+
+  /**
+   * [request] - The metadata request object.
+   *
+   * Request parameters:
+   *
+   * Completes with a [IdResponse].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<IdResponse> create(User request) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (request != null) {
+      _body = convert.JSON.encode((request).toJson());
+    }
+
+    _url = 'users/';
+
+    var _response = _requester.request(_url,
+                                       "POST",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new IdResponse.fromJson(data));
+  }
+
+  /**
+   * Request parameters:
+   *
+   * [id] - Path parameter: 'id'.
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future delete(core.String id) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (id == null) {
+      throw new core.ArgumentError("Parameter id is required.");
+    }
+
+    _downloadOptions = null;
+
+    _url = 'users/' + commons.Escaper.ecapeVariable('$id') + '/';
+
+    var _response = _requester.request(_url,
+                                       "DELETE",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => null);
+  }
+
+  /**
+   * Request parameters:
+   *
+   * Completes with a [ListOfIdNamePair].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<ListOfIdNamePair> getAllIdsAndNames() {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+
+    _url = 'users/';
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new ListOfIdNamePair.fromJson(data));
+  }
+
+  /**
+   * Request parameters:
+   *
+   * [id] - Path parameter: 'id'.
+   *
+   * Completes with a [User].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<User> getById(core.String id) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (id == null) {
+      throw new core.ArgumentError("Parameter id is required.");
+    }
+
+    _url = 'users/' + commons.Escaper.ecapeVariable('$id') + '/';
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new User.fromJson(data));
+  }
+
+  /**
+   * [request] - The metadata request object.
+   *
+   * Request parameters:
+   *
+   * [id] - Path parameter: 'id'.
+   *
+   * Completes with a [IdResponse].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<IdResponse> update(User request, core.String id) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (request != null) {
+      _body = convert.JSON.encode((request).toJson());
+    }
+    if (id == null) {
+      throw new core.ArgumentError("Parameter id is required.");
+    }
+
+    _url = 'users/' + commons.Escaper.ecapeVariable('$id') + '/';
+
+    var _response = _requester.request(_url,
+                                       "PUT",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new IdResponse.fromJson(data));
+  }
+
+}
+
+
+
+class Collection {
+  core.String id;
+  core.String name;
+
+  Collection();
+
+  Collection.fromJson(core.Map _json) {
+    if (_json.containsKey("id")) {
+      id = _json["id"];
+    }
+    if (_json.containsKey("name")) {
+      name = _json["name"];
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (id != null) {
+      _json["id"] = id;
+    }
+    if (name != null) {
+      _json["name"] = name;
+    }
+    return _json;
+  }
+}
 
 class Field {
   core.String format;
@@ -796,6 +1565,7 @@ class IdNamePair {
 
 class IdResponse {
   core.String id;
+  core.String location;
 
   IdResponse();
 
@@ -803,12 +1573,18 @@ class IdResponse {
     if (_json.containsKey("id")) {
       id = _json["id"];
     }
+    if (_json.containsKey("location")) {
+      location = _json["location"];
+    }
   }
 
   core.Map toJson() {
     var _json = new core.Map();
     if (id != null) {
       _json["id"] = id;
+    }
+    if (location != null) {
+      _json["location"] = location;
     }
     return _json;
   }
@@ -870,6 +1646,8 @@ class ImportResult {
 }
 
 class Item {
+  core.List<ItemCopy> copies;
+  core.int copyCount;
   core.List<core.String> fileUploads;
   core.String id;
   core.String name;
@@ -880,6 +1658,12 @@ class Item {
   Item();
 
   Item.fromJson(core.Map _json) {
+    if (_json.containsKey("copies")) {
+      copies = _json["copies"].map((value) => new ItemCopy.fromJson(value)).toList();
+    }
+    if (_json.containsKey("copyCount")) {
+      copyCount = _json["copyCount"];
+    }
     if (_json.containsKey("fileUploads")) {
       fileUploads = _json["fileUploads"];
     }
@@ -902,6 +1686,12 @@ class Item {
 
   core.Map toJson() {
     var _json = new core.Map();
+    if (copies != null) {
+      _json["copies"] = copies.map((value) => (value).toJson()).toList();
+    }
+    if (copyCount != null) {
+      _json["copyCount"] = copyCount;
+    }
     if (fileUploads != null) {
       _json["fileUploads"] = fileUploads;
     }
@@ -924,15 +1714,97 @@ class Item {
   }
 }
 
-class ItemListing {
+class ItemActionRequest {
+  core.String action;
+  core.String actionerUserId;
+
+  ItemActionRequest();
+
+  ItemActionRequest.fromJson(core.Map _json) {
+    if (_json.containsKey("action")) {
+      action = _json["action"];
+    }
+    if (_json.containsKey("actionerUserId")) {
+      actionerUserId = _json["actionerUserId"];
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (action != null) {
+      _json["action"] = action;
+    }
+    if (actionerUserId != null) {
+      _json["actionerUserId"] = actionerUserId;
+    }
+    return _json;
+  }
+}
+
+class ItemCopy {
+  Collection collection;
+  core.String collectionId;
+  core.int copy;
+  core.String itemId;
+  core.String status;
+  core.String uniqueId;
+
+  ItemCopy();
+
+  ItemCopy.fromJson(core.Map _json) {
+    if (_json.containsKey("collection")) {
+      collection = new Collection.fromJson(_json["collection"]);
+    }
+    if (_json.containsKey("collectionId")) {
+      collectionId = _json["collectionId"];
+    }
+    if (_json.containsKey("copy")) {
+      copy = _json["copy"];
+    }
+    if (_json.containsKey("itemId")) {
+      itemId = _json["itemId"];
+    }
+    if (_json.containsKey("status")) {
+      status = _json["status"];
+    }
+    if (_json.containsKey("uniqueId")) {
+      uniqueId = _json["uniqueId"];
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (collection != null) {
+      _json["collection"] = (collection).toJson();
+    }
+    if (collectionId != null) {
+      _json["collectionId"] = collectionId;
+    }
+    if (copy != null) {
+      _json["copy"] = copy;
+    }
+    if (itemId != null) {
+      _json["itemId"] = itemId;
+    }
+    if (status != null) {
+      _json["status"] = status;
+    }
+    if (uniqueId != null) {
+      _json["uniqueId"] = uniqueId;
+    }
+    return _json;
+  }
+}
+
+class ItemListingResponse {
   core.String id;
   core.String name;
   core.String thumbnail;
   core.String typeId;
 
-  ItemListing();
+  ItemListingResponse();
 
-  ItemListing.fromJson(core.Map _json) {
+  ItemListingResponse.fromJson(core.Map _json) {
     if (_json.containsKey("id")) {
       id = _json["id"];
     }
@@ -969,9 +1841,7 @@ class ItemType {
   core.List<core.String> fieldIds;
   core.List<Field> fields;
   core.String id;
-  core.List<core.String> itemNameFields;
   core.String name;
-  core.List<core.String> subTypes;
 
   ItemType();
 
@@ -985,14 +1855,8 @@ class ItemType {
     if (_json.containsKey("id")) {
       id = _json["id"];
     }
-    if (_json.containsKey("itemNameFields")) {
-      itemNameFields = _json["itemNameFields"];
-    }
     if (_json.containsKey("name")) {
       name = _json["name"];
-    }
-    if (_json.containsKey("subTypes")) {
-      subTypes = _json["subTypes"];
     }
   }
 
@@ -1007,21 +1871,15 @@ class ItemType {
     if (id != null) {
       _json["id"] = id;
     }
-    if (itemNameFields != null) {
-      _json["itemNameFields"] = itemNameFields;
-    }
     if (name != null) {
       _json["name"] = name;
-    }
-    if (subTypes != null) {
-      _json["subTypes"] = subTypes;
     }
     return _json;
   }
 }
 
 class ListOfIdNamePair
-    extends collection.ListBase<IdNamePair> {
+    extends collection_1.ListBase<IdNamePair> {
   final core.List<IdNamePair> _inner;
 
   ListOfIdNamePair() : _inner = [];
@@ -1046,22 +1904,48 @@ class ListOfIdNamePair
   }
 }
 
-class ListOfItemListing
-    extends collection.ListBase<ItemListing> {
-  final core.List<ItemListing> _inner;
+class ListOfItemCopy
+    extends collection_1.ListBase<ItemCopy> {
+  final core.List<ItemCopy> _inner;
 
-  ListOfItemListing() : _inner = [];
+  ListOfItemCopy() : _inner = [];
 
-  ListOfItemListing.fromJson(core.List json)
-      : _inner = json.map((value) => new ItemListing.fromJson(value)).toList();
+  ListOfItemCopy.fromJson(core.List json)
+      : _inner = json.map((value) => new ItemCopy.fromJson(value)).toList();
 
   core.List toJson() {
     return _inner.map((value) => (value).toJson()).toList();
   }
 
-  ItemListing operator [](core.int key) => _inner[key];
+  ItemCopy operator [](core.int key) => _inner[key];
 
-  void operator []=(core.int key, ItemListing value) {
+  void operator []=(core.int key, ItemCopy value) {
+    _inner[key] = value;
+  }
+
+  core.int get length => _inner.length;
+
+  void set length(core.int newLength) {
+    _inner.length = newLength;
+  }
+}
+
+class ListOfItemListingResponse
+    extends collection_1.ListBase<ItemListingResponse> {
+  final core.List<ItemListingResponse> _inner;
+
+  ListOfItemListingResponse() : _inner = [];
+
+  ListOfItemListingResponse.fromJson(core.List json)
+      : _inner = json.map((value) => new ItemListingResponse.fromJson(value)).toList();
+
+  core.List toJson() {
+    return _inner.map((value) => (value).toJson()).toList();
+  }
+
+  ItemListingResponse operator [](core.int key) => _inner[key];
+
+  void operator []=(core.int key, ItemListingResponse value) {
     _inner[key] = value;
   }
 
@@ -1073,7 +1957,7 @@ class ListOfItemListing
 }
 
 class MapOfListOfString
-    extends collection.MapBase<core.String, core.List<core.String>> {
+    extends collection_1.MapBase<core.String, core.List<core.String>> {
   final core.Map _innerMap = {};
 
   MapOfListOfString();
@@ -1109,7 +1993,7 @@ class MapOfListOfString
 }
 
 class MapOfString
-    extends collection.MapBase<core.String, core.String> {
+    extends collection_1.MapBase<core.String, core.String> {
   final core.Map _innerMap = {};
 
   MapOfString();
@@ -1142,6 +2026,33 @@ class MapOfString
   core.Iterable<core.String> get keys => _innerMap.keys;
 
   core.String remove(core.Object key) => _innerMap.remove(key);
+}
+
+class PasswordChangeRequest {
+  core.String currentPassword;
+  core.String newPassword;
+
+  PasswordChangeRequest();
+
+  PasswordChangeRequest.fromJson(core.Map _json) {
+    if (_json.containsKey("currentPassword")) {
+      currentPassword = _json["currentPassword"];
+    }
+    if (_json.containsKey("newPassword")) {
+      newPassword = _json["newPassword"];
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (currentPassword != null) {
+      _json["currentPassword"] = currentPassword;
+    }
+    if (newPassword != null) {
+      _json["newPassword"] = newPassword;
+    }
+    return _json;
+  }
 }
 
 class SearchResult {
@@ -1206,8 +2117,8 @@ class SearchResults {
     if (_json.containsKey("currentPage")) {
       currentPage = _json["currentPage"];
     }
-    if (_json.containsKey("data_sources")) {
-      data = _json["data_sources"];
+    if (_json.containsKey("data")) {
+      data = _json["data"];
     }
     if (_json.containsKey("results")) {
       results = _json["results"].map((value) => new SearchResult.fromJson(value)).toList();
@@ -1229,7 +2140,7 @@ class SearchResults {
       _json["currentPage"] = currentPage;
     }
     if (data != null) {
-      _json["data_sources"] = data;
+      _json["data"] = data;
     }
     if (results != null) {
       _json["results"] = results.map((value) => (value).toJson()).toList();
@@ -1242,6 +2153,40 @@ class SearchResults {
     }
     if (totalResults != null) {
       _json["totalResults"] = totalResults;
+    }
+    return _json;
+  }
+}
+
+class User {
+  core.String id;
+  core.String name;
+  core.String password;
+
+  User();
+
+  User.fromJson(core.Map _json) {
+    if (_json.containsKey("id")) {
+      id = _json["id"];
+    }
+    if (_json.containsKey("name")) {
+      name = _json["name"];
+    }
+    if (_json.containsKey("password")) {
+      password = _json["password"];
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (id != null) {
+      _json["id"] = id;
+    }
+    if (name != null) {
+      _json["name"] = name;
+    }
+    if (password != null) {
+      _json["password"] = password;
     }
     return _json;
   }

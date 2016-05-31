@@ -1,6 +1,7 @@
 library dartalog;
 
 part 'src/not_found_exception.dart';
+part 'src/not_authorized_exception.dart';
 part 'src/invalid_input_exception.dart';
 
 const String LOGGED_IN_USER = 'sanmadjack';

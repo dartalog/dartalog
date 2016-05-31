@@ -8,8 +8,9 @@ import 'package:crypt/crypt.dart';
 import 'package:crypto/crypto.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as path;
+import 'package:option/option.dart';
 import 'package:options_file/options_file.dart';
-
+import 'package:shelf_auth/shelf_auth.dart';
 import 'package:dartalog/tools.dart';
 import 'package:dartalog/dartalog.dart';
 import 'package:dartalog/server/server.dart';

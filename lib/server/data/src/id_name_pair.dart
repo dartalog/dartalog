@@ -7,8 +7,8 @@ class IdNamePair {
   IdNamePair();
 
   IdNamePair.copy(dynamic o) {
-    this.id = o.id;
-    this.name = o.name;
+    this.id = o.getId;
+    this.name = o.getName;
   }
 
   IdNamePair.from(this.id, this.name);

@@ -6,8 +6,8 @@ class _MongoItemModel extends _AMongoIdModel<Item> with AItemModel {
   Item _createObject(Map data) {
     Item output = new Item();
 
-    output.id = data['id'];
-    output.name = data['name'];
+    output.getId = data['id'];
+    output.getName = data['name'];
     output.typeId = data['typeId'];
     output.values = data["values"];
     output.copyCount = data["copyCount"];
@@ -19,8 +19,8 @@ class _MongoItemModel extends _AMongoIdModel<Item> with AItemModel {
       con.getItemsCollection();
 
   void _updateMap(Item item, Map data) {
-    data["id"] = item.id;
-    data["name"] = item.name;
+    data["id"] = item.getId;
+    data["name"] = item.getName;
     data["typeId"] = item.typeId;
     data["values"] = item.values;
     if(item.copyCount!=null&&item.copyCount>0)

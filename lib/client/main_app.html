@@ -8,8 +8,6 @@
     <style include="iron-flex"></style>
 
     <template>
-
-
         <paper-drawer-panel id="drawerPanel" responsive-width="1280px">
             <paper-header-panel drawer>
                 <paper-toolbar>
@@ -67,14 +65,14 @@
                 </paper-toolbar>
                 <!-- Main Content -->
                 <div class="content fit">
-                    <iron-pages  attr-for-selected="id" selected="[[visiblePage]]">
-                        <item-browse-page id="browse"  class="fit"></item-browse-page>
-                        <item-page id="item_view"  class="fit"></item-page>
-                        <item-add-page id="item_add"  class="fit"></item-add-page>
-                        <item-import-page id="item_import"  class="fit"></item-import-page>
-                        <item-edit-page id="item_edit"  class="fit"></item-edit-page>
-                        <field-admin-page id="field_admin"  class="fit"></field-admin-page>
-                        <item-type-admin-page id="item_type_admin"  class="fit"></item-type-admin-page>
+                    <iron-pages attr-for-selected="id" selected="[[visiblePage]]">
+                        <item-browse-page id="browse" class="fit"></item-browse-page>
+                        <item-page id="item_view" class="fit"></item-page>
+                        <item-add-page id="item_add" class="fit"></item-add-page>
+                        <item-import-page id="item_import" class="fit"></item-import-page>
+                        <item-edit-page id="item_edit" class="fit"></item-edit-page>
+                        <field-admin-page id="field_admin" class="fit"></field-admin-page>
+                        <item-type-admin-page id="item_type_admin" class="fit"></item-type-admin-page>
                         <div class="fit" id="logging_output">
 
                         </div>
@@ -82,8 +80,9 @@
                 </div>
             </paper-header-panel>
         </paper-drawer-panel>
-        <paper-toast id="global_toast" >
+        <paper-toast id="global_toast" duration="30000">
             <paper-button on-tap="closeToast" class="white-button">Close</paper-button>
         </paper-toast>
+        <user-auth id="userAuthElement"></user-auth>
     </template>
 </dom-module>

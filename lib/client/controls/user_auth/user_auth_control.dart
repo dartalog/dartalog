@@ -1,8 +1,8 @@
 // Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
 
 // is governed by a BSD-style license that can be found in the LICENSE file.
-library dartalog.client.controls.user_auth_control;
 @HtmlImport('user_auth_control.html')
+library dartalog.client.controls.user_auth_control;
 
 import 'dart:html';
 import 'dart:async';
@@ -41,19 +41,34 @@ class UserAuthControl extends AControl {
   @reflectable
   logInClicked(event, [_]) async {
     set("errorMessage", "");
+    HttpRequest request;
     try {
-      HttpRequest request = await HttpRequest.postFormData(
-          "${SERVER_ADDRESS}login/",
-          {"username": userIdValue, "password": passwordValue});
-      String auth = request.getResponseHeader("Authorization");
-      if(isNullOrWhitespace(auth))
+      String url = "${SERVER_ADDRESS}login/";
+      var values = {"username": userIdValue, "password": passwordValue};
+      request = await HttpRequest.postFormData(
+          url, values
+      );
+      window.alert(request.responseHeaders.keys.join(","));
+      if (!request.responseHeaders.containsKey(HttpHeaders.AUTHORIZATION))
+        throw new Exception("Response did not include Authorization header");
+
+      String auth = request.responseHeaders[HttpHeaders.AUTHORIZATION];
+      if (isNullOrWhitespace(auth))
         throw new Exception("Auth request did not return a key");
+      DartalogHttpClient.setAuthKey(auth);
       cacheAuthKey(auth);
-      window.alert(auth);
-    } catch(e, st) {
+      PaperDialog dialog = $['loginDialog'];
+      dialog.close();
+      this.mainApp.evaluateAuthentication();
+    } on Exception catch(e,st) {
       set("errorMessage", e.toString());
       _log.severe("logInClicked", e, st);
-      handleException(e,st);
+    } catch(e, st) {
+      request = e.target;
+      if(request!=null) {
+        String message = "${request.status} - ${request.statusText} - ${request.responseText}";
+        set("errorMessage", message);
+      }
     }
   }
 

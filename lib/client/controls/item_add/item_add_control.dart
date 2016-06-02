@@ -2,7 +2,7 @@
 
 // is governed by a BSD-style license that can be found in the LICENSE file.
 @HtmlImport('item_add_control.html')
-library dartalog.client.controls.item_edit;
+library dartalog.client.controls.item_add;
 
 import 'dart:html';
 import 'dart:async';

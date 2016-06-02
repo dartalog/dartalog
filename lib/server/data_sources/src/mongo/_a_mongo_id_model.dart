@@ -1,17 +1,17 @@
 part of data_sources;
 
 abstract class _AMongoIdModel<T extends AIdData> extends _AMongoModel<T> {
-  Future<List<T>> getAll() => _getFromDb(null);
+  Future<List<T>> getAll({String sortField: "id"}) => _getFromDb(mongo.where.sortBy(sortField));
 
   Future delete(String id) => _deleteFromDb(mongo.where.eq("id", id));
 
 
-  Future<List<IdNamePair>> getAllIdsAndNames() async {
+  Future<List<IdNamePair>> getAllIdsAndNames({String sortField: 'id'}) async {
     _MongoDatabase con = await _MongoDatabase.getConnection();
     try {
       mongo.DbCollection collection = await _getCollection(con);
 
-      List results = await collection.find().toList();
+      List results = await collection.find(mongo.where.sortBy(sortField)).toList();
 
       List<IdNamePair> output = new List<IdNamePair>();
 

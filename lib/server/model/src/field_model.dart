@@ -11,7 +11,7 @@ class FieldModel extends AIdNameBasedModel<Field> {
 
     if (isNullOrWhitespace(field.type))
       field_errors["type"] = "Required";
-    else if(FIELD_TYPES.containsKey(field.type)) {
+    else if(!FIELD_TYPES.containsKey(field.type)) {
       field_errors["type"] = "Invalid";
     }
 

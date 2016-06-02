@@ -4,8 +4,19 @@ class UserModel extends AIdNameBasedModel<User> {
   static final Logger _log = new Logger('UserModel');
   Logger get _logger => _log;
 
-  data_sources.AIdNameBasedDataSource<User> get dataSource =>
+  data_sources.AUserDataSource get dataSource =>
       data_sources.users;
+
+  Future<User> getMe() async {
+    if(!userAuthenticated())
+      throw new NotAuthorizedException();
+
+    Option<Principal> princ = getUserPrincipal();
+    User output = await dataSource.getById(princ.get().name);
+    if(output==null)
+      throw new Exception("Authenticated user not present in database");
+    return output;
+  }
 
   @override
   Future<String> create(User user) async {

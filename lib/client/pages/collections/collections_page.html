@@ -1,0 +1,35 @@
+<!--
+  Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
+  is governed by a BSD-style license that can be found in the LICENSE file.
+-->
+
+<!-- import polymer-element's definition -->
+<dom-module name="collections-page">
+    <link rel="stylesheet" href="collections_page.css">
+    <style include="iron-flex"></style>
+
+    <template>
+        <paper-card heading="Collections" style="margin:8px;" class="vertical layout">
+            <div class="card-content">
+                <template is="dom-repeat" items="[[collections]]">
+                    <paper-item horizontal on-tap="collectionClicked" data-id$="[[item.id]]" class="flex">[[item.name]]</paper-item>
+                </template>
+            </div>
+        </paper-card>
+
+        <paper-dialog id="editDialog" modal="true">
+            <h2>Edit Collection</h2>
+            <div class="vertical">
+                <paper-input floatinglabel data-field-id="id" label="ID" value="{{currentCollection.id}}" required
+                             auto-validate></paper-input>
+                <paper-input floatinglabel data-field-id="name" label="Name" value="{{currentCollection.name}}" required
+                             auto-validate></paper-input>
+                <span id="output_error" style="color:red"></span>
+            </div>
+            <div class="buttons">
+                <paper-button on-tap="cancelClicked">Cancel</paper-button>
+                <paper-button on-tap="saveClicked">Save</paper-button>
+            </div>
+        </paper-dialog>
+    </template>
+</dom-module>

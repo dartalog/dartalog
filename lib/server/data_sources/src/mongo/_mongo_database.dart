@@ -10,7 +10,7 @@ class _MongoDatabase extends ADatabase {
   static const String _ITEM_TYPES_MONGO_COLLECTION = "itemTypes";
   static const String _ITEM_COPIES_MONGO_COLLECTION = "itemCopies";
   static const String _ITEM_COPY_HISTORY_MONGO_COLLECTION = "itemCopyHistory";
-  static const String _COLLECTIONS_MONGO_COLLECTION = "collection";
+  static const String _COLLECTIONS_MONGO_COLLECTION = "collections";
   static const String _USERS_MONGO_COLLECTION = "users";
 
   static String REDIRECT_ENTRY_NAME = "redirect";
@@ -70,7 +70,7 @@ class _MongoDatabase extends ADatabase {
     return output;
   }
 
-  Future<mongo.DbCollection> getItemCopyHistory() async {
+  Future<mongo.DbCollection> getItemCopyHistoryCollection() async {
     _checkConnection();
 
     dynamic output = await con.conn.collection(_ITEM_COPY_HISTORY_MONGO_COLLECTION);

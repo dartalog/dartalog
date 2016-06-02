@@ -33,6 +33,7 @@ import 'package:dartalog/tools.dart';
 @PolymerRegister('item-type-admin-page')
 class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
   static final Logger _log = new Logger("ItemTypeAdminPage");
+  Logger get loggerImpl => _log;
 
   ItemTypeAdminPage.created() : super.created( "Item Type Admin");
 

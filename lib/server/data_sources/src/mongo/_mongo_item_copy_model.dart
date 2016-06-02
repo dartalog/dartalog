@@ -27,16 +27,19 @@ class _MongoItemCopyModel extends _AMongoModel<ItemCopy>
     output.collectionId = data["collectionId"];
     output.copy = data["copy"];
     output.itemId = data["itemId"];
+    output.status = data["status"];
 
     if(tools.isNullOrWhitespace(data["uniqueId"]))
       output.uniqueId = "";
     else
       output.uniqueId = data["uniqueId"];
+
+
     return output;
   }
 
   Future<mongo.DbCollection> _getCollection(_MongoDatabase con) =>
-      con.getItemTypesCollection();
+      con.getItemCopiesCollection();
 
   void _updateMap(ItemCopy itemCopy, Map data) {
     data["collectionId"] = itemCopy.collectionId;
@@ -44,5 +47,14 @@ class _MongoItemCopyModel extends _AMongoModel<ItemCopy>
     data["itemId"] = itemCopy.itemId;
     if(!tools.isNullOrWhitespace(itemCopy.uniqueId))
       data["uniqueId"] = itemCopy.uniqueId;
+    if(!tools.isNullOrWhitespace(itemCopy.status))
+      data["status"] = itemCopy.status;
+
+  }
+
+  Future<ItemCopy> getLargestNumberedCopy(String itemId) async {
+    dynamic criteria = mongo.where.eq("itemId", itemId).sortBy("copy", descending: true).limit(1);
+    ItemCopy output = await _getForOneFromDb(criteria);
+    return output;
   }
 }

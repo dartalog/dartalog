@@ -6,11 +6,14 @@ class ItemCopyModel extends AModel<ItemCopy> {
 
   Future<String> create(String itemId, ItemCopy itemCopy) async {
     itemCopy.itemId = itemId;
-    Item item = await items.getById(itemId);
-    itemCopy.copy = item.copyCount + 1;
-    validate(itemCopy, true);
-    item.copyCount = itemCopy.copy;
-    await data_sources.items.write(item, itemId);
+    itemCopy.status = ITEM_DEFAULT_STATUS;
+
+    ItemCopy topItem = await data_sources.itemCopies.getLargestNumberedCopy(itemId);
+    if(topItem==null)
+      itemCopy.copy = 1;
+    else
+      itemCopy.copy = topItem.copy + 1;
+    await validate(itemCopy, true);
 
     return await data_sources.itemCopies.write(itemCopy);
   }
@@ -18,6 +21,7 @@ class ItemCopyModel extends AModel<ItemCopy> {
   Future<List<ItemCopy>> getAllForItem(String itemId) => data_sources.itemCopies.getAllForItemId(itemId);
 
   Future<String> update(String itemId, int copy, ItemCopy itemCopy) async {
+    itemCopy.status = "";
     await validate(itemCopy, false);
     return await data_sources.itemCopies.write(itemCopy, itemId, copy);
   }
@@ -103,15 +107,17 @@ class ItemCopyModel extends AModel<ItemCopy> {
 
     if(!isNullOrWhitespace(itemCopy.uniqueId)) {
       dynamic test = await data_sources.itemCopies.getByUniqueId(itemCopy.uniqueId);
-      if(test!=null)
+      if(test!=null&&(test.itemId!=itemCopy.itemId||test.copy!=itemCopy.copy))
         field_errors["uniqueId"] = "Already used";
     }
 
-    if(isNullOrWhitespace(itemCopy.status)) {
-      field_errors["status"] = "Required";
-    } else {
-      if(!ITEM_COPY_STATUSES.containsKey(itemCopy.status))
-        field_errors["status"] = "Invalid";
+    if(creating) {
+      if (isNullOrWhitespace(itemCopy.status)) {
+        field_errors["status"] = "Required";
+      } else {
+        if (!ITEM_COPY_STATUSES.containsKey(itemCopy.status))
+          field_errors["status"] = "Invalid";
+      }
     }
 
     return field_errors;

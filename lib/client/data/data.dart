@@ -8,4 +8,7 @@ part 'src/field.dart';
 part 'src/item_type.dart';
 part 'src/import_search_result.dart';
 part 'src/item.dart';
+part 'src/item_copy.dart';
+part 'src/collection.dart';
+part 'src/user.dart';
 part 'src/item_listing.dart';

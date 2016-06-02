@@ -20,6 +20,7 @@ final Map<String, String> FIELD_TYPES = {
 final RegExp FILE_UPLOAD_REGEX = new RegExp("${FILE_UPLOAD_PREFIX}(\\d+)");
 
 const String ITEM_ACTION_NAME = 'name';
+const String ITEM_DEFAULT_STATUS = 'available';
 const String ITEM_ACTION_RESULTING_STATUS = 'resultingStatus';
 const String ITEM_ACTION_VALID_STATUSES = 'validStatuses';
 final Map<String, Map> ITEM_ACTIONS = {

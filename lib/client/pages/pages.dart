@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:polymer/polymer.dart';
+import 'package:logging/logging.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:polymer_elements/iron_input.dart';
 import 'package:polymer_elements/paper_input_behavior.dart';

@@ -22,6 +22,8 @@ dependencies:
   shelf_rpc: ^0.0.3
   shelf_route: any
   shelf_auth: ^0.7.1
+  shelf_cors: any
+  shelf_exception_handler: any
   option: any
   discoveryapis_generator: any
   crypto: '>=0.9.0 <0.10.0'

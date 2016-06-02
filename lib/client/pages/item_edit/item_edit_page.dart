@@ -22,6 +22,7 @@ import 'package:dartalog/client/api/dartalog.dart' as API;
 @PolymerRegister('item-edit-page')
 class ItemEditPage extends APage with ASaveablePage, ASubPage {
   static final Logger _log = new Logger("ItemEditPage");
+  Logger get loggerImpl => _log;
 
   /// Constructor used to create instance of MainApp.
   ItemEditPage.created() : super.created("Item Edit");

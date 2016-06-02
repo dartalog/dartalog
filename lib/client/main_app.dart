@@ -7,7 +7,8 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:dartalog/tools.dart';
-import 'package:dartalog/client/api/dartalog.dart';
+import 'package:dartalog/client/api/dartalog.dart' as api;
+import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/controls/paper_toast_queue/paper_toast_queue.dart';
 import 'package:dartalog/client/controls/user_auth/user_auth_control.dart';
@@ -16,10 +17,10 @@ import 'package:dartalog/client/pages/item/item_page.dart';
 import 'package:dartalog/client/pages/item_add/item_add_page.dart';
 import 'package:dartalog/client/pages/item_browse/item_browse_page.dart';
 import 'package:dartalog/client/pages/item_edit/item_edit_page.dart';
+import 'package:dartalog/client/pages/collections/collections_page.dart';
 import 'package:dartalog/client/pages/item_import/item_import_page.dart';
 import 'package:dartalog/client/pages/item_type_admin/item_type_admin_page.dart';
 import 'package:dartalog/client/pages/pages.dart';
-import 'package:http/browser_client.dart' as http;
 import 'package:logging/logging.dart';
 import 'package:logging_handlers/browser_logging_handlers.dart';
 import 'package:polymer/polymer.dart';
@@ -30,8 +31,10 @@ import 'package:polymer_elements/paper_drawer_panel.dart';
 import 'package:polymer_elements/paper_header_panel.dart';
 import 'package:polymer_elements/paper_icon_button.dart';
 import 'package:polymer_elements/paper_input.dart';
+import 'package:polymer_elements/paper_badge.dart';
 import 'package:polymer_elements/paper_item.dart';
 import 'package:polymer_elements/paper_toast.dart';
+import 'package:polymer_elements/paper_progress.dart';
 import 'package:polymer_elements/paper_toolbar.dart';
 import 'package:route_hierarchical/client.dart';
 import 'package:web_components/web_components.dart';
@@ -43,6 +46,21 @@ class MainApp extends PolymerElement {
 
   @property
   String visiblePage = "item_browse";
+
+  @property
+  int cartCount = 0;
+  @property
+  bool cartEmpty = true;
+
+  @Property(notify: true)
+  List<ItemCopy> cartContents = new List<ItemCopy>();
+
+  @property
+  bool userLoggedIn = false;
+  @property User currentUser;
+
+  @property
+  bool loading = true;
 
   @property
   bool showRefresh = false;
@@ -62,18 +80,19 @@ class MainApp extends PolymerElement {
 
   final Router router = new Router(useFragment: true);
 
-  final DartalogApi api = new DartalogApi(new http.BrowserClient(),
+  static final api.DartalogApi _api = new api.DartalogApi(new DartalogHttpClient(),
       rootUrl: SERVER_ADDRESS, servicePath: "api/dartalog/0.1/");
 
   @Property(notify: true)
   APage currentPage = null;
 
   /// Constructor used to create instance of MainApp.
-  MainApp.created() : super.created() {
+  MainApp.created() : super.created()  {
     Logger.root.level = Level.INFO;
     Logger.root.onRecord.listen(new LogPrintHandler());
 
     // Set up the routes for all the pages.
+    DartalogHttpClient.primer();
 
     router.root
       ..addRoute(
@@ -107,6 +126,11 @@ class MainApp extends PolymerElement {
           defaultRoute: false,
           enter: enterRoute)
       ..addRoute(
+          name: "collections",
+          path: "collections",
+          defaultRoute: false,
+          enter: enterRoute)
+      ..addRoute(
           name: "item_type_admin",
           path: "item_types",
           defaultRoute: false,
@@ -118,6 +142,47 @@ class MainApp extends PolymerElement {
           enter: enterRoute);
 
     router.listen();
+    evaluateAuthentication();
+  }
+
+  void addToCart(ItemCopy itemCopy) {
+    add("cartContents", itemCopy);
+    set("cartCount", cartContents.length);
+    set("cartEmpty", cartContents.length==0);
+  }
+
+  void stopLoading() {
+    set("loading", false);
+  }
+
+  void startLoading() {
+    set("loading", true);
+  }
+
+  Future evaluateAuthentication() async {
+    bool authed = false;
+    try {
+      api.User apiUser = await _api.users.getMe();
+
+      set("currentUser", new User.copy(apiUser));
+      set("currentUser.name", currentUser.name);
+      authed = true;
+    } on api.DetailedApiRequestError catch(e,st) {
+      if(e.status>=400&&e.status<500) {
+        // Not authenticated, nothing to see here
+        set("currentUser.name", "");
+        set("currentUser", null);
+      } else {
+        _log.severe("evaluateAuthentication", e, st);
+        handleException(e, st);
+      }
+    } catch(e,st) {
+      _log.severe("evaluateAuthentication",e,st);
+      handleException(e,st);
+    }
+
+    set("userLoggedIn", authed);
+
   }
 
   PaperDrawerPanel get drawerPanel => $["drawerPanel"];
@@ -132,6 +197,11 @@ class MainApp extends PolymerElement {
   activateRoute(String route, {Map<String, String> arguments}) {
     if (arguments == null) arguments = new Map<String, String>();
     router.go(route, arguments);
+  }
+
+  @reflectable toggleDrawerClicked(event, [_]) {
+    PaperDrawerPanel pdp = $['drawerPanel'];
+    pdp.togglePanel();
   }
 
   @reflectable
@@ -164,7 +234,6 @@ class MainApp extends PolymerElement {
     Element ele = getParentElement(event.target, "paper-item");
     if (ele != null) {
       String route = ele.dataset["route"];
-      window.alert(route);
       if (route == "log_in") {
         UserAuthControl ele = $['userAuthElement'];
         ele.activateDialog();
@@ -206,7 +275,8 @@ class MainApp extends PolymerElement {
 
       set("currentPage", page);
       evaluatePage();
-      await this.currentPage.activate(this.api, e.parameters);
+      await this.currentPage.activate(_api, e.parameters);
+      stopLoading();
     } catch (e, st) {
       window.alert(e.toString());
     }

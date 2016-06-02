@@ -6,20 +6,68 @@
 <dom-module name="item-page">
     <link rel="stylesheet" href="item_page.css">
     <template>
-        <paper-item style="background-color: black">
-            <template is="dom-repeat" items="{{currentItem.fields}}">
-                <template is="dom-if" if="{{item.isTypeImage}}" restamp="true">
-                    <a href="[[item.value]]" ><img src="[[item.value]]" height="100" /></a>
+        <div style="background-color: black" class="vertical horizontal">
+            <template is="dom-repeat" items="[[currentItem.fields]]">
+                <template is="dom-if" if="[[item.isTypeImage]]" restamp="true">
+                    <a href="[[item.value]]">
+                        <iron-image src="[[item.value]]" style="width:200px; height:100px;" sizing="cover"/>
+                    </a>
                 </template>
             </template>
-        </paper-item>
-        <template is="dom-repeat" items="{{currentItem.fields}}">
-            <template is="dom-if" if="{{item.isTypeString}}" restamp="true">
-                <paper-item data-id="[[item.id]]">
-                    <span>[[item.name]]</span>:
-                    <span>[[item.value]]</span>
+        </div>
+        <paper-card style="margin:4pt;" class="vertical layout" heading="Information">
+            <template is="dom-repeat" items="[[currentItem.fields]]">
+                <template is="dom-if" if="[[item.isTypeString]]" restamp="true">
+                    <paper-item data-id="[[item.id]]">
+                        <paper-item-body two-line>
+                        <div>[[item.name]]</div>
+                        <div secondary>[[item.value]]</div>
+                        </paper-item-body>
+                    </paper-item>
+                </template>
+            </template>
+        </paper-card>
+        <paper-card style="margin:4pt;" class="vertical layout" heading="Copies">
+            <template is="dom-repeat" items="[[currentItem.copies]]">
+                <paper-item data-copy$="[[item.copy]]">
+                    <span>[[item.copy]]</span>
+                    <span>[[item.collectionId]]</span>
+                    <span>[[item.status]]</span>
+                    <paper-icon-button icon="create" on-tap="editItemCopyClicked"></paper-icon-button>
+                    <paper-icon-button icon="add-shopping-cart" on-tap="addCartCopyClicked"></paper-icon-button>
                 </paper-item>
             </template>
-        </template>
+            <paper-item on-tap="addCopyClicked">Add Copy...</paper-item>
+        </paper-card>
+
+        <paper-dialog id="copyEditDialog" modal="true">
+            <h2>
+            <template is="dom-if" if="[[createCopy]]" restamp="true">Create Copy</template>
+            <template is="dom-if" if="[[!createCopy]]" restamp="true">Edit Copy</template>
+            </h2>
+            <div class="vertical">
+                <paper-dropdown-menu data-field-id="collectionId" floatinglabel label="Collection" required auto-validate>
+                    <paper-listbox class="dropdown-content" attr-for-selected="value" selected="{{currentItemCopy.collectionId}}">
+                        <template is="dom-repeat" items="[[collections]]">
+                            <paper-item value="[[item.id]]">[[item.name]]</paper-item>
+                        </template>
+                    </paper-listbox>
+                </paper-dropdown-menu>
+
+                <paper-input data-field-id="uniqueId" label="Unique ID" value="{{currentItemCopy.uniqueId}}"></paper-input>
+            </div>
+            <div class="buttons">
+                <paper-button on-tap="paperDialogCancelClicked">Cancel</paper-button>
+                <paper-button on-tap="saveItemCopyClicked">Save</paper-button>
+            </div>
+        </paper-dialog>
+
+        <paper-dialog id="copyActionDialog" modal="true">
+            <h2>Select an action</h2>
+            <div class="buttons">
+                <paper-button on-tap="paperDialogCancelClicked">Cancel</paper-button>
+                <paper-button on-tap="saveItemCopyClicked">Add To Cart</paper-button>
+            </div>
+        </paper-dialog>
     </template>
 </dom-module>

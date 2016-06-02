@@ -6,6 +6,11 @@ import 'dart:indexed_db' as idb;
 
 import 'package:option/option.dart';
 import 'package:dartalog/tools.dart';
+import 'package:http/http.dart';
+import 'package:http/browser_client.dart';
+
+
+part 'src/dartalog_http_client.dart';
 
 const String SERVER_ADDRESS = "http://localhost:3278/";
 
@@ -110,4 +115,8 @@ Future cacheAuthKey(String text) async {
     'id': AUTH_KEY_NAME,
     'value': text
   });
+}
+
+abstract class HttpHeaders {
+  static const String AUTHORIZATION = 'authorization';
 }

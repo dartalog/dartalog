@@ -61,6 +61,8 @@ class ItemModel extends AIdNameBasedModel<Item> {
   Future<Map<String, String>> _validateFieldsInternal(Item item) async {
     Map<String, String> field_errors = new Map<String, String>();
 
+    //TODO: add dynamic field validation
+
     if (isNullOrWhitespace(item.typeId))
       field_errors["typeId"] = "Required";
     else {
@@ -72,6 +74,9 @@ class ItemModel extends AIdNameBasedModel<Item> {
     return field_errors;
   }
 
+
+  static final List<String> NON_SORTING_WORDS = ["the", "a", "an"];
+
   static Future<String> _generateUniqueId(Item item) async {
     if (isNullOrWhitespace(item.getName))
       throw new InvalidInputException(
@@ -80,6 +85,10 @@ class ItemModel extends AIdNameBasedModel<Item> {
     StringBuffer output = new StringBuffer();
     String lastChar = "_";
     String name = item.getName.trim().toLowerCase();
+    String first_word = name.split(" ")[0];
+    if(NON_SORTING_WORDS.contains(first_word))
+      name = name.substring(name.indexOf(" ")+1,name.length);
+
     for (int i = 0; i < name.length; i++) {
       String char = name.substring(i, i + 1);
       switch (char) {

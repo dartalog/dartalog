@@ -32,6 +32,7 @@ import 'package:dartalog/client/api/dartalog.dart' as API;
 @PolymerRegister('item-add-page')
 class ItemAddPage extends APage with ASaveablePage {
   static final Logger _log = new Logger("ItemAddPage");
+  Logger get loggerImpl => _log;
 
   String currentItemTypeId = "";
 

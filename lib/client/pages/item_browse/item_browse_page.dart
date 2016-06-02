@@ -20,6 +20,8 @@ import 'package:polymer_elements/paper_card.dart';
 import 'package:polymer_elements/paper_dialog.dart';
 import 'package:polymer_elements/paper_dialog_scrollable.dart';
 import 'package:polymer_elements/paper_fab.dart';
+import 'package:polymer_elements/iron_image.dart';
+import 'package:polymer_elements/iron_list.dart';
 import 'package:polymer_elements/iron_flex_layout.dart';
 
 
@@ -35,6 +37,7 @@ import '../../api/dartalog.dart' as API;
 @PolymerRegister('item-browse-page')
 class ItemBrowsePage extends APage with ARefreshablePage {
   static final Logger _log = new Logger("ItemBrowsePage");
+  Logger get loggerImpl => _log;
 
   @Property(notify: true)
   List<Item> itemsList = new List<Item>();

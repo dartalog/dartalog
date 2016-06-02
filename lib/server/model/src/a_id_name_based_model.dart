@@ -39,7 +39,7 @@ abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
       field_errors["id"] = "Required";
     else {
       if (creating) {
-        dynamic other = await getById(t.getId);
+        dynamic other = await dataSource.getById(t.getId);
         if (other != null)
           field_errors["id"] = "Already in use";
       }

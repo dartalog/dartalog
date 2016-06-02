@@ -13,6 +13,10 @@ abstract class AResource {
 
     try {
       return await toAwait;
+    } on NotAuthorizedException catch(e,st) {
+      exception = e;
+      stackTrace = st;
+      output = new RpcError(401, "Not Authorized", e.message);
     } on data_source.DataMovedException catch(e, st) {
       exception = e;
       stackTrace = st;

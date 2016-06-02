@@ -12,6 +12,8 @@ import 'package:polymer/polymer.dart';
 import 'package:web_components/web_components.dart';
 import 'package:polymer_elements/paper_icon_button.dart';
 import 'package:polymer_elements/iron_icon.dart';
+import 'package:polymer_elements/paper_item.dart';
+import 'package:polymer_elements/paper_item_body.dart';
 import 'package:polymer_elements/paper_input.dart';
 import 'package:polymer_elements/paper_button.dart';
 import 'package:polymer_elements/paper_dropdown_menu.dart';
@@ -33,7 +35,9 @@ import '../../api/dartalog.dart' as API;
 @PolymerRegister('item-page')
 class ItemPage extends APage with ARefreshablePage, ADeletablePage, AEditablePage, ASubPage {
   static final Logger _log = new Logger("ItemPage");
+  Logger get loggerImpl => _log;
 
+  @property
   String currentItemId = "";
 
   @Property(notify: true)
@@ -42,6 +46,12 @@ class ItemPage extends APage with ARefreshablePage, ADeletablePage, AEditablePag
   ItemPage.created() : super.created("Item View") {
     this.showBackButton = true;
   }
+
+  @Property(notify: true)
+  List<Collection> collections = new List<Collection>();
+
+  @Property(notify: true)
+  ItemCopy currentItemCopy = new ItemCopy();
 
   @override
   Future activateInternal(Map args) async {
@@ -63,16 +73,14 @@ class ItemPage extends APage with ARefreshablePage, ADeletablePage, AEditablePag
   }
 
   Future loadItem() async {
-    try {
-      API.Item item = await api.items.getById(this.currentItemId,includeType: true, includeFields: true );
-      Item newItem = new Item.copy(item);
-      set("currentItem", newItem);
-      set("currentItem.fields",newItem.fields);
-      setTitle(newItem.name);
-    } catch(e,st) {
-      _log.severe(e, st);
-      this.handleException(e,st);
-    }
+    await handleApiExceptions(() async {
+    API.Item item = await api.items.getById(this.currentItemId,includeType: true, includeFields: true, includeCopies: true );
+    Item newItem = new Item.copy(item);
+    set("currentItem", newItem);
+    set("currentItem.fields",newItem.fields);
+    set("currentItem.copies",newItem.copies);
+    setTitle(newItem.name);
+    });
   }
 
   @override
@@ -99,5 +107,82 @@ class ItemPage extends APage with ARefreshablePage, ADeletablePage, AEditablePag
     }
   }
 
+  _updateCurrentItem(ItemCopy itemCopy) {
+    set("currentItemCopy", itemCopy);
+    //itemCopy.
+  }
 
+  @property
+  bool createCopy = false;
+
+
+  @reflectable
+  addCartCopyClicked(event, [_]) async {
+    await handleApiExceptions(() async {
+      dynamic ele = getParentElement(event.target, "paper-item");
+      String copy = ele.dataset["copy"];
+      API.ItemCopy itemCopy = await api.items.copies.get(this.currentItem.id, int.parse(copy));
+      this.mainApp.addToCart(new ItemCopy.copyFrom(itemCopy));
+    });
+  }
+
+  @reflectable
+  addCopyClicked(event, [_]) async {
+    if(!await loadAvailableCollections())
+      return;
+    clearValidation();
+    set("currentItemCopy", new ItemCopy());
+    set("createCopy", true);
+    $['copyEditDialog'].open();
+  }
+
+  @reflectable
+  editItemCopyClicked(event, [_]) async {
+    if(!await loadAvailableCollections())
+      return;
+    await handleApiExceptions(() async {
+      clearValidation();
+      dynamic ele = getParentElement(event.target, "paper-item");
+      String copy = ele.dataset["copy"];
+      API.ItemCopy newCopy = await api.items.copies.get(
+          this.currentItem.id, int.parse(copy));
+      set("currentItemCopy", new ItemCopy.copyFrom(newCopy));
+      set("createCopy", false);
+      $['copyEditDialog'].open();
+    });
+  }
+
+
+  @reflectable
+  saveItemCopyClicked(event, [_]) async {
+    await handleApiExceptions(() async {
+      API.ItemCopy newCopy = new API.ItemCopy();
+      this.currentItemCopy.copyTo(newCopy);
+      if (createCopy)
+        await api.items.copies.create(newCopy, this.currentItem.id);
+      else
+        await api.items.copies.update(
+            newCopy, this.currentItem.id, this.currentItemCopy.copy);
+      showMessage("Copy saved");
+      $['copyEditDialog'].close();
+      this.refresh();
+    });
+  }
+
+  Future<bool> loadAvailableCollections() async {
+    bool output = await handleApiExceptions(() async {
+      clear("collections");
+
+      API.ListOfIdNamePair data = await api.collections.getAllIdsAndNames();
+
+      if(data.length==0)
+        throw new Exception("No collections defined");
+
+      set("collections", IdNamePair.convertList(data));
+      return true;
+    });
+    if(output==true)
+      return true;
+    return false;
+  }
 }

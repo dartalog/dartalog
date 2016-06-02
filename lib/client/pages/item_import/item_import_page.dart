@@ -33,7 +33,8 @@ import 'package:web_components/web_components.dart';
 /// A Polymer `<template-admin-page>` element.
 @PolymerRegister('item-import-page')
 class ItemImportPage extends APage with ASaveablePage {
-  static final Logger _log = new Logger("ItemAddPage");
+  static final Logger _log = new Logger("ItemImportPage");
+  Logger get loggerImpl => _log;
 
   @Property(notify: true)
   String selectedImportSource = "amazon";

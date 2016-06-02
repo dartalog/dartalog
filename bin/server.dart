@@ -16,6 +16,8 @@ import 'package:path/path.dart' show join, dirname;
 import 'package:rpc/rpc.dart';
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as io;
+import 'package:shelf_cors/shelf_cors.dart' as shelf_cors;
+import 'package:shelf_exception_handler/shelf_exception_handler.dart';
 import 'package:shelf_auth/shelf_auth.dart';
 import 'package:shelf_route/shelf_route.dart';
 import 'package:shelf_rpc/shelf_rpc.dart' as shelf_rpc;
@@ -52,10 +54,10 @@ main(List<String> args) async {
     _apiServer.addApi(new DartalogApi());
     _apiServer.enableDiscoveryApi();
 
-    final api_handler = shelf_rpc.createRpcHandler(_apiServer);
 
     final sessionHandler =
         new JwtSessionHandler('dartalog', 'shhh secret', getUser);
+
     final loginMiddleware = authenticate(
         [new UsernamePasswordAuthenticator(authenticateUser)],
         sessionHandler: sessionHandler, allowHttp: true);
@@ -65,18 +67,42 @@ main(List<String> args) async {
         allowHttp: true,
         allowAnonymousAccess: true);
 
+    var loginPipeline = const shelf.Pipeline()
+        .addMiddleware(shelf_cors.createCorsHeadersMiddleware(
+          corsHeaders: {'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+                          'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+                          'Access-Control-Allow-Credentials': 'true',
+                          'Access-Control-Expose-Headers': 'Authorization',
+                          'Access-Control-Allow-Origin': '*'}))
+        .addMiddleware(exceptionHandler())
+        .addMiddleware(loginMiddleware)
+        .addHandler((shelf.Request request) => new shelf.Response.ok(""));
+
+
+    final Map<String, String> _headers = {'Access-Control-Allow-Headers': 'Authorization, content-type'};
+    shelf.Response _cors(shelf.Response response) => response.change(headers: _headers);
+    final shelf.Middleware _fixCORS = shelf.createMiddleware(
+        responseHandler: _cors);
+
+
+    final api_handler = shelf_rpc.createRpcHandler(_apiServer);
+    final apiPipeline = const shelf.Pipeline()
+        .addMiddleware(_fixCORS)
+        .addMiddleware(exceptionHandler())
+        .addMiddleware(defaultAuthMiddleware)
+        .addHandler(api_handler);
+
     final root = router()
-      ..post('/login/', (shelf.Request request) => new shelf.Response.ok(""),
-          middleware: loginMiddleware)
+      ..add('/login/', ['POST', 'GET', 'OPTIONS'], loginPipeline)
       ..add("/images/", ['GET', 'OPTIONS'], staticImagesHandler,
           exactMatch: false)
       ..add('/api/', ['GET', 'PUT', 'POST', 'HEAD', 'OPTIONS', 'DELETE'],
-          api_handler,
-          exactMatch: false, middleware: defaultAuthMiddleware)
+          apiPipeline, exactMatch: false)
       ..add('/', ['GET', 'OPTIONS'], staticSiteHandler, exactMatch: false);
 
     var handler = const shelf.Pipeline()
         .addMiddleware(shelf.logRequests())
+        .addMiddleware(exceptionHandler())
         .addHandler(root.handler);
 
     final HttpServer server =

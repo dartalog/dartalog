@@ -1,8 +1,8 @@
 // Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
 
 // is governed by a BSD-style license that can be found in the LICENSE file.
-@HtmlImport('field_admin_page.html')
-library dartalog.client.pages.field_admin_page;
+@HtmlImport('collections_page.html')
+library dartalog.client.pages.collections_page;
 
 import 'dart:html';
 import 'dart:async';
@@ -27,23 +27,19 @@ import 'package:dartalog/tools.dart';
 import 'package:dartalog/client/api/dartalog.dart' as API;
 
 /// A Polymer `<field-admin-page>` element.
-@PolymerRegister('field-admin-page')
-class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
-  static final Logger _log = new Logger("FieldAdminPage");
+@PolymerRegister('collections-page')
+class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
+  static final Logger _log = new Logger("CollectionsPage");
   Logger get loggerImpl => _log;
 
-
   @property
-  List<IdNamePair> fields = new List<IdNamePair>();
+  List<IdNamePair> collections = new List<IdNamePair>();
 
   String currentId = "";
-  @property Field currentField = new Field();
+  @property Collection currentCollection = new Collection();
 
   /// Constructor used to create instance of MainApp.
-  FieldAdminPage.created() : super.created("Field Admin");
-
-  @Property(notify: true) Iterable get FIELD_TYPE_KEYS => dartalog.FIELD_TYPES.keys;
-  @reflectable String getFieldType(String key) => dartalog.FIELD_TYPES[key];
+  CollectionsPage.created() : super.created("Collection Maintenance");
 
   PaperDialog get editDialog =>  $['editDialog'];
 
@@ -53,7 +49,7 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
 
   @override
   void clearValidation() {
-    $['output_field_error'].text = "";
+    $['output_error'].text = "";
     super.clearValidation();
   }
 
@@ -61,12 +57,12 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   Future refresh() async {
     try {
       this.reset();
-      clear("fields");
+      clear("collections");
 
-      API.ListOfIdNamePair data = await api.fields.getAllIdsAndNames();
+      API.ListOfIdNamePair data = await api.collections.getAllIdsAndNames();
 
       for(API.IdNamePair pair  in data) {
-        add("fields", new IdNamePair.copy(pair));
+        add("collections", new IdNamePair.copy(pair));
       }
     } catch (e, st) {
       _log.severe(e, st);
@@ -79,7 +75,7 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   void reset() {
     clearValidation();
     currentId = "";
-    set('currentField', new Field());
+    set('currentCollection', new Collection());
   }
 
   showModal(event, [_]) {
@@ -98,20 +94,20 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   }
 
   @reflectable
-  fieldClicked(event, [_]) async {
+  collectionClicked(event, [_]) async {
     try {
       String id = event.target.dataset["id"];
       if(id==null)
         return;
 
-      API.Field field = await api.fields.getById(id);
+      API.Collection collection = await api.collections.getById(id);
 
-      if(field==null)
-        throw new Exception("Selected field not found");
+      if(collection==null)
+        throw new Exception("Selected collection not found");
 
       currentId = id;
 
-      set("currentField", new Field.copy(field));
+      set("currentCollection", new Collection.copy(collection));
 
       editDialog.open();
     } catch (e, st) {
@@ -134,24 +130,19 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   @reflectable
   saveClicked(event, [_]) async {
     try {
-      API.Field field = new API.Field();
-      currentField.copyTo(field);
+      API.Collection collection = new API.Collection();
+      currentCollection.copyTo(collection);
       if (isNullOrWhitespace(this.currentId)) {
-        await this.api.fields.create(field);
+        await this.api.collections.create(collection);
       } else {
-        await this.api.fields.update(field, this.currentId);
+        await this.api.collections.update(collection, this.currentId);
       }
 
       refresh();
       editDialog.close();
-      showMessage("Field saved");
+      showMessage("Collection saved");
     } on API.DetailedApiRequestError catch  ( e, st) {
-      try {
-        handleApiError(e, generalErrorField: "output_field_error");
-      } catch (e, st) {
-        _log.severe(e, st);
-        this.handleException(e,st);
-      }
+      handleApiError(e, generalErrorField: "output_field_error");
     } catch (e, st) {
       _log.severe(e, st);
       this.handleException(e,st);

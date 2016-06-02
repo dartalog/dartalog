@@ -24,7 +24,7 @@ class _MongoItemCopyHistoryModel extends _AMongoModel<ItemCopyHistoryEntry>
   }
 
   Future<mongo.DbCollection> _getCollection(_MongoDatabase con) =>
-      con.getItemTypesCollection();
+      con.getItemCopyHistoryCollection();
 
   void _updateMap(ItemCopyHistoryEntry itemCopyHistory, Map data) {
     data["copy"] = itemCopyHistory.copy;

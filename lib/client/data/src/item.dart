@@ -10,6 +10,9 @@ class Item {
   ItemType type;
 
   @Property(notify: true)
+  List<ItemCopy> copies = new List<ItemCopy>();
+
+  @Property(notify: true)
   List<Field> fields;
 
   Map<String,String> get values {
@@ -42,6 +45,11 @@ class Item {
       this.type = new ItemType.copy(input.type);
       if(this.type.fields!=null)
         this.fields = this.type.fields;
+    }
+    if(input.copies!=null) {
+      for(dynamic copy in input.copies) {
+        this.copies.add(new ItemCopy.copyFrom(copy));
+      }
     }
     _copy(input,this);
   }

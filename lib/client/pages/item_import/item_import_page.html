@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="item_import_page.css">
     <style include="iron-flex"></style>
     <template>
+        <paper-tabs selected="single_import_tab" attr-for-selected="data-tab" >
+            <paper-tab data-tab="single_import_tab">Single</paper-tab>
+            <paper-tab data-tab="bulk_import_tab">Bulk</paper-tab>
+        </paper-tabs>
         <iron-pages id="item_add_pages" attr-for-selected="id" selected="item_search">
             <div id="item_search">
                 <div class="container flex horizontal">

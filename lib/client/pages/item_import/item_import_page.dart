@@ -20,6 +20,9 @@ import 'package:polymer_elements/iron_flex_layout/classes/iron_flex_layout.dart'
 import 'package:polymer_elements/iron_flex_layout.dart';
 import 'package:polymer_elements/iron_pages.dart';
 import 'package:polymer_elements/paper_button.dart';
+import 'package:polymer_elements/paper_tab.dart';
+import 'package:polymer_elements/paper_tabs.dart';
+import 'package:polymer_elements/paper_toolbar.dart';
 import 'package:polymer_elements/paper_toggle_button.dart';
 import 'package:polymer_elements/paper_card.dart';
 import 'package:polymer_elements/paper_dialog.dart';

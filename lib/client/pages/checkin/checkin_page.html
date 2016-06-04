@@ -4,11 +4,11 @@
 -->
 
 <!-- import polymer-element's definition -->
-<dom-module name="checkout-page">
-    <link rel="stylesheet" href="checkout_page.css">
+<dom-module name="checkin-page">
+    <link rel="stylesheet" href="checkin_page.css">
     <style include="iron-flex"></style>
     <template>
-        <paper-card heading="Checkout Cart" style="margin:8pt;" class="vertical layout">
+        <paper-card heading="Check-in" style="margin:8pt;" class="vertical layout">
             <div class="card-content">
                 <template is="dom-if" if="[[cartIsEmpty]]">
                     <paper-item class="flex">Cart is empty</paper-item>
@@ -16,11 +16,8 @@
 
                 <template is="dom-repeat" items="[[cart]]">
                     <paper-item horizontal class="flex" data-item-id$="[[item.itemId]]" data-item-copy$="[[item.copy]]" >
-                        <paper-item-body three-line>
-                            <div>[[item.itemName]]</div>
-                            <div secondary>Collection: <span>[[item.collectionName]]</span></div>
-                            <div secondary>Unique ID: <span>[[item.uniqueId]]</span></div>
-                        </paper-item-body>
+                        <span>[[item.itemName]]</span>
+                        <span>[[item.collectionName]]</span>
                         <paper-icon-button icon="remove-circle" on-tap="removeClicked"></paper-icon-button>
                     </paper-item>
                 </template>

@@ -16,8 +16,12 @@ class _MongoItemCopyModel extends _AMongoModel<ItemCopy> with AItemCopyModel {
     return await _getFromDb(_generateSelector(itemCopies));
   }
 
-  Future<List<ItemCopy>> getAllForItemId(String itemId) =>
-      _getFromDb(mongo.where.eq(_ITEM_ID_FIELD, itemId));
+  Future<List<ItemCopy>> getAllForItemId(String itemId, {bool includeRemoved: false}) async {
+    dynamic criteria = mongo.where.eq(_ITEM_ID_FIELD, itemId);
+    if(!includeRemoved)
+      mongo.where.nin(_STATUS_FIELD, [ITEM_STATUS_REMOVED]);
+    return await _getFromDb(criteria);
+  }
 
   Future<ItemCopy> getByItemIdAndCopy(String itemId, int copy) =>
       _getForOneFromDb(

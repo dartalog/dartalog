@@ -20,6 +20,9 @@ class UserModel extends AIdNameBasedModel<User> {
 
   @override
   Future<String> create(User user) async {
+    if (!userAuthenticated()) {
+      throw new NotAuthorizedException();
+    }
     if(!isNullOrWhitespace(user.password))
       user.password = new Crypt.sha256(user.password).toString();
     await super.create(user);
@@ -27,6 +30,9 @@ class UserModel extends AIdNameBasedModel<User> {
 
   Future changePassword(
       String id, String currentPassword, String newPassword) async {
+    if (!userAuthenticated()) {
+      throw new NotAuthorizedException();
+    }
     User user = await dataSource.getById(id);
 
     Map<String, String> field_errors = new Map<String, String>();

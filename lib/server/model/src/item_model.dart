@@ -29,7 +29,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
             "Cannot include fields without including the type");
       }
       if (includeCopies) {
-        output.copies = await data_sources.itemCopies.getAllForItemId(id);
+        output.copies = await this.copies.getAllForItem(id);
       }
     return output;
   }
@@ -37,6 +37,9 @@ class ItemModel extends AIdNameBasedModel<Item> {
 
   @override
   Future<String> create(Item item) async {
+    if (!userAuthenticated()) {
+      throw new NotAuthorizedException();
+    }
     if(!isNullOrWhitespace(item.getName))
       item.getId = await _generateUniqueId(item);
     return await super.create(item);
@@ -44,6 +47,9 @@ class ItemModel extends AIdNameBasedModel<Item> {
 
   @override
   Future<String> update(String id, Item item) async {
+    if (!userAuthenticated()) {
+      throw new NotAuthorizedException();
+    }
     if(!isNullOrWhitespace(item.getName)) {
       Item oldItem = await data_sources.items.getById(id);
       if (oldItem == null)

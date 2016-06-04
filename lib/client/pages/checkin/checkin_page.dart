@@ -1,8 +1,8 @@
 // Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
-@HtmlImport("checkout_page.html")
-library dartalog.client.pages.checkout_page;
+@HtmlImport("checkin_page.html")
+library dartalog.client.pages.checkin_page;
 
 import 'dart:html';
 import 'dart:async';
@@ -35,15 +35,15 @@ import 'package:dartalog/tools.dart';
 
 import '../../api/dartalog.dart' as API;
 
-@PolymerRegister('checkout-page')
-class CheckoutPage extends APage with ARefreshablePage {
-  static final Logger _log = new Logger("CheckoutPage");
+@PolymerRegister('checkin-page')
+class CheckinPage extends APage with ARefreshablePage {
+  static final Logger _log = new Logger("CheckinPage");
   Logger get loggerImpl => _log;
 
   @Property(notify: true)
   List<ItemCopy> cart = new List<ItemCopy>();
 
-  CheckoutPage.created() : super.created("Checkout");
+  CheckinPage.created() : super.created("Check-in");
 
   static const String CART_IS_EMPTY = "cartIsEmpty";
   @property
@@ -117,10 +117,6 @@ class CheckoutPage extends APage with ARefreshablePage {
     }
     add("cart",itemCopy);
     _evaluateCart();
-  }
-
-  Future checkoutClicked(event,[_]) async {
-
   }
 
 }

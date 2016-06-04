@@ -1717,7 +1717,6 @@ class ImportResult {
 
 class Item {
   core.List<ItemCopy> copies;
-  core.int copyCount;
   core.List<core.String> fileUploads;
   core.String id;
   core.String name;
@@ -1730,9 +1729,6 @@ class Item {
   Item.fromJson(core.Map _json) {
     if (_json.containsKey("copies")) {
       copies = _json["copies"].map((value) => new ItemCopy.fromJson(value)).toList();
-    }
-    if (_json.containsKey("copyCount")) {
-      copyCount = _json["copyCount"];
     }
     if (_json.containsKey("fileUploads")) {
       fileUploads = _json["fileUploads"];
@@ -1758,9 +1754,6 @@ class Item {
     var _json = new core.Map();
     if (copies != null) {
       _json["copies"] = copies.map((value) => (value).toJson()).toList();
-    }
-    if (copyCount != null) {
-      _json["copyCount"] = copyCount;
     }
     if (fileUploads != null) {
       _json["fileUploads"] = fileUploads;
@@ -1814,9 +1807,13 @@ class ItemActionRequest {
 class ItemCopy {
   Collection collection;
   core.String collectionId;
+  core.String collectionName;
   core.int copy;
+  core.List<core.String> eligibleActions;
   core.String itemId;
+  core.String itemName;
   core.String status;
+  core.String statusName;
   core.String uniqueId;
 
   ItemCopy();
@@ -1828,14 +1825,26 @@ class ItemCopy {
     if (_json.containsKey("collectionId")) {
       collectionId = _json["collectionId"];
     }
+    if (_json.containsKey("collectionName")) {
+      collectionName = _json["collectionName"];
+    }
     if (_json.containsKey("copy")) {
       copy = _json["copy"];
+    }
+    if (_json.containsKey("eligibleActions")) {
+      eligibleActions = _json["eligibleActions"];
     }
     if (_json.containsKey("itemId")) {
       itemId = _json["itemId"];
     }
+    if (_json.containsKey("itemName")) {
+      itemName = _json["itemName"];
+    }
     if (_json.containsKey("status")) {
       status = _json["status"];
+    }
+    if (_json.containsKey("statusName")) {
+      statusName = _json["statusName"];
     }
     if (_json.containsKey("uniqueId")) {
       uniqueId = _json["uniqueId"];
@@ -1850,14 +1859,26 @@ class ItemCopy {
     if (collectionId != null) {
       _json["collectionId"] = collectionId;
     }
+    if (collectionName != null) {
+      _json["collectionName"] = collectionName;
+    }
     if (copy != null) {
       _json["copy"] = copy;
+    }
+    if (eligibleActions != null) {
+      _json["eligibleActions"] = eligibleActions;
     }
     if (itemId != null) {
       _json["itemId"] = itemId;
     }
+    if (itemName != null) {
+      _json["itemName"] = itemName;
+    }
     if (status != null) {
       _json["status"] = status;
+    }
+    if (statusName != null) {
+      _json["statusName"] = statusName;
     }
     if (uniqueId != null) {
       _json["uniqueId"] = uniqueId;

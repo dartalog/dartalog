@@ -38,7 +38,7 @@ main(List<String> args) async {
   Logger.root.level = Level.INFO;
   Logger.root.onRecord.listen(new serverLogging.LogPrintHandler());
   try {
-    var pathToBuild = join(ROOT_DIRECTORY, 'web');
+    var pathToBuild = join(ROOT_DIRECTORY, 'build/web/');
 
     final staticSiteHandler = createStaticHandler(pathToBuild,
         listDirectories: false,

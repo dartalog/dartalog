@@ -19,28 +19,41 @@ final Map<String, String> FIELD_TYPES = {
 
 final RegExp FILE_UPLOAD_REGEX = new RegExp("${FILE_UPLOAD_PREFIX}(\\d+)");
 
-const String ITEM_ACTION_NAME = 'name';
-const String ITEM_DEFAULT_STATUS = 'available';
-const String ITEM_ACTION_RESULTING_STATUS = 'resultingStatus';
-const String ITEM_ACTION_VALID_STATUSES = 'validStatuses';
-final Map<String, Map> ITEM_ACTIONS = {
-  'borrow': {
-    ITEM_ACTION_NAME: 'Borrow',
-    ITEM_ACTION_VALID_STATUSES: ['available'],
-    ITEM_ACTION_RESULTING_STATUS: 'borrowed'
-  },
-  'return': {
-    ITEM_ACTION_NAME: 'Return',
-    ITEM_ACTION_VALID_STATUSES: ['borrowed'],
-    ITEM_ACTION_RESULTING_STATUS: 'available'
-  }
-};
+const String ITEM_ACTION_BORROW = "borrow";
+const String ITEM_ACTION_RETURN = "return";
+const String ITEM_ACTION_REMOVE = "remove";
+const String ITEM_ACTION_MARK_AS_LOST = "mark_as_lost";
+
+const String ITEM_STATUS_AVAILABLE = 'available';
+const String ITEM_STATUS_BORROWED = 'borrowed';
+const String ITEM_STATUS_REMOVED = 'removed';
+const String ITEM_STATUS_LOST = 'lost';
+
+const String ITEM_DEFAULT_STATUS = ITEM_STATUS_AVAILABLE;
 
 final Map<String, String> ITEM_COPY_STATUSES = {
-  'borrowed': 'Borrowed',
-  'lost': 'Lost',
-  'available': 'Available'
+  ITEM_STATUS_BORROWED: 'Borrowed',
+  ITEM_STATUS_LOST: 'Lost',
+  ITEM_STATUS_AVAILABLE: 'Available'
 };
+
+final Map<String, ItemAction> ITEM_ACTIONS = {
+  ITEM_ACTION_BORROW: new ItemAction(ITEM_ACTION_BORROW, "Borrow", [ITEM_STATUS_AVAILABLE], ITEM_STATUS_BORROWED),
+  ITEM_ACTION_RETURN: new ItemAction(ITEM_ACTION_RETURN, "Return", [ITEM_STATUS_BORROWED], ITEM_STATUS_AVAILABLE),
+  ITEM_ACTION_REMOVE: new ItemAction(ITEM_ACTION_REMOVE, "Remove", [ITEM_STATUS_AVAILABLE], ITEM_STATUS_REMOVED),
+  ITEM_ACTION_MARK_AS_LOST: new ItemAction(ITEM_ACTION_MARK_AS_LOST, "Mark As Lost", [ITEM_STATUS_AVAILABLE, ITEM_STATUS_BORROWED], ITEM_STATUS_LOST)
+};
+
+class ItemAction {
+  String id;
+  String name;
+  List<String> validStatuses;
+  String resultingStatus;
+
+  ItemAction(this.id, this.name, this.validStatuses, this.resultingStatus);
+}
+
+
 
 final List<String> RESERVED_WORDS = ['id', 'name', 'title'];
 

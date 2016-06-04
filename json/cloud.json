@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "b610f4f1e1cebfb1f47c809a7a27579fc8f54afa",
+ "etag": "444d76a6511f3f3f17565e7d185d2fdeca14f9ae",
  "discoveryVersion": "v1",
  "id": "dartalog:0.1",
  "name": "dartalog",
@@ -94,6 +94,9 @@
     "itemId": {
      "type": "string"
     },
+    "itemName": {
+     "type": "string"
+    },
     "copy": {
      "type": "integer",
      "format": "int32"
@@ -101,11 +104,23 @@
     "collectionId": {
      "type": "string"
     },
+    "collectionName": {
+     "type": "string"
+    },
     "uniqueId": {
      "type": "string"
     },
     "status": {
      "type": "string"
+    },
+    "statusName": {
+     "type": "string"
+    },
+    "eligibleActions": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
     },
     "collection": {
      "$ref": "Collection"
@@ -198,10 +213,6 @@
      "items": {
       "type": "string"
      }
-    },
-    "copyCount": {
-     "type": "integer",
-     "format": "int32"
     },
     "copies": {
      "type": "array",

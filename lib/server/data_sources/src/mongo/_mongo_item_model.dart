@@ -10,7 +10,6 @@ class _MongoItemModel extends _AMongoIdModel<Item> with AItemModel {
     output.getName = data['name'];
     output.typeId = data['typeId'];
     output.values = data["values"];
-    output.copyCount = data["copyCount"];
 
     return output;
   }
@@ -23,7 +22,5 @@ class _MongoItemModel extends _AMongoIdModel<Item> with AItemModel {
     data["name"] = item.getName;
     data["typeId"] = item.typeId;
     data["values"] = item.values;
-    if(item.copyCount!=null&&item.copyCount>0)
-      data["copyCount"] = item.copyCount;
   }
 }

@@ -31,10 +31,12 @@
             <template is="dom-repeat" items="[[currentItem.copies]]">
                 <paper-item data-copy$="[[item.copy]]">
                     <span>[[item.copy]]</span>
-                    <span>[[item.collectionId]]</span>
-                    <span>[[item.status]]</span>
+                    <span>[[item.collectionName]]</span>
+                    <span>[[item.statusName]]</span>
                     <paper-icon-button icon="create" on-tap="editItemCopyClicked"></paper-icon-button>
-                    <paper-icon-button icon="add-shopping-cart" on-tap="addCartCopyClicked"></paper-icon-button>
+                    <template is="dom-if" if="[[item.availableForCheckout]]" restamp="true">
+                    <paper-icon-button icon="add-shopping-cart" disabled="[[item.inCart]]" on-tap="addCartCopyClicked"></paper-icon-button>
+                    </template>
                 </paper-item>
             </template>
             <paper-item on-tap="addCopyClicked">Add Copy...</paper-item>

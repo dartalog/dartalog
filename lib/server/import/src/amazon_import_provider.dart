@@ -104,7 +104,14 @@ class AmazonImportProvider extends AScrapingImportProvider {
         contentsRegex: r'"(http://.+?)":',
         contentsRegexGroup: 1,
         replaceRegex: {r"\.[_A-Z0-9,]+\.": "."}
-    //{"http://ecx.images-amazon.com/images/I/61ghr6rr4%2BL._SX421_BO1,204,203,200_.jpg":[423,500],"http://ecx.images-amazon.com/images/I/61ghr6rr4%2BL._SX258_BO1,204,203,200_.jpg":[260,307]}
+    ),
+    new ImportFieldCriteria(
+        field: "front_cover",
+        elementSelector: 'img#imgBlkFront',
+        elementAttribute: 'data-a-dynamic-image',
+        contentsRegex: r'"(http://.+?)":',
+        contentsRegexGroup: 1,
+        replaceRegex: {r"\.[_A-Z0-9,]+\.": "."}
     ),
     new ImportFieldCriteria(
         field: "director",

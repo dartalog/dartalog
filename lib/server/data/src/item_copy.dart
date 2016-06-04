@@ -2,11 +2,15 @@ part of data;
 
 class ItemCopy extends AData {
   String itemId = "";
+  String itemName;
   int copy = 0;
   String collectionId = "";
+  String collectionName;
   String uniqueId = "";
   String status = "";
+  String statusName = "";
 
+  List<String> eligibleActions = [];
   Collection collection;
 
   ItemCopy();

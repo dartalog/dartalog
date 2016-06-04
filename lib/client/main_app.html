@@ -11,13 +11,12 @@
         <paper-header-panel class="flex">
             <paper-toolbar>
                 <template is="dom-if" if="[[!showBack]]">
-                    <paper-icon-button icon="menu" on-tap="toggleDrawerClicked"></paper-icon-button>
+                    <paper-icon-button icon="menu" on-tap="toggleDrawerClicked" style="margin-right:0;"></paper-icon-button>
                 </template>
                 <template is="dom-if" if="[[showBack]]">
                     <paper-icon-button icon="chevron-left" on-tap="backClicked"></paper-icon-button>
                 </template>
-
-                <span class="title">[[currentPage.title]]</span>
+                <span class="title" style="margin-left:8pt;">[[currentPage.title]]</span>
                 <template is="dom-if" if="[[showRefresh]]">
                     <paper-icon-button icon="refresh" on-tap="refreshClicked"></paper-icon-button>
                 </template>

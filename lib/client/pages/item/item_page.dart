@@ -116,7 +116,7 @@ class ItemPage extends APage with ARefreshablePage, ADeletablePage, AEditablePag
   bool createCopy = false;
 
 
-  @reflectable
+  @Observe('cart.*')
   addCartCopyClicked(event, [_]) async {
     await handleApiExceptions(() async {
       dynamic ele = getParentElement(event.target, "paper-item");

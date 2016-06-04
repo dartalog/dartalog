@@ -4,11 +4,20 @@ abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
   data_sources.AIdNameBasedDataSource<T> get dataSource;
 
   Future<String> create(T t) async {
+    if (!userAuthenticated()) {
+      throw new NotAuthorizedException();
+    }
     await validate(t, true);
     return await dataSource.write(t);
   }
 
-  Future delete(String id) => dataSource.delete(id);
+  Future delete(String id) async {
+    if (!userAuthenticated()) {
+      throw new NotAuthorizedException();
+    }
+
+await     dataSource.delete(id);
+  }
 
   Future<List<IdNamePair>> getAllIdsAndNames() =>
       dataSource.getAllIdsAndNames();
@@ -24,6 +33,9 @@ abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
   }
 
   Future<String> update(String id, T t) async {
+    if (!userAuthenticated()) {
+      throw new NotAuthorizedException();
+    }
     await validate(t, id != t.getId);
     return await dataSource.write(t, id);
   }

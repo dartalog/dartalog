@@ -35,21 +35,28 @@ class AControl extends PolymerElement {
     }
   }
 
-  void handleApiError(commons.DetailedApiRequestError error,
-      {String generalErrorField: ""}) {
+  Future handleApiError(commons.DetailedApiRequestError error,
+      {String generalErrorField: ""}) async {
     try {
       clearValidation();
-      if (generalErrorField.length > 0) {
-        dynamic input = $[generalErrorField];
-        if (input != null) {
-          input.text = error.message;
+      if(error.status==400){
+        if (generalErrorField.length > 0) {
+          dynamic input = $[generalErrorField];
+          if (input != null) {
+            input.text = error.message;
+          } else {
+            showMessage(error.message, "error");
+          }
         } else {
           showMessage(error.message, "error");
         }
+        setErrorMesage(error.errors);
+      } else if(error.status==401) {
+        await this.mainApp.clearAuthentication();
+        this.mainApp.promptForAuthentication();
       } else {
-        showMessage(error.message, "error");
+
       }
-      setErrorMesage(error.errors);
     } catch (e, st) {
       loggerImpl.severe(e, st);
       this.handleException(e, st);
@@ -61,7 +68,7 @@ class AControl extends PolymerElement {
     try {
       return await toAwait();
     } on commons.DetailedApiRequestError catch (e, st) {
-      handleApiError(e, generalErrorField: generalErrorField);
+      await handleApiError(e, generalErrorField: generalErrorField);
     } catch (e, st) {
       handleException(e, st);
     }

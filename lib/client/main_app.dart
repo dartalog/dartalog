@@ -18,6 +18,7 @@ import 'package:dartalog/client/pages/item_add/item_add_page.dart';
 import 'package:dartalog/client/pages/item_browse/item_browse_page.dart';
 import 'package:dartalog/client/pages/item_edit/item_edit_page.dart';
 import 'package:dartalog/client/pages/collections/collections_page.dart';
+import 'package:dartalog/client/pages/checkout/checkout_page.dart';
 import 'package:dartalog/client/pages/item_import/item_import_page.dart';
 import 'package:dartalog/client/pages/item_type_admin/item_type_admin_page.dart';
 import 'package:dartalog/client/pages/pages.dart';
@@ -52,12 +53,10 @@ class MainApp extends PolymerElement {
   @property
   bool cartEmpty = true;
 
-  @Property(notify: true)
-  List<ItemCopy> cartContents = new List<ItemCopy>();
-
   @property
   bool userLoggedIn = false;
-  @property User currentUser;
+  @property
+  User currentUser;
 
   @property
   bool loading = true;
@@ -80,19 +79,20 @@ class MainApp extends PolymerElement {
 
   final Router router = new Router(useFragment: true);
 
-  static final api.DartalogApi _api = new api.DartalogApi(new DartalogHttpClient(),
-      rootUrl: SERVER_ADDRESS, servicePath: "api/dartalog/0.1/");
+  static final api.DartalogApi _api = new api.DartalogApi(
+      new DartalogHttpClient(),
+      rootUrl: SERVER_ADDRESS,
+      servicePath: "api/dartalog/0.1/");
 
   @Property(notify: true)
   APage currentPage = null;
 
   /// Constructor used to create instance of MainApp.
-  MainApp.created() : super.created()  {
+  MainApp.created() : super.created() {
     Logger.root.level = Level.INFO;
     Logger.root.onRecord.listen(new LogPrintHandler());
 
     // Set up the routes for all the pages.
-    DartalogHttpClient.primer();
 
     router.root
       ..addRoute(
@@ -136,19 +136,39 @@ class MainApp extends PolymerElement {
           defaultRoute: false,
           enter: enterRoute)
       ..addRoute(
+          name: CHECKOUT_ROUTE_NAME,
+          path: "checkout",
+          defaultRoute: false,
+          enter: enterRoute)
+      ..addRoute(
           name: "logging_output",
           path: "logging_output",
           defaultRoute: false,
           enter: enterRoute);
 
+    startApp();
+  }
+
+  Future startApp() async {
+    await evaluateAuthentication();
     router.listen();
-    evaluateAuthentication();
   }
 
   void addToCart(ItemCopy itemCopy) {
-    add("cartContents", itemCopy);
-    set("cartCount", cartContents.length);
-    set("cartEmpty", cartContents.length==0);
+    CheckoutPage cp = $['checkout'];
+    cp.addToCart(itemCopy);
+    refreshCartInfo();
+  }
+
+  void refreshCartInfo() {
+    CheckoutPage cp = $['checkout'];
+    set("cartCount", cp.cart.length);
+    set("cartEmpty", cp.cart.length == 0);
+  }
+
+  @reflectable
+  void cartClicked(event, [_]) {
+    this.activateRoute(CHECKOUT_ROUTE_PATH);
   }
 
   void stopLoading() {
@@ -159,30 +179,42 @@ class MainApp extends PolymerElement {
     set("loading", true);
   }
 
+  Future promptForAuthentication() async {
+    UserAuthControl ele = $['userAuthElement'];
+    ele.activateDialog();
+  }
+
+  Future clearAuthentication() async {
+    set("currentUser.name", "");
+    set("currentUser", null);
+    await clearAuthCache();
+    DartalogHttpClient.setAuthKey("");
+  }
+
   Future evaluateAuthentication() async {
     bool authed = false;
     try {
+      await DartalogHttpClient.primer();
+
       api.User apiUser = await _api.users.getMe();
 
       set("currentUser", new User.copy(apiUser));
       set("currentUser.name", currentUser.name);
       authed = true;
-    } on api.DetailedApiRequestError catch(e,st) {
-      if(e.status>=400&&e.status<500) {
+    } on api.DetailedApiRequestError catch (e, st) {
+      if (e.status >= 400 && e.status < 500) {
         // Not authenticated, nothing to see here
-        set("currentUser.name", "");
-        set("currentUser", null);
+        await clearAuthentication();
       } else {
         _log.severe("evaluateAuthentication", e, st);
         handleException(e, st);
       }
-    } catch(e,st) {
-      _log.severe("evaluateAuthentication",e,st);
-      handleException(e,st);
+    } catch (e, st) {
+      _log.severe("evaluateAuthentication", e, st);
+      handleException(e, st);
     }
 
     set("userLoggedIn", authed);
-
   }
 
   PaperDrawerPanel get drawerPanel => $["drawerPanel"];
@@ -199,7 +231,8 @@ class MainApp extends PolymerElement {
     router.go(route, arguments);
   }
 
-  @reflectable toggleDrawerClicked(event, [_]) {
+  @reflectable
+  toggleDrawerClicked(event, [_]) {
     PaperDrawerPanel pdp = $['drawerPanel'];
     pdp.togglePanel();
   }
@@ -231,21 +264,19 @@ class MainApp extends PolymerElement {
   @reflectable
   drawerItemClicked(event, [_]) async {
     try {
-    Element ele = getParentElement(event.target, "paper-item");
-    if (ele != null) {
-      String route = ele.dataset["route"];
-      if (route == "log_in") {
-        UserAuthControl ele = $['userAuthElement'];
-        ele.activateDialog();
-      } else {
-        activateRoute(route);
+      Element ele = getParentElement(event.target, "paper-item");
+      if (ele != null) {
+        String route = ele.dataset["route"];
+        if (route == "log_in") {
+          promptForAuthentication();
+        } else {
+          activateRoute(route);
+        }
       }
+    } catch (e, st) {
+      _log.severe("drawerItemClicked", e, st);
+      handleException(e, st);
     }
-    } catch (e,st) {
-      _log.severe("drawerItemClicked", e,st);
-      handleException(e,st);
-    }
-
   }
 
   @reflectable
@@ -258,6 +289,7 @@ class MainApp extends PolymerElement {
 
   Future enterRoute(RouteEvent e) async {
     try {
+      startLoading();
       set("visiblePage", e.route.name);
 
       set("showBack", (router.activePath.length > 1));
@@ -276,9 +308,11 @@ class MainApp extends PolymerElement {
       set("currentPage", page);
       evaluatePage();
       await this.currentPage.activate(_api, e.parameters);
-      stopLoading();
+      evaluatePage();
     } catch (e, st) {
       window.alert(e.toString());
+    } finally {
+      stopLoading();
     }
   }
 
@@ -309,9 +343,14 @@ class MainApp extends PolymerElement {
 
   @reflectable
   refreshClicked(event, [_]) async {
-    if (currentPage is ARefreshablePage) {
-      dynamic page = currentPage;
-      page.refresh();
+    startLoading();
+    try {
+      if (currentPage is ARefreshablePage) {
+        dynamic page = currentPage;
+        await page.refresh();
+      }
+    } finally {
+      stopLoading();
     }
   }
 
@@ -345,7 +384,8 @@ class MainApp extends PolymerElement {
       if (isNullOrWhitespace(details))
         toastElement.text = "$message";
       else
-        toastElement.innerHtml = "<details><summary>${message}</summary><pre>${details}</pre></details>";
+        toastElement.innerHtml =
+            "<details><summary>${message}</summary><pre>${details}</pre></details>";
 
       toastElement.show();
     });

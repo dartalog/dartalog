@@ -4,15 +4,15 @@ class PresetResource extends AResource {
   static final Logger _log = new Logger('PresetResource');
   Logger get _logger => _log;
 
-  @ApiMethod(path: 'presets/')
-  Future<Map<String, String>> getAll() async {
-    try {
-      Map<String, String> output = await model.presets.getAll();
-      return output;
-    } catch (e, st) {
-      _HandleException(e, st);
-    }
-  }
+//  @ApiMethod(path: 'presets/')
+//  Future<Map<String, String>> getAll() async {
+//    try {
+//      Map<String, String> output = await model.presets.getAll();
+//      return output;
+//    } catch (e, st) {
+//      _HandleException(e, st);
+//    }
+//  }
 //
 //  @ApiMethod(path: 'presets/{uuid}/')
 //  Future<ItemTypeResponse> get(String uuid) async {

@@ -24,6 +24,8 @@ const String ITEM_ADD_ROUTE_NAME = "item_add";
 const String ITEM_ADD_ROUTE_PATH = "${ITEM_ADD_ROUTE_NAME}";
 const String ITEM_IMPORT_ROUTE_NAME = "item_import";
 const String ITEM_IMPORT_ROUTE_PATH = "${ITEM_IMPORT_ROUTE_NAME}";
+const String CHECKOUT_ROUTE_NAME = "checkout";
+const String CHECKOUT_ROUTE_PATH = "${CHECKOUT_ROUTE_NAME}";
 
 
 const String ROUTE_ARG_ITEM_ID_NAME = "itemId";
@@ -100,15 +102,27 @@ Future<Option<String>> getCachedAuthKey() async {
   if (!idb.IdbFactory.supported)
     return new None(); //TODO: Implement alternative auth caching mechanism
 
-  var trans = _db.transaction(_DARTALOG_IDB_SETTINGS_STORE, 'read');
+  await openIndexedDb();
+  var trans = _db.transaction(_DARTALOG_IDB_SETTINGS_STORE, 'readonly');
   var store = trans.objectStore(_DARTALOG_IDB_SETTINGS_STORE);
-  dynamic obj = await store.getObject({"id": AUTH_KEY_NAME});
+  dynamic obj = await store.getObject(AUTH_KEY_NAME);
+  if(obj==null)
+    return new None();
   Option output = new Some(obj["value"]);
   output.map((value) => _cachedAuthKey = value);
   return output;
 }
 
+Future clearAuthCache() async {
+  await openIndexedDb();
+  var trans = _db.transaction(_DARTALOG_IDB_SETTINGS_STORE, 'readwrite');
+  var store = trans.objectStore(_DARTALOG_IDB_SETTINGS_STORE);
+  await store.delete(AUTH_KEY_NAME);
+  _cachedAuthKey = "";
+}
+
 Future cacheAuthKey(String text) async {
+  await openIndexedDb();
   var trans = _db.transaction(_DARTALOG_IDB_SETTINGS_STORE, 'readwrite');
   var store = trans.objectStore(_DARTALOG_IDB_SETTINGS_STORE);
   await store.put({

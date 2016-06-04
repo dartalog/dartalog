@@ -13,7 +13,7 @@ abstract class AModel<T> {
       getUserPrincipal().map((Principal p) => true).getOrDefault(false);
 
   Future validate(T t, bool creating) =>
-      DataValidationException.PerformValidation(_validateFields(t, creating));
+      DataValidationException.PerformValidation(() { return _validateFields(t, creating);} );
 
   Future<Map<String, String>> _validateFields(T t, bool creating);
 }

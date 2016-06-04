@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "2c4c964c79ca1dd167fa2e7c85ccb7bcaf7a199a",
+ "etag": "b610f4f1e1cebfb1f47c809a7a27579fc8f54afa",
  "discoveryVersion": "v1",
  "id": "dartalog:0.1",
  "name": "dartalog",
@@ -140,6 +140,37 @@
     },
     "actionerUserId": {
      "type": "string"
+    }
+   }
+  },
+  "BulkItemActionRequest": {
+   "id": "BulkItemActionRequest",
+   "type": "object",
+   "properties": {
+    "action": {
+     "type": "string"
+    },
+    "actionerUserId": {
+     "type": "string"
+    },
+    "itemCopies": {
+     "type": "array",
+     "items": {
+      "$ref": "ItemCopyId"
+     }
+    }
+   }
+  },
+  "ItemCopyId": {
+   "id": "ItemCopyId",
+   "type": "object",
+   "properties": {
+    "itemId": {
+     "type": "string"
+    },
+    "copy": {
+     "type": "integer",
+     "format": "int32"
     }
    }
   },
@@ -300,13 +331,6 @@
     "debug": {
      "type": "string"
     }
-   }
-  },
-  "MapOfString": {
-   "id": "MapOfString",
-   "type": "object",
-   "additionalProperties": {
-    "type": "string"
    }
   },
   "User": {
@@ -742,6 +766,16 @@
        "request": {
         "$ref": "ItemActionRequest"
        }
+      },
+      "performBulkAction": {
+       "id": "DartalogApi.items.copies.performBulkAction",
+       "path": "items/copies/bulk_action/",
+       "httpMethod": "PUT",
+       "parameters": {},
+       "parameterOrder": [],
+       "request": {
+        "$ref": "BulkItemActionRequest"
+       }
       }
      },
      "resources": {}
@@ -828,18 +862,7 @@
    "resources": {}
   },
   "presets": {
-   "methods": {
-    "getAll": {
-     "id": "DartalogApi.presets.getAll",
-     "path": "presets/",
-     "httpMethod": "GET",
-     "parameters": {},
-     "parameterOrder": [],
-     "response": {
-      "$ref": "MapOfString"
-     }
-    }
-   },
+   "methods": {},
    "resources": {}
   },
   "collections": {

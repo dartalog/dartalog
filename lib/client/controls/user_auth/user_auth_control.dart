@@ -28,14 +28,24 @@ class UserAuthControl extends AControl {
 
   UserAuthControl.created() : super.created();
 
-  void activateDialog() {
+  Completer<bool> _toComplete;
+
+  void activateDialog({Completer<bool> toComplete}) {
     try {
+      _toComplete = toComplete;
       PaperDialog dialog = $['loginDialog'];
       dialog.open();
     } catch(e, st) {
       _log.severe("activateDialog", e, st);
       handleException(e,st);
     }
+  }
+
+  void cancelClicked(event, [_]) {
+    PaperDialog dialog = $['loginDialog'];
+    dialog.close();
+    if(this._toComplete!=null)
+      this._toComplete.complete(false);
   }
 
   @reflectable
@@ -59,6 +69,10 @@ class UserAuthControl extends AControl {
       cacheAuthKey(auth);
       PaperDialog dialog = $['loginDialog'];
       dialog.close();
+
+      if(this._toComplete!=null)
+        this._toComplete.complete(true);
+
       this.mainApp.evaluateAuthentication();
     } on Exception catch(e,st) {
       set("errorMessage", e.toString());

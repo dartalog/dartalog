@@ -16,7 +16,6 @@ import 'package:path/path.dart' show join, dirname;
 import 'package:rpc/rpc.dart';
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as io;
-import 'package:shelf_cors/shelf_cors.dart' as shelf_cors;
 import 'package:shelf_exception_handler/shelf_exception_handler.dart';
 import 'package:shelf_auth/shelf_auth.dart';
 import 'package:shelf_route/shelf_route.dart';
@@ -68,27 +67,13 @@ main(List<String> args) async {
         allowAnonymousAccess: true);
 
     var loginPipeline = const shelf.Pipeline()
-        .addMiddleware(shelf_cors.createCorsHeadersMiddleware(
-          corsHeaders: {'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
-                          'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-                          'Access-Control-Allow-Credentials': 'true',
-                          'Access-Control-Expose-Headers': 'Authorization',
-                          'Access-Control-Allow-Origin': '*'}))
-        .addMiddleware(exceptionHandler())
         .addMiddleware(loginMiddleware)
         .addHandler((shelf.Request request) => new shelf.Response.ok(""));
 
 
-    final Map<String, String> _headers = {'Access-Control-Allow-Headers': 'Authorization, content-type'};
-    shelf.Response _cors(shelf.Response response) => response.change(headers: _headers);
-    final shelf.Middleware _fixCORS = shelf.createMiddleware(
-        responseHandler: _cors);
-
 
     final api_handler = shelf_rpc.createRpcHandler(_apiServer);
     final apiPipeline = const shelf.Pipeline()
-        .addMiddleware(_fixCORS)
-        .addMiddleware(exceptionHandler())
         .addMiddleware(defaultAuthMiddleware)
         .addHandler(api_handler);
 
@@ -100,8 +85,20 @@ main(List<String> args) async {
           apiPipeline, exactMatch: false)
       ..add('/', ['GET', 'OPTIONS'], staticSiteHandler, exactMatch: false);
 
+
+    final Map extraHeaders = {'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+      'Access-Control-Allow-Methods': 'POST, GET, PUT, HEAD, DELETE, OPTIONS',
+      'Access-Control-Allow-Credentials': 'true',
+      'Access-Control-Expose-Headers': 'Authorization',
+      'Access-Control-Allow-Origin': '*'};
+    shelf.Response _cors(shelf.Response response) => response.change(headers: extraHeaders);
+    final shelf.Middleware _fixCORS = shelf.createMiddleware(
+        responseHandler: _cors);
+
+
     var handler = const shelf.Pipeline()
         .addMiddleware(shelf.logRequests())
+        .addMiddleware(_fixCORS)
         .addMiddleware(exceptionHandler())
         .addHandler(root.handler);
 

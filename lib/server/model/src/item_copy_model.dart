@@ -34,46 +34,67 @@ class ItemCopyModel extends AModel<ItemCopy> {
     return itemCopy;
   }
 
-  Future performAction(String itemId, int copy, String action, String actionerUserId) async {
+  Future performBulkAction(List<ItemCopyId> itemCopyIds, String action, String actionerUserId) async {
     if(!userAuthenticated()) {
       throw new NotAuthorizedException();
     }
 
-    ItemCopy itemCopy = await get(itemId, copy);
+    if (isNullOrWhitespace(action)) {
+      throw new InvalidInputException("Action required");
+    } else if(!ITEM_ACTIONS.containsKey(action)) {
+      throw new InvalidInputException("Action invalid");
+    }
 
-    await DataValidationException.PerformValidation(
-        new Future.sync(() async {
-          Map<String, String> field_errors = new Map<String, String>();
+    if (isNullOrWhitespace(actionerUserId)) {
+      throw new InvalidInputException("User is required");
+    } else {
+      User user = await data_sources.users.getById(actionerUserId);
+      if(user==null)
+        throw new InvalidInputException("User not found");
+    }
 
-          if (isNullOrWhitespace(action)) {
-            field_errors["action"] = "Required";
-          } else if(!ITEM_ACTIONS.containsKey(action)) {
-            field_errors["action"] = "Invalid";
-          } else if(!ITEM_ACTIONS[action][ITEM_ACTION_VALID_STATUSES].contains(itemCopy.status)){
-            field_errors["action"] = "Invalid for current status";
+    List<ItemCopy> copies = await data_sources.itemCopies.getAll(itemCopyIds);
+
+      await ItemActionException.PerformValidation(
+        () async {
+
+          Map<ItemCopyId, String> item_action_errors = new Map<ItemCopyId, String>();
+
+          for(ItemCopyId itemCopyId in itemCopyIds)  {
+            ItemCopy itemCopy;
+            for(ItemCopy ic in copies) {
+              if(itemCopyId.matchesItemCopy(ic))
+                itemCopy = ic; break;
+            }
+            if(itemCopy==null){
+              item_action_errors[itemCopyId] = "Item copy not found";
+            } else {
+              if(!ITEM_ACTIONS[action][ITEM_ACTION_VALID_STATUSES].contains(itemCopy.status)){
+                item_action_errors[itemCopyId] = "Cannot perform action ${action} when item is in status ${itemCopy.status}";
+              }
+
+            }
+
           }
-
-          if (isNullOrWhitespace(actionerUserId)) {
-            field_errors["actionerUserId"] = "Required";
-          } else {
-            User user = await data_sources.users.getById(actionerUserId);
-            if(user==null)
-              field_errors["actionerUserId"] = "Not found";
-          }
-        })
+        }
     );
 
-    ItemCopyHistoryEntry historyEntry = new ItemCopyHistoryEntry();
-    historyEntry.action = action;
-    historyEntry.actionerUserId = actionerUserId;
-    historyEntry.copy = itemCopy.copy;
-    historyEntry.itemId = itemCopy.itemId;
-    historyEntry.operatorUserId = getUserId();
+    String newStatus = ITEM_ACTIONS[action][ITEM_ACTION_RESULTING_STATUS];
+    data_sources.itemCopies.updateStatus(itemCopyIds, newStatus);
 
-    itemCopy.status = ITEM_ACTIONS[action][ITEM_ACTION_RESULTING_STATUS];
+    for(ItemCopy itemCopy in copies) {
+      ItemCopyHistoryEntry historyEntry = new ItemCopyHistoryEntry();
+      historyEntry.action = action;
+      historyEntry.actionerUserId = actionerUserId;
+      historyEntry.copy = itemCopy.copy;
+      historyEntry.itemId = itemCopy.itemId;
+      historyEntry.operatorUserId = getUserId();
 
-    await data_sources.itemHistories.write(historyEntry);
-    await data_sources.itemCopies.write(itemCopy, itemId, copy);
+      itemCopy.status = newStatus;
+
+      await data_sources.itemHistories.write(historyEntry);
+    }
+
   }
 
   Future _validateFields(ItemCopy itemCopy, bool creating) async {

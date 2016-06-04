@@ -1145,6 +1145,43 @@ class ItemsCopiesResourceApi {
    *
    * Request parameters:
    *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future performBulkAction(BulkItemActionRequest request) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (request != null) {
+      _body = convert.JSON.encode((request).toJson());
+    }
+
+    _downloadOptions = null;
+
+    _url = 'items/copies/bulk_action/';
+
+    var _response = _requester.request(_url,
+                                       "PUT",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => null);
+  }
+
+  /**
+   * [request] - The metadata request object.
+   *
+   * Request parameters:
+   *
    * [itemId] - Path parameter: 'itemId'.
    *
    * [copy] - Path parameter: 'copy'.
@@ -1195,39 +1232,6 @@ class PresetsResourceApi {
 
   PresetsResourceApi(commons.ApiRequester client) : 
       _requester = client;
-
-  /**
-   * Request parameters:
-   *
-   * Completes with a [MapOfString].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
-  async.Future<MapOfString> getAll() {
-    var _url = null;
-    var _queryParams = new core.Map();
-    var _uploadMedia = null;
-    var _uploadOptions = null;
-    var _downloadOptions = commons.DownloadOptions.Metadata;
-    var _body = null;
-
-
-    _url = 'presets/';
-
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
-    return _response.then((data) => new MapOfString.fromJson(data));
-  }
-
 }
 
 
@@ -1499,6 +1503,40 @@ class UsersResourceApi {
 }
 
 
+
+class BulkItemActionRequest {
+  core.String action;
+  core.String actionerUserId;
+  core.List<ItemCopyId> itemCopies;
+
+  BulkItemActionRequest();
+
+  BulkItemActionRequest.fromJson(core.Map _json) {
+    if (_json.containsKey("action")) {
+      action = _json["action"];
+    }
+    if (_json.containsKey("actionerUserId")) {
+      actionerUserId = _json["actionerUserId"];
+    }
+    if (_json.containsKey("itemCopies")) {
+      itemCopies = _json["itemCopies"].map((value) => new ItemCopyId.fromJson(value)).toList();
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (action != null) {
+      _json["action"] = action;
+    }
+    if (actionerUserId != null) {
+      _json["actionerUserId"] = actionerUserId;
+    }
+    if (itemCopies != null) {
+      _json["itemCopies"] = itemCopies.map((value) => (value).toJson()).toList();
+    }
+    return _json;
+  }
+}
 
 class Collection {
   core.String id;
@@ -1828,6 +1866,33 @@ class ItemCopy {
   }
 }
 
+class ItemCopyId {
+  core.int copy;
+  core.String itemId;
+
+  ItemCopyId();
+
+  ItemCopyId.fromJson(core.Map _json) {
+    if (_json.containsKey("copy")) {
+      copy = _json["copy"];
+    }
+    if (_json.containsKey("itemId")) {
+      itemId = _json["itemId"];
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (copy != null) {
+      _json["copy"] = copy;
+    }
+    if (itemId != null) {
+      _json["itemId"] = itemId;
+    }
+    return _json;
+  }
+}
+
 class ItemListingResponse {
   core.String id;
   core.String name;
@@ -2022,42 +2087,6 @@ class MapOfListOfString
   core.Iterable<core.String> get keys => _innerMap.keys;
 
   core.List<core.String> remove(core.Object key) => _innerMap.remove(key);
-}
-
-class MapOfString
-    extends collection_1.MapBase<core.String, core.String> {
-  final core.Map _innerMap = {};
-
-  MapOfString();
-
-  MapOfString.fromJson(core.Map _json) {
-    _json.forEach((core.String key, value) {
-      this[key] = value;
-    });
-  }
-
-  core.Map toJson() {
-    var _json = {};
-    this.forEach((core.String key, value) {
-      _json[key] = value;
-    });
-    return _json;
-  }
-
-  core.String operator [](core.Object key)
-      => _innerMap[key];
-
-  operator []=(core.String key, core.String value) {
-    _innerMap[key] = value;
-  }
-
-  void clear() {
-    _innerMap.clear();
-  }
-
-  core.Iterable<core.String> get keys => _innerMap.keys;
-
-  core.String remove(core.Object key) => _innerMap.remove(key);
 }
 
 class PasswordChangeRequest {

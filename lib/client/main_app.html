@@ -35,65 +35,66 @@
                 </template>
                 <paper-icon-button id="cartIconButton" icon="shopping-cart" on-tap="cartClicked"></paper-icon-button>
                 <template is="dom-if" if="[[!cartEmpty]]">
-                <paper-badge for="cartIconButton" label="[[cartCount]]"></paper-badge>
+                    <paper-badge for="cartIconButton" label="[[cartCount]]"></paper-badge>
                 </template>
                 <template is="dom-if" if="[[loading]]">
                     <paper-progress class="fit" indeterminate="[[loading]]"></paper-progress>
                 </template>
             </paper-toolbar>
 
-        <paper-drawer-panel id="drawerPanel" responsive-width="1000px">
-            <paper-header-panel drawer>
-                <div>
-                    <template is="dom-if" if="[[userLoggedIn]]">
-                        <paper-item>[[currentUser.name]]</paper-item>
-                    </template>
-                    <template is="dom-if" if="[[!userLoggedIn]]">
-                        <paper-item on-tap="drawerItemClicked" data-route="log_in">
+            <paper-drawer-panel id="drawerPanel" responsive-width="1000px">
+                <paper-header-panel drawer>
+                    <div>
+                        <template is="dom-if" if="[[userLoggedIn]]">
+                            <paper-item>[[currentUser.name]]</paper-item>
+                        </template>
+                        <template is="dom-if" if="[[!userLoggedIn]]">
+                            <paper-item on-tap="drawerItemClicked" data-route="log_in">
+                                <iron-icon icon="label-outline"></iron-icon>
+                                <paper-item-body>Log In</paper-item-body>
+                            </paper-item>
+                        </template>
+                        <paper-item on-tap="drawerItemClicked" data-route="browse">
                             <iron-icon icon="label-outline"></iron-icon>
-                            <paper-item-body>Log In</paper-item-body>
+                            <paper-item-body>Browse Items</paper-item-body>
                         </paper-item>
-                    </template>
-                    <paper-item on-tap="drawerItemClicked" data-route="browse">
-                        <iron-icon icon="label-outline"></iron-icon>
-                        <paper-item-body>Browse Items</paper-item-body>
-                    </paper-item>
-                    <paper-item on-tap="drawerItemClicked" data-route="collections">
-                        <iron-icon icon="label-outline"></iron-icon>
-                        <paper-item-body>Collections</paper-item-body>
-                    </paper-item>
-                    <paper-item on-tap="drawerItemClicked" data-route="field_admin">
-                        <iron-icon icon="label-outline"></iron-icon>
-                        <paper-item-body>Fields</paper-item-body>
-                    </paper-item>
-                    <paper-item on-tap="drawerItemClicked" data-route="item_type_admin">
-                        <iron-icon icon="label-outline"></iron-icon>
-                        <paper-item-body>Item Types</paper-item-body>
-                    </paper-item>
-                    <paper-item on-tap="drawerItemClicked" data-route="logging_output">
-                        <iron-icon icon="label-outline"></iron-icon>
-                        <paper-item-body>Logging Output</paper-item-body>
-                    </paper-item>
-                </div>
-            </paper-header-panel>
-            <paper-header-panel class="main" main mode="waterfall">
-                <div class="content fit">
-                    <iron-pages attr-for-selected="id" selected="[[visiblePage]]">
-                        <item-browse-page id="browse" class="fit"></item-browse-page>
-                        <item-page id="item_view" class="fit"></item-page>
-                        <collections-page id="collections" class="fit"></collections-page>
-                        <item-add-page id="item_add" class="fit"></item-add-page>
-                        <item-import-page id="item_import" class="fit"></item-import-page>
-                        <item-edit-page id="item_edit" class="fit"></item-edit-page>
-                        <field-admin-page id="field_admin" class="fit"></field-admin-page>
-                        <item-type-admin-page id="item_type_admin" class="fit"></item-type-admin-page>
-                        <div class="fit" id="logging_output">
+                        <paper-item on-tap="drawerItemClicked" data-route="collections">
+                            <iron-icon icon="label-outline"></iron-icon>
+                            <paper-item-body>Collections</paper-item-body>
+                        </paper-item>
+                        <paper-item on-tap="drawerItemClicked" data-route="field_admin">
+                            <iron-icon icon="label-outline"></iron-icon>
+                            <paper-item-body>Fields</paper-item-body>
+                        </paper-item>
+                        <paper-item on-tap="drawerItemClicked" data-route="item_type_admin">
+                            <iron-icon icon="label-outline"></iron-icon>
+                            <paper-item-body>Item Types</paper-item-body>
+                        </paper-item>
+                        <paper-item on-tap="drawerItemClicked" data-route="logging_output">
+                            <iron-icon icon="label-outline"></iron-icon>
+                            <paper-item-body>Logging Output</paper-item-body>
+                        </paper-item>
+                    </div>
+                </paper-header-panel>
+                <paper-header-panel class="main" main mode="waterfall">
+                    <div class="content fit">
+                        <iron-pages attr-for-selected="id" selected="[[visiblePage]]">
+                            <item-browse-page id="browse" class="fit"></item-browse-page>
+                            <item-page id="item_view" class="fit"></item-page>
+                            <collections-page id="collections" class="fit"></collections-page>
+                            <item-add-page id="item_add" class="fit"></item-add-page>
+                            <item-import-page id="item_import" class="fit"></item-import-page>
+                            <item-edit-page id="item_edit" class="fit"></item-edit-page>
+                            <field-admin-page id="field_admin" class="fit"></field-admin-page>
+                            <item-type-admin-page id="item_type_admin" class="fit"></item-type-admin-page>
+                            <checkout-page id="checkout" class="fit"></checkout-page>
+                            <div class="fit" id="logging_output">
 
-                        </div>
-                    </iron-pages>
-                </div>
-            </paper-header-panel>
-        </paper-drawer-panel>
+                            </div>
+                        </iron-pages>
+                    </div>
+                </paper-header-panel>
+            </paper-drawer-panel>
         </paper-header-panel>
 
         <paper-toast id="global_toast" duration="30000">

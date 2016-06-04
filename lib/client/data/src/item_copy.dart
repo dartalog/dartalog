@@ -31,4 +31,7 @@ class ItemCopy extends JsProxy {
     to.uniqueId = from.uniqueId;
   }
 
+  bool matches(ItemCopy other) {
+    return other.itemId==this.itemId&&other.copy==this.copy;
+  }
 }

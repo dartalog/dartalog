@@ -40,7 +40,17 @@ class ItemCopyResource extends AResource {
   Future<VoidMessage> performAction(String itemId, int copy, ItemActionRequest actionRequest) =>
       _catchExceptions(_performAction(itemId, copy, actionRequest));
   Future<VoidMessage> _performAction(String itemId, int copy, ItemActionRequest actionRequest) async {
-    await model.items.copies.performAction(itemId, copy, actionRequest.action, actionRequest.actionerUserId);
+    //await model.items.copies.performAction(itemId, copy, actionRequest.action, actionRequest.actionerUserId);
+    throw new Exception("Not Implemented");
+    return new VoidMessage();
+  }
+
+  @ApiMethod(
+      method: 'PUT', path: '${_API_PATH}/copies/bulk_action/')
+  Future<VoidMessage> performBulkAction(BulkItemActionRequest actionRequest) =>
+      _catchExceptions(_performBulkAction(actionRequest));
+  Future<VoidMessage> _performBulkAction(BulkItemActionRequest actionRequest) async {
+    await model.items.copies.performBulkAction(actionRequest.itemCopies, actionRequest.action, actionRequest.actionerUserId);
     return new VoidMessage();
   }
 

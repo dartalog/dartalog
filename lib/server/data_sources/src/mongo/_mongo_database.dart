@@ -20,6 +20,17 @@ class _MongoDatabase extends ADatabase {
 
   _MongoDatabase(this.con);
 
+
+  Future<dynamic> startTransaction() async {
+    mongo.DbCollection transactions = await getTransactionsCollection();
+    transactions.findOne({"state": "initial"});
+  }
+
+  Future<mongo.DbCollection> getTransactionsCollection() async {
+    dynamic output = await con.conn.collection("transactions");
+    return output;
+   }
+
   void checkForRedirectMap(Map data) {
     if (data.containsKey(REDIRECT_ENTRY_NAME)) {
       throw new api.RedirectingException(data["id"], data[REDIRECT_ENTRY_NAME]);

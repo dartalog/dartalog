@@ -64,6 +64,21 @@ class Item {
     return null;
   }
 
+  void applyImportResult(API.ImportResult result) {
+    for (Field field in this.fields) {
+      field.value = _getImportResultValue(result, field.id);
+    }
+    this.name = _getImportResultValue(result, "name");
+  }
+
+  String _getImportResultValue(API.ImportResult result, String name) {
+    if (result== null ||
+        !result.values.containsKey(name) ||
+        result.values[name].length == 0) return "";
+    return result.values[name][0];
+  }
+
+
   String getFieldValue(String id) {
     return values[id];
   }

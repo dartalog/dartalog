@@ -22,4 +22,12 @@ class ImportSearchResult extends JsProxy {
     to.title = from.title;
     to.url = from.url;
   }
+
+  static List<ImportSearchResult> convertList(Iterable input) {
+    List<ImportSearchResult> output = [];
+    for (dynamic sr in input) {
+      output.add(new ImportSearchResult.copy(sr));
+    }
+    return output;
+  }
 }

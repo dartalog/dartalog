@@ -46,9 +46,13 @@ class ItemImportPage extends APage with ASaveablePage {
   String selectedImportSource = "amazon";
   @Property(notify: true)
   String selectedItemType = "amazon";
+  @Property(notify: true)
+  String selectedCollectionId;
 
   @Property(notify: true)
   List<IdNamePair> itemTypes = new List<IdNamePair>();
+  @Property(notify: true)
+  List<IdNamePair> collections = new List<IdNamePair>();
 
   @property
   String searchQuery = "";
@@ -75,23 +79,36 @@ class ItemImportPage extends APage with ASaveablePage {
   Future activateInternal(Map args) async {
     showSaveButton = false;
     singleImportPages.selected = "item_search";
+    set("searchQuery", "");
+    set("bulkSearchQuery", "");
+    clear("results");
+    clear("bulkResults");
     await loadItemTypes();
+    await loadCollections();
     //await itemAddControl.activate(this.api, args);
+    _focusOnSearchField();
   }
 
+  @reflectable
+  tabControlClicked(event,[_]) {
+    _focusOnSearchField();
+  }
+
+  void _focusOnSearchField() {
+    switch(this.currentTab) {
+      case "single_import_tab":
+        $["single_search_input"].focus();
+        break;
+      case "bulk_import_tab":
+        $["bulk_search_input"].focus();
+        break;
+    }
+  }
 
   @reflectable
   searchKeypress(event, [_]) async {
     if(event.original.charCode==13)
-      await performSearch();
-  }
-
-  @reflectable
-  String getImportResultValue(String name) {
-    if (importResult == null ||
-        !importResult.values.containsKey(name) ||
-        importResult.values[name].length == 0) return "";
-    return importResult.values[name][0];
+      await performSingleSearch();
   }
 
   ImportSearchResult getSearchResult(String id) {
@@ -113,6 +130,16 @@ class ItemImportPage extends APage with ASaveablePage {
       this.handleException(e, st);
     }
   }
+  Future loadCollections() async {
+    try {
+      clear("collections");
+      API.ListOfIdNamePair data = await api.collections.getAllIdsAndNames();
+      addAll("collections", IdNamePair.convertList(data));
+    } catch (e, st) {
+      _log.severe(e, st);
+      this.handleException(e, st);
+    }
+  }
 
   @override
   Future save() async {
@@ -124,22 +151,23 @@ class ItemImportPage extends APage with ASaveablePage {
   }
 
   @reflectable
-  searchClicked(event, [_]) async {
-    performSearch();
+  singleSearchClicked(event, [_]) async {
+    performSingleSearch();
   }
 
-  Future performSearch() async {
+  Future performSingleSearch() async {
     try {
+      this.mainApp.startLoading();
       clear("results");
 
       API.SearchResults results =
           await api.import.search(selectedImportSource, this.searchQuery);
-      for (API.SearchResult sr in results.results) {
-        add("results", new ImportSearchResult.copy(sr));
-      }
+      addAll("results", ImportSearchResult.convertList(results.results));
     } catch (e, st) {
       _log.severe(e, st);
       this.handleException(e, st);
+    }finally {
+      this.mainApp.stopLoading();
     }
   }
 
@@ -150,7 +178,7 @@ class ItemImportPage extends APage with ASaveablePage {
         throw new Exception("Please select an item type");
       }
 
-        dynamic ele = getParentElement(event.target, "paper-item");
+      dynamic ele = getParentElement(event.target, "paper-item");
       String id = ele.dataset["id"];
       API.ImportResult result = await api.import.import("amazon", id);
       importResult = result;
@@ -169,7 +197,6 @@ class ItemImportPage extends APage with ASaveablePage {
 
       newItem.name = this.getImportResultValue("name");
 
-
       await itemEditControl.activate(this.api, {"imported_item": newItem});
 
       this.showSaveButton = true;
@@ -181,7 +208,81 @@ class ItemImportPage extends APage with ASaveablePage {
     }
   }
 
-  showModal(event, detail, target) {
-    String uuid = target.dataset['uuid'];
+  @reflectable
+  bulkSearchClicked(event, [_]) async {
+    try {
+      if(isNullOrWhitespace(selectedImportSource)) {
+        throw new Exception("Please select an import source");
+      }
+      if(isNullOrWhitespace(selectedItemType)) {
+        throw new Exception("Please select an item type");
+      }
+      if(isNullOrWhitespace(selectedCollectionId)) {
+        throw new Exception("Please select a collection");
+      }
+
+
+      this.mainApp.startLoading();
+      clear("bulkResults");
+
+      if(isNullOrWhitespace(bulkSearchQuery))
+        return;
+
+      List<String> lines = bulkSearchQuery.split("\n");
+
+      for(String line in lines) {
+        API.SearchResults results =
+        await api.import.search(selectedImportSource, line);
+
+        BulkImportItem bii = new BulkImportItem(line, ImportSearchResult.convertList(results.results));
+
+        add("bulkResults",bii);
+      }
+
+    } catch (e, st) {
+      _log.severe(e, st);
+      this.handleException(e, st);
+    } finally  {
+      this.mainApp.stopLoading();
+    }
+  }
+
+  @reflectable
+  bulkImportClicked(event, [_]) async {
+    try {
+      this.mainApp.startLoading();
+
+      if(isNullOrWhitespace(selectedItemType)) {
+        throw new Exception("Please select an item type");
+      }
+      API.ItemType itemType = await api.itemTypes.getById(selectedItemType, includeFields: true);
+
+      while(this.bulkResults.length>0) {
+        BulkImportItem bii = this.bulkResults.first;
+        Item newItem;
+        if(bii.newItem!=null) {
+          newItem = bii.newItem;
+        } else {
+          API.ImportResult result = await api.import.import("amazon", bii.selectedResult);
+
+          newItem = new Item.forType(new ItemType.copy(itemType));
+          newItem.applyImportResult(result);
+        }
+
+        API.Item apiItem = new API.Item();
+        newItem.copyTo(apiItem);
+        await api.items.create(apiItem);
+        API.ItemCopy newItemCopy = new API.ItemCopy();
+        newItemCopy.collectionId = this.selectedCollectionId;
+        newItem
+        this.bulkResults.remove(bii);
+      }
+
+    } catch (e, st) {
+      _log.severe(e, st);
+      this.handleException(e, st);
+    } finally  {
+      this.mainApp.stopLoading();
+    }
   }
 }

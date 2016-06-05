@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="item_import_page.css">
     <style include="iron-flex"></style>
     <template>
-        <paper-tabs selected="{{currentTab}}" attr-for-selected="data-tab">
+        <paper-tabs selected="{{currentTab}}" attr-for-selected="data-tab" on-iron-select="tabControlClicked">
             <paper-tab data-tab="single_import_tab">Single</paper-tab>
             <paper-tab data-tab="bulk_import_tab">Bulk</paper-tab>
         </paper-tabs>
@@ -38,7 +38,7 @@
                                 </paper-dropdown-menu>
                             </div>
                             <div class="flexchild">
-                                <paper-input value="{{searchQuery}}" label="Search"
+                                <paper-input id="single_search_input" value="{{searchQuery}}" label="Search"
                                              on-keypress="searchKeypress"></paper-input>
                             </div>
                             <div>
@@ -68,7 +68,6 @@
                 <iron-pages id="bulk_import_pages" attr-for-selected="data-page" selected="item_search">
                     <div data-page="item_search">
                         <div class="container flex horizontal">
-                            <div>
                                 <paper-dropdown-menu id="bulk_import_source_dropdown" floatinglabel label="Import Source" required
                                                      auto-validate>
                                     <paper-listbox class="dropdown-content" attr-for-selected="value"
@@ -76,8 +75,6 @@
                                         <paper-item value="amazon">Amazon</paper-item>
                                     </paper-listbox>
                                 </paper-dropdown-menu>
-                            </div>
-                            <div>
                                 <paper-dropdown-menu id="bulk_item_type_dropdown" floatinglabel label="Item Type" required
                                                      auto-validate>
                                     <paper-listbox class="dropdown-content" attr-for-selected="value"
@@ -87,9 +84,17 @@
                                         </template>
                                     </paper-listbox>
                                 </paper-dropdown-menu>
-                            </div>
+                            <paper-dropdown-menu floatinglabel label="Collection" required
+                                                 auto-validate>
+                                <paper-listbox class="dropdown-content" attr-for-selected="value"
+                                               selected="{{selectedCollectionId}}">
+                                    <template is="dom-repeat" items="[[collections]]">
+                                        <paper-item value="[[item.id]]">[[item.name]]</paper-item>
+                                    </template>
+                                </paper-listbox>
+                            </paper-dropdown-menu>
                             <div class="flexchild">
-                                <paper-textarea label="Bulk Import Search (One entry per line)"
+                                <paper-textarea id="bulk_search_input" label="Bulk Import Search (One entry per line)"
                                                 value="{{bulkSearchQuery}}"></paper-textarea>
                             </div>
                             <div>
@@ -97,12 +102,24 @@
                             </div>
                         </div>
 
-                        <template is="dom-repeat" items="[[results]]">
-                            <paper-item on-tap="searchResultClicked" data-id$="[[item.id]]">
+                        <template is="dom-repeat" items="[[bulkResults]]">
+                            <paper-item data-index$="[[index]]">
                                 <table>
                                     <tr>
-                                        <td rowspan="3"><img src="[[item.thumbnail]]"/></td>
-                                        <td>[[item.title]]</td>
+                                        <td><paper-toggle-button checked="{{item.selected}}"></paper-toggle-button></td>
+                                        <td>[[item.query]]</td>
+                                        <td>
+                                            <paper-dropdown-menu floatinglabel label="Results" required
+                                                                 auto-validate style="width: 200px;">
+                                                <paper-listbox class="dropdown-content" attr-for-selected="value"
+                                                               selected="{{item.selectedResult}}">
+                                                    <template is="dom-repeat" items="[[item.results]]" as="result">
+                                                        <paper-item value="[[result.id]]"><img src$="[[result.thumbnail]]" style="height:50px;"/><span>[[result.title]]</span></paper-item>
+                                                    </template>
+                                                </paper-listbox>
+                                            </paper-dropdown-menu>
+                                        </td>
+                                        <td><paper-input label="Unique ID" value="{{item.uniqueId}}" /></td>
                                     </tr>
                                 </table>
                             </paper-item>

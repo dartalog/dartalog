@@ -40,7 +40,12 @@ class ItemImportPage extends APage with ASaveablePage {
   Logger get loggerImpl => _log;
 
   @Property(notify: true)
+  String currentTab = "single_import_tab";
+
+  @Property(notify: true)
   String selectedImportSource = "amazon";
+  @Property(notify: true)
+  String selectedItemType = "amazon";
 
   @Property(notify: true)
   List<IdNamePair> itemTypes = new List<IdNamePair>();
@@ -54,26 +59,22 @@ class ItemImportPage extends APage with ASaveablePage {
   List<ImportSearchResult> results = new List<ImportSearchResult>();
 
   @Property(notify: true)
-  bool bulkMode= false;
-
-  @Property(notify: true)
-  String selectedItemType = "";
-
+  List<BulkImportItem> bulkResults = new List<BulkImportItem>();
 
   API.ImportResult importResult = null;
 
-  ItemImportPage.created() : super.created("Import Item");
+  ItemImportPage.created() : super.created("Import Item(s)");
 
   ItemEditControl get itemEditControl =>
       document.getElementById('item_import_item_edit_control');
 
-  IronPages get pages => $['item_add_pages'];
-  PaperDropdownMenu get itemTypeDropDown => $['item_type_dropdown'];
+  IronPages get singleImportPages => $['single_import_pages'];
+  IronPages get bulkImportPages => $['bulk_import_pages'];
 
   @override
   Future activateInternal(Map args) async {
     showSaveButton = false;
-    pages.selected = "item_search";
+    singleImportPages.selected = "item_search";
     await loadItemTypes();
     //await itemAddControl.activate(this.api, args);
   }
@@ -172,7 +173,7 @@ class ItemImportPage extends APage with ASaveablePage {
       await itemEditControl.activate(this.api, {"imported_item": newItem});
 
       this.showSaveButton = true;
-      pages.selected = "item_entry";
+      singleImportPages.selected = "item_entry";
       this.mainApp.evaluatePage();
     } catch (e, st) {
       _log.severe(e, st);

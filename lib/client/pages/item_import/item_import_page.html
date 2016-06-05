@@ -8,58 +8,110 @@
     <link rel="stylesheet" href="item_import_page.css">
     <style include="iron-flex"></style>
     <template>
-        <paper-tabs selected="single_import_tab" attr-for-selected="data-tab" >
+        <paper-tabs selected="{{currentTab}}" attr-for-selected="data-tab">
             <paper-tab data-tab="single_import_tab">Single</paper-tab>
             <paper-tab data-tab="bulk_import_tab">Bulk</paper-tab>
         </paper-tabs>
-        <iron-pages id="item_add_pages" attr-for-selected="id" selected="item_search">
-            <div id="item_search">
-                <div class="container flex horizontal">
-                    <div>
-                <paper-dropdown-menu id="import_source_dropdown" floatinglabel label="Import Source" required auto-validate>
-                    <paper-listbox class="dropdown-content" attr-for-selected="value" selected="{{selectedImportSource}}">
-                        <paper-item value="amazon">Amazon</paper-item>
-                    </paper-listbox>
-                </paper-dropdown-menu>
-                    </div>
-                    <div>
-                <paper-dropdown-menu id="item_type_dropdown" floatinglabel label="Item Type" required auto-validate>
-                    <paper-listbox class="dropdown-content" attr-for-selected="value" selected="{{selectedItemType}}">
-                        <template is="dom-repeat" items="[[itemTypes]]">
-                            <paper-item value="[[item.id]]">[[item.name]]</paper-item>
-                        </template>
-                    </paper-listbox>
-                </paper-dropdown-menu>
-                    </div>
-                    <div class="flexchild">
-                        <template is="dom-if" if="[[!bulkMode]]">
-                            <paper-input value="{{searchQuery}}" label="Search" on-keypress="searchKeypress"></paper-input>
-                        </template>
-                        <template is="dom-if" if="[[bulkMode]]">
-                            <paper-textarea label="Bulk Import Search (One entry per line)" value="{{bulkSearchQuery}}"></paper-textarea>
-                        </template>
-                    </div>
-                    <div>
-                        <paper-toggle-button checked="{{bulkMode}}">Bulk Mode</paper-toggle-button>
-                    </div>
-                    <div>
-                <paper-button raised on-tap="searchClicked">Search</paper-button>
-                    </div>
-                </div>
+        <iron-pages selected="{{currentTab}}"  attr-for-selected="data-tab">
+            <div data-tab="single_import_tab">
+                <iron-pages id="single_import_pages" attr-for-selected="data-page" selected="item_search">
+                    <div data-page="item_search">
+                        <div class="container flex horizontal">
+                            <div>
+                                <paper-dropdown-menu id="single_import_source_dropdown" floatinglabel label="Import Source" required
+                                                     auto-validate>
+                                    <paper-listbox class="dropdown-content" attr-for-selected="value"
+                                                   selected="{{selectedImportSource}}">
+                                        <paper-item value="amazon">Amazon</paper-item>
+                                    </paper-listbox>
+                                </paper-dropdown-menu>
+                            </div>
+                            <div>
+                                <paper-dropdown-menu id="single_item_type_dropdown" floatinglabel label="Item Type" required
+                                                     auto-validate>
+                                    <paper-listbox class="dropdown-content" attr-for-selected="value"
+                                                   selected="{{selectedItemType}}">
+                                        <template is="dom-repeat" items="[[itemTypes]]">
+                                            <paper-item value="[[item.id]]">[[item.name]]</paper-item>
+                                        </template>
+                                    </paper-listbox>
+                                </paper-dropdown-menu>
+                            </div>
+                            <div class="flexchild">
+                                <paper-input value="{{searchQuery}}" label="Search"
+                                             on-keypress="searchKeypress"></paper-input>
+                            </div>
+                            <div>
+                                <paper-button raised on-tap="singleSearchClicked">Search</paper-button>
+                            </div>
+                        </div>
 
-                <template is="dom-repeat" items="[[results]]">
-                    <paper-item on-tap="searchResultClicked" data-id$="[[item.id]]">
-                        <table>
-                            <tr>
-                                <td rowspan="3"><img src="[[item.thumbnail]]" /></td>
-                                <td>[[item.title]]</td>
-                            </tr>
-                        </table>
-                    </paper-item>
-                </template>
+                        <template is="dom-repeat" items="[[results]]">
+                            <paper-item on-tap="searchResultClicked" data-id$="[[item.id]]">
+                                <table>
+                                    <tr>
+                                        <td rowspan="3"><img src="[[item.thumbnail]]"/></td>
+                                        <td>[[item.title]]</td>
+                                    </tr>
+                                </table>
+                            </paper-item>
+                        </template>
+                    </div>
+                    <div data-page="item_entry">
+                        <item-edit-control id="item_import_item_edit_control"></item-edit-control>
+                    </div>
+                </iron-pages>
             </div>
-            <div id="item_entry">
-                <item-edit-control id="item_import_item_edit_control"></item-edit-control>
+
+
+            <div data-tab="bulk_import_tab">
+                <iron-pages id="bulk_import_pages" attr-for-selected="data-page" selected="item_search">
+                    <div data-page="item_search">
+                        <div class="container flex horizontal">
+                            <div>
+                                <paper-dropdown-menu id="bulk_import_source_dropdown" floatinglabel label="Import Source" required
+                                                     auto-validate>
+                                    <paper-listbox class="dropdown-content" attr-for-selected="value"
+                                                   selected="{{selectedImportSource}}">
+                                        <paper-item value="amazon">Amazon</paper-item>
+                                    </paper-listbox>
+                                </paper-dropdown-menu>
+                            </div>
+                            <div>
+                                <paper-dropdown-menu id="bulk_item_type_dropdown" floatinglabel label="Item Type" required
+                                                     auto-validate>
+                                    <paper-listbox class="dropdown-content" attr-for-selected="value"
+                                                   selected="{{selectedItemType}}">
+                                        <template is="dom-repeat" items="[[itemTypes]]">
+                                            <paper-item value="[[item.id]]">[[item.name]]</paper-item>
+                                        </template>
+                                    </paper-listbox>
+                                </paper-dropdown-menu>
+                            </div>
+                            <div class="flexchild">
+                                <paper-textarea label="Bulk Import Search (One entry per line)"
+                                                value="{{bulkSearchQuery}}"></paper-textarea>
+                            </div>
+                            <div>
+                                <paper-button raised on-tap="bulkSearchClicked">Search</paper-button>
+                            </div>
+                        </div>
+
+                        <template is="dom-repeat" items="[[results]]">
+                            <paper-item on-tap="searchResultClicked" data-id$="[[item.id]]">
+                                <table>
+                                    <tr>
+                                        <td rowspan="3"><img src="[[item.thumbnail]]"/></td>
+                                        <td>[[item.title]]</td>
+                                    </tr>
+                                </table>
+                            </paper-item>
+                        </template>
+                    </div>
+                    <div data-page="item_entry">
+                        <item-edit-control id="item_import_item_edit_control"></item-edit-control>
+                    </div>
+                </iron-pages>
             </div>
         </iron-pages>
     </template>

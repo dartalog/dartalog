@@ -32,6 +32,13 @@ class ItemResource extends AIdResource<Item> {
   Future<Item> getById(String id, {bool includeType: false, bool includeFields: false, bool includeCopies:false}) =>
       _catchExceptions(model.items.getById(id, includeType: includeType, includeCopies: includeCopies, includeFields: includeFields));
 
+  @ApiMethod(path: 'search/{query}/')
+  Future<List<ItemListingResponse>> search(String query) =>
+      _catchExceptions(_search(query));
+  Future<List<ItemListingResponse>> _search(String query) async {
+    return ItemListingResponse.convertList(await model.items.search(query));
+  }
+
   @ApiMethod(method: 'PUT', path: '${_API_PATH}/{id}/')
   Future<IdResponse> update(String id, Item item) => _updateWithCatch(id, item);
 

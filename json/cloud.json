@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "93f3ae2d9200009cc9b783db6c2ff617a9698bb4",
+ "etag": "b4eb4ec62f06db5a17a41d1012fd2315f6178bbb",
  "discoveryVersion": "v1",
  "id": "dartalog:0.1",
  "name": "dartalog",
@@ -643,6 +643,25 @@
      ],
      "response": {
       "$ref": "Item"
+     }
+    },
+    "search": {
+     "id": "DartalogApi.items.search",
+     "path": "search/{query}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "query": {
+       "type": "string",
+       "description": "Path parameter: 'query'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "query"
+     ],
+     "response": {
+      "$ref": "ListOfItemListingResponse"
      }
     },
     "update": {

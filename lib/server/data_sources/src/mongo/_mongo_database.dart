@@ -95,6 +95,8 @@ class _MongoDatabase extends ADatabase {
     dynamic output = await con.conn.collection(_ITEMS_MONGO_COLLECTION);
     await con.conn
         .createIndex(_ITEMS_MONGO_COLLECTION, key: "id", unique: true);
+    await con.conn
+        .createIndex(_ITEMS_MONGO_COLLECTION, keys: {"name": "text"} );
     return output;
   }
 

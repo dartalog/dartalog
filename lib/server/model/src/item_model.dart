@@ -4,7 +4,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
   static final Logger _log = new Logger('ItemModel');
   Logger get _logger => _log;
 
-  data_sources.AIdNameBasedDataSource<Item> get dataSource => data_sources.items;
+  data_sources.AItemDataSource get dataSource => data_sources.items;
 
   static final RegExp LEGAL_ID_CHARACTERS = new RegExp("[a-zA-Z0-9_]");
 
@@ -33,6 +33,9 @@ class ItemModel extends AIdNameBasedModel<Item> {
       }
     return output;
   }
+
+  Future<List<Item>> search(String query) =>
+      dataSource.search(query);
 
   Future<ItemCopyId> createWithCopy(Item item, String collectionId,[String uniqueId])  async {
     if (!userAuthenticated()) {

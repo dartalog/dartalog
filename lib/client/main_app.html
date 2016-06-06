@@ -17,6 +17,11 @@
                     <paper-icon-button icon="chevron-left" on-tap="backClicked"></paper-icon-button>
                 </template>
                 <span class="title" style="margin-left:8pt;">[[currentPage.title]]</span>
+                <template is="dom-if" if="[[showSearch]]">
+                    <paper-input on-keypress="searchKeypress" placeholder="Search" class="search_input">
+                        <iron-icon icon="search" prefix></iron-icon>
+                    </paper-input>
+                </template>
                 <template is="dom-if" if="[[showRefresh]]">
                     <paper-icon-button icon="refresh" on-tap="refreshClicked"></paper-icon-button>
                 </template>

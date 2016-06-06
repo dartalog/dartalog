@@ -16,6 +16,8 @@ const String SERVER_ADDRESS = "http://localhost:3278/";
 
 const String BROWSE_ROUTE_NAME = "browse";
 const String BROWSE_ROUTE_PATH = "${BROWSE_ROUTE_NAME}";
+const String SEARCH_ROUTE_NAME = "search";
+const String SEARCH_ROUTE_PATH = "${SEARCH_ROUTE_NAME}";
 const String ITEM_VIEW_ROUTE_NAME = "item_view";
 const String ITEM_VIEW_ROUTE_PATH = "${ITEM_VIEW_ROUTE_NAME}";
 const String ITEM_EDIT_ROUTE_NAME = "item_edit";
@@ -30,6 +32,7 @@ const String CHECKOUT_ROUTE_PATH = "${CHECKOUT_ROUTE_NAME}";
 
 const String ROUTE_ARG_ITEM_ID_NAME = "itemId";
 const String ROUTE_ARG_ITEM_TYPE_ID_NAME = "itemTypeId";
+const String ROUTE_ARG_SEARCH_QUERY_NAME = "searchQuery";
 
 
 Element getParentElement(Element start, String tagName) {

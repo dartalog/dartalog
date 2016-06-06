@@ -21,9 +21,9 @@ part 'src/a_id_name_based_data_source.dart';
 part 'src/a_field_model.dart';
 part 'src/a_collection_model.dart';
 part 'src/a_item_type_model.dart';
-part 'src/a_item_copy_model.dart';
+part 'src/a_item_copy_data_source.dart';
 part 'src/a_item_copy_history_model.dart';
-part 'src/a_item_model.dart';
+part 'src/a_item_data_source.dart';
 part 'src/a_user_data_source.dart';
 part 'src/a_settings_model.dart';
 part 'src/preset_model.dart';
@@ -38,14 +38,14 @@ part 'src/mongo/_a_mongo_id_data_sourcel.dart';
 part 'src/mongo/_mongo_field_model.dart';
 part 'src/mongo/_mongo_user_data_source.dart';
 part 'src/mongo/_mongo_item_type_model.dart';
-part 'src/mongo/_mongo_item_copy_model.dart';
+part 'src/mongo/_mongo_item_copy_data_source.dart';
 part 'src/mongo/_mongo_item_copy_history_model.dart';
-part 'src/mongo/_mongo_item_model.dart';
+part 'src/mongo/_mongo_item_data_source.dart';
 part 'src/mongo/_mongo_item_collection_model.dart';
 
 final Logger _log = new Logger('Model');
 
-final AItemModel items = new _MongoItemModel();
+final AItemDataSource items = new _MongoItemDataSource();
 
 final AFieldModel fields = new _MongoFieldModel();
 
@@ -53,7 +53,7 @@ final AItemTypeModel itemTypes = new _MongoItemTypeModel();
 
 final PresetModel presets = new PresetModel();
 final AUserDataSource users= new _MongoUserDataSource();
-final AItemCopyModel itemCopies = new _MongoItemCopyModel();
+final AItemCopyDataSource itemCopies = new _MongoItemCopyDataSource();
 final AItemCopyHistoryModel itemHistories = new _MongoItemCopyHistoryModel();
 
 final AItemCollectionModel itemCollections = new _MongoItemCollectionModel();

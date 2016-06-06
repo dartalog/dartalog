@@ -35,21 +35,38 @@ import 'package:dartalog/tools.dart';
 import '../../api/dartalog.dart' as API;
 
 @PolymerRegister('item-browse-page')
-class ItemBrowsePage extends APage with ARefreshablePage {
+class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
   static final Logger _log = new Logger("ItemBrowsePage");
   Logger get loggerImpl => _log;
 
   @Property(notify: true)
   List<Item> itemsList = new List<Item>();
 
+  @property
+  bool noItemsFound = false;
+
   ItemAddControl get browseItemAddControl =>  $['browse_item_add_control'];
 
   ItemBrowsePage.created() : super.created("Item Browse");
 
+  String _currentQuery = "";
+  bool _loaded = false;
+
   @override
   Future activateInternal(Map args) async {
-    await browseItemAddControl.activate(this.api,null);
-    await this.refresh();
+    await browseItemAddControl.activate(this.api,args);
+    if(args.containsKey(ROUTE_ARG_SEARCH_QUERY_NAME)) {
+      if(_currentQuery!=args[ROUTE_ARG_SEARCH_QUERY_NAME].toString().trim()) {
+        _currentQuery = args[ROUTE_ARG_SEARCH_QUERY_NAME].toString().trim();
+        if(isNullOrWhitespace(this.mainApp.searchText))
+          this.mainApp.searchText = _currentQuery;
+        await this.refresh();
+      } else if(!_loaded) {
+        await this.refresh();
+      }
+    } else if(!_loaded) {
+      await this.refresh();
+    }
   }
 
   @override
@@ -64,12 +81,30 @@ class ItemBrowsePage extends APage with ARefreshablePage {
 
   Future loadItems() async {
     try {
+      _loaded = false;
       clear("itemsList");
-      dynamic data = await api.items.getAllListings();
+      dynamic data;
+      if(isNullOrWhitespace(_currentQuery)) {
+        data = await api.items.getAllListings();
+      } else {
+        data = await api.items.search(_currentQuery);
+      }
       set("itemsList", ItemListing.convertList(data));
+      _loaded = true;
     } catch(e,st) {
       _log.severe(e, st);
       this.handleException(e,st);
+    }
+  }
+
+  @override
+  Future search(String query) async {
+    if(isNullOrWhitespace(query)) {
+      _loaded = false;
+      _currentQuery = "";
+      this.mainApp.activateRoute(BROWSE_ROUTE_PATH);
+    } else {
+      this.mainApp.activateRoute(SEARCH_ROUTE_PATH, arguments: {ROUTE_ARG_SEARCH_QUERY_NAME: query});
     }
   }
 

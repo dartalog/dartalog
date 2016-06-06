@@ -65,7 +65,7 @@ class MainApp extends PolymerElement {
   @property
   bool showRefresh = false;
   @property
-  bool showSearch = false;
+  bool showSearch = true; // True initially so that it can be found on page load
   @property
   bool showAdd = false;
   @property
@@ -100,6 +100,11 @@ class MainApp extends PolymerElement {
           name: BROWSE_ROUTE_NAME,
           path: "items",
           defaultRoute: true,
+          enter: enterRoute)
+      ..addRoute(
+          name: SEARCH_ROUTE_NAME,
+          path: "search/:${ROUTE_ARG_SEARCH_QUERY_NAME}",
+          defaultRoute: false,
           enter: enterRoute)
       ..addRoute(
           name: ITEM_VIEW_ROUTE_NAME,
@@ -148,6 +153,16 @@ class MainApp extends PolymerElement {
           enter: enterRoute);
 
     startApp();
+  }
+
+  @reflectable
+  Future searchKeypress(event, [_]) async {
+    if(event.original.charCode==13) {
+      if (currentPage is ASearchablePage) {
+        ASearchablePage page = currentPage as ASearchablePage;
+        page.search(event.target.value);
+      }
+    }
   }
 
   Future startApp() async {
@@ -291,11 +306,20 @@ class MainApp extends PolymerElement {
   Future enterRoute(RouteEvent e) async {
     try {
       startLoading();
-      set("visiblePage", e.route.name);
 
+      String pageName;
       set("showBack", (router.activePath.length > 1));
 
-      dynamic page = $[e.route.name];
+      switch(e.route.name) {
+        case SEARCH_ROUTE_NAME:
+          pageName = BROWSE_ROUTE_NAME;
+          break;
+        default:
+          pageName = e.route.name;
+          break;
+      }
+      dynamic page = $[pageName];
+      set("visiblePage", pageName);
 
       if (page == null) {
         throw new Exception("Page not found: ${this.visiblePage}");
@@ -337,6 +361,13 @@ class MainApp extends PolymerElement {
         currentPage is ASaveablePage &&
             (currentPage as ASaveablePage).showSaveButton);
   }
+
+  PaperInput get _searchInput {
+    return document.querySelector(".search_input");
+  }
+
+  String get searchText => _searchInput.value;
+  set searchText(String text) => _searchInput.value = text;
 
   void handleException(e, st) {
     if(e is api.DetailedApiRequestError) {

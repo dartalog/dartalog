@@ -1,7 +1,8 @@
 part of data_sources;
 
-class _MongoItemModel extends _AMongoIdDataSource<Item> with AItemModel {
-  static final Logger _log = new Logger('_MongoItemModel');
+class _MongoItemDataSource extends _AMongoIdDataSource<Item>
+    with AItemDataSource {
+  static final Logger _log = new Logger('_MongoItemDataSource');
 
   Item _createObject(Map data) {
     Item output = new Item();
@@ -12,6 +13,12 @@ class _MongoItemModel extends _AMongoIdDataSource<Item> with AItemModel {
     output.values = data["values"];
 
     return output;
+  }
+
+  Future<List<Item>> search(String query) async {
+    mongo.SelectorBuilder selector = mongo.where;
+    selector.map["\$text"] = {"\$search": query};
+    return await _getFromDb(selector);
   }
 
   Future<mongo.DbCollection> _getCollection(_MongoDatabase con) =>

@@ -1,6 +1,6 @@
 part of data_sources;
 
-abstract class AItemCopyModel extends _ADataSource {
+abstract class AItemCopyDataSource extends _ADataSource {
   static final Logger _log = new Logger('AItemCopyModel');
 
   Future delete(String itemId, int copy);
@@ -11,6 +11,5 @@ abstract class AItemCopyModel extends _ADataSource {
   Future<ItemCopyId> write(ItemCopy itemCopy, [String itemId, int copy]);
   Future<ItemCopy> getLargestNumberedCopy(String itemId);
   Future<List<ItemCopy>> getAll(List<ItemCopyId> itemCopies);
-
   Future updateStatus(List<ItemCopyId> itemCopies, String status);
 }

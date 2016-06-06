@@ -51,3 +51,11 @@ core-menu > paper-item.core-selected {
         height: 100%;
     }
 }
+
+.search_input {
+    --paper-input-container-color: white;
+    --paper-input-container-focus-color: white;
+    --paper-input-container-invalid-color: red;
+    --paper-input-container-input-color: white;
+    margin-bottom:12pt
+}

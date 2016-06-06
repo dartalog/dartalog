@@ -1,7 +1,7 @@
 part of data_sources;
 
-class _MongoItemCopyModel extends _AMongoDataSource<ItemCopy> with AItemCopyModel {
-  static final Logger _log = new Logger('_MongoItemCopyModel');
+class _MongoItemCopyDataSource extends _AMongoDataSource<ItemCopy> with AItemCopyDataSource {
+  static final Logger _log = new Logger('_MongoItemCopyDataSource');
 
   static const String _COLLECTION_ID_FIELD = "collectionId";
   static const String _COPY_FIELD = "copy";

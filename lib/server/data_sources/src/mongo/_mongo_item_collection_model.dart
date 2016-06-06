@@ -1,6 +1,6 @@
 part of data_sources;
 
-class _MongoItemCollectionModel extends _AMongoIdModel<Collection>
+class _MongoItemCollectionModel extends _AMongoIdDataSource<Collection>
     with AItemCollectionModel {
   static final Logger _log = new Logger('_MongoCollectionModel');
 

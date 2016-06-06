@@ -34,6 +34,34 @@ class ItemModel extends AIdNameBasedModel<Item> {
     return output;
   }
 
+  Future<ItemCopyId> createWithCopy(Item item, String collectionId,[String uniqueId])  async {
+    if (!userAuthenticated()) {
+      throw new NotAuthorizedException();
+    }
+
+    if(!isNullOrWhitespace(item.getName))
+      item.getId = await _generateUniqueId(item);
+    await DataValidationException.PerformValidation(() async {
+      Map output = await _validateFields(item, true);
+      if(isNullOrWhitespace(collectionId)) {
+        output["collectionId"] = "Required";
+      } else if(!await data_sources.itemCollections.exists(collectionId)) {
+          output["collectionId"] = "Invalid";
+      }
+
+      if(!isNullOrWhitespace(uniqueId)&& await data_sources.itemCopies.existsByUniqueId(uniqueId)) {
+        output["uniqueId"] = "Already in use";
+      }
+      return output;
+    } );
+
+    String itemId = await data_sources.items.write(item);
+    ItemCopy itemCopy = new ItemCopy();
+    itemCopy.collectionId = collectionId;
+    itemCopy.uniqueId = uniqueId;
+    return await copies.create(itemId, itemCopy);
+
+  }
 
   @override
   Future<String> create(Item item) async {

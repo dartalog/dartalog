@@ -1,6 +1,6 @@
 part of data_sources;
 
-class _MongoItemModel extends _AMongoIdModel<Item> with AItemModel {
+class _MongoItemModel extends _AMongoIdDataSource<Item> with AItemModel {
   static final Logger _log = new Logger('_MongoItemModel');
 
   Item _createObject(Map data) {

@@ -6,8 +6,9 @@ abstract class AItemCopyModel extends _ADataSource {
   Future delete(String itemId, int copy);
   Future<ItemCopy> getByItemIdAndCopy(String itemId, int copy);
   Future<ItemCopy> getByUniqueId(String uniqueId);
+  Future<bool> existsByUniqueId(String uniqueId);
   Future<List<ItemCopy>> getAllForItemId(String itemId);
-  Future write(ItemCopy itemCopy, [String itemId, int copy]);
+  Future<ItemCopyId> write(ItemCopy itemCopy, [String itemId, int copy]);
   Future<ItemCopy> getLargestNumberedCopy(String itemId);
   Future<List<ItemCopy>> getAll(List<ItemCopyId> itemCopies);
 

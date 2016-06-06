@@ -7,6 +7,7 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:dartalog/tools.dart';
+import 'package:_discoveryapis_commons/_discoveryapis_commons.dart' as commons;
 import 'package:dartalog/client/api/dartalog.dart' as api;
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/client.dart';
@@ -338,7 +339,19 @@ class MainApp extends PolymerElement {
   }
 
   void handleException(e, st) {
-    showMessage(e.toString(), "error", st.toString());
+    if(e is api.DetailedApiRequestError) {
+      api.DetailedApiRequestError dare = e as api.DetailedApiRequestError;
+      StringBuffer message = new StringBuffer();
+      message.writeln(dare.message);
+      for(commons.ApiRequestErrorDetail det in e.errors) {
+        message.write(det.location);
+        message.write(": ");
+        message.writeln(det.message);
+      }
+      showMessage(message.toString(), "error", st.toString());
+    } else {
+      showMessage(e.toString(), "error", st.toString());
+    }
   }
 
   @reflectable

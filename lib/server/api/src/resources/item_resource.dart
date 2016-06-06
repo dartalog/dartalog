@@ -11,13 +11,11 @@ class ItemResource extends AIdResource<Item> {
   model.AIdNameBasedModel<Item> get idModel => model.items;
 
   @ApiMethod(method: 'POST', path: '${_API_PATH}/')
+  Future<ItemCopyId> createItemWithCopy(CreateItemRequest newItem) =>
+      _catchExceptions(model.items.createWithCopy(newItem.newItem, newItem.collectionId, newItem.uniqueId));
+
+  // Created only to satisfy the interface; should not be used, as creating acopy with each item should be required
   Future<IdResponse> create(Item item) => _createWithCatch(item);
-
-  @ApiMethod(method: 'POST', path: '${_API_PATH}/')
-  Future<IdResponse> createWithCopy(Item item, ) async {
-    _catchExceptions()
-  }
-
 
   @ApiMethod(method: 'DELETE', path: '${_API_PATH}/{id}/')
   Future<VoidMessage> delete(String id) => _deleteWithCatch(id);

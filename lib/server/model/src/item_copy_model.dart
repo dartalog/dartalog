@@ -4,7 +4,7 @@ class ItemCopyModel extends AModel<ItemCopy> {
   static final Logger _log = new Logger('ItemCopyModel');
   Logger get _logger => _log;
 
-  Future<String> create(String itemId, ItemCopy itemCopy) async {
+  Future<ItemCopyId> create(String itemId, ItemCopy itemCopy) async {
     if (!userAuthenticated()) {
       throw new NotAuthorizedException();
     }
@@ -101,7 +101,7 @@ class ItemCopyModel extends AModel<ItemCopy> {
     }
   }
 
-  Future<String> update(String itemId, int copy, ItemCopy itemCopy) async {
+  Future<ItemCopyId> update(String itemId, int copy, ItemCopy itemCopy) async {
     if (!userAuthenticated()) {
       throw new NotAuthorizedException();
     }

@@ -768,7 +768,7 @@ class ItemsResourceApi {
    *
    * Request parameters:
    *
-   * Completes with a [IdResponse].
+   * Completes with a [ItemCopyId].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
@@ -776,7 +776,7 @@ class ItemsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<IdResponse> create(Item request) {
+  async.Future<ItemCopyId> createItemWithCopy(CreateItemRequest request) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -797,7 +797,7 @@ class ItemsResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new IdResponse.fromJson(data));
+    return _response.then((data) => new ItemCopyId.fromJson(data));
   }
 
   /**
@@ -979,7 +979,7 @@ class ItemsCopiesResourceApi {
    *
    * [itemId] - Path parameter: 'itemId'.
    *
-   * Completes with a [IdResponse].
+   * Completes with a [ItemCopyId].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
@@ -987,7 +987,7 @@ class ItemsCopiesResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<IdResponse> create(ItemCopy request, core.String itemId) {
+  async.Future<ItemCopyId> create(ItemCopy request, core.String itemId) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -1011,7 +1011,7 @@ class ItemsCopiesResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new IdResponse.fromJson(data));
+    return _response.then((data) => new ItemCopyId.fromJson(data));
   }
 
   /**
@@ -1186,7 +1186,7 @@ class ItemsCopiesResourceApi {
    *
    * [copy] - Path parameter: 'copy'.
    *
-   * Completes with a [IdResponse].
+   * Completes with a [ItemCopyId].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
@@ -1194,7 +1194,7 @@ class ItemsCopiesResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<IdResponse> update(ItemCopy request, core.String itemId, core.int copy) {
+  async.Future<ItemCopyId> update(ItemCopy request, core.String itemId, core.int copy) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -1221,7 +1221,7 @@ class ItemsCopiesResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new IdResponse.fromJson(data));
+    return _response.then((data) => new ItemCopyId.fromJson(data));
   }
 
 }
@@ -1560,6 +1560,40 @@ class Collection {
     }
     if (name != null) {
       _json["name"] = name;
+    }
+    return _json;
+  }
+}
+
+class CreateItemRequest {
+  core.String collectionId;
+  Item newItem;
+  core.String uniqueId;
+
+  CreateItemRequest();
+
+  CreateItemRequest.fromJson(core.Map _json) {
+    if (_json.containsKey("collectionId")) {
+      collectionId = _json["collectionId"];
+    }
+    if (_json.containsKey("newItem")) {
+      newItem = new Item.fromJson(_json["newItem"]);
+    }
+    if (_json.containsKey("uniqueId")) {
+      uniqueId = _json["uniqueId"];
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (collectionId != null) {
+      _json["collectionId"] = collectionId;
+    }
+    if (newItem != null) {
+      _json["newItem"] = (newItem).toJson();
+    }
+    if (uniqueId != null) {
+      _json["uniqueId"] = uniqueId;
     }
     return _json;
   }

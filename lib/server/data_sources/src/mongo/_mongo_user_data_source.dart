@@ -1,6 +1,6 @@
 part of data_sources;
 
-class _MongoUserDataSource extends _AMongoIdModel<User> with AUserDataSource {
+class _MongoUserDataSource extends _AMongoIdDataSource<User> with AUserDataSource {
   static final Logger _log = new Logger('_MongoUserDataSource');
 
   User _createObject(Map data) {

@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "444d76a6511f3f3f17565e7d185d2fdeca14f9ae",
+ "etag": "93f3ae2d9200009cc9b783db6c2ff617a9698bb4",
  "discoveryVersion": "v1",
  "id": "dartalog:0.1",
  "name": "dartalog",
@@ -139,6 +139,19 @@
     }
    }
   },
+  "ItemCopyId": {
+   "id": "ItemCopyId",
+   "type": "object",
+   "properties": {
+    "itemId": {
+     "type": "string"
+    },
+    "copy": {
+     "type": "integer",
+     "format": "int32"
+    }
+   }
+  },
   "ListOfItemCopy": {
    "id": "ListOfItemCopy",
    "type": "array",
@@ -176,16 +189,18 @@
     }
    }
   },
-  "ItemCopyId": {
-   "id": "ItemCopyId",
+  "CreateItemRequest": {
+   "id": "CreateItemRequest",
    "type": "object",
    "properties": {
-    "itemId": {
+    "newItem": {
+     "$ref": "Item"
+    },
+    "collectionId": {
      "type": "string"
     },
-    "copy": {
-     "type": "integer",
-     "format": "int32"
+    "uniqueId": {
+     "type": "string"
     }
    }
   },
@@ -554,17 +569,17 @@
   },
   "items": {
    "methods": {
-    "create": {
-     "id": "DartalogApi.items.create",
+    "createItemWithCopy": {
+     "id": "DartalogApi.items.createItemWithCopy",
      "path": "items/",
      "httpMethod": "POST",
      "parameters": {},
      "parameterOrder": [],
      "request": {
-      "$ref": "Item"
+      "$ref": "CreateItemRequest"
      },
      "response": {
-      "$ref": "IdResponse"
+      "$ref": "ItemCopyId"
      }
     },
     "delete": {
@@ -675,7 +690,7 @@
         "$ref": "ItemCopy"
        },
        "response": {
-        "$ref": "IdResponse"
+        "$ref": "ItemCopyId"
        }
       },
       "getAllForItem": {
@@ -723,7 +738,7 @@
         "$ref": "ItemCopy"
        },
        "response": {
-        "$ref": "IdResponse"
+        "$ref": "ItemCopyId"
        }
       },
       "get": {

@@ -5,7 +5,7 @@ description: A web app built using polymer.dart.
 #homepage: https://www.example.com
 
 environment:
-  sdk: '>=1.9.0 <2.0.0'
+  sdk: '>=1.16.0 <2.0.0'
 
 dependencies:
   browser: ^0.10.0
@@ -37,7 +37,8 @@ dependencies:
   uuid: ^0.5.1
   options_file: ^0.11.0
   logging_handlers: ^0.8.0
-
+  # 0.27.3 has a bug with paths
+  analyzer: 0.27.2
 transformers:
 - polymer:
     entry_points: web/index.html

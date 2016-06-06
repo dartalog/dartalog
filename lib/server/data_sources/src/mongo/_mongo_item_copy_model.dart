@@ -1,6 +1,6 @@
 part of data_sources;
 
-class _MongoItemCopyModel extends _AMongoModel<ItemCopy> with AItemCopyModel {
+class _MongoItemCopyModel extends _AMongoDataSource<ItemCopy> with AItemCopyModel {
   static final Logger _log = new Logger('_MongoItemCopyModel');
 
   static const String _COLLECTION_ID_FIELD = "collectionId";
@@ -30,6 +30,9 @@ class _MongoItemCopyModel extends _AMongoModel<ItemCopy> with AItemCopyModel {
   Future<ItemCopy> getByUniqueId(String uniqueId) =>
       _getForOneFromDb(mongo.where.eq(_UNIQUE_ID_FIELD, uniqueId));
 
+  Future<bool> existsByUniqueId(String uniqueId) =>
+      _exists(mongo.where.eq(_UNIQUE_ID_FIELD, uniqueId));
+
   Future<ItemCopy> getLargestNumberedCopy(String itemId) async {
     dynamic criteria = mongo.where
         .eq(_ITEM_ID_FIELD, itemId)
@@ -43,7 +46,7 @@ class _MongoItemCopyModel extends _AMongoModel<ItemCopy> with AItemCopyModel {
     await _updateFields(itemCopies, {_STATUS_FIELD: status});
   }
 
-  Future write(ItemCopy itemCopy, [String itemId, int copy]) async {
+  Future<ItemCopyId> write(ItemCopy itemCopy, [String itemId, int copy]) async {
     if (!tools.isNullOrWhitespace(itemId) || copy != null) {
       if (tools.isNullOrWhitespace(itemId) || copy == null)
         throw new Exception("Both itemId and copy are required");
@@ -53,6 +56,7 @@ class _MongoItemCopyModel extends _AMongoModel<ItemCopy> with AItemCopyModel {
     } else {
       await _insertIntoDb(itemCopy);
     }
+    return new ItemCopyId.fromItemCopy(itemCopy);
   }
 
   ItemCopy _createObject(Map data) {

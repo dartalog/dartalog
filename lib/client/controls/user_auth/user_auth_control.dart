@@ -58,7 +58,6 @@ class UserAuthControl extends AControl {
       request = await HttpRequest.postFormData(
           url, values
       );
-      window.alert(request.responseHeaders.keys.join(","));
       if (!request.responseHeaders.containsKey(HttpHeaders.AUTHORIZATION))
         throw new Exception("Response did not include Authorization header");
 

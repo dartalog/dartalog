@@ -79,22 +79,27 @@ class ItemImportPage extends APage with ASaveablePage {
   Future activateInternal(Map args) async {
     showSaveButton = false;
     singleImportPages.selected = "item_search";
-    set("searchQuery", "");
-    set("bulkSearchQuery", "");
-    clear("results");
-    clear("bulkResults");
     await loadItemTypes();
     await loadCollections();
     //await itemAddControl.activate(this.api, args);
-    _focusOnSearchField();
+    _resetSearchFields();
   }
 
   @reflectable
   tabControlClicked(event,[_]) {
-    _focusOnSearchField();
+    _resetSearchFields();
   }
 
-  void _focusOnSearchField() {
+  @reflectable
+  clearClicked(event,[_]) {
+    _resetSearchFields();
+  }
+
+  void _resetSearchFields() {
+    set("searchQuery", "");
+    set("bulkSearchQuery", "");
+    clear("results");
+    clear("bulkResults");
     switch(this.currentTab) {
       case "single_import_tab":
         $["single_search_input"].focus();
@@ -180,7 +185,7 @@ class ItemImportPage extends APage with ASaveablePage {
 
       dynamic ele = getParentElement(event.target, "paper-item");
       String id = ele.dataset["id"];
-      API.ImportResult result = await api.import.import("amazon", id);
+      API.ImportResult result = await api.import.import(selectedImportSource, id);
       importResult = result;
 
       API.ItemType it = await api.itemTypes.getById(selectedItemType, includeFields: true);
@@ -188,14 +193,9 @@ class ItemImportPage extends APage with ASaveablePage {
       if (it == null)
         throw new Exception("Specified Item Type not found on server");
 
-
       Item newItem = new Item.forType(new ItemType.copy(it));
 
-      for (Field field in newItem.fields) {
-        field.value = this.getImportResultValue(field.id);
-      }
-
-      newItem.name = this.getImportResultValue("name");
+      newItem.applyImportResult(result);
 
       await itemEditControl.activate(this.api, {"imported_item": newItem});
 
@@ -231,6 +231,8 @@ class ItemImportPage extends APage with ASaveablePage {
       List<String> lines = bulkSearchQuery.split("\n");
 
       for(String line in lines) {
+        if(isNullOrWhitespace(line))
+          continue;
         API.SearchResults results =
         await api.import.search(selectedImportSource, line);
 
@@ -248,7 +250,7 @@ class ItemImportPage extends APage with ASaveablePage {
   }
 
   @reflectable
-  bulkImportClicked(event, [_]) async {
+  bulkImportSaveClicked(event, [_]) async {
     try {
       this.mainApp.startLoading();
 
@@ -257,25 +259,30 @@ class ItemImportPage extends APage with ASaveablePage {
       }
       API.ItemType itemType = await api.itemTypes.getById(selectedItemType, includeFields: true);
 
-      while(this.bulkResults.length>0) {
-        BulkImportItem bii = this.bulkResults.first;
+      for(int i = 0; i< this.bulkResults.length;i++) {
+        BulkImportItem bii = this.bulkResults[i];
+        if(!bii.selected)
+          continue;
+
         Item newItem;
         if(bii.newItem!=null) {
           newItem = bii.newItem;
         } else {
-          API.ImportResult result = await api.import.import("amazon", bii.selectedResult);
+          API.ImportResult result = await api.import.import(selectedImportSource, bii.selectedResult);
 
           newItem = new Item.forType(new ItemType.copy(itemType));
           newItem.applyImportResult(result);
         }
 
-        API.Item apiItem = new API.Item();
-        newItem.copyTo(apiItem);
-        await api.items.create(apiItem);
-        API.ItemCopy newItemCopy = new API.ItemCopy();
-        newItemCopy.collectionId = this.selectedCollectionId;
-        newItem
-        this.bulkResults.remove(bii);
+        API.CreateItemRequest request = new API.CreateItemRequest();
+        request.newItem = new API.Item();
+        newItem.copyTo(request.newItem);
+        request.collectionId = this.selectedCollectionId;
+        request.uniqueId = bii.uniqueId;
+
+        await api.items.createItemWithCopy(request);
+        removeAt("bulkResults",i);
+        i--;
       }
 
     } catch (e, st) {
@@ -283,6 +290,21 @@ class ItemImportPage extends APage with ASaveablePage {
       this.handleException(e, st);
     } finally  {
       this.mainApp.stopLoading();
+    }
+  }
+
+  @reflectable
+  bulkUniqueIdKeyPress(event, [_]) async {
+    if(event.original.charCode==13) {
+      Element ele = getParentElement(event.target, "paper-input");
+      String index = ele.dataset["index"];
+      int i = int.parse(index);
+      i++;
+      PaperInput next = querySelector("paper-input[data-index='${i}']");
+      if(next!=null) {
+        next.focus();
+        //TODO: Figure out a way to select all the text in the input element for easier re-scannings
+      }
     }
   }
 }

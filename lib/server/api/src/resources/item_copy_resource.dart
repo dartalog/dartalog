@@ -7,12 +7,10 @@ class ItemCopyResource extends AResource {
   Logger get _logger => _log;
 
   @ApiMethod(method: 'POST', path: '${_API_PATH}/{itemId}/${API_COPIES_PATH}/')
-  Future<IdResponse> create(String itemId, ItemCopy itemCopy) =>
+  Future<ItemCopyId> create(String itemId, ItemCopy itemCopy) =>
       _catchExceptions(_create(itemId, itemCopy));
-  Future<IdResponse> _create(String itemId, ItemCopy itemCopy) async {
-    String output = await model.items.copies.create(itemId,itemCopy);
-    return new IdResponse.fromId(
-        output, _generateCopyRedirect(itemId, itemCopy.copy));
+  Future<ItemCopyId> _create(String itemId, ItemCopy itemCopy) async {
+    return await model.items.copies.create(itemId,itemCopy);
   }
 
   @ApiMethod(path: '${_API_PATH}/{itemId}/${API_COPIES_PATH}/')
@@ -22,12 +20,10 @@ class ItemCopyResource extends AResource {
 
   @ApiMethod(
       method: 'PUT', path: '${_API_PATH}/{itemId}/${API_COPIES_PATH}/{copy}/')
-  Future<IdResponse> update(String itemId, int copy, ItemCopy itemCopy) =>
+  Future<ItemCopyId> update(String itemId, int copy, ItemCopy itemCopy) =>
       _catchExceptions(_update(itemId, copy, itemCopy));
-  Future<IdResponse> _update(String itemId, int copy, ItemCopy itemCopy) async {
-    String output = await model.items.copies.update(itemId, copy,itemCopy);
-    return new IdResponse.fromId(
-        output, _generateCopyRedirect(itemId, itemCopy.copy));
+  Future<ItemCopyId> _update(String itemId, int copy, ItemCopy itemCopy) async {
+    return await model.items.copies.update(itemId, copy,itemCopy);
   }
 
   @ApiMethod(path: '${_API_PATH}/{itemId}/${API_COPIES_PATH}/{copy}/')

@@ -1,6 +1,6 @@
 part of data_sources;
 
-class _MongoFieldModel extends _AMongoIdModel<Field> with AFieldModel {
+class _MongoFieldModel extends _AMongoIdDataSource<Field> with AFieldModel {
   static final Logger _log = new Logger('_MongoFieldModel');
 
   Future<List<Field>> getByIds(List<String> ids) async {

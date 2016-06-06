@@ -8,5 +8,6 @@ abstract class AIdNameBasedDataSource<T> {
   Future<T> getById(String id);
   Future<String> write(T t, [String id = null]);
   Future delete(String id);
+  Future<bool> exists(String id);
 
 }

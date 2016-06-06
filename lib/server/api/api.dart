@@ -24,6 +24,7 @@ part 'src/dartalog_api.dart';
 part 'src/exceptions/redirecting_exception.dart';
 part 'src/requests/password_change_request.dart';
 part 'src/requests/item_action_request.dart';
+part 'src/requests/create_item_request.dart';
 part 'src/requests/bulk_item_action_request.dart';
 part 'src/resources/a_id_resource.dart';
 part 'src/resources/a_resource.dart';

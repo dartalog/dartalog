@@ -3,7 +3,7 @@ part of model;
 class ItemTypeModel extends AIdNameBasedModel<ItemType> {
   static final Logger _log = new Logger('ItemTypeModel');
   Logger get _logger => _log;
-  data_sources.AIdNameBasedDataSource<ItemType> get dataSource => data_sources.itemTypes;
+  AIdNameBasedDataSource<ItemType> get dataSource => data_sources.itemTypes;
 
   @override
   Future<ItemType> getById(String id, {bool includeFields: false}) async {
@@ -22,7 +22,7 @@ class ItemTypeModel extends AIdNameBasedModel<ItemType> {
       field_errors["fieldIds"] = "Required";
     else {
       List test = await data_sources.fields.getByIds(itemType.fieldIds);
-      if(test.length==itemType.fieldIds.length)
+      if(test.length!=itemType.fieldIds.length)
         field_errors["fieldIds"] = "Not found";
     }
 

@@ -1,4 +1,4 @@
-part of data_sources;
+part of data_sources.interfaces;
 
 class PresetModel extends _ADataSource {
   static final Logger _log = new Logger('PresetModel');

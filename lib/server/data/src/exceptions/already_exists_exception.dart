@@ -1,4 +1,4 @@
-part of data_sources;
+part of data;
 
 class AlreadyExistsException implements  Exception {
   String message;

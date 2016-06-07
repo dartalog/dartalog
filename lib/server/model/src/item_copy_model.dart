@@ -11,32 +11,30 @@ class ItemCopyModel extends AModel<ItemCopy> {
     itemCopy.itemId = itemId;
     itemCopy.status = ITEM_DEFAULT_STATUS;
 
-    ItemCopy topItem =
-        await data_sources.itemCopies.getLargestNumberedCopy(itemId);
-    if (topItem == null)
-      itemCopy.copy = 1;
-    else
-      itemCopy.copy = topItem.copy + 1;
+    itemCopy.copy = await data_sources.itemCopies.getNextCopyNumber(itemId);
+
     await validate(itemCopy, true);
 
-    return await data_sources.itemCopies.write(itemCopy);
+    return await data_sources.itemCopies.write(itemCopy, false);
   }
 
   Future<ItemCopy> get(String itemId, int copy) async {
-    ItemCopy itemCopy =
+    Option<ItemCopy> optItemCopy =
         await data_sources.itemCopies.getByItemIdAndCopy(itemId, copy);
-    if (itemCopy == null)
-      throw new NotFoundException("Copy #${copy} of ${itemId} not found");
-    await _setAdditionalFields(itemCopy);
 
+    ItemCopy itemCopy = optItemCopy.getOrElse(() => throw new NotFoundException("Copy #${copy} of ${itemId} not found"));
+
+    itemCopy.itemId = itemId;
+    await _setAdditionalFields(itemCopy);
     return itemCopy;
   }
 
   Future<List<ItemCopy>> getAllForItem(String itemId,
       {bool includeRemoved: false}) async {
-    List<ItemCopy> output =
+        List<ItemCopy> output =
         await data_sources.itemCopies.getAllForItemId(itemId);
     for (ItemCopy itemCopy in output) {
+      itemCopy.itemId = itemId;
       await _setAdditionalFields(itemCopy);
     }
     return output;
@@ -57,8 +55,8 @@ class ItemCopyModel extends AModel<ItemCopy> {
     if (isNullOrWhitespace(actionerUserId)) {
       throw new InvalidInputException("User is required");
     } else {
-      User user = await data_sources.users.getById(actionerUserId);
-      if (user == null) throw new InvalidInputException("User not found");
+      if(!await data_sources.users.exists(actionerUserId))
+        throw new InvalidInputException("User not found");
     }
 
     List<ItemCopy> copies = await data_sources.itemCopies.getAll(itemCopyIds);
@@ -107,7 +105,7 @@ class ItemCopyModel extends AModel<ItemCopy> {
     }
     itemCopy.status = "";
     await validate(itemCopy, false);
-    return await data_sources.itemCopies.write(itemCopy, itemId, copy);
+    return await data_sources.itemCopies.write(itemCopy, true);
   }
 
   Future _setAdditionalFields(ItemCopy itemCopy) async {
@@ -116,13 +114,11 @@ class ItemCopyModel extends AModel<ItemCopy> {
         itemCopy.eligibleActions.add(action);
     }
     itemCopy.statusName = ITEM_COPY_STATUSES[itemCopy.status];
-    Collection col = await data_sources.itemCollections.getById(itemCopy.collectionId);
-    if(col==null)
-      throw new Exception("Collection ${itemCopy.collectionId} could not be found");
-
+    Collection col = await collections.getById(itemCopy.collectionId);
     itemCopy.collectionName = col.name;
 
-    Item item = await data_sources.items.getById(itemCopy.itemId);
+    Item item = await items.getById(itemCopy.itemId);
+
     itemCopy.itemName = item.name;
   }
 
@@ -139,13 +135,13 @@ class ItemCopyModel extends AModel<ItemCopy> {
     if (itemCopy.copy == 0)
       throw new Exception("Copy must be greater than 0");
     else {
-      dynamic test = await data_sources.itemCopies
-          .getByItemIdAndCopy(itemCopy.itemId, itemCopy.copy);
+      bool test = await data_sources.itemCopies
+          .existsByItemIdAndCopy(itemCopy.itemId, itemCopy.copy);
       if (creating) {
-        if (test != null)
+        if (test)
           throw new InvalidInputException("Copy already exists");
       } else {
-        if (test == null)
+        if (test)
           throw new NotFoundException("Specified copy not found");
       }
     }
@@ -153,17 +149,16 @@ class ItemCopyModel extends AModel<ItemCopy> {
     if (isNullOrWhitespace(itemCopy.collectionId)) {
       field_errors["collectionId"] = "Required";
     } else {
-      dynamic test =
-          await data_sources.itemCollections.getById(itemCopy.collectionId);
-      if (test == null) field_errors["collectionId"] = "Not found";
+      if (!await data_sources.itemCollections.exists(itemCopy.collectionId)) field_errors["collectionId"] = "Not found";
     }
 
     if (!isNullOrWhitespace(itemCopy.uniqueId)) {
-      dynamic test =
+      Option<ItemCopy> test =
           await data_sources.itemCopies.getByUniqueId(itemCopy.uniqueId);
-      if (test != null &&
-          (test.itemId != itemCopy.itemId || test.copy != itemCopy.copy))
-        field_errors["uniqueId"] = "Already used";
+      test.map((ItemCopy testItemCopy) {
+        if (testItemCopy.itemId != itemCopy.itemId || testItemCopy.copy != itemCopy.copy)
+          field_errors["uniqueId"] = "Already used";
+      });
     }
 
     if (creating) {

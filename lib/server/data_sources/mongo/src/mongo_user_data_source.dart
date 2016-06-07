@@ -1,21 +1,21 @@
-part of data_sources;
+part of data_sources.mongo;
 
-class _MongoUserDataSource extends _AMongoIdDataSource<User> with AUserDataSource {
-  static final Logger _log = new Logger('_MongoUserDataSource');
+class MongoUserDataSource extends _AMongoIdDataSource<User> with AUserDataSource {
+  static final Logger _log = new Logger('MongoUserDataSource');
 
   User _createObject(Map data) {
     User output = new User();
-    output.getId = data["id"];
+    output.getId = data[ID_FIELD];
     output.getName = data["name"];
     output.password = data["password"];
     return output;
   }
 
-  Future<mongo.DbCollection> _getCollection(_MongoDatabase con) =>
+  Future<DbCollection> _getCollection(_MongoDatabase con) =>
       con.getUsersCollection();
 
   void _updateMap(User field, Map data) {
-    data["id"] = field.getId;
+    data[ID_FIELD] = field.getId;
     data["name"] = field.getName;
     if(!tools.isNullOrWhitespace(field.password))
       data["password"] = field.password;

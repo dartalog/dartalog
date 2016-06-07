@@ -4,66 +4,71 @@ class ItemModel extends AIdNameBasedModel<Item> {
   static final Logger _log = new Logger('ItemModel');
   Logger get _logger => _log;
 
-  data_sources.AItemDataSource get dataSource => data_sources.items;
+  AItemDataSource get dataSource => data_sources.items;
 
   static final RegExp LEGAL_ID_CHARACTERS = new RegExp("[a-zA-Z0-9_]");
 
   final ItemCopyModel copies = new ItemCopyModel();
 
   @override
-  Future<Item> getById(String id, {bool includeType: false, bool includeFields: false, bool includeCopies:false}) async {
+  Future<Item> getById(String id,
+      {bool includeType: false,
+      bool includeFields: false,
+      bool includeCopies: false}) async {
     Item output = await super.getById(id);
 
-      if (includeType) {
-        output.type = await data_sources.itemTypes.getById(output.typeId);
-        if (output.type == null) {
-          throw new Exception(
-              "Item type '${output.typeId}' specified for item not found");
-        }
-        if (includeFields) {
-          output.type.fields =
-          await data_sources.fields.getByIds(output.type.fieldIds);
-        }
-      } else if(includeFields) {
-        throw new InvalidInputException(
-            "Cannot include fields without including the type");
+    if (includeType) {
+      output.type = (await data_sources.itemTypes.getById(output.typeId))
+          .getOrElse(() => throw new Exception(
+              "Item type '${output.typeId}' specified for item not found"));
+
+      if (includeFields) {
+        output.type.fields =
+            await data_sources.fields.getByIds(output.type.fieldIds);
       }
-      if (includeCopies) {
+    } else if (includeFields) {
+      throw new InvalidInputException(
+          "Cannot include fields without including the type");
+    }
+    if (includeCopies) {
+      if (output.copies == null)
         output.copies = await this.copies.getAllForItem(id);
-      }
+    } else {
+      output.copies = null;
+    }
     return output;
   }
 
-  Future<List<Item>> search(String query) =>
-      dataSource.search(query);
+  Future<List<Item>> search(String query) => dataSource.search(query);
 
-  Future<ItemCopyId> createWithCopy(Item item, String collectionId,[String uniqueId])  async {
+  Future<ItemCopyId> createWithCopy(Item item, String collectionId,
+      [String uniqueId]) async {
     if (!userAuthenticated()) {
       throw new NotAuthorizedException();
     }
 
-    if(!isNullOrWhitespace(item.getName))
+    if (!isNullOrWhitespace(item.getName))
       item.getId = await _generateUniqueId(item);
     await DataValidationException.PerformValidation(() async {
       Map output = await _validateFields(item, true);
-      if(isNullOrWhitespace(collectionId)) {
+      if (isNullOrWhitespace(collectionId)) {
         output["collectionId"] = "Required";
-      } else if(!await data_sources.itemCollections.exists(collectionId)) {
-          output["collectionId"] = "Invalid";
+      } else if (!await data_sources.itemCollections.exists(collectionId)) {
+        output["collectionId"] = "Invalid";
       }
 
-      if(!isNullOrWhitespace(uniqueId)&& await data_sources.itemCopies.existsByUniqueId(uniqueId)) {
+      if (!isNullOrWhitespace(uniqueId) &&
+          await data_sources.itemCopies.existsByUniqueId(uniqueId)) {
         output["uniqueId"] = "Already in use";
       }
       return output;
-    } );
+    });
 
     String itemId = await data_sources.items.write(item);
     ItemCopy itemCopy = new ItemCopy();
     itemCopy.collectionId = collectionId;
     itemCopy.uniqueId = uniqueId;
     return await copies.create(itemId, itemCopy);
-
   }
 
   @override
@@ -71,7 +76,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
     if (!userAuthenticated()) {
       throw new NotAuthorizedException();
     }
-    if(!isNullOrWhitespace(item.getName))
+    if (!isNullOrWhitespace(item.getName))
       item.getId = await _generateUniqueId(item);
     return await super.create(item);
   }
@@ -81,18 +86,17 @@ class ItemModel extends AIdNameBasedModel<Item> {
     if (!userAuthenticated()) {
       throw new NotAuthorizedException();
     }
-    if(!isNullOrWhitespace(item.getName)) {
-      Item oldItem = await data_sources.items.getById(id);
-      if (oldItem == null)
-        throw new NotFoundException("Item ${item} not found");
+    if (!isNullOrWhitespace(item.getName)) {
+      Item oldItem = (await data_sources.items.getById(id)).getOrElse(
+          () => throw new NotFoundException("Item ${item} not found"));
 
-      if (oldItem.getName.trim().toLowerCase() != item.getName.trim().toLowerCase())
+      if (oldItem.getName.trim().toLowerCase() !=
+          item.getName.trim().toLowerCase())
         item.getId = await _generateUniqueId(item);
     }
 
     return await super.update(id, item);
   }
-
 
   @override
   Future<Map<String, String>> _validateFieldsInternal(Item item) async {
@@ -104,27 +108,24 @@ class ItemModel extends AIdNameBasedModel<Item> {
       field_errors["typeId"] = "Required";
     else {
       dynamic test = await data_sources.itemTypes.getById(item.typeId);
-      if(test==null)
-        field_errors["typeId"] = "Not found";
+      if (test == null) field_errors["typeId"] = "Not found";
     }
 
     return field_errors;
   }
 
-
   static final List<String> NON_SORTING_WORDS = ["the", "a", "an"];
 
   static Future<String> _generateUniqueId(Item item) async {
     if (isNullOrWhitespace(item.getName))
-      throw new InvalidInputException(
-          "Name required to generate unique ID");
+      throw new InvalidInputException("Name required to generate unique ID");
 
     StringBuffer output = new StringBuffer();
     String lastChar = "_";
     String name = item.getName.trim().toLowerCase();
     String first_word = name.split(" ")[0];
-    if(NON_SORTING_WORDS.contains(first_word))
-      name = name.substring(name.indexOf(" ")+1,name.length);
+    if (NON_SORTING_WORDS.contains(first_word))
+      name = name.substring(name.indexOf(" ") + 1, name.length);
 
     for (int i = 0; i < name.length; i++) {
       String char = name.substring(i, i + 1);
@@ -151,9 +152,9 @@ class ItemModel extends AIdNameBasedModel<Item> {
 
     String base_name = output.toString();
     String testName = base_name;
-    Item testItem = await data_sources.items.getById(base_name);
+    Option<Item> testItem = await data_sources.items.getById(base_name);
     int i = 1;
-    while (testItem != null) {
+    while (testItem.isNotEmpty) {
       testName = "${base_name}_${i}";
       i++;
       testItem = await data_sources.items.getById(testName);
@@ -162,7 +163,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
   }
 
   Future _handleFileUploads(Item item) async {
-    ItemType type = await data_sources.itemTypes.getById(item.typeId);
+    ItemType type = await itemTypes.getById(item.typeId);
     List<Field> fields = await data_sources.fields.getByIds(type.fieldIds);
     Map<String, List<int>> filesToWrite = new Map<String, List<int>>();
 
@@ -187,7 +188,8 @@ class ItemModel extends AIdNameBasedModel<Item> {
         // This is a new file upload
         int filePosition = int.parse(m.group(1));
         if (item.fileUploads.length - 1 < filePosition) {
-          throw new InvalidInputException("Field ${f.getId} specifies unprovided upload file at position ${filePosition}");
+          throw new InvalidInputException(
+              "Field ${f.getId} specifies unprovided upload file at position ${filePosition}");
         }
         data = BASE64.decode(item.fileUploads[filePosition]);
 
@@ -205,7 +207,8 @@ class ItemModel extends AIdNameBasedModel<Item> {
       }
 
       if (data.length == 0)
-        throw new InvalidInputException("Specified file upload ${value} is empty");
+        throw new InvalidInputException(
+            "Specified file upload ${value} is empty");
 
       Digest hash = sha256.convert(data);
       String hashString = hash.toString();
@@ -245,6 +248,4 @@ class ItemModel extends AIdNameBasedModel<Item> {
       throw e;
     }
   }
-
-
 }

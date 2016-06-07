@@ -1,4 +1,4 @@
-part of data_sources;
+part of data_sources.interfaces;
 
 abstract class ASettingsModel extends _ADataSource {
   static final Logger _log = new Logger('ASettingsModel');

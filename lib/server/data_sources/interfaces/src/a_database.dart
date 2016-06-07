@@ -1,4 +1,4 @@
-part of data_sources;
+part of data_sources.interfaces;
 
 abstract class ADatabase {
 

@@ -1,12 +1,12 @@
 part of model;
 
 abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
-  data_sources.AIdNameBasedDataSource<T> get dataSource;
+  AIdNameBasedDataSource<T> get dataSource;
 
   Future<String> create(T t) async {
-    if (!userAuthenticated()) {
-      throw new NotAuthorizedException();
-    }
+//    if (!userAuthenticated()) {
+//      throw new NotAuthorizedException();
+//    }
     await validate(t, true);
     return await dataSource.write(t);
   }
@@ -26,10 +26,11 @@ await     dataSource.delete(id);
       dataSource.getAll();
 
   Future<T> getById(String id) async {
-    T output = await dataSource.getById(id);
-    if (output == null) throw new NotFoundException("ID '${id}' not found");
+    Option<T> output = await dataSource.getById(id);
 
-    return output;
+    if (output.isEmpty) throw new NotFoundException("ID '${id}' not found");
+
+    return output.get();
   }
 
   Future<String> update(String id, T t) async {
@@ -51,8 +52,7 @@ await     dataSource.delete(id);
       field_errors["id"] = "Required";
     else {
       if (creating) {
-        dynamic other = await dataSource.getById(t.getId);
-        if (other != null)
+        if (await dataSource.exists(t.getId))
           field_errors["id"] = "Already in use";
       }
       if (RESERVED_WORDS.contains(t.getId.trim().toLowerCase())) {

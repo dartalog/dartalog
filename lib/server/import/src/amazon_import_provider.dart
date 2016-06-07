@@ -7,7 +7,7 @@ class AmazonImportProvider extends AScrapingImportProvider {
 
   static final List VALID_TYPES = ["music","dvd","videogames","vhs"];
 
-  static final RegExp _item_link_reg = new RegExp(r'http://www.amazon.com/[^/]+/dp/([^/]+)/.+', multiLine: true, caseSensitive: false);
+  static final RegExp _item_link_reg = new RegExp(r'https?://www.amazon.com/[^/]+/dp/([^/]+)/.+', multiLine: true, caseSensitive: false);
 
   static final String NAME = "amazon";
 

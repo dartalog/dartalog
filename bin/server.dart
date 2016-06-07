@@ -123,16 +123,16 @@ final Logger _log = new Logger('main');
 
 Future<Option<Principal>> authenticateUser(
     String userName, String password) async {
-  User user = await data_source.users.getById(userName);
-  if (user == null) return new None();
-  if (!model.users.verifyPassword(user, password)) return new None();
-  Principal principal = new Principal(user.getId);
+  Option<User> user = await data_source.users.getById(userName);
+  if (user.isEmpty) return new None();
+  if (!model.users.verifyPassword(user.get(), password)) return new None();
+  Principal principal = new Principal(user.get().getId);
   return new Some(principal);
 }
 
 Future<Option<Principal>> getUser(String userName) async {
-  User user = await data_source.users.getById(userName);
-  if (user == null) return new None();
-  Principal principal = new Principal(user.getId);
+  Option<User> user = await data_source.users.getById(userName);
+  if (user.isEmpty) return new None();
+  Principal principal = new Principal(user.get().getId);
   return new Some(principal);
 }

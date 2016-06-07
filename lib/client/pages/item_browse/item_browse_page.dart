@@ -83,6 +83,7 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
     try {
       _loaded = false;
       clear("itemsList");
+      set("noItemsFound", false);
       dynamic data;
       if(isNullOrWhitespace(_currentQuery)) {
         data = await api.items.getAllListings();
@@ -90,6 +91,7 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
         data = await api.items.search(_currentQuery);
       }
       set("itemsList", ItemListing.convertList(data));
+      set("noItemsFound", itemsList.length==0);
       _loaded = true;
     } catch(e,st) {
       _log.severe(e, st);

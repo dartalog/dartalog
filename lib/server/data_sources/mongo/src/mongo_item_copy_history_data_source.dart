@@ -1,12 +1,12 @@
-part of data_sources;
+part of data_sources.mongo;
 
-class _MongoItemCopyHistoryModel extends _AMongoDataSource<ItemCopyHistoryEntry>
+class MongoItemCopyHistoryDataSource extends _AMongoDataSource<ItemCopyHistoryEntry>
     with AItemCopyHistoryModel {
-  static final Logger _log = new Logger('_MongoItemCopyModel');
+  static final Logger _log = new Logger('MongoItemCopyHistoryDataSource');
 
   Future<List<ItemCopyHistoryEntry>> getForItemCopy(
           String itemId, int copy) =>
-      _getFromDb(mongo.where.eq("itemId", itemId).eq("copy", copy));
+      _getFromDb(where.eq("itemId", itemId).eq("copy", copy));
 
   Future write(ItemCopyHistoryEntry itemCopyHistory) =>
       _insertIntoDb(itemCopyHistory);
@@ -23,7 +23,7 @@ class _MongoItemCopyHistoryModel extends _AMongoDataSource<ItemCopyHistoryEntry>
     return output;
   }
 
-  Future<mongo.DbCollection> _getCollection(_MongoDatabase con) =>
+  Future<DbCollection> _getCollection(_MongoDatabase con) =>
       con.getItemCopyHistoryCollection();
 
   void _updateMap(ItemCopyHistoryEntry itemCopyHistory, Map data) {

@@ -4,7 +4,7 @@ class UserModel extends AIdNameBasedModel<User> {
   static final Logger _log = new Logger('UserModel');
   Logger get _logger => _log;
 
-  data_sources.AUserDataSource get dataSource =>
+  AUserDataSource get dataSource =>
       data_sources.users;
 
   Future<User> getMe() async {
@@ -12,17 +12,15 @@ class UserModel extends AIdNameBasedModel<User> {
       throw new NotAuthorizedException();
 
     Option<Principal> princ = getUserPrincipal();
-    User output = await dataSource.getById(princ.get().name);
-    if(output==null)
-      throw new Exception("Authenticated user not present in database");
-    return output;
+    Option<User> output = await dataSource.getById(princ.get().name);
+    return output.getOrElse(() =>throw new Exception("Authenticated user not present in database"));
   }
 
   @override
   Future<String> create(User user) async {
-    if (!userAuthenticated()) {
-      throw new NotAuthorizedException();
-    }
+//    if (!userAuthenticated()) {
+//      throw new NotAuthorizedException();
+//    }
     if(!isNullOrWhitespace(user.password))
       user.password = new Crypt.sha256(user.password).toString();
     await super.create(user);
@@ -33,7 +31,7 @@ class UserModel extends AIdNameBasedModel<User> {
     if (!userAuthenticated()) {
       throw new NotAuthorizedException();
     }
-    User user = await dataSource.getById(id);
+    User user = await this.getById(id);
 
     Map<String, String> field_errors = new Map<String, String>();
 

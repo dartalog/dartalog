@@ -1,13 +1,13 @@
-part of data_sources;
+part of data_sources.mongo;
 
-class _MongoItemDataSource extends _AMongoIdDataSource<Item>
+class MongoItemDataSource extends _AMongoIdDataSource<Item>
     with AItemDataSource {
-  static final Logger _log = new Logger('_MongoItemDataSource');
+  static final Logger _log = new Logger('MongoItemDataSource');
 
   Item _createObject(Map data) {
     Item output = new Item();
 
-    output.getId = data['id'];
+    output.id = data[ID_FIELD];
     output.getName = data['name'];
     output.typeId = data['typeId'];
     output.values = data["values"];
@@ -16,16 +16,16 @@ class _MongoItemDataSource extends _AMongoIdDataSource<Item>
   }
 
   Future<List<Item>> search(String query) async {
-    mongo.SelectorBuilder selector = mongo.where;
-    selector.map["\$text"] = {"\$search": query};
+    SelectorBuilder selector = where;
+    selector.map[_TEXT_COMMAND] = {_SEARCH_COMMAND: query};
     return await _getFromDb(selector);
   }
 
-  Future<mongo.DbCollection> _getCollection(_MongoDatabase con) =>
+  Future<DbCollection> _getCollection(_MongoDatabase con) =>
       con.getItemsCollection();
 
   void _updateMap(Item item, Map data) {
-    data["id"] = item.getId;
+    data[ID_FIELD] = item.id;
     data["name"] = item.getName;
     data["typeId"] = item.typeId;
     data["values"] = item.values;

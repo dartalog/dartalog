@@ -17,7 +17,7 @@ abstract class AResource {
       exception = e;
       stackTrace = st;
       output = new RpcError(401, "Not Authorized", e.message);
-    } on data_source.DataMovedException catch(e, st) {
+    } on DataMovedException catch(e, st) {
       exception = e;
       stackTrace = st;
       String redirect = _generateRedirect(e.newId);
@@ -41,7 +41,7 @@ abstract class AResource {
             locationType: "field",
             message: e.fieldErrors[field]));
       }
-    } on data_source.AlreadyExistsException catch(e, st) {
+    } on AlreadyExistsException catch(e, st) {
       exception = e;
       stackTrace = st;
       output = new RpcError(406, "Conflict", e.toString());

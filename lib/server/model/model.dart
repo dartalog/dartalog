@@ -15,6 +15,7 @@ import 'package:dartalog/tools.dart';
 import 'package:dartalog/dartalog.dart';
 import 'package:dartalog/server/server.dart';
 import 'package:dartalog/server/data/data.dart';
+import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
 import 'package:dartalog/server/data_sources/data_sources.dart' as data_sources;
 
 part 'src/a_model.dart';

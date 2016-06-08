@@ -235,6 +235,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
         continue;
       } else {
         // So we assume it's a URL
+        _log.fine("Processing as URL: ${value}");
         Uri fileUri = Uri.parse(value);
         HttpClientRequest req = await new HttpClient().getUrl(fileUri);
         HttpClientResponse response = await req.close();
@@ -293,8 +294,10 @@ class ItemModel extends AIdNameBasedModel<Item> {
         RandomAccessFile imageRaf = await file.open(mode: FileMode.WRITE_ONLY);
         RandomAccessFile thumbnailRaf = await thumbnailFile.open(mode: FileMode.WRITE_ONLY);
         try {
+          _log.fine("Writing to ${file.path}");
           imageRaf.writeFrom(filesToWrite[key]);
           filesWritten.add(file.path);
+          _log.fine("Writing to ${thumbnailFile.path}");
           thumbnailRaf.writeFrom(thumbnailData);
           filesWritten.add(thumbnailFile.path);
         } finally {

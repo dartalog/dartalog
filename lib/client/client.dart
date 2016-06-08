@@ -137,14 +137,16 @@ abstract class HttpHeaders {
 }
 
 String getServerRoot() {
-  String serverAddress = window.location.href;
-  if(serverAddress.toLowerCase().endsWith("index.html"))
-    serverAddress = serverAddress.substring(0, serverAddress.length-10);
+  StringBuffer output = new StringBuffer();
+  output.write(window.location.protocol);
+  output.write("//");
+  output.write(window.location.host);
+  output.write("/");
 
   // When running in dev, since I use PHPStorm, the client runs via a different server than the dartalog server component
-  serverAddress = "http://localhost:3278/";
+  return "http://localhost:3278/";
 
-  return serverAddress;
+  return output.toString();
 }
 
 enum ImageType {

@@ -10,6 +10,11 @@ class ItemModel extends AIdNameBasedModel<Item> {
 
   final ItemCopyModel copies = new ItemCopyModel();
 
+  static final String ORIGINAL_IMAGE_PATH =  path.join(ROOT_DIRECTORY, HOSTED_IMAGES_ORIGINALS_PATH);
+  static final String THUMBNAIL_IMAGE_PATH =  path.join(ROOT_DIRECTORY, HOSTED_IMAGES_THUMBNAILS_PATH);
+  static final Directory ORIGINAL_IMAGE_DIR = new Directory(ORIGINAL_IMAGE_PATH);
+  static final Directory THUMBNAIL_DIR = new Directory(THUMBNAIL_IMAGE_PATH);
+
   @override
   Future<Item> getById(String id,
       {bool includeType: false,
@@ -39,10 +44,18 @@ class ItemModel extends AIdNameBasedModel<Item> {
     return output;
   }
 
+//  @override
+//  _performAdjustments(Item item) {
+//    // TODO: filter this down to just image fields?
+//    for(String key in item.values.keys) {
+//      item.values[key] = _handleImageLink(item.values[key]);
+//    }
+//  }
+
   Future<List<Item>> search(String query) => dataSource.search(query);
 
   Future<ItemCopyId> createWithCopy(Item item, String collectionId,
-      [String uniqueId]) async {
+  {String uniqueId, List<List<int>> files}) async {
     if (!userAuthenticated()) {
       throw new NotAuthorizedException();
     }
@@ -64,6 +77,9 @@ class ItemModel extends AIdNameBasedModel<Item> {
       return output;
     });
 
+    await _handleFileUploads(item, files);
+    //TODO: More thorough cleanup of files in case of failure
+
     String itemId = await data_sources.items.write(item);
     ItemCopy itemCopy = new ItemCopy();
     itemCopy.collectionId = collectionId;
@@ -72,17 +88,21 @@ class ItemModel extends AIdNameBasedModel<Item> {
   }
 
   @override
-  Future<String> create(Item item) async {
+  Future<String> create(Item item, {List<List<int>> files}) async {
     if (!userAuthenticated()) {
       throw new NotAuthorizedException();
     }
     if (!isNullOrWhitespace(item.getName))
       item.getId = await _generateUniqueId(item);
+
+    await _handleFileUploads(item, files);
+
+
     return await super.create(item);
   }
 
   @override
-  Future<String> update(String id, Item item) async {
+  Future<String> update(String id, Item item, {List<List<int>> files}) async {
     if (!userAuthenticated()) {
       throw new NotAuthorizedException();
     }
@@ -95,13 +115,21 @@ class ItemModel extends AIdNameBasedModel<Item> {
         item.getId = await _generateUniqueId(item);
     }
 
+    await _handleFileUploads(item, files);
+
     return await super.update(id, item);
   }
+
+//  String _handleImageLink(String value) {
+//    if (value.startsWith(HOSTED_IMAGE_PREFIX)) {
+//      return "${getImagesRootUrl()}${value.substring(HOSTED_IMAGE_PREFIX.length)}";
+//    }
+//    return value;
+//  }
 
   @override
   Future<Map<String, String>> _validateFieldsInternal(Item item) async {
     Map<String, String> field_errors = new Map<String, String>();
-
     //TODO: add dynamic field validation
 
     if (isNullOrWhitespace(item.typeId))
@@ -162,7 +190,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
     return testName;
   }
 
-  Future _handleFileUploads(Item item) async {
+  Future _handleFileUploads(Item item, List<List<int>> files) async {
     ItemType type = await itemTypes.getById(item.typeId);
     List<Field> fields = await data_sources.fields.getByIds(type.fieldIds);
     Map<String, List<int>> filesToWrite = new Map<String, List<int>>();
@@ -181,17 +209,28 @@ class ItemModel extends AIdNameBasedModel<Item> {
         continue;
       }
 
+//      String image_url = getImagesRootUrl().toLowerCase();
+//      if(value.toLowerCase().startsWith(image_url))
+//        continue;
+//      //TODO: Evaluate for abuse
+//      // The server generates the image URL based on the HTTP request's server,
+//      // so theoretically this should cover all real-world work cases,
+//      // but if someone intentionally sent an image url from another accessible path to the server
+//      // (ie, the ip address instead of domain name), it would end up downloading its own file.
+//      // Since the file already exists, it would catch that it was the same file and abort,
+//      // but there may be some way to abuse this. Have to think about it.
+
       List<int> data;
 
       Match m = FILE_UPLOAD_REGEX.firstMatch(value);
       if (m != null) {
         // This is a new file upload
         int filePosition = int.parse(m.group(1));
-        if (item.fileUploads.length - 1 < filePosition) {
+        if (files.length - 1 < filePosition) {
           throw new InvalidInputException(
               "Field ${f.getId} specifies unprovided upload file at position ${filePosition}");
         }
-        data = BASE64.decode(item.fileUploads[filePosition]);
+        data = files[filePosition];
 
         continue;
       } else {
@@ -219,20 +258,51 @@ class ItemModel extends AIdNameBasedModel<Item> {
     // Now that the above sections have completed gathering all the file data_sources for saving, we save it all
     List<String> filesWritten = new List<String>();
     try {
+      if(!ORIGINAL_IMAGE_DIR.existsSync())
+        ORIGINAL_IMAGE_DIR.createSync(recursive: true);
+      if(!THUMBNAIL_DIR.existsSync())
+        THUMBNAIL_DIR.createSync(recursive: true);
+
       for (String key in filesToWrite.keys) {
-        File file = new File(path.join(ROOT_DIRECTORY, "images", key));
+        File file = new File(path.join(ORIGINAL_IMAGE_PATH, key));
         bool fileExists = await file.exists();
         if (!fileExists) {
           await file.create();
+        } else  {
+          int size = await file.length();
+          if(size!=filesToWrite[key].length)
+            throw new Exception("File already exists with a different size");
+          // If it already exists,
+          continue;
         }
 
-        RandomAccessFile raf = await file.open(mode: FileMode.WRITE_ONLY);
+        Image image = decodeImage(filesToWrite[key]);
+        List<int> thumbnailData;
+        File thumbnailFile = new File(path.join(THUMBNAIL_IMAGE_PATH, key));
+        if(thumbnailFile.existsSync())
+          thumbnailFile.deleteSync();
+        thumbnailFile.createSync();
+
+        if(image.width>300) {
+          Image thumbnail = copyResize(image, 300);
+          thumbnailData = encodeJpg(thumbnail,quality: 90);
+        } else {
+          thumbnailData = filesToWrite[key];
+        }
+
+        RandomAccessFile imageRaf = await file.open(mode: FileMode.WRITE_ONLY);
+        RandomAccessFile thumbnailRaf = await thumbnailFile.open(mode: FileMode.WRITE_ONLY);
         try {
-          raf.writeFrom(filesToWrite[key]);
+          imageRaf.writeFrom(filesToWrite[key]);
           filesWritten.add(file.path);
+          thumbnailRaf.writeFrom(thumbnailData);
+          filesWritten.add(thumbnailFile.path);
         } finally {
           try {
-            await raf.close();
+            await imageRaf.close();
+          } catch (e2, st) {}
+          try {
+            await thumbnailRaf.close();
           } catch (e2, st) {}
         }
       }

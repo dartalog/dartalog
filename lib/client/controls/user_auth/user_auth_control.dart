@@ -53,7 +53,7 @@ class UserAuthControl extends AControl {
     set("errorMessage", "");
     HttpRequest request;
     try {
-      String url = "${SERVER_ADDRESS}login/";
+      String url = "${getServerRoot()}login/";
       var values = {"username": userIdValue, "password": passwordValue};
       request = await HttpRequest.postFormData(
           url, values

@@ -141,7 +141,7 @@ class ItemCopyModel extends AModel<ItemCopy> {
         if (test)
           throw new InvalidInputException("Copy already exists");
       } else {
-        if (test)
+        if (!test)
           throw new NotFoundException("Specified copy not found");
       }
     }

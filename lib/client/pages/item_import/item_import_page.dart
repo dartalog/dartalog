@@ -275,8 +275,8 @@ class ItemImportPage extends APage with ASaveablePage {
         }
 
         API.CreateItemRequest request = new API.CreateItemRequest();
-        request.newItem = new API.Item();
-        newItem.copyTo(request.newItem);
+        request.item = new API.Item();
+        newItem.copyTo(request.item);
         request.collectionId = this.selectedCollectionId;
         request.uniqueId = bii.uniqueId;
 

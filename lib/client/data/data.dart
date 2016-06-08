@@ -2,6 +2,7 @@ library data;
 
 import 'package:polymer/polymer.dart';
 import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/api/dartalog.dart' as API;
 
 part 'src/id_name_pair.dart';

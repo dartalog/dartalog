@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 import 'package:path/path.dart';
+import 'package:rpc/rpc.dart' as rpc;
 
 part 'src/settings.dart';
 part 'src/setting_names.dart';
@@ -12,6 +13,9 @@ final String ROOT_DIRECTORY = join(dirname(Platform.script.toFilePath()),'..');
 
 String SERVER_ROOT, SERVER_API_ROOT;
 
+//String getImagesRootUrl() {
+//  return rpc.context.baseUrl + "/images/";
+//}
 
 Future<Map> loadJSONFile(String path) async {
   File dir = new File(path);

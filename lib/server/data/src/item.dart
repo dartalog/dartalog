@@ -13,8 +13,6 @@ class Item extends AIdData {
 
   Map<String, String> values = new Map<String, String>();
 
-  List<String> fileUploads;
-
   List<ItemCopy> copies;
   ItemType type;
 

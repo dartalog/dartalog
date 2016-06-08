@@ -973,7 +973,7 @@ class ItemsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<IdResponse> update(Item request, core.String id) {
+  async.Future<IdResponse> updateItem(UpdateItemRequest request, core.String id) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -1604,7 +1604,8 @@ class Collection {
 
 class CreateItemRequest {
   core.String collectionId;
-  Item newItem;
+  core.List<MediaMessage> files;
+  Item item;
   core.String uniqueId;
 
   CreateItemRequest();
@@ -1613,8 +1614,11 @@ class CreateItemRequest {
     if (_json.containsKey("collectionId")) {
       collectionId = _json["collectionId"];
     }
-    if (_json.containsKey("newItem")) {
-      newItem = new Item.fromJson(_json["newItem"]);
+    if (_json.containsKey("files")) {
+      files = _json["files"].map((value) => new MediaMessage.fromJson(value)).toList();
+    }
+    if (_json.containsKey("item")) {
+      item = new Item.fromJson(_json["item"]);
     }
     if (_json.containsKey("uniqueId")) {
       uniqueId = _json["uniqueId"];
@@ -1626,8 +1630,11 @@ class CreateItemRequest {
     if (collectionId != null) {
       _json["collectionId"] = collectionId;
     }
-    if (newItem != null) {
-      _json["newItem"] = (newItem).toJson();
+    if (files != null) {
+      _json["files"] = files.map((value) => (value).toJson()).toList();
+    }
+    if (item != null) {
+      _json["item"] = (item).toJson();
     }
     if (uniqueId != null) {
       _json["uniqueId"] = uniqueId;
@@ -1788,7 +1795,6 @@ class ImportResult {
 
 class Item {
   core.List<ItemCopy> copies;
-  core.List<core.String> fileUploads;
   core.String id;
   core.String name;
   ItemType type;
@@ -1800,9 +1806,6 @@ class Item {
   Item.fromJson(core.Map _json) {
     if (_json.containsKey("copies")) {
       copies = _json["copies"].map((value) => new ItemCopy.fromJson(value)).toList();
-    }
-    if (_json.containsKey("fileUploads")) {
-      fileUploads = _json["fileUploads"];
     }
     if (_json.containsKey("id")) {
       id = _json["id"];
@@ -1825,9 +1828,6 @@ class Item {
     var _json = new core.Map();
     if (copies != null) {
       _json["copies"] = copies.map((value) => (value).toJson()).toList();
-    }
-    if (fileUploads != null) {
-      _json["fileUploads"] = fileUploads;
     }
     if (id != null) {
       _json["id"] = id;
@@ -2181,6 +2181,75 @@ class MapOfListOfString
   core.List<core.String> remove(core.Object key) => _innerMap.remove(key);
 }
 
+class MediaMessage {
+  core.List<core.int> bytes;
+  core.String cacheControl;
+  core.String contentEncoding;
+  core.String contentLanguage;
+  core.String contentType;
+  core.String md5Hash;
+  core.Map<core.String, core.String> metadata;
+  core.DateTime updated;
+
+  MediaMessage();
+
+  MediaMessage.fromJson(core.Map _json) {
+    if (_json.containsKey("bytes")) {
+      bytes = _json["bytes"];
+    }
+    if (_json.containsKey("cacheControl")) {
+      cacheControl = _json["cacheControl"];
+    }
+    if (_json.containsKey("contentEncoding")) {
+      contentEncoding = _json["contentEncoding"];
+    }
+    if (_json.containsKey("contentLanguage")) {
+      contentLanguage = _json["contentLanguage"];
+    }
+    if (_json.containsKey("contentType")) {
+      contentType = _json["contentType"];
+    }
+    if (_json.containsKey("md5Hash")) {
+      md5Hash = _json["md5Hash"];
+    }
+    if (_json.containsKey("metadata")) {
+      metadata = _json["metadata"];
+    }
+    if (_json.containsKey("updated")) {
+      updated = core.DateTime.parse(_json["updated"]);
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (bytes != null) {
+      _json["bytes"] = bytes;
+    }
+    if (cacheControl != null) {
+      _json["cacheControl"] = cacheControl;
+    }
+    if (contentEncoding != null) {
+      _json["contentEncoding"] = contentEncoding;
+    }
+    if (contentLanguage != null) {
+      _json["contentLanguage"] = contentLanguage;
+    }
+    if (contentType != null) {
+      _json["contentType"] = contentType;
+    }
+    if (md5Hash != null) {
+      _json["md5Hash"] = md5Hash;
+    }
+    if (metadata != null) {
+      _json["metadata"] = metadata;
+    }
+    if (updated != null) {
+      _json["updated"] = (updated).toIso8601String();
+    }
+    return _json;
+  }
+}
+
 class PasswordChangeRequest {
   core.String currentPassword;
   core.String newPassword;
@@ -2306,6 +2375,33 @@ class SearchResults {
     }
     if (totalResults != null) {
       _json["totalResults"] = totalResults;
+    }
+    return _json;
+  }
+}
+
+class UpdateItemRequest {
+  core.List<MediaMessage> files;
+  Item item;
+
+  UpdateItemRequest();
+
+  UpdateItemRequest.fromJson(core.Map _json) {
+    if (_json.containsKey("files")) {
+      files = _json["files"].map((value) => new MediaMessage.fromJson(value)).toList();
+    }
+    if (_json.containsKey("item")) {
+      item = new Item.fromJson(_json["item"]);
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (files != null) {
+      _json["files"] = files.map((value) => (value).toJson()).toList();
+    }
+    if (item != null) {
+      _json["item"] = (item).toJson();
     }
     return _json;
   }

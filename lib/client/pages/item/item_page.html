@@ -9,8 +9,8 @@
         <div style="background-color: black" class="vertical horizontal">
             <template is="dom-repeat" items="[[currentItem.fields]]">
                 <template is="dom-if" if="[[item.isTypeImage]]" restamp="true">
-                    <a href="[[item.value]]" target="_new">
-                        <iron-image src="[[item.value]]" style="width:200px; height:100px;" sizing="cover"/>
+                    <a href="[[getOriginalImageUrl(item.value)]]" target="_new">
+                        <iron-image src="[[getThumbnailUrl(item.value)]]" style="width:200px; height:100px;" sizing="cover"/>
                     </a>
                 </template>
             </template>

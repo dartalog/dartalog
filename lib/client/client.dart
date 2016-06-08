@@ -8,11 +8,9 @@ import 'package:option/option.dart';
 import 'package:dartalog/tools.dart';
 import 'package:http/http.dart';
 import 'package:http/browser_client.dart';
-
+import 'package:dartalog/dartalog.dart';
 
 part 'src/dartalog_http_client.dart';
-
-const String SERVER_ADDRESS = "http://localhost:3278/";
 
 const String BROWSE_ROUTE_NAME = "browse";
 const String BROWSE_ROUTE_PATH = "${BROWSE_ROUTE_NAME}";
@@ -136,4 +134,31 @@ Future cacheAuthKey(String text) async {
 
 abstract class HttpHeaders {
   static const String AUTHORIZATION = 'authorization';
+}
+
+String getServerRoot() {
+  String serverAddress = window.location.href;
+  if(serverAddress.toLowerCase().endsWith("index.html"))
+    serverAddress = serverAddress.substring(0, serverAddress.length-10);
+
+  // When running in dev, since I use PHPStorm, the client runs via a different server than the dartalog server component
+  serverAddress = "http://localhost:3278/";
+
+  return serverAddress;
+}
+
+enum ImageType {
+  ORIGINAL, THUMBNAIL
+}
+
+String getImageUrl(String image, ImageType type) {
+  if(!image.startsWith(HOSTED_IMAGE_PREFIX))
+    return image;
+
+  switch(type) {
+    case ImageType.ORIGINAL:
+      return "${getServerRoot()}${HOSTED_IMAGES_ORIGINALS_PATH}${image.substring(HOSTED_IMAGE_PREFIX.length)}";
+    case ImageType.THUMBNAIL:
+      return "${getServerRoot()}${HOSTED_IMAGES_THUMBNAILS_PATH}${image.substring(HOSTED_IMAGE_PREFIX.length)}";
+  }
 }

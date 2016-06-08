@@ -9,6 +9,10 @@ const String LOGGED_IN_USER = 'sanmadjack';
 const String FILE_UPLOAD_PREFIX = "upload:";
 const String HOSTED_IMAGE_PREFIX = "image:";
 
+const String HOSTED_IMAGES_PATH = "images/";
+const String HOSTED_IMAGES_ORIGINALS_PATH = "${HOSTED_IMAGES_PATH}originals/";
+const String HOSTED_IMAGES_THUMBNAILS_PATH = "${HOSTED_IMAGES_PATH}thumbnails/";
+
 final Map<String, String> FIELD_TYPES = {
   'numeric': 'Numeric',
   'string': 'String',

@@ -185,4 +185,15 @@ class ItemPage extends APage with ARefreshablePage, ADeletablePage, AEditablePag
       return true;
     return false;
   }
+
+  @reflectable
+  String getThumbnailUrl(String value) {
+    String output =getImageUrl(value, ImageType.THUMBNAIL);
+    return output;
+  }
+
+  @reflectable
+  String getOriginalImageUrl(String value) {
+    return getImageUrl(value, ImageType.ORIGINAL);
+  }
 }

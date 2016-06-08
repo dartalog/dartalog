@@ -40,6 +40,7 @@ import 'package:polymer_elements/paper_progress.dart';
 import 'package:polymer_elements/paper_toolbar.dart';
 import 'package:route_hierarchical/client.dart';
 import 'package:web_components/web_components.dart';
+import 'package:path/path.dart';
 
 /// Uses [PaperInput]
 @PolymerRegister('main-app')
@@ -80,10 +81,7 @@ class MainApp extends PolymerElement {
 
   final Router router = new Router(useFragment: true);
 
-  static final api.DartalogApi _api = new api.DartalogApi(
-      new DartalogHttpClient(),
-      rootUrl: SERVER_ADDRESS,
-      servicePath: "api/dartalog/0.1/");
+  static api.DartalogApi _api;
 
   @Property(notify: true)
   APage currentPage = null;
@@ -93,6 +91,10 @@ class MainApp extends PolymerElement {
     Logger.root.level = Level.INFO;
     Logger.root.onRecord.listen(new LogPrintHandler());
 
+    _api = new api.DartalogApi(
+        new DartalogHttpClient(),
+        rootUrl: getServerRoot(),
+        servicePath: "api/dartalog/0.1/");
     // Set up the routes for all the pages.
 
     router.root

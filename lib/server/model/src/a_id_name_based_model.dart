@@ -22,16 +22,24 @@ await     dataSource.delete(id);
   Future<List<IdNamePair>> getAllIdsAndNames() =>
       dataSource.getAllIdsAndNames();
 
-  Future<List<T>> getAll() =>
-      dataSource.getAll();
+  Future<List<T>> getAll() async {
+    List<T> output = await dataSource.getAll();
+    for(T t in output)
+      _performAdjustments(t);
+    return output;
+  }
 
   Future<T> getById(String id) async {
     Option<T> output = await dataSource.getById(id);
 
     if (output.isEmpty) throw new NotFoundException("ID '${id}' not found");
 
+    _performAdjustments(output.get());
+
     return output.get();
   }
+
+  _performAdjustments(T t) {}
 
   Future<String> update(String id, T t) async {
     if (!userAuthenticated()) {

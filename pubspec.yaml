@@ -18,7 +18,9 @@ dependencies:
   args: any
   rpc: ^0.5.6
   shelf: ^0.6.5
-  shelf_static: ^0.2.3
+  shelf_static:
+    git: https://github.com/dartalog/shelf_static.git
+  #shelf_static: ^0.2.3
   shelf_rpc: ^0.0.3
   shelf_route: any
   shelf_auth: ^0.7.1
@@ -28,6 +30,7 @@ dependencies:
   crypto: '>=0.9.0 <0.10.0'
   crypt: ^1.0.2
   _discoveryapis_commons: '>=0.1.0 <0.2.0'
+  image: ^1.1.26
 
   mongo_dart: ^0.2.5
   connection_pool: ^0.1.0

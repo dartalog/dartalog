@@ -40,7 +40,7 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
   Logger get loggerImpl => _log;
 
   @Property(notify: true)
-  List<Item> itemsList = new List<Item>();
+  List<ItemListing> itemsList = new List<ItemListing>();
 
   @property
   bool noItemsFound = false;
@@ -125,4 +125,8 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
     }
   }
 
+  @reflectable
+  String getThumbnailForImage(String value) {
+    return getImageUrl(value, ImageType.THUMBNAIL);
+  }
 }

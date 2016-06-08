@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "b4eb4ec62f06db5a17a41d1012fd2315f6178bbb",
+ "etag": "6f74ab580da537825e084a36ea1ea30e5bec8bc3",
  "discoveryVersion": "v1",
  "id": "dartalog:0.1",
  "name": "dartalog",
@@ -193,8 +193,14 @@
    "id": "CreateItemRequest",
    "type": "object",
    "properties": {
-    "newItem": {
+    "item": {
      "$ref": "Item"
+    },
+    "files": {
+     "type": "array",
+     "items": {
+      "$ref": "MediaMessage"
+     }
     },
     "collectionId": {
      "type": "string"
@@ -223,12 +229,6 @@
       "type": "string"
      }
     },
-    "fileUploads": {
-     "type": "array",
-     "items": {
-      "type": "string"
-     }
-    },
     "copies": {
      "type": "array",
      "items": {
@@ -237,6 +237,44 @@
     },
     "type": {
      "$ref": "ItemType"
+    }
+   }
+  },
+  "MediaMessage": {
+   "id": "MediaMessage",
+   "type": "object",
+   "properties": {
+    "bytes": {
+     "type": "array",
+     "items": {
+      "type": "integer",
+      "format": "int32"
+     }
+    },
+    "updated": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "contentType": {
+     "type": "string"
+    },
+    "cacheControl": {
+     "type": "string"
+    },
+    "contentEncoding": {
+     "type": "string"
+    },
+    "contentLanguage": {
+     "type": "string"
+    },
+    "md5Hash": {
+     "type": "string"
+    },
+    "metadata": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "string"
+     }
     }
    }
   },
@@ -262,6 +300,21 @@
     },
     "thumbnail": {
      "type": "string"
+    }
+   }
+  },
+  "UpdateItemRequest": {
+   "id": "UpdateItemRequest",
+   "type": "object",
+   "properties": {
+    "item": {
+     "$ref": "Item"
+    },
+    "files": {
+     "type": "array",
+     "items": {
+      "$ref": "MediaMessage"
+     }
     }
    }
   },
@@ -664,8 +717,8 @@
       "$ref": "ListOfItemListingResponse"
      }
     },
-    "update": {
-     "id": "DartalogApi.items.update",
+    "updateItem": {
+     "id": "DartalogApi.items.updateItem",
      "path": "items/{id}/",
      "httpMethod": "PUT",
      "parameters": {
@@ -680,7 +733,7 @@
       "id"
      ],
      "request": {
-      "$ref": "Item"
+      "$ref": "UpdateItemRequest"
      },
      "response": {
       "$ref": "IdResponse"

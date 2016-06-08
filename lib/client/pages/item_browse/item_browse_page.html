@@ -15,7 +15,7 @@
             <paper-card class="rate"  data-id$="[[item.id]]" on-tap="itemClicked" style="cursor:pointer;width:300px;height:300px;margin-left:4pt;margin-top:4pt;text-overflow: ellipsis;">
                 <div class="card-header">
                     <iron-image style="width:300px; height:250px;" sizing="cover"
-                                src="[[item.thumbnail]]"></iron-image>
+                                src="[[getThumbnailForImage(item.thumbnail)]]"></iron-image>
                 </div>
                 <div class="card-content" style="height:34px;padding-bottom:0;padding-top:14px;white-space: nowrap; overflow: hidden;text-overflow: ellipsis;">[[item.name]]</div>
             </paper-card>

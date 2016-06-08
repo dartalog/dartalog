@@ -12,6 +12,13 @@ class ItemListing extends JsProxy {
 
   ItemListing();
 
+
+  @reflectable
+  String getThumbnailUrl() {
+    return getImageUrl(thumbnail, ImageType.THUMBNAIL);
+  }
+
+
   ItemListing.copy(dynamic field) {
     _copy(field,this);
   }

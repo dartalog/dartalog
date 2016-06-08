@@ -82,11 +82,13 @@ class ItemEditControl extends AControl  {
       currentItem.copyTo(newItem);
 
       if (!isNullOrWhitespace(this.originalItemId)) {
-        API.IdResponse idResponse =  await api.items.update(newItem, this.originalItemId);
+        API.UpdateItemRequest request = new API.UpdateItemRequest();
+        request.item = newItem;
+        API.IdResponse idResponse =  await api.items.updateItem(request, this.originalItemId);
         return idResponse.id;
       } else {
         API.CreateItemRequest request = new API.CreateItemRequest();
-        request.newItem = newItem;
+        request.item = newItem;
         request.uniqueId = newUniqueId;
         request.collectionId = newCollectionId;
         API.ItemCopyId itemCopyId  = await api.items.createItemWithCopy(request);

@@ -15,6 +15,8 @@ class Item {
   @Property(notify: true)
   List<Field> fields;
 
+
+
   Map<String,String> get values {
     Map<String,String> output = new Map<String,String>();
     for(Field f in fields) {

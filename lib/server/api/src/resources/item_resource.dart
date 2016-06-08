@@ -11,8 +11,14 @@ class ItemResource extends AIdResource<Item> {
   model.AIdNameBasedModel<Item> get idModel => model.items;
 
   @ApiMethod(method: 'POST', path: '${_API_PATH}/')
-  Future<ItemCopyId> createItemWithCopy(CreateItemRequest newItem) =>
-      _catchExceptions(model.items.createWithCopy(newItem.newItem, newItem.collectionId, newItem.uniqueId));
+  Future<ItemCopyId> createItemWithCopy(CreateItemRequest newItem) async {
+    List<List<int>> files = null;
+    if(newItem.files!=null) {
+      files = convertFiles(newItem.files);
+    }
+    return await _catchExceptions(model.items.createWithCopy(
+        newItem.item, newItem.collectionId, uniqueId: newItem.uniqueId, files: files));
+  }
 
   // Created only to satisfy the interface; should not be used, as creating acopy with each item should be required
   Future<IdResponse> create(Item item) => _createWithCatch(item);
@@ -39,8 +45,17 @@ class ItemResource extends AIdResource<Item> {
     return ItemListingResponse.convertList(await model.items.search(query));
   }
 
-  @ApiMethod(method: 'PUT', path: '${_API_PATH}/{id}/')
   Future<IdResponse> update(String id, Item item) => _updateWithCatch(id, item);
+
+  @ApiMethod(method: 'PUT', path: '${_API_PATH}/{id}/')
+  Future<IdResponse> updateItem(String id, UpdateItemRequest item) async {
+    List<List<int>> files = null;
+    if(item.files!=null) {
+      files = convertFiles(item.files);
+    }
+    String output =  await _catchExceptions(model.items.update(id, item.item, files: files));
+    return new IdResponse.fromId(id, _generateRedirect(id));
+  }
 
   String _generateRedirect(String newId) =>
       "${SERVER_API_ROOT}${API_ITEMS_PATH}/${newId}";

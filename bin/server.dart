@@ -48,7 +48,8 @@ main(List<String> args) async {
     pathToBuild = join(ROOT_DIRECTORY, 'images');
 
     final staticImagesHandler = createStaticHandler(pathToBuild,
-        listDirectories: false, serveFilesOutsidePath: false);
+        listDirectories: false, serveFilesOutsidePath: false,
+        useMagicBytesForContentType: true);
 
     _apiServer.addApi(new DartalogApi());
     _apiServer.enableDiscoveryApi();
@@ -87,7 +88,7 @@ main(List<String> args) async {
 
     final Map extraHeaders = {
       'Access-Control-Allow-Headers':
-          'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+      'Origin, X-Requested-With, Content-Type, Accept, Authorization',
       'Access-Control-Allow-Methods': 'POST, GET, PUT, HEAD, DELETE, OPTIONS',
       'Access-Control-Allow-Credentials': 'true',
       'Access-Control-Expose-Headers': 'Authorization',

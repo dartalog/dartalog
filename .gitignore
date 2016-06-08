@@ -21,3 +21,4 @@ doc/api/
 *.ipr
 *.iws
 pubspec.lock
+images/

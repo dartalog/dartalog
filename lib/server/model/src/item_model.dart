@@ -285,7 +285,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
         thumbnailFile.createSync();
 
         if(image.width>300) {
-          Image thumbnail = copyResize(image, 300);
+          Image thumbnail = copyResize(image, 300, -1, CUBIC);
           thumbnailData = encodeJpg(thumbnail,quality: 90);
         } else {
           thumbnailData = filesToWrite[key];

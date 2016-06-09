@@ -23,5 +23,8 @@ class DartalogApi {
   @ApiResource()
   final UserResource users = new UserResource();
 
+  @ApiResource()
+  final SetupResource setup = new SetupResource();
+
   DartalogApi();
 }

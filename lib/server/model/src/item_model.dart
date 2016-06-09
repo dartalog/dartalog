@@ -62,8 +62,8 @@ class ItemModel extends AIdNameBasedModel<Item> {
 
     if (!isNullOrWhitespace(item.getName))
       item.getId = await _generateUniqueId(item);
-    await DataValidationException.PerformValidation(() async {
-      Map output = await _validateFields(item, true);
+    await DataValidationException.PerformValidation((Map output) async {
+      output.addAll(await _validateFields(item, true));
       if (isNullOrWhitespace(collectionId)) {
         output["collectionId"] = "Required";
       } else if (!await data_sources.itemCollections.exists(collectionId)) {
@@ -273,7 +273,6 @@ class ItemModel extends AIdNameBasedModel<Item> {
           int size = await file.length();
           if(size!=filesToWrite[key].length)
             throw new Exception("File already exists with a different size");
-          // If it already exists,
           continue;
         }
 

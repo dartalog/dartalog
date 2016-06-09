@@ -1,6 +1,6 @@
 part of data_sources.mongo;
 
-class _MongoDatabase  {
+class _MongoDatabase {
   static final Logger _log = new Logger('_MongoDatabase');
   static _MongoDbConnectionPool _pool;
 
@@ -18,17 +18,6 @@ class _MongoDatabase  {
   bool released = false;
 
   _MongoDatabase(this.con);
-
-
-  Future<dynamic> startTransaction() async {
-    DbCollection transactions = await getTransactionsCollection();
-    transactions.findOne({"state": "initial"});
-  }
-
-  Future<DbCollection> getTransactionsCollection() async {
-    dynamic output = await con.conn.collection("transactions");
-    return output;
-   }
 
   void checkForRedirectMap(Map data) {
     if (data.containsKey(REDIRECT_ENTRY_NAME)) {
@@ -55,35 +44,27 @@ class _MongoDatabase  {
     return output;
   }
 
-  Future<DbCollection> getUsersCollection() async {
+  Future<DbCollection> getItemCopyHistoryCollection() async {
     _checkConnection();
 
-    dynamic output = await con.conn.collection(_USERS_MONGO_COLLECTION);
+    dynamic output =
+        await con.conn.collection(_ITEM_COPY_HISTORY_MONGO_COLLECTION);
+    await con.conn.createIndex(_ITEM_COPY_HISTORY_MONGO_COLLECTION,
+        keys: {"itemId": 1, "copy": 1});
     return output;
   }
-
 
   Future<DbCollection> getItemsCollection() async {
     _checkConnection();
     dynamic output = await con.conn.collection(_ITEMS_MONGO_COLLECTION);
-    await con.conn
-        .createIndex(_ITEMS_MONGO_COLLECTION, keys: {"name": "text", "copies.uniqueId": "text"} );
-    await con.conn
-        .createIndex(_ITEMS_MONGO_COLLECTION, keys: {ID_FIELD: 1, "copies.copy": 1}, unique: true);
-    await con.conn
-        .createIndex(_ITEMS_MONGO_COLLECTION, key: "copies.uniqueId", unique: true, sparse: true);
+    await con.conn.createIndex(_ITEMS_MONGO_COLLECTION,
+        keys: {"name": "text", "copies.uniqueId": "text"});
+    await con.conn.createIndex(_ITEMS_MONGO_COLLECTION,
+        keys: {ID_FIELD: 1, "copies.copy": 1}, unique: true);
+    await con.conn.createIndex(_ITEMS_MONGO_COLLECTION,
+        key: "copies.uniqueId", unique: true, sparse: true);
     return output;
   }
-
-  Future<DbCollection> getItemCopyHistoryCollection() async {
-    _checkConnection();
-
-    dynamic output = await con.conn.collection(_ITEM_COPY_HISTORY_MONGO_COLLECTION);
-    await con.conn
-        .createIndex(_ITEM_COPY_HISTORY_MONGO_COLLECTION, keys: {"itemId": 1, "copy": 1});
-    return output;
-  }
-
 
   Future<DbCollection> getItemTypesCollection() async {
     _checkConnection();
@@ -99,6 +80,24 @@ class _MongoDatabase  {
     return output;
   }
 
+  Future<DbCollection> getSetupCollection() async {
+    dynamic output = await con.conn.collection("setup");
+    return output;
+  }
+
+  Future<DbCollection> getTransactionsCollection() async {
+    dynamic output = await con.conn.collection("transactions");
+    return output;
+  }
+
+  Future<DbCollection> getUsersCollection() async {
+    _checkConnection();
+    DbCollection output = await con.conn.collection(_USERS_MONGO_COLLECTION);
+    await con.conn.createIndex(_USERS_MONGO_COLLECTION,
+        keys: {"id": "text", "name": "text", "idNumber": "text"});
+    return output;
+  }
+
   void release({bool dispose: false}) {
     if (released) return;
     if (dispose) {
@@ -108,6 +107,11 @@ class _MongoDatabase  {
     }
     con = null;
     released = true;
+  }
+
+  Future<dynamic> startTransaction() async {
+    DbCollection transactions = await getTransactionsCollection();
+    transactions.findOne({"state": "initial"});
   }
 
   void _checkConnection() {

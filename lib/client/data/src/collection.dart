@@ -5,6 +5,14 @@ class Collection extends JsProxy {
   @reflectable
   String name;
 
+  @reflectable
+  bool publiclyBrowsable= false;
+
+  @reflectable
+  List<String> curators = [];
+  @reflectable
+  List<String> browsers = [];
+
   Collection();
 
   Collection.copy(dynamic input) {
@@ -18,6 +26,10 @@ class Collection extends JsProxy {
   void _copy(dynamic from, dynamic to) {
     to.id = from.id;
     to.name = from.name;
+    to.publiclyBrowsable = from.publiclyBrowsable;
+    to.curators = from.curators;
+    to.browsers = from.browsers;
   }
+
 
 }

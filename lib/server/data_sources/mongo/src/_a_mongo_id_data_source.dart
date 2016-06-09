@@ -1,11 +1,13 @@
 part of data_sources.mongo;
 
 abstract class _AMongoIdDataSource<T extends AIdData>
-    extends _AMongoDataSource<T> with AIdNameBasedDataSource<T> {
+    extends _AMongoObjectDataSource<T> with AIdNameBasedDataSource<T> {
 
   Future delete(String id) => _deleteFromDb(where.eq(ID_FIELD, id));
 
   Future<bool> exists(String id) => _exists(where.eq(ID_FIELD, id));
+
+  Future<List<T>> search(String query);
 
   Future<List<T>> getAll({String sortField: ID_FIELD}) =>
       _getFromDb(where.sortBy(sortField));

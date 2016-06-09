@@ -23,21 +23,40 @@ import 'package:shelf_rpc/shelf_rpc.dart' as shelf_rpc;
 import 'package:shelf_static/shelf_static.dart';
 import 'package:stack_trace/stack_trace.dart';
 
-main(List<String> args) async {
-  var parser = new argsLib.ArgParser()
-    ..addOption('port', abbr: 'p', defaultsTo: '8080');
 
-  var result = parser.parse(args);
+HttpServer server;
 
-  var port = int.parse(result['port'], onError: (val) {
-    stdout.writeln('Could not parse port value "$val" into a number.');
-    exit(1);
-  });
 
+main(List<String> args) {
+//  var parser = new argsLib.ArgParser()
+//    ..addOption('port', abbr: 'p', defaultsTo: '8080');
+//
+//  var result = parser.parse(args);
+//
+//  var port = int.parse(result['port'], onError: (val) {
+//    stdout.writeln('Could not parse port value "$val" into a number.');
+//    exit(1);
+//  });
+//
   // Add a simple log handler to log information to a server side file.
   Logger.root.level = Level.INFO;
   Logger.root.onRecord.listen(new serverLogging.LogPrintHandler());
+
+  startServer();
+}
+
+dynamic stopServer() async  {
+  if(server==null)
+    throw new Exception("Server has not been started");
+  await server.close();
+  server = null;
+}
+
+dynamic startServer() async {
   try {
+    if(server!=null)
+      throw new Exception("Server has already been instantiated");
+
     var pathToBuild = join(ROOT_DIRECTORY, 'build/web/');
 
     final staticSiteHandler = createStaticHandler(pathToBuild,
@@ -97,15 +116,15 @@ main(List<String> args) async {
     shelf.Response _cors(shelf.Response response) =>
         response.change(headers: extraHeaders);
     final shelf.Middleware _fixCORS =
-        shelf.createMiddleware(responseHandler: _cors);
+    shelf.createMiddleware(responseHandler: _cors);
 
     var handler = const shelf.Pipeline()
         .addMiddleware(shelf.logRequests())
         .addMiddleware(_fixCORS)
-        .addMiddleware(exceptionHandler())
+        //.addMiddleware(exceptionHandler())
         .addHandler(root.handler);
 
-    final HttpServer server =
+    server =
         await io.serve(handler, '0.0.0.0', model.options.getInt("port"));
 
     SERVER_ROOT = "http://${server.address.host}:${server.port}/";
@@ -126,7 +145,7 @@ Future<Option<Principal>> authenticateUser(
     String userName, String password) async {
   Option<User> user = await data_source.users.getById(userName);
   if (user.isEmpty) return new None();
-  if (!model.users.verifyPassword(user.get(), password)) return new None();
+  if (!model.users.verifyPassword(user.get().password, password)) return new None();
   Principal principal = new Principal(user.get().getId);
   return new Some(principal);
 }

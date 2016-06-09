@@ -3,6 +3,8 @@ part of model;
 abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
   AIdNameBasedDataSource<T> get dataSource;
 
+  Future<List<T>> search(String query) => dataSource.search(query);
+
   Future<String> create(T t) async {
 //    if (!userAuthenticated()) {
 //      throw new NotAuthorizedException();
@@ -16,7 +18,7 @@ abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
       throw new NotAuthorizedException();
     }
 
-await     dataSource.delete(id);
+    await dataSource.delete(id);
   }
 
   Future<List<IdNamePair>> getAllIdsAndNames() =>
@@ -24,8 +26,7 @@ await     dataSource.delete(id);
 
   Future<List<T>> getAll() async {
     List<T> output = await dataSource.getAll();
-    for(T t in output)
-      _performAdjustments(t);
+    for (T t in output) _performAdjustments(t);
     return output;
   }
 

@@ -22,10 +22,10 @@ final AFieldModel fields = new MongoFieldDataSource();
 
 final AItemTypeModel itemTypes = new MongoItemTypeDataSource();
 
-final PresetModel presets = new PresetModel();
+//final PresetModel presets = new PresetModel();
 final AUserDataSource users= new MongoUserDataSource();
 final AItemCopyDataSource itemCopies = new MongoItemCopyDataSource();
 final AItemCopyHistoryModel itemHistories = new MongoItemCopyHistoryDataSource();
 
-final AItemCollectionModel itemCollections = new MongoCollectionDataSource();
+final ACollectionDataSource itemCollections = new MongoCollectionDataSource();
 

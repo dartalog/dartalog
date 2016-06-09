@@ -35,6 +35,13 @@ const String ITEM_STATUS_LOST = 'lost';
 
 const String ITEM_DEFAULT_STATUS = ITEM_STATUS_AVAILABLE;
 
+const String USER_PRIVILEGE_ADMIN = "admin"; // Implies all other privileges
+const String USER_PRIVILEGE_CREATE = "create";
+const String USER_PRIVILEGE_CHECKOUT = "checkout";
+const String USER_PRIVILEGE_BORROW = "borrow"; // All other privileges imply this
+
+const int HTTP_STATUS_SERVER_NEEDS_SETUP = 555;
+
 final Map<String, String> ITEM_COPY_STATUSES = {
   ITEM_STATUS_BORROWED: 'Borrowed',
   ITEM_STATUS_LOST: 'Lost',

@@ -9,6 +9,11 @@ class Collection extends AIdData {
   String get getName => name;
   set getName(String value) => name = value;
 
+  bool publiclyBrowsable= false;
+
+  List<String> curators = [];
+  List<String> browsers = [];
+
   Collection();
 
 }

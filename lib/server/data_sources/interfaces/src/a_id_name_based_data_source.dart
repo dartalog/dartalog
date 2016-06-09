@@ -9,5 +9,7 @@ abstract class AIdNameBasedDataSource<T> {
   Future<String> write(T t, [String id = null]);
   Future delete(String id);
   Future<bool> exists(String id);
+  Future<List<T>> search(String query);
+
 
 }

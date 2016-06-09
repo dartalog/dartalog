@@ -61,6 +61,15 @@ class MainApp extends PolymerElement {
   User currentUser;
 
   @property
+  bool userIsAdmin = false;
+  @property
+  bool userCanCheckout = false;
+  @property
+  bool userCanAdd = false;
+  @property
+  bool userCanBorrow = false;
+
+  @property
   bool loading = true;
 
   @property
@@ -78,6 +87,7 @@ class MainApp extends PolymerElement {
 
   @property
   bool showBack = false;
+
 
   final Router router = new Router(useFragment: true);
 

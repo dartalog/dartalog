@@ -1,6 +1,6 @@
 part of data_sources.mongo;
 
-class MongoItemCopyHistoryDataSource extends _AMongoDataSource<ItemCopyHistoryEntry>
+class MongoItemCopyHistoryDataSource extends _AMongoObjectDataSource<ItemCopyHistoryEntry>
     with AItemCopyHistoryModel {
   static final Logger _log = new Logger('MongoItemCopyHistoryDataSource');
 

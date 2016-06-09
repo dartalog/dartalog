@@ -7,6 +7,10 @@ abstract class AResource {
     return "";
   }
 
+  Future<dynamic> _catchExceptionsAwait(Future toAwait()) async {
+    return _catchExceptions(toAwait());
+  }
+
   Future<dynamic> _catchExceptions(Future toAwait) async {
     RpcError output;
     dynamic exception, stackTrace;
@@ -16,7 +20,7 @@ abstract class AResource {
     } on NotAuthorizedException catch(e,st) {
       exception = e;
       stackTrace = st;
-      output = new RpcError(401, "Not Authorized", e.message);
+      output = new RpcError(HttpStatus.UNAUTHORIZED, "Not Authorized", e.message);
     } on DataMovedException catch(e, st) {
       exception = e;
       stackTrace = st;
@@ -44,7 +48,7 @@ abstract class AResource {
     } on AlreadyExistsException catch(e, st) {
       exception = e;
       stackTrace = st;
-      output = new RpcError(406, "Conflict", e.toString());
+      output = new RpcError(HttpStatus.CONFLICT, "Conflict", e.toString());
     } on NotFoundException catch(e, st) {
       exception = e;
       stackTrace = st;
@@ -52,6 +56,14 @@ abstract class AResource {
     } on RpcError catch(e, st) {
       _logger.severe(e, st);
       throw e;
+    } on SetupDisabledException catch(e,st) {
+      exception = e;
+      stackTrace = st;
+      output = new RpcError(HttpStatus.FORBIDDEN,"Forbidden", "Setup is disabled");
+    } on SetupRequiredException catch(e,st) {
+      exception = e;
+      stackTrace = st;
+      output = new RpcError(HTTP_STATUS_SERVER_NEEDS_SETUP,"Setup Required", "Setup is required");
     } catch(e,st) {
       exception = e;
       stackTrace = st;
@@ -66,6 +78,11 @@ abstract class AResource {
   void _sendRedirectHeader(String target) {
     context.responseStatusCode = HttpStatus.MOVED_PERMANENTLY;
     context.responseHeaders[HttpHeaders.LOCATION] = target;
-    throw new RpcError(301," Moved Permanently",target);
+    throw new RpcError(HttpStatus.MOVED_PERMANENTLY," Moved Permanently",target);
+  }
+
+  Future checkIfSetupRequired() async {
+    if(await model.setup.isSetupRequired())
+      throw new SetupRequiredException();
   }
 }

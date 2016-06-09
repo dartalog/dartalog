@@ -91,7 +91,7 @@ class ItemCopyModel extends AModel<ItemCopy> {
       historyEntry.actionerUserId = actionerUserId;
       historyEntry.copy = itemCopy.copy;
       historyEntry.itemId = itemCopy.itemId;
-      historyEntry.operatorUserId = getUserId();
+      historyEntry.operatorUserId = currentUserId;
 
       itemCopy.status = newStatus;
 

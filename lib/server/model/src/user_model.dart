@@ -7,6 +7,11 @@ class UserModel extends AIdNameBasedModel<User> {
   AUserDataSource get dataSource =>
       data_sources.users;
 
+  Future<List<IdNamePair>> getAllIdsAndNames() async {
+    await checkUserForPrivilege(USER_PRIVILEGE_CHECKOUT);
+    return await super.getAllIdsAndNames();
+  }
+
   Future<User> getMe() async {
     if(!userAuthenticated())
       throw new NotAuthorizedException();
@@ -16,14 +21,23 @@ class UserModel extends AIdNameBasedModel<User> {
     return output.getOrElse(() =>throw new Exception("Authenticated user not present in database"));
   }
 
+  Future setPrivileges(String id, List<String> privilege) async {
+    await checkUserForPrivilege(USER_PRIVILEGE_ADMIN);
+    if(!await dataSource.exists(id))
+      throw new NotFoundException("User not found");
+
+    await dataSource.setPrivileges(id, privilege);
+  }
+
   @override
-  Future<String> create(User user) async {
-//    if (!userAuthenticated()) {
-//      throw new NotAuthorizedException();
-//    }
-    if(!isNullOrWhitespace(user.password))
-      user.password = new Crypt.sha256(user.password).toString();
-    await super.create(user);
+  Future<String> create(User user, {List<String> privileges}) async {
+    await checkUserForPrivilege(USER_PRIVILEGE_ADMIN);
+
+    String output = await super.create(user);
+
+    await _setPassword(output, user.password);
+
+    return output;
   }
 
   Future changePassword(
@@ -31,32 +45,43 @@ class UserModel extends AIdNameBasedModel<User> {
     if (!userAuthenticated()) {
       throw new NotAuthorizedException();
     }
-    User user = await this.getById(id);
+    if(currentUserId!=id)
+      throw new NotAuthorizedException.withMessage("You do not have permission to change another user's password");
 
     Map<String, String> field_errors = new Map<String, String>();
 
-    if (isNullOrWhitespace(currentPassword)) {
-      field_errors["currentPassword"] = "Required";
-    } else if (!verifyPassword(user, currentPassword)) {
-      field_errors["currentPassword"] = "Incorrect";
-    }
+    String userPassword = (await data_sources.users.getPasswordHash(id)).getOrElse(() => throw new Exception("User ${id} does not have a current password"));
 
-    if (isNullOrWhitespace(newPassword)) {
-      field_errors["newPassword"] = "Required";
-    } else if (newPassword.length < 8) {
-      //TODO: Additional restrictions? Keep them sane.
-      field_errors["newPassword"] = "Must be at least 8 digits long";
-    }
-
-    if (field_errors.length > 0) {
-      throw new DataValidationException.WithFieldErrors(
-          "Invalid input", field_errors);
-    }
-
-    user.password = new Crypt.sha256(newPassword).toString();
-    await dataSource.write(user, id);
+    await DataValidationException.PerformValidation((Map field_errors) async {
+      if (isNullOrWhitespace(currentPassword)) {
+        field_errors["currentPassword"] = "Required";
+      } else if (!verifyPassword(userPassword, currentPassword)) {
+        field_errors["currentPassword"] = "Incorrect";
+      }
+    });
+    await _setPassword(id, newPassword);
   }
 
-  bool verifyPassword(User user, String password) =>
-      new Crypt(user.password).match(password);
+  Future _setPassword(String id, String newPassword) async {
+    await DataValidationException.PerformValidation((Map field_errors) async {
+      if (isNullOrWhitespace(newPassword)) {
+        field_errors["newPassword"] = "Required";
+      } else if (newPassword.length < 8) {
+        //TODO: Additional restrictions? Keep them sane.
+        field_errors["newPassword"] = "Must be at least 8 digits long";
+      }
+    });
+
+    String passwordHash = hashPassword(newPassword);
+    await dataSource.setPassword(id, passwordHash);
+
+  }
+
+  String hashPassword(String password) {
+    return new Crypt.sha256(password).toString();
+  }
+
+  bool verifyPassword(String hash, String password) =>
+      new Crypt(hash).match(password);
+
 }

@@ -1,14 +1,6 @@
 part of data_sources.mongo;
 
-abstract class _AMongoDataSource<T> {
-  Map _createMap(T object) {
-    Map data = new Map();
-    _updateMap(object, data);
-    return data;
-  }
-
-  T _createObject(Map data);
-
+abstract class _AMongoDataSource {
   Future<dynamic> _connectionWrapper(Future statement(_MongoDatabase)) async {
     _MongoDatabase con = await _MongoDatabase.getConnection();
     try {
@@ -37,14 +29,6 @@ abstract class _AMongoDataSource<T> {
 
   Future<DbCollection> _getCollection(_MongoDatabase con);
 
-  Future<Option<T>> _getForOneFromDb(dynamic selector) async {
-    List results = await _getFromDb(selector);
-    if (results.length == 0) {
-      return new None();
-    }
-    return new Some(results.first);
-  }
-
   Future<dynamic> _genericUpdate(dynamic selector, dynamic document, {bool multiUpdate: false}) async {
     return await _collectionWrapper((DbCollection collection) async {
       return await collection.update(selector, document, multiUpdate: multiUpdate);
@@ -67,39 +51,10 @@ abstract class _AMongoDataSource<T> {
   }
 
 
-  Future<List<T>> _getFromDb(dynamic selector) async {
-    List results = await _genericFind(selector);
-    List<T> output = new List<T>();
-    for (var result in results) {
-      output.add(_createObject(result));
-    }
-    return output;
-  }
-
 
   Future<dynamic> _genericFind(dynamic selector) async {
     return await _collectionWrapper((DbCollection collection) async {
       return await collection.find(selector).toList();
-    });
-  }
-
-  _updateMap(T object, Map data);
-
-  Future _updateToDb(dynamic selector, T item) async {
-    return await _collectionWrapper((DbCollection collection) async {
-      Map data = await collection.findOne(selector);
-      if(data==null)
-        throw new InvalidInputException("Object to update not found");
-      _updateMap(item, data);
-      await collection.save(data);
-    });
-  }
-
-  Future _insertIntoDb(T item) async {
-    return await _collectionWrapper((DbCollection collection) async {
-
-      Map data = _createMap(item);
-      await collection.insert(data);
     });
   }
 

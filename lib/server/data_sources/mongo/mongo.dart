@@ -16,6 +16,7 @@ part 'src/_mongo_db_connection_pool.dart';
 part 'src/_mongo_database.dart';
 //part 'src/mongo/_mongo_settings_model.dart';
 part 'src/_a_mongo_data_source.dart';
+part 'src/_a_mongo_object_data_source.dart';
 part 'src/_a_mongo_id_data_source.dart';
 part 'src/mongo_field_data_source.dart';
 part 'src/mongo_user_data_source.dart';
@@ -23,9 +24,11 @@ part 'src/mongo_item_type_data_source.dart';
 part 'src/mongo_item_copy_data_source.dart';
 part 'src/mongo_item_copy_history_data_source.dart';
 part 'src/mongo_item_data_source.dart';
+part 'src/mongo_setup_data_source.dart';
 part 'src/mongo_collection_data_source.dart';
 
 const String ID_FIELD = "_id";
+const String NAME_FIELD = "name";
 
 const String _TEXT_COMMAND = "\$text";
 const String _UNWIND_COMMAND = "\$unwind";

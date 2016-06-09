@@ -25,6 +25,7 @@ part 'src/exceptions/redirecting_exception.dart';
 part 'src/requests/password_change_request.dart';
 part 'src/requests/item_action_request.dart';
 part 'src/requests/create_item_request.dart';
+part 'src/requests/database_setup_request.dart';
 part 'src/requests/update_item_request.dart';
 part 'src/requests/bulk_item_action_request.dart';
 part 'src/resources/a_id_resource.dart';
@@ -32,6 +33,7 @@ part 'src/resources/a_resource.dart';
 part 'src/resources/collection_resource.dart';
 part 'src/resources/field_resource.dart';
 part 'src/resources/import_resource.dart';
+part 'src/resources/setup_resource.dart';
 part 'src/resources/item_copy_resource.dart';
 part 'src/resources/item_resource.dart';
 part 'src/resources/item_type_resource.dart';
@@ -49,6 +51,7 @@ const String API_IMPORT_PATH = "import";
 const String API_ITEM_TYPES_PATH = "item_types";
 const String API_ITEMS_PATH = "items";
 const String API_USERS_PATH = "users";
+const String API_SETUP_PATH = "setup";
 
 
 List<List<int>> convertFiles(List<MediaMessage> input) {

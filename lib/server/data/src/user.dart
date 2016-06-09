@@ -11,5 +11,9 @@ class User extends AIdData {
 
   String password;
 
+  String idNumber = ""; // For library cards and such
+
+  List<String> privileges = new List<String>();
+
   User();
 }

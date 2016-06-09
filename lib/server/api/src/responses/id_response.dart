@@ -6,5 +6,5 @@ class IdResponse {
 
   IdResponse();
 
-  IdResponse.fromId(this.id, this.location);
+  IdResponse.fromId(this.id, [this.location]);
 }

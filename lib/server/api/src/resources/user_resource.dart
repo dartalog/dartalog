@@ -16,18 +16,17 @@ class UserResource extends AIdResource<User> {
   Future<User> getById(String id) => _getByIdWithCatch(id);
 
   @ApiMethod(path: 'current_user/')
-  Future<User> getMe() => _catchExceptions(model.users.getMe());
+  Future<User> getMe() => _catchExceptionsAwait(model.users.getMe);
 
 
   @ApiMethod(method: 'PUT', path: '${API_USERS_PATH}/{id}/')
   Future<IdResponse> update(String id, User user) => _updateWithCatch(id, user);
 
   @ApiMethod(method: 'PUT', path: '${API_USERS_PATH}/{id}/password/')
-  Future<VoidMessage> changePassword(String id, PasswordChangeRequest pcr) => _catchExceptions(_changePassword(id, pcr));
-  Future<VoidMessage> _changePassword(String id, PasswordChangeRequest pcr) async {
+  Future<VoidMessage> changePassword(String id, PasswordChangeRequest pcr) =>_catchExceptionsAwait(() async {
     await model.users.changePassword(id, pcr.currentPassword, pcr.newPassword);
-      return new VoidMessage();
-  }
+    return new VoidMessage();
+  });
 
   @ApiMethod(method: 'DELETE', path: '${API_USERS_PATH}/{id}/')
   Future<VoidMessage> delete(String id) => _deleteWithCatch(id);

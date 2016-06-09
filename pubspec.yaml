@@ -44,7 +44,9 @@ dependencies:
   analyzer: 0.27.2
 transformers:
 - polymer:
-    entry_points: web/index.html
+    entry_points:
+      - web/index.html
+      - web/setup/index.html
 - $dart2js:
     minify: true
     commandLineOptions:

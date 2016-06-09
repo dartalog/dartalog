@@ -15,11 +15,7 @@ class MongoItemDataSource extends _AMongoIdDataSource<Item>
     return output;
   }
 
-  Future<List<Item>> search(String query) async {
-    SelectorBuilder selector = where;
-    selector.map[_TEXT_COMMAND] = {_SEARCH_COMMAND: query};
-    return await _getFromDb(selector);
-  }
+
 
   Future<DbCollection> _getCollection(_MongoDatabase con) =>
       con.getItemsCollection();

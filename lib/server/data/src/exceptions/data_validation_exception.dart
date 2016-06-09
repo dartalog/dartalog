@@ -10,8 +10,10 @@ class DataValidationException implements  Exception {
     return message;
   }
 
-  static Future PerformValidation(Future<Map<String,String>> toAwait()) async {
-    Map<String,String> field_errors = await toAwait();
+  static Future PerformValidation(Future toAwait(Map<String,String> field_errors)) async {
+    Map<String,String> field_errors = new Map<String,String>();
+
+    await toAwait(field_errors);
 
     if (field_errors.length > 0) {
       throw new DataValidationException.WithFieldErrors(

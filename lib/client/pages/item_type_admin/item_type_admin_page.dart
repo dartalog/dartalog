@@ -28,6 +28,7 @@ import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/api/dartalog.dart' as API;
 import 'package:dartalog/tools.dart';
+import 'package:dartalog/client/controls/combo_list/combo_list_control.dart';
 
 /// A Polymer `<template-admin-page>` element.
 @PolymerRegister('item-type-admin-page')
@@ -92,10 +93,6 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
 
   @override
   void clearValidation() {
-    $['input_id'].invalid = false;
-    $['input_name'].invalid = false;
-    $['input_fieldIds'].invalid = false;
-    $['output_error'].text = "";
   }
 
   @override
@@ -133,44 +130,6 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
     }
   }
 
-  @reflectable
-  Future addFieldClicked(event, [_]) async {
-    try {
-      String id = this.selectedField;
-
-      if(isNullOrWhitespace(id))
-        throw new Exception("Please select a field");
-
-      if(this.currentItemType.fieldIds.contains(id)){
-        throw new Exception("Field has already been added");
-      }
-
-      add("currentItemType.fieldIds",id);
-    } catch(e,st) {
-      _log.severe(e, st);
-      this.handleException(e,st);
-    }
-  }
-  @reflectable
-  Future removeFieldClicked(event, [_]) async {
-    try {
-      dynamic ele = event.target;
-      while(isNullOrWhitespace(ele.dataset["id"])) {
-        ele = ele.parent;
-      }
-      String id = ele.dataset["id"];
-
-      if(id==null){
-        throw new Exception("null id");
-      }
-
-      removeItem("currentItemType.fieldIds", id);
-    } catch(e,st) {
-      _log.severe(e, st);
-      this.handleException(e,st);
-    }
-
-  }
 
   @reflectable
   saveClicked(event, [_]) async {

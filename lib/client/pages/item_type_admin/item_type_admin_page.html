@@ -19,27 +19,11 @@
         <paper-dialog id="editDialog" modal="true">
             <h2>Edit Item Type</h2>
             <paper-dialog-scrollable class="vertical">
-                <paper-input floatinglabel id="input_id" label="ID" value="{{currentItemType.id}}"></paper-input>
-                <paper-input floatinglabel id="input_name" label="Name" value="{{currentItemType.name}}"></paper-input>
+                <paper-input floatinglabel data-field-id="id" label="ID" value="{{currentItemType.id}}"></paper-input>
+                <paper-input floatinglabel data-field-id="name" label="Name" value="{{currentItemType.name}}"></paper-input>
 
-                <template is="dom-repeat" items="{{currentItemType.fieldIds}}">
-                    <paper-item class="container flex-horizontal" data-id$="{{item}}">
-                        <div class="flexchild">{{item}}</div>
-                        <paper-icon-button icon="arrow-upward" on-tap="upClicked"></paper-icon-button>
-                        <paper-icon-button icon="arrow-downward" on-tap="downClicked"></paper-icon-button>
-                        <paper-icon-button icon="delete" on-tap="removeFieldClicked"></paper-icon-button>
-                    </paper-item>
-                </template>
-
-                <paper-dropdown-menu id="input_fieldIds" floatinglabel label="Field">
-                    <paper-listbox class="dropdown-content " attr-for-selected="value" selected="{{selectedField}}">
-                        <template is="dom-repeat" items="{{fields}}">
-                            <paper-item value="{{item.id}}">{{item.name}}</paper-item>
-                        </template>
-                    </paper-listbox>
-                </paper-dropdown-menu>
-
-                <paper-icon-button icon="add" on-tap="addFieldClicked"></paper-icon-button>
+                <combo-list-control data-field-id="fields" label="Fields" items="[[fields]]" selected-values="{{currentItemType.fieldIds}}">
+                </combo-list-control>
                 </paper-dialog-scrollable>
             <span id="output_error" style="color:red"></span>
             <div class="buttons">

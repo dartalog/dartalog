@@ -23,6 +23,7 @@ part 'src/a_model.dart';
 part 'src/a_id_name_based_model.dart';
 part 'src/field_model.dart';
 part 'src/user_model.dart';
+part 'src/setup_model.dart';
 part 'src/item_model.dart';
 part 'src/collections_model.dart';
 part 'src/item_type_model.dart';
@@ -35,5 +36,6 @@ final FieldModel fields = new FieldModel();
 final CollectionsModel collections = new CollectionsModel();
 final ItemTypeModel itemTypes = new ItemTypeModel();
 final ItemModel items = new ItemModel();
+final SetupModel setup = new SetupModel();
 
 

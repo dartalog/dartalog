@@ -16,7 +16,7 @@ class ItemResource extends AIdResource<Item> {
     if(newItem.files!=null) {
       files = convertFiles(newItem.files);
     }
-    return await _catchExceptions(model.items.createWithCopy(
+    return await _catchExceptionsAwait(() => model.items.createWithCopy(
         newItem.item, newItem.collectionId, uniqueId: newItem.uniqueId, files: files));
   }
 
@@ -29,21 +29,16 @@ class ItemResource extends AIdResource<Item> {
   Future<List<IdNamePair>> getAllIdsAndNames() => _getAllIdsAndNamesWithCatch();
 
   @ApiMethod(path: '${_API_PATH}/')
-  Future<List<ItemListingResponse>> getAllListings() =>
-      _catchExceptions(_getAllListings());
-  Future<List<ItemListingResponse>> _getAllListings() async =>
-      ItemListingResponse.convertList(await model.items.getAll());
+  Future<List<ItemListingResponse>> getAllListings()  =>
+      _catchExceptionsAwait(() async => ItemListingResponse.convertList(await model.items.getAll()));
 
   @ApiMethod(path: '${_API_PATH}/{id}/')
   Future<Item> getById(String id, {bool includeType: false, bool includeFields: false, bool includeCopies:false}) =>
-      _catchExceptions(model.items.getById(id, includeType: includeType, includeCopies: includeCopies, includeFields: includeFields));
+      _catchExceptionsAwait(() =>model.items.getById(id, includeType: includeType, includeCopies: includeCopies, includeFields: includeFields));
 
   @ApiMethod(path: 'search/{query}/')
   Future<List<ItemListingResponse>> search(String query) =>
-      _catchExceptions(_search(query));
-  Future<List<ItemListingResponse>> _search(String query) async {
-    return ItemListingResponse.convertList(await model.items.search(query));
-  }
+      _catchExceptionsAwait(() async => ItemListingResponse.convertList(await model.items.search(query)));
 
   Future<IdResponse> update(String id, Item item) => _updateWithCatch(id, item);
 
@@ -53,7 +48,7 @@ class ItemResource extends AIdResource<Item> {
     if(item.files!=null) {
       files = convertFiles(item.files);
     }
-    String output =  await _catchExceptions(model.items.update(id, item.item, files: files));
+    String output =  await _catchExceptionsAwait(() => model.items.update(id, item.item, files: files));
     return new IdResponse.fromId(id, _generateRedirect(id));
   }
 

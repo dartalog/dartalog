@@ -9,32 +9,39 @@
     <style include="iron-flex"></style>
 
     <template>
-        <paper-card>
-        <paper-input  value="{{currentItem.name}}" label="Name"></paper-input>
-        <template is="dom-repeat" items="{{currentItem.fields}}">
-            <template is="dom-if" if="{{item.isTypeString}}" restamp="true">
-                <paper-input  value="{{item.value}}" label="{{item.name}}" data-type$="{{item.type}}"></paper-input>
-            </template>
-            <template is="dom-if" if="{{item.isTypeImage}}" restamp="true">
-                <paper-item>
-                    <paper-input  value="{{item.value}}" label="{{item.name}}" data-type$="{{item.type}}"></paper-input>
-                    <img src="[[item.value]]" />
-                </paper-item>
-            </template>
-        </template>
-        </paper-card>
-        <template is="dom-if" if="{{isNew}}" restamp="true">
-        <paper-card heading="New Copy">
-            <paper-dropdown-menu data-field-id="collectionId" floatinglabel label="Collection">
-                <paper-listbox class="dropdown-content" attr-for-selected="value" selected="{{newCollectionId}}">
-                    <template is="dom-repeat" items="[[collections]]">
-                        <paper-item value="[[item.id]]">[[item.name]]</paper-item>
+        <paper-card class="vertical layout" style="margin:8px;">
+            <div class="card_list_item">
+                <paper-input value="{{currentItem.name}}" label="Name"></paper-input>
+            </div>
+            <template is="dom-repeat" items="[[currentItem.fields]]">
+                <div class="card_list_item layout horizontal center" data-index$="[[index]]">
+                    <template is="dom-if" if="[[item.isTypeString]]" restamp="true">
+                        <paper-input value="{{item.value}}" label="[[item.name]]"
+                                     data-type$="[[item.type]]"></paper-input>
                     </template>
-                </paper-listbox>
-            </paper-dropdown-menu>
-
-            <paper-input data-field-id="uniqueId" label="Unique ID" value="{{newUniqueId}}"></paper-input>
-        </paper-card>
+                    <template is="dom-if" if="{{item.isTypeImage}}" restamp="true">
+                        <paper-input value="{{item.editImageUrl}}" label="[[item.name]]"
+                                     data-type$="[[item.type]]" on-change="imageInputChanged" class="flex"></paper-input>
+                        <paper-icon-button icon="file-upload" on-tap="uploadClicked"
+                                           title="Upload Image"></paper-icon-button>
+                        <input type="file" on-change="fileUploadChanged" style="display:none"/>
+                        <iron-image src="[[item.displayImageUrl]]" style="width:100px; height:100px;" sizing="contain"/>
+                    </template>
+                </div>
             </template>
+        </paper-card>
+        <template is="dom-if" if="[[isNew]]" restamp="true">
+            <paper-card heading="New Copy">
+                <paper-dropdown-menu data-field-id="collectionId" floatinglabel label="Collection">
+                    <paper-listbox class="dropdown-content" attr-for-selected="value" selected="{{newCollectionId}}">
+                        <template is="dom-repeat" items="[[collections]]">
+                            <paper-item value="[[item.id]]">[[item.name]]</paper-item>
+                        </template>
+                    </paper-listbox>
+                </paper-dropdown-menu>
+
+                <paper-input data-field-id="uniqueId" label="Unique ID" value="{{newUniqueId}}"></paper-input>
+            </paper-card>
+        </template>
     </template>
 </dom-module>

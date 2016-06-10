@@ -6,15 +6,22 @@ library dartalog.client.controls.item_edit;
 
 import 'dart:async';
 import 'dart:html';
+import 'dart:convert';
 
 import 'package:dartalog/client/api/dartalog.dart' as API;
 import 'package:dartalog/client/client.dart';
+import 'package:dartalog/dartalog.dart';
 import 'package:dartalog/client/controls/controls.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/tools.dart';
 import 'package:logging/logging.dart';
 import 'package:polymer/polymer.dart';
 import 'package:polymer_elements/paper_card.dart';
+import 'package:polymer_elements/paper_input.dart';
+import 'package:polymer_elements/paper_item.dart';
+import 'package:polymer_elements/paper_dropdown_menu.dart';
+import 'package:polymer_elements/paper_listbox.dart';
+import 'package:polymer_elements/iron_image.dart';
 import 'package:web_components/web_components.dart';
 
 @PolymerRegister('item-edit-control')
@@ -57,13 +64,25 @@ class ItemEditControl extends AControl {
   }
 
   Future<String> save() async {
-    await handleApiExceptions(() async {
+    return await handleApiExceptions(() async {
+      List<API.MediaMessage> files = new List<API.MediaMessage>();
+
+      for(Field f in this.currentItem.fields) {
+        if(f.type=="image") {
+          if(f.mediaMessage!=null) {
+            files.add(f.mediaMessage);
+            f.value = "${FILE_UPLOAD_PREFIX}${files.length-1}";
+          }
+        }
+      }
+
       API.Item newItem = new API.Item();
       currentItem.copyTo(newItem);
 
       if (!isNullOrWhitespace(this.originalItemId)) {
         API.UpdateItemRequest request = new API.UpdateItemRequest();
         request.item = newItem;
+        request.files = files;
         API.IdResponse idResponse =
             await api.items.updateItem(request, this.originalItemId);
         return idResponse.id;
@@ -72,11 +91,13 @@ class ItemEditControl extends AControl {
         request.item = newItem;
         request.uniqueId = newUniqueId;
         request.collectionId = newCollectionId;
+        request.files = files;
+
         API.ItemCopyId itemCopyId = await api.items.createItemWithCopy(request);
         return itemCopyId.itemId;
       }
+      return "";
     });
-    return "";
   }
 
   Future _loadItem(String id) async {
@@ -101,4 +122,46 @@ class ItemEditControl extends AControl {
     set("currentItem.fields", newItem.fields);
     set("currentItem.name", newItem.name);
   }
+
+  @reflectable
+  imageInputChanged(event,[_]) {
+    Element parent = getParentElement(event.target, "div");
+    int index = int.parse(parent.dataset["index"]);
+    Field field = this.currentItem.fields[index];
+
+
+  }
+
+  @reflectable
+  uploadClicked(event, [_]) {
+    Element parent = getParentElement(event.target, "div");
+    InputElement input = parent.querySelector("input[type='file']");
+    input.click();
+  }
+
+  @reflectable
+  fileUploadChanged(event, [_]) async {
+    InputElement input = event.target;
+    if(input.files.length==0)
+      return;
+    File file  = input.files[0];
+
+    Element parent = getParentElement(event.target, "div");
+    int index = int.parse(parent.dataset["index"]);
+
+    Field field = this.currentItem.fields[index];
+
+    this.set("currentItem.fields.${index}.editImageUrl", file.name);
+    FileReader reader = new FileReader();
+    reader.readAsDataUrl(file);
+    await for(dynamic fileEvent in reader.onLoad) {
+      this.set("currentItem.fields.${index}.displayImageUrl", reader.result);
+      field.mediaMessage = new API.MediaMessage();
+      List<String> parms = reader.result.toString().split(";");
+      field.mediaMessage.contentType = parms[0].split(":")[1];
+      field.mediaMessage.bytes = BASE64URL.decode(parms[1].split(",")[1]);
+    }
+
+  }
+
 }

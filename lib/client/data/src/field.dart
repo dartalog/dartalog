@@ -1,6 +1,6 @@
 part of data;
 
-class Field extends JsProxy {
+class Field extends JsProxy  {
   @reflectable
   String format = "";
   @reflectable
@@ -10,10 +10,27 @@ class Field extends JsProxy {
   @reflectable
   String type = "";
 
-  @Property(notify: true) String value = "";
+  String _value = "";
+  @Property(notify: true)
+  String get value => _value;
+  set value(String value) {
+    _value = value;
+    if(type=="image") {
+      String url = getImageUrl(value, ImageType.THUMBNAIL);
+      this.displayImageUrl = getImageUrl(value, ImageType.THUMBNAIL);
+      if(!value.startsWith(HOSTED_IMAGE_PREFIX))
+        editImageUrl = value;
+    }
+  }
 
   @reflectable bool isTypeString = false;
   @reflectable bool isTypeImage = false;
+
+  @reflectable String displayImageUrl = "";
+
+  @Property(notify:true) String editImageUrl = "";
+
+  API.MediaMessage mediaMessage;
 
   Field();
 
@@ -48,5 +65,7 @@ class Field extends JsProxy {
     }
     return output;
   }
+
+
 
 }

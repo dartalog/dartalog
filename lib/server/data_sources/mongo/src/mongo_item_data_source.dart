@@ -11,6 +11,8 @@ class MongoItemDataSource extends _AMongoIdDataSource<Item>
     output.getName = data['name'];
     output.typeId = data['typeId'];
     output.values = data["values"];
+    output.dateAdded = data["dateAdded"];
+    output.dateUpdated = data["dateUpdated"];
 
     return output;
   }
@@ -25,5 +27,8 @@ class MongoItemDataSource extends _AMongoIdDataSource<Item>
     data["name"] = item.getName;
     data["typeId"] = item.typeId;
     data["values"] = item.values;
+    if(item.dateAdded!=null)
+      data["dateAdded"] = item.dateAdded;
+    data["dateUpdated"] = item.dateUpdated;
   }
 }

@@ -11,6 +11,9 @@ class Item extends AIdData {
 
   String typeId;
 
+  DateTime dateAdded;
+  DateTime dateUpdated;
+
   Map<String, String> values = new Map<String, String>();
 
   List<ItemCopy> copies;

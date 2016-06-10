@@ -60,6 +60,8 @@ class ItemModel extends AIdNameBasedModel<Item> {
       throw new NotAuthorizedException();
     }
 
+    item.dateAdded = new DateTime.now();
+    item.dateUpdated = new DateTime.now();
     if (!isNullOrWhitespace(item.getName))
       item.getId = await _generateUniqueId(item);
     await DataValidationException.PerformValidation((Map output) async {
@@ -89,16 +91,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
 
   @override
   Future<String> create(Item item, {List<List<int>> files}) async {
-    if (!userAuthenticated()) {
-      throw new NotAuthorizedException();
-    }
-    if (!isNullOrWhitespace(item.getName))
-      item.getId = await _generateUniqueId(item);
-
-    await _handleFileUploads(item, files);
-
-
-    return await super.create(item);
+    throw new Exception("Use createWithCopy");
   }
 
   @override
@@ -106,6 +99,10 @@ class ItemModel extends AIdNameBasedModel<Item> {
     if (!userAuthenticated()) {
       throw new NotAuthorizedException();
     }
+
+    item.dateAdded = null;
+    item.dateUpdated = new DateTime.now();
+
     if (!isNullOrWhitespace(item.getName)) {
       Item oldItem = (await data_sources.items.getById(id)).getOrElse(
           () => throw new NotFoundException("Item ${item} not found"));
@@ -228,7 +225,6 @@ class ItemModel extends AIdNameBasedModel<Item> {
         }
         data = files[filePosition];
 
-        continue;
       } else {
         // So we assume it's a URL
         _log.fine("Processing as URL: ${value}");

@@ -1,5 +1,6 @@
 library data;
 
+import 'dart:html';
 import 'package:polymer/polymer.dart';
 import 'package:dartalog/dartalog.dart';
 import 'package:dartalog/client/client.dart';

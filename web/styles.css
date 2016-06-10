@@ -12,3 +12,8 @@ body {
     -webkit-touch-callout: none;
     background-color: #f2f2f2;
 }
+
+div.card_list_item {
+    padding-left: 16px;
+    padding-right: 16px;
+}

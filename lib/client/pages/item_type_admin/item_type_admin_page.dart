@@ -62,27 +62,21 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
   }
 
   Future loadAvailableFields() async {
-    try {
+    await handleApiExceptions(() async {
       clear("fields");
 
       API.ListOfIdNamePair data = await api.fields.getAllIdsAndNames();
 
       set("fields", IdNamePair.convertList(data));
-    } catch(e,st) {
-      _log.severe(e, st);
-      this.handleException(e,st);
-    }
+    });
   }
 
   Future loadItemTypes() async {
-    try {
+    await handleApiExceptions(() async {
       clear("itemTypes");
       API.ListOfIdNamePair data = await api.itemTypes.getAllIdsAndNames();
       set("itemTypes", IdNamePair.convertList(data));
-    } catch(e,st) {
-      _log.severe(e, st);
-      this.handleException(e,st);
-    }
+    });
   }
 
   void reset() {
@@ -114,7 +108,7 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
 
   @reflectable
   itemTypeClicked(event, [_]) async {
-    try {
+    await handleApiExceptions(() async {
       String id = event.target.dataset["id"];
       API.ItemType itemType = await api.itemTypes.getById(id);
 
@@ -124,16 +118,13 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
       currentItemId = id;
       set("currentItemType", new ItemType.copy(itemType));
       editDialog.open();
-    } catch(e,st) {
-      _log.severe(e, st);
-      this.handleException(e,st);
-    }
+    });
   }
 
 
   @reflectable
   saveClicked(event, [_]) async {
-    try {
+    await handleApiExceptions(() async {
       API.ItemType itemType = new API.ItemType();
       this.currentItemType.copyTo(itemType);
 
@@ -144,19 +135,7 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
       }
       this.refresh();
       this.editDialog.close();
-    } on API.DetailedApiRequestError catch  ( e, st) {
-      try {
-        handleApiError(e, generalErrorField: "output_error");
-      } catch (e, st) {
-        _log.severe(e, st);
-        this.handleException(e,st);
-      }
-    } catch(e,st) {
-      _log.severe(e, st);
-      this.handleException(e,st);
-    } finally {
-    }
-
+    });
   }
 
 }

@@ -15,9 +15,7 @@ class ItemTypeModel extends AIdNameBasedModel<ItemType> {
   }
 
   @override
-  Future<Map<String, String>> _validateFieldsInternal(ItemType itemType) async {
-    Map<String, String> field_errors = new Map<String, String>();
-
+  Future _validateFieldsInternal(Map<String, String> field_errors, ItemType itemType, bool creating) async {
     if (itemType.fieldIds == null || itemType.fieldIds.length == 0)
       field_errors["fieldIds"] = "Required";
     else {
@@ -25,8 +23,6 @@ class ItemTypeModel extends AIdNameBasedModel<ItemType> {
       if(test.length!=itemType.fieldIds.length)
         field_errors["fieldIds"] = "Not found";
     }
-
-    return field_errors;
   }
 
 }

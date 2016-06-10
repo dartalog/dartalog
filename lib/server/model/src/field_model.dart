@@ -6,9 +6,7 @@ class FieldModel extends AIdNameBasedModel<Field> {
   AIdNameBasedDataSource<Field> get dataSource => data_sources.fields;
 
   @override
-  Future<Map<String, String>> _validateFieldsInternal(Field field) async {
-    Map<String, String> field_errors = new Map<String, String>();
-
+  Future _validateFieldsInternal(Map field_errors, Field field, bool creating) async {
     if (isNullOrWhitespace(field.type))
       field_errors["type"] = "Required";
     else if(!FIELD_TYPES.containsKey(field.type)) {
@@ -19,8 +17,6 @@ class FieldModel extends AIdNameBasedModel<Field> {
       String test = validateRegularExpression(field.format);
       if (!isNullOrWhitespace(test)) field_errors["format"] = test;
     }
-
-    return field_errors;
   }
 
 }

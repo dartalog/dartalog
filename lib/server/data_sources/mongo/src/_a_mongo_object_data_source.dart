@@ -17,7 +17,8 @@ abstract class _AMongoObjectDataSource<T> extends _AMongoDataSource {
 
   Future<DbCollection> _getCollection(_MongoDatabase con);
 
-  Future<Option<T>> _getForOneFromDb(dynamic selector) async {
+  Future<Option<T>> _getForOneFromDb(SelectorBuilder selector) async {
+    selector = selector.limit(1);
     List results = await _getFromDb(selector);
     if (results.length == 0) {
       return new None();

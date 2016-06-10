@@ -50,11 +50,19 @@ abstract class _AMongoDataSource {
     });
   }
 
+  Future<Option<dynamic>> _genericFindOne(SelectorBuilder selector) async {
+    selector = selector.limit(1);
+    List output = await _genericFind(selector);
+    if(output.length==0)
+      return new None();
+    return new Some(output[0]);
+  }
 
-
-  Future<dynamic> _genericFind(dynamic selector) async {
+  Future<List> _genericFind(SelectorBuilder selector) async {
     return await _collectionWrapper((DbCollection collection) async {
-      return await collection.find(selector).toList();
+      Stream str = collection.find(selector);
+      List output = await str.toList();
+      return output;
     });
   }
 

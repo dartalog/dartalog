@@ -55,19 +55,16 @@ class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
 
   @reflectable
   Future refresh() async {
-    try {
+    await handleApiExceptions(() async {
       this.reset();
       clear("collections");
 
       API.ListOfIdNamePair data = await api.collections.getAllIdsAndNames();
 
-      for(API.IdNamePair pair  in data) {
+      for (API.IdNamePair pair in data) {
         add("collections", new IdNamePair.copy(pair));
       }
-    } catch (e, st) {
-      _log.severe(e, st);
-      this.handleException(e,st);
-    }
+    });
   }
 
 
@@ -95,14 +92,14 @@ class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
 
   @reflectable
   collectionClicked(event, [_]) async {
-    try {
+    await handleApiExceptions(() async {
       String id = event.target.dataset["id"];
-      if(id==null)
+      if (id == null)
         return;
 
       API.Collection collection = await api.collections.getById(id);
 
-      if(collection==null)
+      if (collection == null)
         throw new Exception("Selected collection not found");
 
       currentId = id;
@@ -110,10 +107,7 @@ class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
       set("currentCollection", new Collection.copy(collection));
 
       editDialog.open();
-    } catch (e, st) {
-      _log.severe(e, st);
-      this.handleException(e,st);
-    }
+    });
   }
 
   @reflectable
@@ -129,7 +123,7 @@ class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
 
   @reflectable
   saveClicked(event, [_]) async {
-    try {
+    await handleApiExceptions(() async {
       API.Collection collection = new API.Collection();
       currentCollection.copyTo(collection);
       if (isNullOrWhitespace(this.currentId)) {
@@ -141,13 +135,7 @@ class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
       refresh();
       editDialog.close();
       showMessage("Collection saved");
-    } on API.DetailedApiRequestError catch  ( e, st) {
-      handleApiError(e, generalErrorField: "output_field_error");
-    } catch (e, st) {
-      _log.severe(e, st);
-      this.handleException(e,st);
-    } finally {
-    }
+    });
   }
 
 }

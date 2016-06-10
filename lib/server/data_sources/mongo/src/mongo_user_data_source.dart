@@ -9,7 +9,8 @@ class MongoUserDataSource extends _AMongoIdDataSource<User> with AUserDataSource
     User output = new User();
     output.getId = data[ID_FIELD];
     output.getName = data["name"];
-    output.privileges = data[PRIVILEGES_FIELD];
+    if(data.containsKey(PRIVILEGES_FIELD))
+      output.privileges = data[PRIVILEGES_FIELD];
     return output;
   }
 
@@ -43,9 +44,10 @@ class MongoUserDataSource extends _AMongoIdDataSource<User> with AUserDataSource
 
   Future<Option<String>> getPasswordHash(String id) async {
     SelectorBuilder selector = where.eq(ID_FIELD, id);
-    Map data = await _genericFind(selector);
-    if(data.containsKey(PASSWORD_FIELD))
-      return new Some(data[PASSWORD_FIELD]);
-    return  new None();
+    Option data = await _genericFindOne(selector);
+    return data.map((Map user) {
+      if(user.containsKey(PASSWORD_FIELD))
+        return user[PASSWORD_FIELD];
+    });
   }
 }

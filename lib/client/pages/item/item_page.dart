@@ -85,16 +85,13 @@ class ItemPage extends APage with ARefreshablePage, ADeletablePage, AEditablePag
 
   @override
   Future delete() async {
-    try {
+    await handleApiExceptions(() async {
       if(!window.confirm("Are you sure you want to delete this item?"))
         return;
       await api.items.delete(currentItem.id);
       showMessage("Item deleted");
       mainApp.activateRoute(BROWSE_ROUTE_NAME);
-    } catch(e,st) {
-      _log.severe(e, st);
-      this.handleException(e,st);
-    }
+    });
   }
 
   @override

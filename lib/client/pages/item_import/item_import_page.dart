@@ -126,24 +126,18 @@ class ItemImportPage extends APage with ASaveablePage {
   }
 
   Future loadItemTypes() async {
-    try {
+    await handleApiExceptions(() async {
       clear("itemTypes");
       API.ListOfIdNamePair data = await api.itemTypes.getAllIdsAndNames();
       addAll("itemTypes", IdNamePair.convertList(data));
-    } catch (e, st) {
-      _log.severe(e, st);
-      this.handleException(e, st);
-    }
+    });
   }
   Future loadCollections() async {
-    try {
+    await handleApiExceptions(() async {
       clear("collections");
       API.ListOfIdNamePair data = await api.collections.getAllIdsAndNames();
       addAll("collections", IdNamePair.convertList(data));
-    } catch (e, st) {
-      _log.severe(e, st);
-      this.handleException(e, st);
-    }
+    });
   }
 
   @override
@@ -161,24 +155,19 @@ class ItemImportPage extends APage with ASaveablePage {
   }
 
   Future performSingleSearch() async {
-    try {
+    await handleApiExceptions(() async {
       this.mainApp.startLoading();
       clear("results");
 
       API.SearchResults results =
           await api.import.search(selectedImportSource, this.searchQuery);
       addAll("results", ImportSearchResult.convertList(results.results));
-    } catch (e, st) {
-      _log.severe(e, st);
-      this.handleException(e, st);
-    }finally {
-      this.mainApp.stopLoading();
-    }
+    });
   }
 
   @reflectable
   searchResultClicked(event, [_]) async {
-    try {
+    await handleApiExceptions(() async {
       if(isNullOrWhitespace(selectedItemType)) {
         throw new Exception("Please select an item type");
       }
@@ -202,15 +191,12 @@ class ItemImportPage extends APage with ASaveablePage {
       this.showSaveButton = true;
       singleImportPages.selected = "item_entry";
       this.mainApp.evaluatePage();
-    } catch (e, st) {
-      _log.severe(e, st);
-      this.handleException(e, st);
-    }
+    });
   }
 
   @reflectable
   bulkSearchClicked(event, [_]) async {
-    try {
+    await handleApiExceptions(() async {
       if(isNullOrWhitespace(selectedImportSource)) {
         throw new Exception("Please select an import source");
       }
@@ -241,17 +227,12 @@ class ItemImportPage extends APage with ASaveablePage {
         add("bulkResults",bii);
       }
 
-    } catch (e, st) {
-      _log.severe(e, st);
-      this.handleException(e, st);
-    } finally  {
-      this.mainApp.stopLoading();
-    }
+    });
   }
 
   @reflectable
   bulkImportSaveClicked(event, [_]) async {
-    try {
+    await handleApiExceptions(() async {
       this.mainApp.startLoading();
 
       if(isNullOrWhitespace(selectedItemType)) {
@@ -285,12 +266,7 @@ class ItemImportPage extends APage with ASaveablePage {
         i--;
       }
 
-    } catch (e, st) {
-      _log.severe(e, st);
-      this.handleException(e, st);
-    } finally  {
-      this.mainApp.stopLoading();
-    }
+    });
   }
 
   @reflectable

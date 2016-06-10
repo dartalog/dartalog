@@ -26,6 +26,7 @@ class DartalogApi {
   ItemTypesResourceApi get itemTypes => new ItemTypesResourceApi(_requester);
   ItemsResourceApi get items => new ItemsResourceApi(_requester);
   PresetsResourceApi get presets => new PresetsResourceApi(_requester);
+  SetupResourceApi get setup => new SetupResourceApi(_requester);
   UsersResourceApi get users => new UsersResourceApi(_requester);
 
   DartalogApi(http.Client client, {core.String rootUrl: "http://localhost:8080/", core.String servicePath: "dartalog/0.1/"}) :
@@ -1272,6 +1273,148 @@ class PresetsResourceApi {
 }
 
 
+class SetupResourceApi {
+  final commons.ApiRequester _requester;
+
+  SetupResourceApi(commons.ApiRequester client) : 
+      _requester = client;
+
+  /**
+   * Request parameters:
+   *
+   * Completes with a [ListOfString].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<ListOfString> checkDatabase() {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+
+    _url = 'setup/database/';
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new ListOfString.fromJson(data));
+  }
+
+  /**
+   * Request parameters:
+   *
+   * Completes with a [ListOfString].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<ListOfString> checkForAdminUser() {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+
+    _url = 'setup/admin_user/';
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new ListOfString.fromJson(data));
+  }
+
+  /**
+   * [request] - The metadata request object.
+   *
+   * Request parameters:
+   *
+   * Completes with a [IdResponse].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<IdResponse> createAdminUser(User request) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (request != null) {
+      _body = convert.JSON.encode((request).toJson());
+    }
+
+    _url = 'setup/admin_user/';
+
+    var _response = _requester.request(_url,
+                                       "POST",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new IdResponse.fromJson(data));
+  }
+
+  /**
+   * Request parameters:
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future setUpDatabase() {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+
+    _downloadOptions = null;
+
+    _url = 'setup/database/';
+
+    var _response = _requester.request(_url,
+                                       "POST",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => null);
+  }
+
+}
+
+
 class UsersResourceApi {
   final commons.ApiRequester _requester;
 
@@ -1576,27 +1719,48 @@ class BulkItemActionRequest {
 }
 
 class Collection {
+  core.List<core.String> browsers;
+  core.List<core.String> curators;
   core.String id;
   core.String name;
+  core.bool publiclyBrowsable;
 
   Collection();
 
   Collection.fromJson(core.Map _json) {
+    if (_json.containsKey("browsers")) {
+      browsers = _json["browsers"];
+    }
+    if (_json.containsKey("curators")) {
+      curators = _json["curators"];
+    }
     if (_json.containsKey("id")) {
       id = _json["id"];
     }
     if (_json.containsKey("name")) {
       name = _json["name"];
     }
+    if (_json.containsKey("publiclyBrowsable")) {
+      publiclyBrowsable = _json["publiclyBrowsable"];
+    }
   }
 
   core.Map toJson() {
     var _json = new core.Map();
+    if (browsers != null) {
+      _json["browsers"] = browsers;
+    }
+    if (curators != null) {
+      _json["curators"] = curators;
+    }
     if (id != null) {
       _json["id"] = id;
     }
     if (name != null) {
       _json["name"] = name;
+    }
+    if (publiclyBrowsable != null) {
+      _json["publiclyBrowsable"] = publiclyBrowsable;
     }
     return _json;
   }
@@ -2145,6 +2309,32 @@ class ListOfItemListingResponse
   }
 }
 
+class ListOfString
+    extends collection_1.ListBase<core.String> {
+  final core.List<core.String> _inner;
+
+  ListOfString() : _inner = [];
+
+  ListOfString.fromJson(core.List json)
+      : _inner = json.map((value) => value).toList();
+
+  core.List toJson() {
+    return _inner.map((value) => value).toList();
+  }
+
+  core.String operator [](core.int key) => _inner[key];
+
+  void operator []=(core.int key, core.String value) {
+    _inner[key] = value;
+  }
+
+  core.int get length => _inner.length;
+
+  void set length(core.int newLength) {
+    _inner.length = newLength;
+  }
+}
+
 class MapOfListOfString
     extends collection_1.MapBase<core.String, core.List<core.String>> {
   final core.Map _innerMap = {};
@@ -2409,8 +2599,10 @@ class UpdateItemRequest {
 
 class User {
   core.String id;
+  core.String idNumber;
   core.String name;
   core.String password;
+  core.List<core.String> privileges;
 
   User();
 
@@ -2418,11 +2610,17 @@ class User {
     if (_json.containsKey("id")) {
       id = _json["id"];
     }
+    if (_json.containsKey("idNumber")) {
+      idNumber = _json["idNumber"];
+    }
     if (_json.containsKey("name")) {
       name = _json["name"];
     }
     if (_json.containsKey("password")) {
       password = _json["password"];
+    }
+    if (_json.containsKey("privileges")) {
+      privileges = _json["privileges"];
     }
   }
 
@@ -2431,11 +2629,17 @@ class User {
     if (id != null) {
       _json["id"] = id;
     }
+    if (idNumber != null) {
+      _json["idNumber"] = idNumber;
+    }
     if (name != null) {
       _json["name"] = name;
     }
     if (password != null) {
       _json["password"] = password;
+    }
+    if (privileges != null) {
+      _json["privileges"] = privileges;
     }
     return _json;
   }

@@ -121,7 +121,7 @@ dynamic startServer() async {
     var handler = const shelf.Pipeline()
         .addMiddleware(shelf.logRequests())
         .addMiddleware(_fixCORS)
-        //.addMiddleware(exceptionHandler())
+        .addMiddleware(exceptionHandler())
         .addHandler(root.handler);
 
     server =
@@ -145,9 +145,13 @@ Future<Option<Principal>> authenticateUser(
     String userName, String password) async {
   Option<User> user = await data_source.users.getById(userName);
   if (user.isEmpty) return new None();
-  if (!model.users.verifyPassword(user.get().password, password)) return new None();
-  Principal principal = new Principal(user.get().getId);
-  return new Some(principal);
+  Option<String> hashOption = await data_source.users.getPasswordHash(userName);
+  return hashOption.map((String hash) {
+    if (model.users.verifyPassword(hash, password))
+      return new Principal(user.get().getId);
+  }).orElse(() => throw new Exception("User does not have a password set"));
+
+
 }
 
 Future<Option<Principal>> getUser(String userName) async {

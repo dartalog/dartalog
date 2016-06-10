@@ -74,23 +74,26 @@ class CheckoutPage extends APage with ARefreshablePage {
 
   @override
   Future refresh() async {
-    List<ItemCopy> newCart = [];
-    for(ItemCopy itemCopy in cart) {
-      try {
-        API.ItemCopy updatedItemCopy = await api.items.copies.get(itemCopy.itemId, itemCopy.copy);
-        newCart.add(new ItemCopy.copyFrom(updatedItemCopy));
-      } on API.DetailedApiRequestError catch (e,st) {
-        if(e.status==404) {
-          //TODO: More robust handling of item status changes
-          showMessage("Item not found on server");
-        } else {
-          throw e;
+    await handleApiExceptions(() async {
+      List<ItemCopy> newCart = [];
+      for (ItemCopy itemCopy in cart) {
+        try {
+          API.ItemCopy updatedItemCopy = await api.items.copies.get(
+              itemCopy.itemId, itemCopy.copy);
+          newCart.add(new ItemCopy.copyFrom(updatedItemCopy));
+        } on API.DetailedApiRequestError catch (e, st) {
+          if (e.status == 404) {
+            //TODO: More robust handling of item status changes
+            showMessage("Item not found on server");
+          } else {
+            throw e;
+          }
         }
       }
-    }
-    clear("cart");
-    addAll("cart", newCart);
-    _evaluateCart();
+      clear("cart");
+      addAll("cart", newCart);
+      _evaluateCart();
+    });
   }
 
   void _evaluateCart() {

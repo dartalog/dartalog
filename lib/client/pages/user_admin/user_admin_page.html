@@ -4,37 +4,52 @@
 -->
 
 <!-- import polymer-element's definition -->
-<dom-module name="field-admin-page">
+<dom-module name="user-admin-page">
     <link rel="stylesheet" href="user_admin_page.css">
     <style include="iron-flex"></style>
 
     <template>
-        <paper-card heading="Fields" style="margin:8px;" class="vertical layout">
+        <paper-card heading="Users" style="margin:8px;" class="vertical layout">
             <div class="card-content">
-                <template is="dom-repeat" items="{{fields}}">
-                    <hr style="height:1px;"/>
-                    <paper-item horizontal on-tap="fieldClicked" data-id$="{{item.id}}" class="flex">{{item.name}}
+                <template is="dom-repeat" items="[[items]]">
+                    <paper-item horizontal on-tap="itemClicked" data-id$="[[item.id]]" class="flex">
+                        <paper-item-body three-line clas="flex">
+                            <div>[[item.name]]</div>
+                            <div secondary><span>ID:</span>
+                                <span>[[item.id]]</span>
+                            </div>
+                            <div secondary><span>Privileges:</span>
+                                <template is="dom-repeat" items="[[item.privileges]]" as="privilege">
+                                    <span>[[privilege]]</span>
+                                </template>
+                            </div>
+                        </paper-item-body>
+                        <paper-icon-button icon="lock" on-tap="changePasswordClicked" title="Change Password"></paper-icon-button>
+                        <paper-icon-button icon="delete" on-tap="deleteClicked"></paper-icon-button>
                     </paper-item>
                 </template>
             </div>
         </paper-card>
 
         <paper-dialog id="editDialog" modal="true">
-            <h2>Edit Field</h2>
+            <h2><template is="dom-if" if="[[creating]]">
+                Create User
+            </template>
+            <template is="dom-if" if="[[!creating]]">
+                Edit User
+            </template></h2>
             <div class="vertical">
-                <paper-input floatinglabel data-field-id="id" label="ID" value="{{currentField.id}}" required
+                <paper-input floatinglabel data-field-id="id" label="ID" value="{{currentItem.id}}" required
                              auto-validate></paper-input>
-                <paper-input floatinglabel data-field-id="name" label="Name" value="{{currentField.name}}" required
+                <paper-input floatinglabel data-field-id="name" label="Name" value="{{currentItem.name}}" required
                              auto-validate></paper-input>
-                <paper-dropdown-menu data-field-id="type" floatinglabel label="Type" required auto-validate>
-                    <paper-listbox class="dropdown-content" attr-for-selected="value" selected="{{currentField.type}}">
-                        <template is="dom-repeat" items="{{FIELD_TYPE_KEYS}}">
-                            <paper-item value="{{item}}">{{getFieldType(item)}}</paper-item>
-                        </template>
-                    </paper-listbox>
-                </paper-dropdown-menu>
-                <paper-input floatinglabel data-field-id="format" label="Format"
-                             value="{{currentField.format}}"></paper-input>
+
+                <template is="dom-if" if="[[creating]]">
+                <paper-input floatinglabel data-field-id="password" label="Password" type="password" value="{{currentItem.password}}" required
+                             auto-validate></paper-input>
+                <paper-input floatinglabel data-field-id="confirmPassword" label="Confirm Password" type="password" value="{{currentItem.confirmPassword}}" required
+                             auto-validate></paper-input>
+                </template>
                 <span id="output_field_error" style="color:red"></span>
             </div>
             <div class="buttons">

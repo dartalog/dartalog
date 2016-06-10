@@ -2,7 +2,7 @@
 
 // is governed by a BSD-style license that can be found in the LICENSE file.
 @HtmlImport('user_admin_page.html')
-library dartalog.client.pages.field_admin_page;
+library dartalog.client.pages.user_admin_page;
 
 import 'dart:html';
 import 'dart:async';
@@ -11,6 +11,8 @@ import 'package:logging/logging.dart';
 import 'package:polymer/polymer.dart';
 import 'package:web_components/web_components.dart';
 import 'package:polymer_elements/paper_input.dart';
+import 'package:polymer_elements/paper_item.dart';
+import 'package:polymer_elements/paper_item_body.dart';
 import 'package:polymer_elements/paper_button.dart';
 import 'package:polymer_elements/paper_dropdown_menu.dart';
 import 'package:polymer_elements/paper_dialog_scrollable.dart';
@@ -27,23 +29,26 @@ import 'package:dartalog/tools.dart';
 import 'package:dartalog/client/api/dartalog.dart' as API;
 
 /// A Polymer `<field-admin-page>` element.
-@PolymerRegister('field-admin-page')
-class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
-  static final Logger _log = new Logger("FieldAdminPage");
+@PolymerRegister('user-admin-page')
+class UserAdminPage extends APage with ARefreshablePage, ACollectionPage {
+  static final Logger _log = new Logger("UserAdminPage");
   Logger get loggerImpl => _log;
 
+  @property
+  bool creating = false;
 
   @property
-  List<IdNamePair> fields = new List<IdNamePair>();
+  List<IdNamePair> items = new List<IdNamePair>();
 
+  @property
   String currentId = "";
-  @property Field currentField = new Field();
+
+  @property
+  User currentItem = new User();
+
 
   /// Constructor used to create instance of MainApp.
-  FieldAdminPage.created() : super.created("Field Admin");
-
-  @Property(notify: true) Iterable get FIELD_TYPE_KEYS => dartalog.FIELD_TYPES.keys;
-  @reflectable String getFieldType(String key) => dartalog.FIELD_TYPES[key];
+  UserAdminPage.created() : super.created("User Admin");
 
   PaperDialog get editDialog =>  $['editDialog'];
 
@@ -59,19 +64,16 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
 
   @reflectable
   Future refresh() async {
-    try {
+    await handleApiExceptions(() async {
       this.reset();
-      clear("fields");
+      clear("items");
 
-      API.ListOfIdNamePair data = await api.fields.getAllIdsAndNames();
+      API.ListOfIdNamePair data = await api.users.getAllIdsAndNames();
 
       for(API.IdNamePair pair  in data) {
-        add("fields", new IdNamePair.copy(pair));
+        add("items", new IdNamePair.copy(pair));
       }
-    } catch (e, st) {
-      _log.severe(e, st);
-      this.handleException(e,st);
-    }
+    });
   }
 
 
@@ -79,7 +81,7 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   void reset() {
     clearValidation();
     currentId = "";
-    set('currentField', new Field());
+    set('currentItem', new User());
   }
 
   showModal(event, [_]) {
@@ -88,6 +90,7 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
 
   @override
   Future newItem() async {
+    set("creating", true);
     try {
       this.reset();
       editDialog.open();
@@ -98,26 +101,25 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   }
 
   @reflectable
-  fieldClicked(event, [_]) async {
-    try {
+  itemClicked(event, [_]) async {
+    await handleApiExceptions(() async {
+      clearValidation();
+      set("creating", false );
       String id = event.target.dataset["id"];
       if(id==null)
         return;
 
-      API.Field field = await api.fields.getById(id);
+      API.User user = await api.users.getById(id);
 
-      if(field==null)
-        throw new Exception("Selected field not found");
+      if(user==null)
+        throw new Exception("Selected user not found");
 
-      currentId = id;
+      set("currentId",id);
 
-      set("currentField", new Field.copy(field));
+      set("currentItem", new User.copy(user));
 
       editDialog.open();
-    } catch (e, st) {
-      _log.severe(e, st);
-      this.handleException(e,st);
-    }
+    });
   }
 
   @reflectable
@@ -133,30 +135,25 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
 
   @reflectable
   saveClicked(event, [_]) async {
-    try {
-      API.Field field = new API.Field();
-      currentField.copyTo(field);
+    if(currentItem.password!=currentItem.confirmPassword) {
+      setFieldMessage("confirmPassword","Doesn't match");
+      return;
+    }
+    await handleApiExceptions(() async {
+
+
+      API.User user= new API.User();
+      currentItem.copyTo(user);
       if (isNullOrWhitespace(this.currentId)) {
-        await this.api.fields.create(field);
+        await this.api.users.create(user);
       } else {
-        await this.api.fields.update(field, this.currentId);
+        await this.api.users.update(user, this.currentId);
       }
 
       refresh();
       editDialog.close();
-      showMessage("Field saved");
-    } on API.DetailedApiRequestError catch  ( e, st) {
-      try {
-        handleApiError(e, generalErrorField: "output_field_error");
-      } catch (e, st) {
-        _log.severe(e, st);
-        this.handleException(e,st);
-      }
-    } catch (e, st) {
-      _log.severe(e, st);
-      this.handleException(e,st);
-    } finally {
-    }
+      showMessage("User saved");
+    });
   }
 
 }

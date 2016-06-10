@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "6f74ab580da537825e084a36ea1ea30e5bec8bc3",
+ "etag": "8a00520f72554e00167a3aa97106ff0bbd7a7739",
  "discoveryVersion": "v1",
  "id": "dartalog:0.1",
  "name": "dartalog",
@@ -136,6 +136,21 @@
     },
     "name": {
      "type": "string"
+    },
+    "publiclyBrowsable": {
+     "type": "boolean"
+    },
+    "curators": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "browsers": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
     }
    }
   },
@@ -424,6 +439,15 @@
     },
     "password": {
      "type": "string"
+    },
+    "idNumber": {
+     "type": "string"
+    },
+    "privileges": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
     }
    }
   },
@@ -439,6 +463,13 @@
      "type": "string",
      "required": true
     }
+   }
+  },
+  "ListOfString": {
+   "id": "ListOfString",
+   "type": "array",
+   "items": {
+    "type": "string"
    }
   }
  },
@@ -1158,6 +1189,51 @@
      "parameterOrder": [
       "id"
      ]
+    }
+   },
+   "resources": {}
+  },
+  "setup": {
+   "methods": {
+    "checkDatabase": {
+     "id": "DartalogApi.setup.checkDatabase",
+     "path": "setup/database/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "ListOfString"
+     }
+    },
+    "setUpDatabase": {
+     "id": "DartalogApi.setup.setUpDatabase",
+     "path": "setup/database/",
+     "httpMethod": "POST",
+     "parameters": {},
+     "parameterOrder": []
+    },
+    "checkForAdminUser": {
+     "id": "DartalogApi.setup.checkForAdminUser",
+     "path": "setup/admin_user/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "ListOfString"
+     }
+    },
+    "createAdminUser": {
+     "id": "DartalogApi.setup.createAdminUser",
+     "path": "setup/admin_user/",
+     "httpMethod": "POST",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "User"
+     },
+     "response": {
+      "$ref": "IdResponse"
+     }
     }
    },
    "resources": {}

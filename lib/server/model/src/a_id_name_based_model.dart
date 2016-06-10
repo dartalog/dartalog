@@ -75,10 +75,10 @@ abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
       field_errors["name"] = "Cannot use '${t.getName}' as name";
     }
 
-    field_errors.addAll(await _validateFieldsInternal(t));
+    await _validateFieldsInternal(field_errors, t, creating);
 
     return field_errors;
   }
 
-  Future<Map<String, String>> _validateFieldsInternal(T t) async => {};
+  Future _validateFieldsInternal(Map field_errors, T t, bool creating) async => {};
 }

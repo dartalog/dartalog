@@ -49,14 +49,11 @@ class ItemAddControl extends AControl  {
   }
 
   Future loadItemTypes() async {
-    try {
+    await handleApiExceptions(() async {
       clear("itemTypes");
       API.ListOfIdNamePair data = await api.itemTypes.getAllIdsAndNames();
       addAll("itemTypes", IdNamePair.convertList(data));
-    } catch (e, st) {
-      _log.severe(e, st);
-      this.handleException(e,st);
-    }
+    });
   }
 
   @reflectable

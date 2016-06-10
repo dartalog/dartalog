@@ -80,7 +80,7 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
   }
 
   Future loadItems() async {
-    try {
+    await handleApiExceptions(() async {
       _loaded = false;
       clear("itemsList");
       set("noItemsFound", false);
@@ -93,10 +93,7 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
       set("itemsList", ItemListing.convertList(data));
       set("noItemsFound", itemsList.length==0);
       _loaded = true;
-    } catch(e,st) {
-      _log.severe(e, st);
-      this.handleException(e,st);
-    }
+    });
   }
 
   @override

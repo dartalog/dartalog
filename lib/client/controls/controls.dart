@@ -10,6 +10,7 @@ import 'package:polymer_elements/paper_input_behavior.dart';
 import 'package:polymer_elements/paper_dropdown_menu.dart';
 import 'package:polymer_elements/paper_dialog.dart';
 import 'package:polymer_elements/iron_input.dart';
+import 'package:polymer_elements/paper_input.dart';
 
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/main_app.dart';

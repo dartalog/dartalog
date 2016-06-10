@@ -128,18 +128,14 @@ class ItemModel extends AIdNameBasedModel<Item> {
 //  }
 
   @override
-  Future<Map<String, String>> _validateFieldsInternal(Item item) async {
-    Map<String, String> field_errors = new Map<String, String>();
+  Future _validateFieldsInternal(Map<String, String> field_errors, Item item, bool creating) async {
     //TODO: add dynamic field validation
-
     if (isNullOrWhitespace(item.typeId))
       field_errors["typeId"] = "Required";
     else {
       dynamic test = await data_sources.itemTypes.getById(item.typeId);
       if (test == null) field_errors["typeId"] = "Not found";
     }
-
-    return field_errors;
   }
 
   static final List<String> NON_SORTING_WORDS = ["the", "a", "an"];

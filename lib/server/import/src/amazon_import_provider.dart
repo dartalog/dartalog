@@ -100,7 +100,7 @@ class AmazonImportProvider extends AScrapingImportProvider {
     new ImportFieldCriteria(
         field: "front_cover",
         elementSelector: 'img#imgBlkFront',
-        elementAttribute: 'data_sources-a-dynamic-image',
+        elementAttribute: 'data-a-dynamic-image',
         contentsRegex: r'"(http://.+?)":',
         contentsRegexGroup: 1,
         replaceRegex: {r"\.[_A-Z0-9,]+\.": "."}
@@ -109,7 +109,7 @@ class AmazonImportProvider extends AScrapingImportProvider {
         field: "front_cover",
         elementSelector: 'img#imgBlkFront',
         elementAttribute: 'data-a-dynamic-image',
-        contentsRegex: r'"(http://.+?)":',
+        contentsRegex: r'"(https?://.+?)":',
         contentsRegexGroup: 1,
         replaceRegex: {r"\.[_A-Z0-9,]+\.": "."}
     ),
@@ -117,7 +117,7 @@ class AmazonImportProvider extends AScrapingImportProvider {
         field: "director",
         elementSelector: 'div#detail-bullets ul li',
         elementAttribute: 'innerHtml',
-        contentsRegex: '<b>Directors:</b>(.+)',
+        contentsRegex: '<b>Directors:</b>([^<]+)',
         contentsRegexGroup: 1,
         multipleValues: true
     ),
@@ -125,14 +125,14 @@ class AmazonImportProvider extends AScrapingImportProvider {
         field: "isbn10",
         elementSelector: 'div#detail-bullets ul li',
         elementAttribute: 'innerHtml',
-        contentsRegex: '<b>ISBN-10:</b>(.+)',
+        contentsRegex: '<b>ISBN-10:</b>([^<]+)',
         contentsRegexGroup: 1
     ),
     new ImportFieldCriteria(
         field: "isbn13",
         elementSelector: 'div#detail-bullets ul li',
         elementAttribute: 'innerHtml',
-        contentsRegex: '<b>ISBN-13:</b>(.+)',
+        contentsRegex: '<b>ISBN-13:</b>([^<]+)',
         contentsRegexGroup: 1
     ),
     new ImportFieldCriteria(
@@ -167,14 +167,14 @@ class AmazonImportProvider extends AScrapingImportProvider {
         elementSelector: 'div#detail-bullets ul li',
         field: "series",
         elementAttribute: 'innerHtml',
-        contentsRegex: r'<b>Series:</b>(.+)',
+        contentsRegex: r'<b>Series:</b>([^<]+)',
         contentsRegexGroup: 1
     ),
     new ImportFieldCriteria(
         elementSelector: 'div#detail-bullets ul li',
         field: "language",
         elementAttribute: 'innerHtml',
-        contentsRegex: r'<b>Language:</b>(.+)',
+        contentsRegex: r'<b>Language:</b>([^<]+)',
         contentsRegexGroup: 1
     )
   ];

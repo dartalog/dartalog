@@ -21,6 +21,7 @@ import 'package:dartalog/client/pages/item_edit/item_edit_page.dart';
 import 'package:dartalog/client/pages/collections/collections_page.dart';
 import 'package:dartalog/client/pages/checkout/checkout_page.dart';
 import 'package:dartalog/client/pages/item_import/item_import_page.dart';
+import 'package:dartalog/client/pages/user_admin/user_admin_page.dart';
 import 'package:dartalog/client/pages/item_type_admin/item_type_admin_page.dart';
 import 'package:dartalog/client/pages/pages.dart';
 import 'package:logging/logging.dart';
@@ -151,6 +152,11 @@ class MainApp extends PolymerElement {
       ..addRoute(
           name: "item_type_admin",
           path: "item_types",
+          defaultRoute: false,
+          enter: enterRoute)
+      ..addRoute(
+          name: "user_admin",
+          path: "users",
           defaultRoute: false,
           enter: enterRoute)
       ..addRoute(

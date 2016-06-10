@@ -7,6 +7,24 @@ class UserModel extends AIdNameBasedModel<User> {
   AUserDataSource get dataSource =>
       data_sources.users;
 
+
+  @override
+  Future<Map<String, String>> _validateFieldsInternal(Map field_errors, User user, bool creating) async {
+    if(creating){
+      _validatePassword(field_errors, user.password);
+    }
+    return {};
+  }
+
+  _validatePassword(Map field_errors, String password) {
+    if (isNullOrWhitespace(password)) {
+      field_errors["password"] = "Required";
+    } else if (password.length < 8) {
+      //TODO: Additional restrictions? Keep them sane.
+      field_errors["password"] = "Must be at least 8 digits long";
+    }
+  }
+
   Future<List<IdNamePair>> getAllIdsAndNames() async {
     await checkUserForPrivilege(USER_PRIVILEGE_CHECKOUT);
     return await super.getAllIdsAndNames();
@@ -48,8 +66,6 @@ class UserModel extends AIdNameBasedModel<User> {
     if(currentUserId!=id)
       throw new NotAuthorizedException.withMessage("You do not have permission to change another user's password");
 
-    Map<String, String> field_errors = new Map<String, String>();
-
     String userPassword = (await data_sources.users.getPasswordHash(id)).getOrElse(() => throw new Exception("User ${id} does not have a current password"));
 
     await DataValidationException.PerformValidation((Map field_errors) async {
@@ -64,12 +80,7 @@ class UserModel extends AIdNameBasedModel<User> {
 
   Future _setPassword(String id, String newPassword) async {
     await DataValidationException.PerformValidation((Map field_errors) async {
-      if (isNullOrWhitespace(newPassword)) {
-        field_errors["newPassword"] = "Required";
-      } else if (newPassword.length < 8) {
-        //TODO: Additional restrictions? Keep them sane.
-        field_errors["newPassword"] = "Must be at least 8 digits long";
-      }
+      _validatePassword(field_errors, newPassword);
     });
 
     String passwordHash = hashPassword(newPassword);

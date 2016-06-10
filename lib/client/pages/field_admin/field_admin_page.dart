@@ -59,7 +59,7 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
 
   @reflectable
   Future refresh() async {
-    try {
+    await handleApiExceptions(() async {
       this.reset();
       clear("fields");
 
@@ -68,10 +68,7 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
       for(API.IdNamePair pair  in data) {
         add("fields", new IdNamePair.copy(pair));
       }
-    } catch (e, st) {
-      _log.severe(e, st);
-      this.handleException(e,st);
-    }
+    });
   }
 
 
@@ -99,7 +96,7 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
 
   @reflectable
   fieldClicked(event, [_]) async {
-    try {
+    await handleApiExceptions(() async {
       String id = event.target.dataset["id"];
       if(id==null)
         return;
@@ -114,10 +111,7 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
       set("currentField", new Field.copy(field));
 
       editDialog.open();
-    } catch (e, st) {
-      _log.severe(e, st);
-      this.handleException(e,st);
-    }
+    });
   }
 
   @reflectable
@@ -133,7 +127,7 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
 
   @reflectable
   saveClicked(event, [_]) async {
-    try {
+    await handleApiExceptions(() async {
       API.Field field = new API.Field();
       currentField.copyTo(field);
       if (isNullOrWhitespace(this.currentId)) {
@@ -145,18 +139,7 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
       refresh();
       editDialog.close();
       showMessage("Field saved");
-    } on API.DetailedApiRequestError catch  ( e, st) {
-      try {
-        handleApiError(e, generalErrorField: "output_field_error");
-      } catch (e, st) {
-        _log.severe(e, st);
-        this.handleException(e,st);
-      }
-    } catch (e, st) {
-      _log.severe(e, st);
-      this.handleException(e,st);
-    } finally {
-    }
+    });
   }
 
 }

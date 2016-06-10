@@ -66,6 +66,7 @@
                             <iron-icon icon="label-outline"></iron-icon>
                             <paper-item-body>Collections</paper-item-body>
                         </paper-item>
+                        Admin
                         <paper-item on-tap="drawerItemClicked" data-route="field_admin">
                             <iron-icon icon="label-outline"></iron-icon>
                             <paper-item-body>Fields</paper-item-body>
@@ -74,9 +75,9 @@
                             <iron-icon icon="label-outline"></iron-icon>
                             <paper-item-body>Item Types</paper-item-body>
                         </paper-item>
-                        <paper-item on-tap="drawerItemClicked" data-route="logging_output">
+                        <paper-item on-tap="drawerItemClicked" data-route="user_admin">
                             <iron-icon icon="label-outline"></iron-icon>
-                            <paper-item-body>Logging Output</paper-item-body>
+                            <paper-item-body>Users</paper-item-body>
                         </paper-item>
                     </div>
                 </paper-header-panel>
@@ -93,7 +94,8 @@
 
 
                                 <field-admin-page id="field_admin" class="fit"></field-admin-page>
-                                <item-type-admin-page id="item_type_admin" class="fit"></item-type-admin-page>
+                            <item-type-admin-page id="item_type_admin" class="fit"></item-type-admin-page>
+                            <user-admin-page id="user_admin" class="fit"></user-admin-page>
 
                             <checkout-page id="checkout" class="fit"></checkout-page>
                             <div class="fit" id="logging_output">

@@ -103,7 +103,7 @@ class ItemAddPage extends APage with ASaveablePage {
 
   @reflectable
   searchClicked(event, [_]) async {
-    try {
+    await handleApiExceptions(() async {
       clear("results");
 
       API.SearchResults results =
@@ -112,29 +112,23 @@ class ItemAddPage extends APage with ASaveablePage {
         add("results", new ImportSearchResult.copy(sr));
       }
 
-    } catch (e, st) {
-      _log.severe(e, st);
-      this.handleException(e,st);
-    }
+    });
   }
 
   @reflectable
   searchResultClicked(event, [_]) async {
-    try {
+    await handleApiExceptions(() async {
       dynamic ele = getParentElement(event.target,"paper-item");
       String id = ele.dataset["id"];
       API.ImportResult result = await api.import.import("amazon", id);
       importResult = result;
       pages.selected = "choose_type";
-    } catch (e, st) {
-      _log.severe(e, st);
-      this.handleException(e,st);
-    }
+    });
   }
 
   @reflectable
   createClicked(event, [_]) async {
-    try {
+    await handleApiExceptions(() async {
       dynamic ele = getChildElement($['input_type'],'paper-listbox');
 
       String value = ele.selected;
@@ -156,10 +150,7 @@ class ItemAddPage extends APage with ASaveablePage {
       set("currentItem.name",newItem.name);
 
       pages.selected = "item_entry";
-    } catch (e, st) {
-      _log.severe(e, st);
-      this.handleException(e,st);
-    }
+    });
   }
 
 }

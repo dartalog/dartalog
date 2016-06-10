@@ -4,21 +4,21 @@
 @HtmlImport('item_edit_control.html')
 library dartalog.client.controls.item_edit;
 
-import 'dart:html';
 import 'dart:async';
-import 'package:logging/logging.dart';
+import 'dart:html';
 
-import 'package:polymer/polymer.dart';
-import 'package:web_components/web_components.dart';
-import 'package:polymer_elements/paper_card.dart';
-import 'package:dartalog/tools.dart';
+import 'package:dartalog/client/api/dartalog.dart' as API;
+import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/controls/controls.dart';
 import 'package:dartalog/client/data/data.dart';
-import 'package:dartalog/client/client.dart';
-import 'package:dartalog/client/api/dartalog.dart' as API;
+import 'package:dartalog/tools.dart';
+import 'package:logging/logging.dart';
+import 'package:polymer/polymer.dart';
+import 'package:polymer_elements/paper_card.dart';
+import 'package:web_components/web_components.dart';
 
 @PolymerRegister('item-edit-control')
-class ItemEditControl extends AControl  {
+class ItemEditControl extends AControl {
   static final Logger _log = new Logger("ItemEdit");
 
   String originalItemId = "";
@@ -38,24 +38,50 @@ class ItemEditControl extends AControl  {
   ItemEditControl.created() : super.created();
 
   Future activateInternal(Map args) async {
-    set("isNew", true);
-    if(args.containsKey(ROUTE_ARG_ITEM_ID_NAME)) {
-      await _loadItem(args[ROUTE_ARG_ITEM_ID_NAME]);
-      set("isNew", false);
-    } else if(args.containsKey(ROUTE_ARG_ITEM_TYPE_ID_NAME)) {
-      await _loadItemType(args[ROUTE_ARG_ITEM_TYPE_ID_NAME]);
-    } else if(args.containsKey("imported_item")) {
-      dynamic newItem = args["imported_item"];
-      if(!(newItem is Item)) {
-        throw new Exception("Imported item must be of type Item");
+    await handleApiExceptions(() async {
+      set("isNew", true);
+      if (args.containsKey(ROUTE_ARG_ITEM_ID_NAME)) {
+        await _loadItem(args[ROUTE_ARG_ITEM_ID_NAME]);
+        set("isNew", false);
+      } else if (args.containsKey(ROUTE_ARG_ITEM_TYPE_ID_NAME)) {
+        await _loadItemType(args[ROUTE_ARG_ITEM_TYPE_ID_NAME]);
+      } else if (args.containsKey("imported_item")) {
+        dynamic newItem = args["imported_item"];
+        if (!(newItem is Item)) {
+          throw new Exception("Imported item must be of type Item");
+        }
+        originalItemId = "";
+        _setCurrentItem(newItem);
       }
-      originalItemId = "";
-      _setCurrentItem(newItem);
-    }
+    });
+  }
+
+  Future<String> save() async {
+    await handleApiExceptions(() async {
+      API.Item newItem = new API.Item();
+      currentItem.copyTo(newItem);
+
+      if (!isNullOrWhitespace(this.originalItemId)) {
+        API.UpdateItemRequest request = new API.UpdateItemRequest();
+        request.item = newItem;
+        API.IdResponse idResponse =
+            await api.items.updateItem(request, this.originalItemId);
+        return idResponse.id;
+      } else {
+        API.CreateItemRequest request = new API.CreateItemRequest();
+        request.item = newItem;
+        request.uniqueId = newUniqueId;
+        request.collectionId = newCollectionId;
+        API.ItemCopyId itemCopyId = await api.items.createItemWithCopy(request);
+        return itemCopyId.itemId;
+      }
+    });
+    return "";
   }
 
   Future _loadItem(String id) async {
-    API.Item item = await api.items.getById(id, includeType: true, includeFields: true);
+    API.Item item =
+        await api.items.getById(id, includeType: true, includeFields: true);
     Item newItem = new Item.copy(item);
 
     originalItemId = id;
@@ -72,32 +98,7 @@ class ItemEditControl extends AControl  {
 
   void _setCurrentItem(Item newItem) {
     set("currentItem", newItem);
-    set("currentItem.fields",newItem.fields);
-    set("currentItem.name",newItem.name);
-  }
-
-  Future<String> save() async {
-    try {
-      API.Item newItem = new API.Item();
-      currentItem.copyTo(newItem);
-
-      if (!isNullOrWhitespace(this.originalItemId)) {
-        API.UpdateItemRequest request = new API.UpdateItemRequest();
-        request.item = newItem;
-        API.IdResponse idResponse =  await api.items.updateItem(request, this.originalItemId);
-        return idResponse.id;
-      } else {
-        API.CreateItemRequest request = new API.CreateItemRequest();
-        request.item = newItem;
-        request.uniqueId = newUniqueId;
-        request.collectionId = newCollectionId;
-        API.ItemCopyId itemCopyId  = await api.items.createItemWithCopy(request);
-        return itemCopyId.itemId;
-      }
-    } catch (e, st) {
-      _log.severe(e, st);
-      this.handleException(e,st);
-    }
-    return "";
+    set("currentItem.fields", newItem.fields);
+    set("currentItem.name", newItem.name);
   }
 }

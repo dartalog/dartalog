@@ -59,7 +59,7 @@
                 <paper-input data-field-id="uniqueId" label="Unique ID" value="{{currentItemCopy.uniqueId}}"></paper-input>
             </div>
             <div class="buttons">
-                <paper-button on-tap="paperDialogCancelClicked">Cancel</paper-button>
+                <paper-button dialog-dismiss>Cancel</paper-button>
                 <paper-button on-tap="saveItemCopyClicked">Save</paper-button>
             </div>
         </paper-dialog>
@@ -67,7 +67,7 @@
         <paper-dialog id="copyActionDialog" modal="true">
             <h2>Select an action</h2>
             <div class="buttons">
-                <paper-button on-tap="paperDialogCancelClicked">Cancel</paper-button>
+                <paper-button dialog-dismiss>Cancel</paper-button>
                 <paper-button on-tap="saveItemCopyClicked">Add To Cart</paper-button>
             </div>
         </paper-dialog>

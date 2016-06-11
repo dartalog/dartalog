@@ -120,7 +120,7 @@ class _MongoDatabase {
 
   static Future<_MongoDatabase> getConnection() async {
     if (_pool == null) {
-      _pool = new _MongoDbConnectionPool(model.options.getString("mongo"), 3);
+      _pool = new _MongoDbConnectionPool(model.settings.mongoConnectionString, 3);
     }
 
     ManagedConnection con = await _pool.getConnection();

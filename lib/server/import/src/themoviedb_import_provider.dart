@@ -6,7 +6,7 @@ class TheMovieDbImportProvider extends AAPIImportProvider {
 
   Future<SearchResults> search(String query, String type_id, {int page: 0}) async {
     themoviedb.TheMovieDB mdb = new themoviedb.TheMovieDB(
-        model.options.getString("themoviedb_api_key"));
+        model.settings.movieDbApiKey);
     themoviedb.SearchResults mdbsr = await mdb.searchMulti(query);
 
     SearchResults results = new SearchResults();

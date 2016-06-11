@@ -35,6 +35,9 @@ class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
   @property
   List<IdNamePair> collections = new List<IdNamePair>();
 
+  @property
+  List<IdNamePair> users = new List<IdNamePair>();
+
   String currentId = "";
   @property Collection currentCollection = new Collection();
 
@@ -58,12 +61,15 @@ class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
     await handleApiExceptions(() async {
       this.reset();
       clear("collections");
+      clear("users");
 
       API.ListOfIdNamePair data = await api.collections.getAllIdsAndNames();
 
-      for (API.IdNamePair pair in data) {
-        add("collections", new IdNamePair.copy(pair));
-      }
+      addAll("collections", IdNamePair.convertList(data));
+
+      data = await api.users.getAllIdsAndNames();
+
+      addAll("users", IdNamePair.convertList(data));
     });
   }
 
@@ -124,6 +130,12 @@ class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
   @reflectable
   saveClicked(event, [_]) async {
     await handleApiExceptions(() async {
+      if(currentUser.isEmpty)
+        return; // Not signed in, how can you be doing anything?
+
+      if(!currentCollection.curators.contains(currentUser.get().id)&&!window.confirm("Your user is not in the list of curators, are you sure you want to continue?"))
+        return;
+
       API.Collection collection = new API.Collection();
       currentCollection.copyTo(collection);
       if (isNullOrWhitespace(this.currentId)) {

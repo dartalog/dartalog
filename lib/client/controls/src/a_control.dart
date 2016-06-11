@@ -1,12 +1,12 @@
 part of controls;
 
 class AControl extends PolymerElement {
-  MainApp _mainApp = null;
-
-  DartalogApi api;
-  AControl.created() : super.created();
-
   Logger get loggerImpl;
+  MainApp _mainApp = null;
+  DartalogApi api;
+
+  static Option<User> currentUserStatic = new None();
+  Option<User> get currentUser => currentUserStatic;
 
   MainApp get mainApp {
     if (_mainApp == null) {
@@ -16,6 +16,8 @@ class AControl extends PolymerElement {
     }
     return _mainApp;
   }
+
+  AControl.created() : super.created();
 
   Future activate(DartalogApi api, Map args) async {
     this.api = api;
@@ -33,6 +35,14 @@ class AControl extends PolymerElement {
         PaperInput pi = ele as PaperInput;
         ele.invalid = false;
         ele.errorMessage = "";
+      } else if(ele is PaperToggleButton) {
+        PaperToggleButton pi = ele as PaperToggleButton;
+        ele.invalid = false;
+        //ele.errorMessage = ""; TODO: Error messages for toggle buttons?
+      } else if(ele is ComboListControl) {
+        ComboListControl pi = ele as ComboListControl;
+        pi.setErrorMessage("");
+        pi.setInvalid(false);
       } else if(ele is PaperDropdownMenu) {
         PaperDropdownMenu pi = ele as PaperDropdownMenu;
         ele.invalid = false; //TODO: Once error messages are properly supported, clear them
@@ -120,6 +130,14 @@ class AControl extends PolymerElement {
         pi.attributes["error"] =
             message; //TODO: Not properly supported yet
         pi.invalid = true;
+      } else if(input is PaperToggleButton) {
+        PaperToggleButton pi = input as PaperToggleButton;
+        input.invalid = false;
+        //ele.errorMessage = ""; TODO: Error messages for toggle buttons?
+      } else if (input is ComboListControl) {
+        ComboListControl pi = input as ComboListControl;
+        pi.setErrorMessage(message);
+        pi.setInvalid(true);
       } else {
         window.alert("Unknown control: " + input.runtimeType.toString());
       }

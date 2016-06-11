@@ -24,7 +24,15 @@
                              auto-validate></paper-input>
                 <paper-input floatinglabel data-field-id="name" label="Name" value="{{currentCollection.name}}" required
                              auto-validate></paper-input>
-                <paper-toggle-button data-field-id="publiclyVisible" label="Publicly Visible" value="{{currentCollection.publiclyVisible}}"></paper-toggle-button>
+                <paper-toggle-button data-field-id="publiclyVisible" value="{{currentCollection.publiclyVisible}}">Publicly Visible</paper-toggle-button>
+
+                <combo-list-control data-field-id="curators" label="Curators" items="[[users]]"
+                                    selected-values="{{currentCollection.curators}}">
+                </combo-list-control>
+                <combo-list-control data-field-id="browsers" label="Browsers" items="[[users]]"
+                                    selected-values="{{currentCollection.browsers}}">
+                </combo-list-control>
+
                 <span id="output_error" style="color:red"></span>
             </div>
             <div class="buttons">

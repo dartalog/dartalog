@@ -42,6 +42,13 @@ const String USER_PRIVILEGE_BORROW = "borrow"; // All other privileges imply thi
 
 const int HTTP_STATUS_SERVER_NEEDS_SETUP = 555;
 
+final List USER_PRIVILEGES = [
+  USER_PRIVILEGE_ADMIN,
+  USER_PRIVILEGE_CREATE,
+  USER_PRIVILEGE_CHECKOUT,
+  USER_PRIVILEGE_BORROW
+];
+
 final Map<String, String> ITEM_COPY_STATUSES = {
   ITEM_STATUS_BORROWED: 'Borrowed',
   ITEM_STATUS_LOST: 'Lost',

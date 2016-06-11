@@ -28,6 +28,9 @@ class User extends JsProxy {
     to.id = from.id;
     to.name = from.name;
     to.privileges = from.privileges;
-    to.password = from.password;
+    if(from.password==null)
+      to.password = "";
+    else
+      to.password = from.password;
   }
 }

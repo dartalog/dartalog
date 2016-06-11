@@ -4,36 +4,33 @@
 @HtmlImport('user_admin_page.html')
 library dartalog.client.pages.user_admin_page;
 
-import 'dart:html';
 import 'dart:async';
-import 'package:logging/logging.dart';
+import 'dart:html';
 
+import 'package:dartalog/client/api/dartalog.dart' as API;
+import 'package:dartalog/client/client.dart';
+import 'package:dartalog/client/controls/combo_list/combo_list_control.dart';
+import 'package:dartalog/client/data/data.dart';
+import 'package:dartalog/client/pages/pages.dart';
+import 'package:dartalog/dartalog.dart' as dartalog;
+import 'package:dartalog/tools.dart';
+import 'package:logging/logging.dart';
 import 'package:polymer/polymer.dart';
-import 'package:web_components/web_components.dart';
+import 'package:polymer_elements/iron_flex_layout.dart';
+import 'package:polymer_elements/paper_button.dart';
+import 'package:polymer_elements/paper_card.dart';
+import 'package:polymer_elements/paper_dialog.dart';
+import 'package:polymer_elements/paper_dialog_scrollable.dart';
+import 'package:polymer_elements/paper_dropdown_menu.dart';
 import 'package:polymer_elements/paper_input.dart';
 import 'package:polymer_elements/paper_item.dart';
 import 'package:polymer_elements/paper_item_body.dart';
-import 'package:polymer_elements/paper_button.dart';
-import 'package:polymer_elements/paper_dropdown_menu.dart';
-import 'package:polymer_elements/paper_dialog_scrollable.dart';
 import 'package:polymer_elements/paper_listbox.dart';
-import 'package:polymer_elements/paper_card.dart';
-import 'package:polymer_elements/paper_dialog.dart';
-import 'package:polymer_elements/iron_flex_layout.dart';
+import 'package:web_components/web_components.dart';
 
-import 'package:dartalog/dartalog.dart' as dartalog;
-import 'package:dartalog/client/pages/pages.dart';
-import 'package:dartalog/client/client.dart';
-import 'package:dartalog/client/data/data.dart';
-import 'package:dartalog/tools.dart';
-import 'package:dartalog/client/api/dartalog.dart' as API;
-
-/// A Polymer `<field-admin-page>` element.
 @PolymerRegister('user-admin-page')
 class UserAdminPage extends APage with ARefreshablePage, ACollectionPage {
   static final Logger _log = new Logger("UserAdminPage");
-  Logger get loggerImpl => _log;
-
   @property
   bool creating = false;
 
@@ -46,14 +43,30 @@ class UserAdminPage extends APage with ARefreshablePage, ACollectionPage {
   @property
   User currentItem = new User();
 
-
   /// Constructor used to create instance of MainApp.
   UserAdminPage.created() : super.created("User Admin");
 
-  PaperDialog get editDialog =>  $['editDialog'];
+  PaperDialog get editDialog => $['editDialog'];
+
+  Logger get loggerImpl => _log;
+
+  @Property(notify: true)
+  Iterable get privileges {
+    List output = [];
+    for (String privilege in dartalog.USER_PRIVILEGES) {
+      output.add(new IdNamePair(privilege, privilege));
+    }
+    return output;
+  }
 
   Future activateInternal(Map args) async {
     await this.refresh();
+  }
+
+  @reflectable
+  cancelClicked(event, [_]) {
+    editDialog.cancel();
+    this.reset();
   }
 
   @override
@@ -63,29 +76,23 @@ class UserAdminPage extends APage with ARefreshablePage, ACollectionPage {
   }
 
   @reflectable
-  Future refresh() async {
+  itemClicked(event, [_]) async {
     await handleApiExceptions(() async {
-      this.reset();
-      clear("items");
+      clearValidation();
+      set("creating", false);
+      String id = event.target.dataset["id"];
+      if (id == null) return;
 
-      API.ListOfIdNamePair data = await api.users.getAllIdsAndNames();
+      API.User user = await api.users.getById(id);
 
-      for(API.IdNamePair pair  in data) {
-        add("items", new IdNamePair.copy(pair));
-      }
+      if (user == null) throw new Exception("Selected user not found");
+
+      set("currentId", id);
+
+      set("currentItem", new User.copy(user));
+
+      editDialog.open();
     });
-  }
-
-
-  @reflectable
-  void reset() {
-    clearValidation();
-    currentId = "";
-    set('currentItem', new User());
-  }
-
-  showModal(event, [_]) {
-    //String uuid = target.dataset['uuid'];
   }
 
   @override
@@ -96,53 +103,39 @@ class UserAdminPage extends APage with ARefreshablePage, ACollectionPage {
       editDialog.open();
     } catch (e, st) {
       _log.severe(e, st);
-      this.handleException(e,st);
+      this.handleException(e, st);
     }
   }
 
   @reflectable
-  itemClicked(event, [_]) async {
+  Future refresh() async {
     await handleApiExceptions(() async {
-      clearValidation();
-      set("creating", false );
-      String id = event.target.dataset["id"];
-      if(id==null)
-        return;
+      this.reset();
+      clear("items");
 
-      API.User user = await api.users.getById(id);
+      API.ListOfIdNamePair data = await api.users.getAllIdsAndNames();
 
-      if(user==null)
-        throw new Exception("Selected user not found");
-
-      set("currentId",id);
-
-      set("currentItem", new User.copy(user));
-
-      editDialog.open();
+      for (API.IdNamePair pair in data) {
+        add("items", new IdNamePair.copy(pair));
+      }
     });
   }
 
   @reflectable
-  validateField(event, [_]) {
-    _log.info("Validating");
-  }
-
-  @reflectable
-  cancelClicked(event, [_]) {
-    editDialog.cancel();
-    this.reset();
+  void reset() {
+    clearValidation();
+    currentId = "";
+    set('currentItem', new User());
   }
 
   @reflectable
   saveClicked(event, [_]) async {
-    if(currentItem.password!=currentItem.confirmPassword) {
-      setFieldMessage("confirmPassword","Doesn't match");
+    if (currentItem.password != currentItem.confirmPassword) {
+      setFieldMessage("confirmPassword", "Doesn't match");
       return;
     }
     await handleApiExceptions(() async {
-
-
-      API.User user= new API.User();
+      API.User user = new API.User();
       currentItem.copyTo(user);
       if (isNullOrWhitespace(this.currentId)) {
         await this.api.users.create(user);
@@ -156,4 +149,12 @@ class UserAdminPage extends APage with ARefreshablePage, ACollectionPage {
     });
   }
 
+  showModal(event, [_]) {
+    //String uuid = target.dataset['uuid'];
+  }
+
+  @reflectable
+  validateField(event, [_]) {
+    _log.info("Validating");
+  }
 }

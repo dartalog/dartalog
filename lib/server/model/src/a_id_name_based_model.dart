@@ -6,9 +6,10 @@ abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
   Future<List<T>> search(String query) => dataSource.search(query);
 
   Future<String> create(T t) async {
-//    if (!userAuthenticated()) {
-//      throw new NotAuthorizedException();
-//    }
+    if (!userAuthenticated()) {
+      throw new NotAuthorizedException();
+    }
+
     await validate(t, true);
     return await dataSource.write(t);
   }

@@ -12,13 +12,19 @@
         <template is="dom-repeat" items="[[selectedItems]]">
             <paper-item class="container flex-horizontal" data-index$="[[index]]" data-id$="[[item.id]]">
                 <div class="flex">[[item.name]]</div>
-                <paper-icon-button icon="arrow-upward" on-tap="upClicked"></paper-icon-button>
-                <paper-icon-button icon="arrow-downward" on-tap="downClicked"></paper-icon-button>
+                <template is="dom-if" if="[[allowOrdering]]" restamp="true">
+                    <template is="dom-if" if="[[!isFirst(index)]]">
+                        <paper-icon-button icon="arrow-upward" on-tap="upClicked"></paper-icon-button>
+                    </template>
+                    <template is="dom-if" if="[[!isLast(index)]]">
+                        <paper-icon-button icon="arrow-downward" on-tap="downClicked"></paper-icon-button>
+                    </template>
+                </template>
                 <paper-icon-button icon="delete" on-tap="removeClicked"></paper-icon-button>
             </paper-item>
         </template>
 
-        <paper-dropdown-menu id="input_fieldIds" floatinglabel label="[[label]]">
+        <paper-dropdown-menu id="input_fieldIds" floatinglabel label="[[label]]" invalid="[[invalid]]">
             <paper-listbox class="dropdown-content" attr-for-selected="value" selected="{{selectedItem}}">
                 <template is="dom-repeat" items="[[items]]">
                     <paper-item value="[[item.id]]">[[item.name]]</paper-item>

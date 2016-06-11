@@ -5,7 +5,7 @@ description: A web app built using polymer.dart.
 #homepage: https://www.example.com
 
 environment:
-  sdk: '>=1.16.0 <2.0.0'
+  sdk: '>=1.17.0 <2.0.0'
 
 dependencies:
   browser: ^0.10.0
@@ -27,9 +27,9 @@ dependencies:
   shelf_exception_handler: any
   option: any
   discoveryapis_generator: any
-  crypto: '>=0.9.0 <0.10.0'
+  crypto: ^0.9.0
   crypt: ^1.0.2
-  _discoveryapis_commons: '>=0.1.0 <0.2.0'
+  _discoveryapis_commons: ^0.1.0
   image: ^1.1.26
 
   mongo_dart: ^0.2.5
@@ -40,7 +40,7 @@ dependencies:
   uuid: ^0.5.1
   options_file: ^0.11.0
   logging_handlers: ^0.8.0
-  # 0.27.3 has a bug with paths
+  # 0.27.3 has a bug with paths on Windows
   analyzer: 0.27.2
 transformers:
 - polymer:

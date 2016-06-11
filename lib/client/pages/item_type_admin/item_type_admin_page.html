@@ -22,7 +22,8 @@
                 <paper-input floatinglabel data-field-id="id" label="ID" value="{{currentItemType.id}}"></paper-input>
                 <paper-input floatinglabel data-field-id="name" label="Name" value="{{currentItemType.name}}"></paper-input>
 
-                <combo-list-control data-field-id="fields" label="Fields" items="[[fields]]" selected-values="{{currentItemType.fieldIds}}">
+                <combo-list-control data-field-id="fields" label="Fields" items="[[fields]]" allow-ordering="true"
+                                    selected-values="{{currentItemType.fieldIds}}">
                 </combo-list-control>
                 </paper-dialog-scrollable>
             <span id="output_error" style="color:red"></span>

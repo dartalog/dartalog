@@ -3,6 +3,22 @@ part of model;
 class CollectionsModel extends AIdNameBasedModel<Collection> {
   static final Logger _log = new Logger('CollectionsModel');
   Logger get _logger => _log;
-  AIdNameBasedDataSource<Collection> get dataSource => data_sources.itemCollections;
+  ACollectionDataSource get dataSource => data_sources.itemCollections;
+
+  @override
+  Future<List<Collection>> getAll() async {
+    await validateUserPrivilege(USER_PRIVILEGE_CREATE);
+
+    List output;
+
+    if(await userHasPrivilege(USER_PRIVILEGE_ADMIN))
+      output = await dataSource.getAll();
+    else
+      output = await dataSource.getAllForCurator(getUserPrincipal().get().name);
+
+    for (dynamic t in output) _performAdjustments(t);
+    return output;
+
+  }
 
 }

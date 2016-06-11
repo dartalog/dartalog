@@ -38,20 +38,22 @@
             <template is="dom-if" if="[[!creating]]">
                 Edit User
             </template></h2>
-            <div class="vertical">
+            <paper-dialog-scrollable class="vertical">
                 <paper-input floatinglabel data-field-id="id" label="ID" value="{{currentItem.id}}" required
                              auto-validate></paper-input>
                 <paper-input floatinglabel data-field-id="name" label="Name" value="{{currentItem.name}}" required
                              auto-validate></paper-input>
 
-                <template is="dom-if" if="[[creating]]">
+                <combo-list-control data-field-id="privileges" label="Privileges" items="[[privileges]]"
+                                    selected-values="{{currentItem.privileges}}">
+                </combo-list-control>
+
                 <paper-input floatinglabel data-field-id="password" label="Password" type="password" value="{{currentItem.password}}" required
                              auto-validate></paper-input>
                 <paper-input floatinglabel data-field-id="confirmPassword" label="Confirm Password" type="password" value="{{currentItem.confirmPassword}}" required
                              auto-validate></paper-input>
-                </template>
                 <span id="output_field_error" style="color:red"></span>
-            </div>
+            </paper-dialog-scrollable>
             <div class="buttons">
                 <paper-button on-tap="cancelClicked">Cancel</paper-button>
                 <paper-button on-tap="saveClicked">Save</paper-button>

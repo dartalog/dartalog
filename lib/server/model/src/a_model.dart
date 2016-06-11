@@ -24,11 +24,18 @@ abstract class AModel<T> {
     throw new NotAuthorizedException.withMessage("User not found"));
   }
 
-  Future<bool> checkUserForPrivilege(String privilege) async {
+  Future<bool> validateUserPrivilege(String privilege) async {
+    if(await userHasPrivilege(privilege))
+      return true;
+    throw new NotAuthorizedException();
+  }
+
+  Future<bool> userHasPrivilege(String privilege) async {
     User user = await getCurrentUser();
     if(user.privileges.contains(USER_PRIVILEGE_ADMIN)||user.privileges.contains(privilege))
       return true;
 
-    throw new NotAuthorizedException();
+    throw false;
   }
+
 }

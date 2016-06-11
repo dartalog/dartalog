@@ -7,6 +7,7 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:dartalog/tools.dart';
+import 'package:option/option.dart';
 import 'package:_discoveryapis_commons/_discoveryapis_commons.dart' as commons;
 import 'package:dartalog/client/api/dartalog.dart' as api;
 import 'package:dartalog/client/data/data.dart';
@@ -42,6 +43,7 @@ import 'package:polymer_elements/paper_toolbar.dart';
 import 'package:route_hierarchical/client.dart';
 import 'package:web_components/web_components.dart';
 import 'package:path/path.dart';
+import 'package:dartalog/client/controls/controls.dart';
 
 /// Uses [PaperInput]
 @PolymerRegister('main-app')
@@ -218,9 +220,20 @@ class MainApp extends PolymerElement {
     ele.activateDialog();
   }
 
+  setUserObject(User user) {
+    if(user==null) {
+      set("currentUser.name", "");
+      set("currentUser", null);
+      AControl.currentUserStatic = new None();
+    } else {
+      set("currentUser.name", user.name);
+      set("currentUser", user);
+      AControl.currentUserStatic = new Some(user);
+    }
+  }
+
   Future clearAuthentication() async {
-    set("currentUser.name", "");
-    set("currentUser", null);
+    setUserObject(null);
     await clearAuthCache();
     DartalogHttpClient.setAuthKey("");
   }
@@ -232,8 +245,8 @@ class MainApp extends PolymerElement {
 
       api.User apiUser = await _api.users.getMe();
 
-      set("currentUser", new User.copy(apiUser));
-      set("currentUser.name", currentUser.name);
+      setUserObject(new User.copy(apiUser));
+
       authed = true;
     } on api.DetailedApiRequestError catch (e, st) {
       if (e.status >= 400 && e.status < 500) {

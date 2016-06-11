@@ -9,11 +9,20 @@ class UserModel extends AIdNameBasedModel<User> {
 
 
   @override
-  Future<Map<String, String>> _validateFieldsInternal(Map field_errors, User user, bool creating) async {
-    if(creating){
+  Future _validateFieldsInternal(Map field_errors, User user, bool creating) async {
+    if(creating||!isNullOrWhitespace(user.password)){
       _validatePassword(field_errors, user.password);
     }
-    return {};
+    if(user.privileges!=null) {
+      if(user.privileges.length==0) {
+        field_errors["privileges"] = "Required";
+      } else {
+        for(String privilege in user.privileges) {
+          if(!USER_PRIVILEGES.contains(privilege))
+            field_errors["privileges"] = "Invalid";
+        }
+      }
+    }
   }
 
   _validatePassword(Map field_errors, String password) {
@@ -26,7 +35,7 @@ class UserModel extends AIdNameBasedModel<User> {
   }
 
   Future<List<IdNamePair>> getAllIdsAndNames() async {
-    await checkUserForPrivilege(USER_PRIVILEGE_CHECKOUT);
+    await validateUserPrivilege(USER_PRIVILEGE_CHECKOUT);
     return await super.getAllIdsAndNames();
   }
 
@@ -40,7 +49,7 @@ class UserModel extends AIdNameBasedModel<User> {
   }
 
   Future setPrivileges(String id, List<String> privilege) async {
-    await checkUserForPrivilege(USER_PRIVILEGE_ADMIN);
+    await validateUserPrivilege(USER_PRIVILEGE_ADMIN);
     if(!await dataSource.exists(id))
       throw new NotFoundException("User not found");
 
@@ -49,14 +58,32 @@ class UserModel extends AIdNameBasedModel<User> {
 
   @override
   Future<String> create(User user, {List<String> privileges}) async {
-    await checkUserForPrivilege(USER_PRIVILEGE_ADMIN);
+    await validateUserPrivilege(USER_PRIVILEGE_ADMIN);
 
     String output = await super.create(user);
 
     await _setPassword(output, user.password);
+    await setPrivileges(output, user.privileges);
 
     return output;
   }
+
+  @override
+  Future<String> update(String id, User user) async {
+    await validateUserPrivilege(USER_PRIVILEGE_ADMIN);
+    // Only admin can update...for now
+
+    String output = await super.update(id, user);
+
+    if(!isNullOrWhitespace(user.password))
+      await _setPassword(output, user.password);
+
+    if(user.privileges!=null)
+      await setPrivileges(output, user.privileges);
+
+    return output;
+  }
+
 
   Future changePassword(
       String id, String currentPassword, String newPassword) async {

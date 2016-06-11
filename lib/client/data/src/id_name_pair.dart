@@ -7,7 +7,7 @@ class IdNamePair extends JsProxy {
   @reflectable
   String name = "";
 
-  IdNamePair();
+  IdNamePair(this.id, this.name);
 
   IdNamePair.copy(dynamic o) {
     this.id = o.id;

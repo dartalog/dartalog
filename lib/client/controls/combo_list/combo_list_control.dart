@@ -27,6 +27,9 @@ class ComboListControl extends AControl  {
 
   Logger get loggerImpl => _log;
 
+  @property String errorMessage= "";
+  @property bool invalid = false;
+
   @property
   String label = "";
 
@@ -42,7 +45,15 @@ class ComboListControl extends AControl  {
   @Property(notify: true)
   String selectedItem;
 
+  @property
+  bool allowOrdering = false;
+
   ComboListControl.created() : super.created();
+
+  @reflectable
+  bool isFirst(int index) => index==0;
+  @reflectable
+  bool isLast(int index) => index==(selectedItems.length-1);
 
   @Observe('selectedValues.*')
   void usersChanged(Map changeRecord) {
@@ -123,6 +134,13 @@ class ComboListControl extends AControl  {
       this.handleException(e,st);
     }
 
+  }
+
+  setInvalid(bool value) {
+    set("invalid", value);
+  }
+  setErrorMessage(String  value) {
+    set("errorMessage", value);
   }
 
   @reflectable

@@ -36,22 +36,34 @@ class ItemEditControl extends AControl {
   @Property(notify: true)
   Item currentItem = new Item();
 
+  @Property(notify: true, observer: "itemTypeChanged")
+  String currentItemTypeId = "";
+
   @Property(notify: true)
   String newCollectionId;
 
   @Property(notify: true)
   String newUniqueId;
 
+  @Property(notify: true)
+  List<IdNamePair> collections;
+  @Property(notify: true)
+  List<IdNamePair> itemTypes;
+
+  API.ImportResult importResult = null;
+
   ItemEditControl.created() : super.created();
 
   Future activateInternal(Map args) async {
     await handleApiExceptions(() async {
+      importResult = null;
+      await loadItemTypes();
       set("isNew", true);
       if (args.containsKey(ROUTE_ARG_ITEM_ID_NAME)) {
         await _loadItem(args[ROUTE_ARG_ITEM_ID_NAME]);
         set("isNew", false);
       } else if (args.containsKey(ROUTE_ARG_ITEM_TYPE_ID_NAME)) {
-        await _loadItemType(args[ROUTE_ARG_ITEM_TYPE_ID_NAME]);
+        set("currentItemTypeId", args[ROUTE_ARG_ITEM_TYPE_ID_NAME]);
       } else if (args.containsKey("imported_item")) {
         dynamic newItem = args["imported_item"];
         if (!(newItem is Item)) {
@@ -59,17 +71,36 @@ class ItemEditControl extends AControl {
         }
         originalItemId = "";
         _setCurrentItem(newItem);
+      } else if (args.containsKey(ROUTE_ARG_IMPORT_RESULT_NAME)) {
+        dynamic result = args[ROUTE_ARG_IMPORT_RESULT_NAME];
+        if (!(result is API.ImportResult)) {
+          throw new Exception("Imported item must be of type ImportResult");
+        }
+        originalItemId = "";
+        importResult = result;
+        set("currentItemTypeId", result.itemTypeId);
       }
+      await loadCollections();
     });
+  }
+
+  Future loadCollections() async {
+    API.ListOfIdNamePair collections = await  this.api.collections.getAllIdsAndNames();
+    set("collections", IdNamePair.convertList(collections));
+  }
+
+  Future loadItemTypes() async {
+    API.ListOfIdNamePair itemTypes = await this.api.itemTypes.getAllIdsAndNames();
+    set("itemTypes", IdNamePair.convertList(itemTypes));
   }
 
   Future<String> save() async {
     return await handleApiExceptions(() async {
       List<API.MediaMessage> files = new List<API.MediaMessage>();
 
-      for(Field f in this.currentItem.fields) {
-        if(f.type=="image") {
-          if(f.mediaMessage!=null) {
+      for (Field f in this.currentItem.fields) {
+        if (f.type == "image") {
+          if (f.mediaMessage != null) {
             files.add(f.mediaMessage);
             f.value = "${FILE_UPLOAD_PREFIX}${files.length-1}";
           }
@@ -110,10 +141,18 @@ class ItemEditControl extends AControl {
     _setCurrentItem(newItem);
   }
 
-  Future _loadItemType(String id) async {
-    API.ItemType type = await api.itemTypes.getById(id, includeFields: true);
+  @reflectable
+  Future itemTypeChanged([_, __]) async {
+    API.ItemType type = await api.itemTypes.getById(this.currentItemTypeId, includeFields: true);
+    if (type == null)
+      throw new Exception("Specified Item Type not found on server");
+
     Item newItem = new Item.forType(new ItemType.copy(type));
     originalItemId = "";
+
+    if(importResult!=null)
+      newItem.applyImportResult(importResult);
+
     _setCurrentItem(newItem);
   }
 
@@ -124,12 +163,10 @@ class ItemEditControl extends AControl {
   }
 
   @reflectable
-  imageInputChanged(event,[_]) {
+  imageInputChanged(event, [_]) {
     Element parent = getParentElement(event.target, "div");
     int index = int.parse(parent.dataset["index"]);
     Field field = this.currentItem.fields[index];
-
-
   }
 
   @reflectable
@@ -142,9 +179,8 @@ class ItemEditControl extends AControl {
   @reflectable
   fileUploadChanged(event, [_]) async {
     InputElement input = event.target;
-    if(input.files.length==0)
-      return;
-    File file  = input.files[0];
+    if (input.files.length == 0) return;
+    File file = input.files[0];
 
     Element parent = getParentElement(event.target, "div");
     int index = int.parse(parent.dataset["index"]);
@@ -154,14 +190,12 @@ class ItemEditControl extends AControl {
     this.set("currentItem.fields.${index}.editImageUrl", file.name);
     FileReader reader = new FileReader();
     reader.readAsDataUrl(file);
-    await for(dynamic fileEvent in reader.onLoad) {
+    await for (dynamic fileEvent in reader.onLoad) {
       this.set("currentItem.fields.${index}.displayImageUrl", reader.result);
       field.mediaMessage = new API.MediaMessage();
       List<String> parms = reader.result.toString().split(";");
       field.mediaMessage.contentType = parms[0].split(":")[1];
       field.mediaMessage.bytes = BASE64URL.decode(parms[1].split(",")[1]);
     }
-
   }
-
 }

@@ -10,28 +10,38 @@
 
     <template>
         <paper-card class="vertical layout" style="margin:8px;">
-            <div class="card_list_item">
+            <div class="card-content layout vertical">
+                <template is="dom-if" if="[[isNew]]" restamp="true">
+                <paper-dropdown-menu data-field-id="itemTypeId" floatinglabel label="Item Type">
+                    <paper-listbox class="dropdown-content" attr-for-selected="value" selected="{{currentItemTypeId}}">
+                        <template is="dom-repeat" items="[[itemTypes]]">
+                            <paper-item value="[[item.id]]">[[item.name]]</paper-item>
+                        </template>
+                    </paper-listbox>
+                </paper-dropdown-menu>
+                    </template>
                 <paper-input value="{{currentItem.name}}" label="Name"></paper-input>
-            </div>
             <template is="dom-repeat" items="[[currentItem.fields]]">
-                <div class="card_list_item layout horizontal center" data-index$="[[index]]">
                     <template is="dom-if" if="[[item.isTypeString]]" restamp="true">
                         <paper-input value="{{item.value}}" label="[[item.name]]"
                                      data-type$="[[item.type]]"></paper-input>
                     </template>
-                    <template is="dom-if" if="{{item.isTypeImage}}" restamp="true">
+                    <template is="dom-if" if="[[item.isTypeImage]]" restamp="true">
+                        <div class="layout horizontal" data-index$="[[index]]">
                         <paper-input value="{{item.editImageUrl}}" label="[[item.name]]"
                                      data-type$="[[item.type]]" on-change="imageInputChanged" class="flex"></paper-input>
                         <paper-icon-button icon="file-upload" on-tap="uploadClicked"
                                            title="Upload Image"></paper-icon-button>
                         <input type="file" on-change="fileUploadChanged" style="display:none"/>
                         <iron-image src="[[item.displayImageUrl]]" style="width:100px; height:100px;" sizing="contain"/>
+                        </div>
                     </template>
-                </div>
             </template>
+                </div>
         </paper-card>
         <template is="dom-if" if="[[isNew]]" restamp="true">
-            <paper-card heading="New Copy">
+            <paper-card heading="New Copy" class="vertical layout"  style="margin:8px;">
+                <div class="card-content">
                 <paper-dropdown-menu data-field-id="collectionId" floatinglabel label="Collection">
                     <paper-listbox class="dropdown-content" attr-for-selected="value" selected="{{newCollectionId}}">
                         <template is="dom-repeat" items="[[collections]]">
@@ -41,6 +51,7 @@
                 </paper-dropdown-menu>
 
                 <paper-input data-field-id="uniqueId" label="Unique ID" value="{{newUniqueId}}"></paper-input>
+                </div>
             </paper-card>
         </template>
     </template>

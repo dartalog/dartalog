@@ -27,23 +27,9 @@
                                     </paper-listbox>
                                 </paper-dropdown-menu>
                             </div>
-                            <div>
-                                <paper-dropdown-menu id="single_item_type_dropdown" floatinglabel label="Item Type"
-                                                     required
-                                                     auto-validate>
-                                    <paper-listbox class="dropdown-content" attr-for-selected="value"
-                                                   selected="{{selectedItemType}}">
-                                        <template is="dom-repeat" items="[[itemTypes]]">
-                                            <paper-item value="[[item.id]]">[[item.name]]</paper-item>
-                                        </template>
-                                    </paper-listbox>
-                                </paper-dropdown-menu>
-                            </div>
                             <div class="flexchild">
                                 <paper-input id="single_search_input" value="{{searchQuery}}" label="Search"
                                              on-keypress="searchKeypress"></paper-input>
-                            </div>
-                            <div>
                             </div>
                         </div>
                         <div class="card-actions layout horizontal end-justified">
@@ -80,16 +66,6 @@
                                     <paper-listbox class="dropdown-content" attr-for-selected="value"
                                                    selected="{{selectedImportSource}}">
                                         <paper-item value="amazon">Amazon</paper-item>
-                                    </paper-listbox>
-                                </paper-dropdown-menu>
-                                <paper-dropdown-menu id="bulk_item_type_dropdown" floatinglabel label="Item Type"
-                                                     required
-                                                     auto-validate>
-                                    <paper-listbox class="dropdown-content" attr-for-selected="value"
-                                                   selected="{{selectedItemType}}">
-                                        <template is="dom-repeat" items="[[itemTypes]]">
-                                            <paper-item value="[[item.id]]">[[item.name]]</paper-item>
-                                        </template>
                                     </paper-listbox>
                                 </paper-dropdown-menu>
                                 <paper-dropdown-menu floatinglabel label="Collection" required

@@ -14,9 +14,11 @@ import 'package:polymer_elements/iron_input.dart';
 import 'package:polymer_elements/paper_input.dart';
 import 'package:polymer_elements/paper_toggle_button.dart';
 
+import 'package:dartalog/dartalog.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/main_app.dart';
-import 'package:dartalog/client/api/dartalog.dart';
+import 'package:dartalog/client/data/data.dart';
+import 'package:dartalog/client/api/dartalog.dart' as API;
 import 'package:dartalog/client/controls/combo_list/combo_list_control.dart';
 
 part 'src/a_control.dart';

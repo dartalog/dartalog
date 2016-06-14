@@ -37,7 +37,9 @@
                 <template is="dom-if" if="[[showSave]]">
                     <paper-icon-button icon="save" on-tap="saveClicked"></paper-icon-button>
                 </template>
+                <template is="dom-if" if="[[userCanCheckout]]">
                 <paper-icon-button id="cartIconButton" icon="shopping-cart" on-tap="cartClicked"></paper-icon-button>
+                </template>
                 <template is="dom-if" if="[[!cartEmpty]]">
                     <paper-badge for="cartIconButton" label="[[cartCount]]"></paper-badge>
                 </template>
@@ -50,7 +52,7 @@
                 <paper-header-panel drawer>
                     <div>
                         <template is="dom-if" if="[[userLoggedIn]]">
-                            <paper-item>[[currentUser.name]]</paper-item>
+                            <paper-item>[[currentUserProperty.name]]</paper-item>
                         </template>
                         <template is="dom-if" if="[[!userLoggedIn]]">
                             <paper-item on-tap="drawerItemClicked" data-route="log_in">

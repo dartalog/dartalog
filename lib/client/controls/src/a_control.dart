@@ -3,7 +3,7 @@ part of controls;
 class AControl extends PolymerElement {
   Logger get loggerImpl;
   MainApp _mainApp = null;
-  DartalogApi api;
+  API.DartalogApi api;
 
   static Option<User> currentUserStatic = new None();
   Option<User> get currentUser => currentUserStatic;
@@ -19,9 +19,32 @@ class AControl extends PolymerElement {
 
   AControl.created() : super.created();
 
-  Future activate(DartalogApi api, Map args) async {
+
+  Map lastArgs;
+  Future activate(API.DartalogApi api, Map args) async {
     this.api = api;
+    this.lastArgs = args;
     await activateInternal(args);
+  }
+  Future reActivate() async {
+    await activateInternal(lastArgs);
+  }
+
+  bool userHasPrivilege(String privilege) {
+    return this.currentUser.any((User user) {
+      return user.privileges.contains(privilege)||user.privileges.contains(USER_PRIVILEGE_ADMIN);
+    });
+  }
+
+  // If you open a dialog too soon after changing its contents, it won't center properly.
+  // This delays opening the dialog until the system has had a second to process the DOM change.
+  Future openDialog(PaperDialog dialog)  {
+    Completer completer = new Completer();
+    Timer timer = new Timer(new Duration(milliseconds: 100), () {
+      dialog.open();
+      completer.complete();
+    });
+    return completer.future;
   }
 
   Future activateInternal(Map args);
@@ -95,12 +118,6 @@ class AControl extends PolymerElement {
   void handleException(e, st) {
     loggerImpl.severe(this.tagName, e, st);
     mainApp.handleException(e, st);
-  }
-
-  @reflectable
-  paperDialogCancelClicked(event, [_]) {
-    PaperDialog pd = getParentElement(event.target, "paper-dialog");
-    if (pd != null) pd.cancel();
   }
 
   void setErrorMessages(List<commons.ApiRequestErrorDetail> fieldErrors) {

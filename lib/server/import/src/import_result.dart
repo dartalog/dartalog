@@ -4,7 +4,8 @@ class ImportResult {
   String itemUrl;
   String itemId;
   String itemSource;
-  String itemType;
+  String itemTypeId;
+  String itemTypeName;
   Map<String,List<String>> values = new Map<String,List<String>>();
   String debug;
 }

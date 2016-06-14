@@ -10,6 +10,7 @@ import 'package:dartalog/tools.dart';
 import 'package:option/option.dart';
 import 'package:_discoveryapis_commons/_discoveryapis_commons.dart' as commons;
 import 'package:dartalog/client/api/dartalog.dart' as api;
+import 'package:dartalog/dartalog.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/controls/paper_toast_queue/paper_toast_queue.dart';
@@ -61,7 +62,14 @@ class MainApp extends PolymerElement {
   @property
   bool userLoggedIn = false;
   @property
-  User currentUser;
+  User get currentUserProperty => currentUser.getOrElse(() => new User());
+  set currentUserProperty(User user) {
+    if(user==null)
+      this.currentUser = new None();
+    else
+      this.currentUser = new Some(user);
+  }
+  Option<User> currentUser = new None();
 
   @property
   bool userIsAdmin = false;
@@ -222,13 +230,13 @@ class MainApp extends PolymerElement {
 
   setUserObject(User user) {
     if(user==null) {
-      set("currentUser.name", "");
-      set("currentUser", null);
-      AControl.currentUserStatic = new None();
+      set("currentUserProperty.name", "");
+      set("currentUserProperty", null);
+      AControl.currentUserStatic = this.currentUser;
     } else {
-      set("currentUser.name", user.name);
-      set("currentUser", user);
-      AControl.currentUserStatic = new Some(user);
+      set("currentUserProperty.name", user.name);
+      set("currentUserProperty", user);
+      AControl.currentUserStatic = this.currentUser;
     }
   }
 
@@ -236,6 +244,7 @@ class MainApp extends PolymerElement {
     setUserObject(null);
     await clearAuthCache();
     DartalogHttpClient.setAuthKey("");
+    await evaluateAuthentication();
   }
 
   Future evaluateAuthentication() async {
@@ -247,7 +256,14 @@ class MainApp extends PolymerElement {
 
       setUserObject(new User.copy(apiUser));
 
+      set("userCanCheckout", userHasPrivilege(USER_PRIVILEGE_CHECKOUT));
+
       authed = true;
+
+      if(userLoggedIn!=authed&&this.currentPage!=null) {
+        this.currentPage.reActivate();
+      }
+
     } on api.DetailedApiRequestError catch (e, st) {
       if (e.status >= 400 && e.status < 500) {
         // Not authenticated, nothing to see here
@@ -262,6 +278,13 @@ class MainApp extends PolymerElement {
     }
 
     set("userLoggedIn", authed);
+
+  }
+
+  bool userHasPrivilege(String privilege) {
+    return this.currentUser.any((User user) {
+      return user.privileges.contains(privilege)||user.privileges.contains(USER_PRIVILEGE_ADMIN);
+    });
   }
 
   PaperDrawerPanel get drawerPanel => $["drawerPanel"];

@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "8a00520f72554e00167a3aa97106ff0bbd7a7739",
+ "etag": "1d013a889a99e61051b42009ff37d8b9f57abc24",
  "discoveryVersion": "v1",
  "id": "dartalog:0.1",
  "name": "dartalog",
@@ -238,6 +238,14 @@
     "typeId": {
      "type": "string"
     },
+    "dateAdded": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "dateUpdated": {
+     "type": "string",
+     "format": "date-time"
+    },
     "values": {
      "type": "object",
      "additionalProperties": {
@@ -346,7 +354,10 @@
     "itemSource": {
      "type": "string"
     },
-    "itemType": {
+    "itemTypeId": {
+     "type": "string"
+    },
+    "itemTypeName": {
      "type": "string"
     },
     "values": {

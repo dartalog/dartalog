@@ -45,12 +45,8 @@ class ItemImportPage extends APage with ASaveablePage {
   @Property(notify: true)
   String selectedImportSource = "amazon";
   @Property(notify: true)
-  String selectedItemType = "amazon";
-  @Property(notify: true)
   String selectedCollectionId;
 
-  @Property(notify: true)
-  List<IdNamePair> itemTypes = new List<IdNamePair>();
   @Property(notify: true)
   List<IdNamePair> collections = new List<IdNamePair>();
 
@@ -79,7 +75,6 @@ class ItemImportPage extends APage with ASaveablePage {
   Future activateInternal(Map args) async {
     showSaveButton = false;
     singleImportPages.selected = "item_search";
-    await loadItemTypes();
     await loadCollections();
     //await itemAddControl.activate(this.api, args);
     _resetSearchFields();
@@ -125,13 +120,6 @@ class ItemImportPage extends APage with ASaveablePage {
     return null;
   }
 
-  Future loadItemTypes() async {
-    await handleApiExceptions(() async {
-      clear("itemTypes");
-      API.ListOfIdNamePair data = await api.itemTypes.getAllIdsAndNames();
-      addAll("itemTypes", IdNamePair.convertList(data));
-    });
-  }
   Future loadCollections() async {
     await handleApiExceptions(() async {
       clear("collections");
@@ -168,25 +156,13 @@ class ItemImportPage extends APage with ASaveablePage {
   @reflectable
   searchResultClicked(event, [_]) async {
     await handleApiExceptions(() async {
-      if(isNullOrWhitespace(selectedItemType)) {
-        throw new Exception("Please select an item type");
-      }
 
       dynamic ele = getParentElement(event.target, "paper-item");
       String id = ele.dataset["id"];
       API.ImportResult result = await api.import.import(selectedImportSource, id);
       importResult = result;
 
-      API.ItemType it = await api.itemTypes.getById(selectedItemType, includeFields: true);
-
-      if (it == null)
-        throw new Exception("Specified Item Type not found on server");
-
-      Item newItem = new Item.forType(new ItemType.copy(it));
-
-      newItem.applyImportResult(result);
-
-      await itemEditControl.activate(this.api, {"imported_item": newItem});
+      await itemEditControl.activate(this.api, {ROUTE_ARG_IMPORT_RESULT_NAME: result});
 
       this.showSaveButton = true;
       singleImportPages.selected = "item_entry";
@@ -199,9 +175,6 @@ class ItemImportPage extends APage with ASaveablePage {
     await handleApiExceptions(() async {
       if(isNullOrWhitespace(selectedImportSource)) {
         throw new Exception("Please select an import source");
-      }
-      if(isNullOrWhitespace(selectedItemType)) {
-        throw new Exception("Please select an item type");
       }
       if(isNullOrWhitespace(selectedCollectionId)) {
         throw new Exception("Please select a collection");
@@ -235,10 +208,6 @@ class ItemImportPage extends APage with ASaveablePage {
     await handleApiExceptions(() async {
       this.mainApp.startLoading();
 
-      if(isNullOrWhitespace(selectedItemType)) {
-        throw new Exception("Please select an item type");
-      }
-      API.ItemType itemType = await api.itemTypes.getById(selectedItemType, includeFields: true);
 
       for(int i = 0; i< this.bulkResults.length;i++) {
         BulkImportItem bii = this.bulkResults[i];
@@ -250,6 +219,15 @@ class ItemImportPage extends APage with ASaveablePage {
           newItem = bii.newItem;
         } else {
           API.ImportResult result = await api.import.import(selectedImportSource, bii.selectedResult);
+
+          if(isNullOrWhitespace(result.itemId))
+            throw new Exception("Was not able to determine item type for ${bii.selectedResult}, please perform a single import of this item");
+
+          API.ItemType itemType = await api.itemTypes.getById(result.itemTypeId, includeFields: true);
+
+          if(itemType==null)
+            throw new Exception("Detected item type for ${bii.selectedResult} does not exist on server, please perform a single import of this item");
+
 
           newItem = new Item.forType(new ItemType.copy(itemType));
           newItem.applyImportResult(result);

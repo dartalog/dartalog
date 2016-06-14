@@ -24,7 +24,7 @@
             <div class="buttons">
                 <paper-button on-tap="manualClicked">Manual</paper-button>
                 <paper-button on-tap="importClicked">Import</paper-button>
-                <paper-button on-tap="paperDialogCancelClicked">Cancel</paper-button>
+                <paper-button dialog-dismiss>Cancel</paper-button>
             </div>
         </paper-dialog>
         <paper-dialog id="importSourceDialog" modal="true">
@@ -33,19 +33,19 @@
                 <paper-item data-id="amazon" on-tap="importSourceClicked">Amazon</paper-item>
             </div>
             <div class="buttons">
-                <paper-button on-tap="paperDialogCancelClicked">Cancel</paper-button>
+                <paper-button dialog-dismiss>Cancel</paper-button>
             </div>
         </paper-dialog>
 
         <paper-dialog id="selectItemTypeDialog" modal="true">
             <h2>What type of item do you want to create?</h2>
-            <div class="vertical">
+            <paper-dialog-scrollable>
                 <template is="dom-repeat" items="[[itemTypes]]">
                     <paper-item data-id$="[[item.id]]" on-tap="itemTypeClicked">[[item.name]]</paper-item>
                 </template>
-            </div>
+            </paper-dialog-scrollable>
             <div class="buttons">
-                <paper-button on-tap="paperDialogCancelClicked">Cancel</paper-button>
+                <paper-button dialog-dismiss>Cancel</paper-button>
             </div>
         </paper-dialog>
 

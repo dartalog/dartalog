@@ -31,7 +31,7 @@ const String CHECKOUT_ROUTE_PATH = "${CHECKOUT_ROUTE_NAME}";
 const String ROUTE_ARG_ITEM_ID_NAME = "itemId";
 const String ROUTE_ARG_ITEM_TYPE_ID_NAME = "itemTypeId";
 const String ROUTE_ARG_SEARCH_QUERY_NAME = "searchQuery";
-
+const String ROUTE_ARG_IMPORT_RESULT_NAME= "importResults";
 
 Element getParentElement(Element start, String tagName) {
   if(start==null)

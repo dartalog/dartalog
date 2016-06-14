@@ -37,9 +37,6 @@ class ItemAddControl extends AControl  {
 
   ItemAddControl.created() : super.created();
 
-  @reflectable
-  paperDialogCancelClicked(event, [_]) => super.paperDialogCancelClicked(event, [_]);
-
   Future activateInternal(Map args) async {
     //await this.refresh();
   }
@@ -60,7 +57,7 @@ class ItemAddControl extends AControl  {
   Future manualClicked(event, [_]) async {
     await loadItemTypes();
     addItemMethodDialog.close();
-    selectItemTypeDialog.open();
+    openDialog(selectItemTypeDialog);
   }
 
   @reflectable

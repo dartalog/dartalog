@@ -52,9 +52,15 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
   String _currentQuery = "";
   bool _loaded = false;
 
+  @property
+  bool showAddControl = false;
+
   @override
   Future activateInternal(Map args) async {
-    await browseItemAddControl.activate(this.api,args);
+    set("showAddControl",userHasPrivilege(dartalog.USER_PRIVILEGE_CREATE));
+    if(showAddControl) {
+      await browseItemAddControl.activate(this.api,args);
+    }
     if(args.containsKey(ROUTE_ARG_SEARCH_QUERY_NAME)) {
       if(_currentQuery!=args[ROUTE_ARG_SEARCH_QUERY_NAME].toString().trim()) {
         _currentQuery = args[ROUTE_ARG_SEARCH_QUERY_NAME].toString().trim();

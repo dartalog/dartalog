@@ -1906,7 +1906,8 @@ class ImportResult {
   core.String debug;
   core.String itemId;
   core.String itemSource;
-  core.String itemType;
+  core.String itemTypeId;
+  core.String itemTypeName;
   core.String itemUrl;
   core.Map<core.String, core.List<core.String>> values;
 
@@ -1922,8 +1923,11 @@ class ImportResult {
     if (_json.containsKey("itemSource")) {
       itemSource = _json["itemSource"];
     }
-    if (_json.containsKey("itemType")) {
-      itemType = _json["itemType"];
+    if (_json.containsKey("itemTypeId")) {
+      itemTypeId = _json["itemTypeId"];
+    }
+    if (_json.containsKey("itemTypeName")) {
+      itemTypeName = _json["itemTypeName"];
     }
     if (_json.containsKey("itemUrl")) {
       itemUrl = _json["itemUrl"];
@@ -1944,8 +1948,11 @@ class ImportResult {
     if (itemSource != null) {
       _json["itemSource"] = itemSource;
     }
-    if (itemType != null) {
-      _json["itemType"] = itemType;
+    if (itemTypeId != null) {
+      _json["itemTypeId"] = itemTypeId;
+    }
+    if (itemTypeName != null) {
+      _json["itemTypeName"] = itemTypeName;
     }
     if (itemUrl != null) {
       _json["itemUrl"] = itemUrl;
@@ -1959,6 +1966,8 @@ class ImportResult {
 
 class Item {
   core.List<ItemCopy> copies;
+  core.DateTime dateAdded;
+  core.DateTime dateUpdated;
   core.String id;
   core.String name;
   ItemType type;
@@ -1970,6 +1979,12 @@ class Item {
   Item.fromJson(core.Map _json) {
     if (_json.containsKey("copies")) {
       copies = _json["copies"].map((value) => new ItemCopy.fromJson(value)).toList();
+    }
+    if (_json.containsKey("dateAdded")) {
+      dateAdded = core.DateTime.parse(_json["dateAdded"]);
+    }
+    if (_json.containsKey("dateUpdated")) {
+      dateUpdated = core.DateTime.parse(_json["dateUpdated"]);
     }
     if (_json.containsKey("id")) {
       id = _json["id"];
@@ -1992,6 +2007,12 @@ class Item {
     var _json = new core.Map();
     if (copies != null) {
       _json["copies"] = copies.map((value) => (value).toJson()).toList();
+    }
+    if (dateAdded != null) {
+      _json["dateAdded"] = (dateAdded).toIso8601String();
+    }
+    if (dateUpdated != null) {
+      _json["dateUpdated"] = (dateUpdated).toIso8601String();
     }
     if (id != null) {
       _json["id"] = id;

@@ -125,7 +125,7 @@ dynamic startServer() async {
         .addHandler(root.handler);
 
     server =
-        await io.serve(handler, '0.0.0.0', model.options.getInt("port"));
+        await io.serve(handler, model.settings.serverBindToAddress, model.settings.serverPort);
 
     SERVER_ROOT = "http://${server.address.host}:${server.port}/";
     SERVER_API_ROOT = "${SERVER_ROOT}api/dartalog/0.1/";

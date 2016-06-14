@@ -33,4 +33,12 @@ class User extends JsProxy {
     else
       to.password = from.password;
   }
+
+  static List<User> copyList(Iterable e) {
+    List output = [];
+    for(dynamic obj in e) {
+      output.add(new User.copy(obj));
+    }
+    return output;
+  }
 }

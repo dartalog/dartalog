@@ -16,7 +16,9 @@ class UserResource extends AIdResource<User> {
   Future<User> getById(String id) => _getByIdWithCatch(id);
 
   @ApiMethod(path: 'current_user/')
-  Future<User> getMe() => _catchExceptionsAwait(model.users.getMe);
+  Future<User> getMe() => _catchExceptionsAwait(() async {
+    return await model.users.getMe();
+  });
 
 
   @ApiMethod(method: 'PUT', path: '${API_USERS_PATH}/{id}/')

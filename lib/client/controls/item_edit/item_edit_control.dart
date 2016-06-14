@@ -8,7 +8,7 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:convert';
 
-import 'package:dartalog/client/api/dartalog.dart' as API;
+import 'package:dartalog/client/api/dartalog.dart' as API_Library;
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/dartalog.dart';
 import 'package:dartalog/client/controls/controls.dart';
@@ -50,7 +50,7 @@ class ItemEditControl extends AControl {
   @Property(notify: true)
   List<IdNamePair> itemTypes;
 
-  API.ImportResult importResult = null;
+  API_Library.ImportResult importResult = null;
 
   ItemEditControl.created() : super.created();
 
@@ -73,7 +73,7 @@ class ItemEditControl extends AControl {
         _setCurrentItem(newItem);
       } else if (args.containsKey(ROUTE_ARG_IMPORT_RESULT_NAME)) {
         dynamic result = args[ROUTE_ARG_IMPORT_RESULT_NAME];
-        if (!(result is API.ImportResult)) {
+        if (!(result is API_Library.ImportResult)) {
           throw new Exception("Imported item must be of type ImportResult");
         }
         originalItemId = "";
@@ -85,18 +85,18 @@ class ItemEditControl extends AControl {
   }
 
   Future loadCollections() async {
-    API.ListOfIdNamePair collections = await  this.api.collections.getAllIdsAndNames();
+    API_Library.ListOfIdNamePair collections = await  this.api.collections.getAllIdsAndNames();
     set("collections", IdNamePair.convertList(collections));
   }
 
   Future loadItemTypes() async {
-    API.ListOfIdNamePair itemTypes = await this.api.itemTypes.getAllIdsAndNames();
+    API_Library.ListOfIdNamePair itemTypes = await this.api.itemTypes.getAllIdsAndNames();
     set("itemTypes", IdNamePair.convertList(itemTypes));
   }
 
   Future<String> save() async {
     return await handleApiExceptions(() async {
-      List<API.MediaMessage> files = new List<API.MediaMessage>();
+      List<API_Library.MediaMessage> files = new List<API_Library.MediaMessage>();
 
       for (Field f in this.currentItem.fields) {
         if (f.type == "image") {
@@ -107,24 +107,24 @@ class ItemEditControl extends AControl {
         }
       }
 
-      API.Item newItem = new API.Item();
+      API_Library.Item newItem = new API_Library.Item();
       currentItem.copyTo(newItem);
 
       if (!isNullOrWhitespace(this.originalItemId)) {
-        API.UpdateItemRequest request = new API.UpdateItemRequest();
+        API_Library.UpdateItemRequest request = new API_Library.UpdateItemRequest();
         request.item = newItem;
         request.files = files;
-        API.IdResponse idResponse =
+        API_Library.IdResponse idResponse =
             await api.items.updateItem(request, this.originalItemId);
         return idResponse.id;
       } else {
-        API.CreateItemRequest request = new API.CreateItemRequest();
+        API_Library.CreateItemRequest request = new API_Library.CreateItemRequest();
         request.item = newItem;
         request.uniqueId = newUniqueId;
         request.collectionId = newCollectionId;
         request.files = files;
 
-        API.ItemCopyId itemCopyId = await api.items.createItemWithCopy(request);
+        API_Library.ItemCopyId itemCopyId = await api.items.createItemWithCopy(request);
         return itemCopyId.itemId;
       }
       return "";
@@ -132,7 +132,7 @@ class ItemEditControl extends AControl {
   }
 
   Future _loadItem(String id) async {
-    API.Item item =
+    API_Library.Item item =
         await api.items.getById(id, includeType: true, includeFields: true);
     Item newItem = new Item.copy(item);
 
@@ -143,7 +143,10 @@ class ItemEditControl extends AControl {
 
   @reflectable
   Future itemTypeChanged([_, __]) async {
-    API.ItemType type = await api.itemTypes.getById(this.currentItemTypeId, includeFields: true);
+    if(api==null)
+      return;
+
+    API_Library.ItemType type = await api.itemTypes.getById(this.currentItemTypeId, includeFields: true);
     if (type == null)
       throw new Exception("Specified Item Type not found on server");
 
@@ -192,7 +195,7 @@ class ItemEditControl extends AControl {
     reader.readAsDataUrl(file);
     await for (dynamic fileEvent in reader.onLoad) {
       this.set("currentItem.fields.${index}.displayImageUrl", reader.result);
-      field.mediaMessage = new API.MediaMessage();
+      field.mediaMessage = new API_Library.MediaMessage();
       List<String> parms = reader.result.toString().split(";");
       field.mediaMessage.contentType = parms[0].split(":")[1];
       field.mediaMessage.bytes = BASE64URL.decode(parms[1].split(",")[1]);

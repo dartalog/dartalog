@@ -244,7 +244,6 @@ class MainApp extends PolymerElement {
     setUserObject(null);
     await clearAuthCache();
     DartalogHttpClient.setAuthKey("");
-    await evaluateAuthentication();
   }
 
   Future evaluateAuthentication() async {

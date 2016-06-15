@@ -7,14 +7,14 @@ class CollectionsModel extends AIdNameBasedModel<Collection> {
 
   @override
   Future<List<Collection>> getAll() async {
-    await validateUserPrivilege(USER_PRIVILEGE_CREATE);
+    await _validateUserPrivilege(USER_PRIVILEGE_CREATE);
 
     List output;
 
-    if(await userHasPrivilege(USER_PRIVILEGE_ADMIN))
+    if(await _userHasPrivilege(USER_PRIVILEGE_ADMIN))
       output = await dataSource.getAll();
     else
-      output = await dataSource.getAllForCurator(getUserPrincipal().get().name);
+      output = await dataSource.getAllForCurator(_userPrincipal.get().name);
 
     for (dynamic t in output) _performAdjustments(t);
     return output;

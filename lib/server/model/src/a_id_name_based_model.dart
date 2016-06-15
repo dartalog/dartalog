@@ -6,7 +6,7 @@ abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
   Future<List<T>> search(String query) => dataSource.search(query);
 
   Future<String> create(T t) async {
-    if (!userAuthenticated()) {
+    if (!_userAuthenticated) {
       throw new NotAuthorizedException();
     }
 
@@ -15,7 +15,7 @@ abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
   }
 
   Future delete(String id) async {
-    if (!userAuthenticated()) {
+    if (!_userAuthenticated) {
       throw new NotAuthorizedException();
     }
 
@@ -44,7 +44,7 @@ abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
   _performAdjustments(T t) {}
 
   Future<String> update(String id, T t) async {
-    if (!userAuthenticated()) {
+    if (!_userAuthenticated) {
       throw new NotAuthorizedException();
     }
     await validate(t, id != t.getId);

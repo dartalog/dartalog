@@ -8,16 +8,16 @@ class MongoCollectionDataSource extends _AMongoIdDataSource<Collection>
   static const String CURATORS_FIELD = "curators";
   static const String BROWSERS_FIELD = "browsers";
 
-  Future<List<Collection>> getAllForCurator(String userId)  async {
+  Future<IdNameList<Collection>> getAllForCurator(String userId)  async {
     SelectorBuilder selector = where.eq(CURATORS_FIELD, userId);
-    return await _getFromDb(selector);
+    return  await _getIdNameListFromDb(selector);
   }
 
-  Future<List<Collection>> getVisibleCollections(String userId) async {
+  Future<IdNameList<Collection>> getVisibleCollections(String userId) async {
     SelectorBuilder selector = where.eq(PUBLICLY_BROWSABLE_FIELD, true)
         .or(where.eq(CURATORS_FIELD, userId))
         .or(where.eq(BROWSERS_FIELD, userId));
-    return await _getFromDb(selector);
+    return await _getIdNameListFromDb(selector);
   }
 
 

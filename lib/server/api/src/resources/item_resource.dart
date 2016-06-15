@@ -33,8 +33,8 @@ class ItemResource extends AIdResource<Item> {
       _catchExceptionsAwait(() async => ItemListingResponse.convertList(await model.items.getAll()));
 
   @ApiMethod(path: '${_API_PATH}/{id}/')
-  Future<Item> getById(String id, {bool includeType: false, bool includeFields: false, bool includeCopies:false}) =>
-      _catchExceptionsAwait(() =>model.items.getById(id, includeType: includeType, includeCopies: includeCopies, includeFields: includeFields));
+  Future<Item> getById(String id, {bool includeType: false, bool includeFields: false, bool includeCopies:false, bool includeCopyCollection: false}) =>
+      _catchExceptionsAwait(() =>model.items.getById(id, includeType: includeType, includeCopies: includeCopies, includeFields: includeFields, includeCopyCollection: includeCopyCollection));
 
   @ApiMethod(path: 'search/{query}/')
   Future<List<ItemListingResponse>> search(String query) =>

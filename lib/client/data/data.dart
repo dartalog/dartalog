@@ -3,6 +3,7 @@ library data;
 import 'dart:html';
 import 'package:polymer/polymer.dart';
 import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/tools.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/api/dartalog.dart' as API;
 

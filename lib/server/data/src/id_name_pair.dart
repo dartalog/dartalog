@@ -1,8 +1,13 @@
 part of data;
 
-class IdNamePair {
+class IdNamePair extends AIdData {
   String id = "";
+  String get getId => id;
+  set getId(String value) => id = value;
+
   String name = "";
+  String get getName => name;
+  set getName(String value) => name = value;
 
   IdNamePair();
 

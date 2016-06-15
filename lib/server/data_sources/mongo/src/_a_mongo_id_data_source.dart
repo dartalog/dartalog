@@ -7,12 +7,12 @@ abstract class _AMongoIdDataSource<T extends AIdData>
 
   Future<bool> exists(String id) => _exists(where.eq(ID_FIELD, id));
 
-  Future<List<T>> search(String query);
+  Future<IdNameList<T>> search(String query);
 
-  Future<List<T>> getAll({String sortField: ID_FIELD}) =>
-      _getFromDb(where.sortBy(sortField));
+  Future<IdNameList<T>> getAll({String sortField: ID_FIELD}) =>
+      _getIdNameListFromDb(where.sortBy(sortField));
 
-  Future<List<IdNamePair>> getAllIdsAndNames(
+  Future<IdNameList<IdNamePair>> getAllIdsAndNames(
       {String sortField: ID_FIELD}) async {
     _MongoDatabase con = await _MongoDatabase.getConnection();
     try {
@@ -21,7 +21,7 @@ abstract class _AMongoIdDataSource<T extends AIdData>
       List results =
           await collection.find(where.sortBy(sortField)).toList();
 
-      List<IdNamePair> output = new List<IdNamePair>();
+      IdNameList<IdNamePair> output = new IdNameList<IdNamePair>();
 
       for (var result in results) {
         output.add(new IdNamePair.from(result[ID_FIELD], result["name"]));
@@ -45,4 +45,7 @@ abstract class _AMongoIdDataSource<T extends AIdData>
     dynamic tmp = object;
     return tmp.getId;
   }
+
+  Future<IdNameList<T>> _getIdNameListFromDb(dynamic selector) async =>
+    new IdNameList<T>.convert(await _getFromDb(selector));
 }

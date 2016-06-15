@@ -5,7 +5,16 @@
 
 <dom-module id="main-app">
     <link rel="stylesheet" href="main_app.css">
-    <style include="iron-flex"></style>
+    <style include="iron-flex">
+
+        paper-input{
+            --paper-input-container-color: #bababa;
+            --paper-input-container-focus-color: white;
+            --paper-input-container-invalid-color: red;
+            --paper-input-container-input-color: white;
+            margin-bottom:16pt
+        }
+    </style>
 
     <template>
         <paper-header-panel class="flex">
@@ -18,7 +27,8 @@
                 </template>
                 <span class="title" style="margin-left:8pt;">[[currentPage.title]]</span>
                 <template is="dom-if" if="[[showSearch]]">
-                    <paper-input on-keypress="searchKeypress" placeholder="Search" class="search_input" value="{{searchText}}">
+                    <paper-input on-keypress="searchKeypress" placeholder="Search" style="color:white"
+                                 class="search_input" value="{{searchText}}">
                         <iron-icon icon="search" prefix></iron-icon>
                         <paper-icon-button suffix on-tap="clearSearch" icon="clear" alt="clear" title="clear">
                         </paper-icon-button>
@@ -39,11 +49,11 @@
                 <template is="dom-if" if="[[showSave]]">
                     <paper-icon-button icon="save" on-tap="saveClicked"></paper-icon-button>
                 </template>
-                <template is="dom-if" if="[[userCanCheckout]]">
+                <template is="dom-if" if="[[userCanCheckout]]" restamp="true">
                 <paper-icon-button id="cartIconButton" icon="shopping-cart" on-tap="cartClicked"></paper-icon-button>
-                </template>
-                <template is="dom-if" if="[[!cartEmpty]]">
-                    <paper-badge for="cartIconButton" label="[[cartCount]]"></paper-badge>
+                    <template is="dom-if" if="[[!cartEmpty]]">
+                        <paper-badge for="cartIconButton" label="[[cartCount]]"></paper-badge>
+                    </template>
                 </template>
                 <template is="dom-if" if="[[loading]]">
                     <paper-progress class="fit" indeterminate="[[loading]]"></paper-progress>

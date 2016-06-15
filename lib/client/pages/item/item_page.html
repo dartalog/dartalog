@@ -10,53 +10,68 @@
             <template is="dom-repeat" items="[[currentItem.fields]]">
                 <template is="dom-if" if="[[item.isTypeImage]]" restamp="true">
                     <a href="[[getOriginalImageUrl(item.value)]]" target="_new">
-                        <iron-image src="[[getThumbnailUrl(item.value)]]" style="width:200px; height:100px;" sizing="cover"/>
+                        <iron-image src="[[getThumbnailUrl(item.value)]]" style="width:200px; height:100px;"
+                                    sizing="cover"/>
                     </a>
                 </template>
             </template>
         </div>
         <paper-card style="margin:4pt;" class="vertical layout" heading="Information">
-            <template is="dom-repeat" items="[[currentItem.fields]]">
-                <template is="dom-if" if="[[item.isTypeString]]" restamp="true">
-                    <paper-item data-id="[[item.id]]">
-                        <paper-item-body two-line>
-                        <div>[[item.name]]</div>
-                        <div secondary>[[item.value]]</div>
-                        </paper-item-body>
-                    </paper-item>
+            <div class="card-content">
+                <template is="dom-repeat" items="[[currentItem.fields]]">
+                    <template is="dom-if" if="[[item.isTypeString]]" restamp="true">
+                        <paper-item data-id="[[item.id]]">
+                            <paper-item-body two-line>
+                                <div>[[item.name]]</div>
+                                <div secondary>[[item.value]]</div>
+                            </paper-item-body>
+                        </paper-item>
+                    </template>
                 </template>
-            </template>
+            </div>
         </paper-card>
         <paper-card style="margin:4pt;" class="vertical layout" heading="Copies">
-            <template is="dom-repeat" items="[[currentItem.copies]]">
-                <paper-item data-copy$="[[item.copy]]">
-                    <span>[[item.copy]]</span>
-                    <span>[[item.collectionName]]</span>
-                    <span>[[item.statusName]]</span>
-                    <paper-icon-button icon="create" on-tap="editItemCopyClicked"></paper-icon-button>
-                    <template is="dom-if" if="[[item.availableForCheckout]]" restamp="true">
-                    <paper-icon-button icon="add-shopping-cart" disabled="[[item.inCart]]" on-tap="addCartCopyClicked"></paper-icon-button>
-                    </template>
-                </paper-item>
-            </template>
-            <paper-item on-tap="addCopyClicked">Add Copy...</paper-item>
+            <div class="card-content">
+                <template is="dom-repeat" items="[[currentItem.copies]]">
+                    <paper-item class="layout horizontal" data-copy$="[[item.copy]]">
+                        <paper-item-body two-line>
+                            <div><span>Collection: </span>[[item.collection.name]]</div>
+                            <div secondary is="dom=if" id="[[item.hasUniqueId]]">
+                                <span>Unique ID: </span>[[item.uniqueId]]
+                            </div>
+                        </paper-item-body>
+                        <div>[[item.statusName]]</div>
+                        <template is="dom-if" if="[[item.userCanEdit]]" restamp="true">
+                            <paper-icon-button icon="create" on-tap="editItemCopyClicked"></paper-icon-button>
+                        </template>
+                        <template is="dom-if" if="[[item.availableForCheckout]]" restamp="true">
+                            <paper-icon-button icon="add-shopping-cart" disabled="[[item.inCart]]"
+                                               on-tap="addCartCopyClicked"></paper-icon-button>
+                        </template>
+                    </paper-item>
+                </template>
+                <paper-item on-tap="addCopyClicked">Add Copy...</paper-item>
+            </div>
         </paper-card>
 
         <paper-dialog id="copyEditDialog" modal="true">
             <h2>
-            <template is="dom-if" if="[[createCopy]]" restamp="true">Create Copy</template>
-            <template is="dom-if" if="[[!createCopy]]" restamp="true">Edit Copy</template>
+                <template is="dom-if" if="[[createCopy]]" restamp="true">Create Copy</template>
+                <template is="dom-if" if="[[!createCopy]]" restamp="true">Edit Copy</template>
             </h2>
             <div class="vertical">
-                <paper-dropdown-menu data-field-id="collectionId" floatinglabel label="Collection" required auto-validate>
-                    <paper-listbox class="dropdown-content" attr-for-selected="value" selected="{{currentItemCopy.collectionId}}">
+                <paper-dropdown-menu data-field-id="collectionId" floatinglabel label="Collection" required
+                                     auto-validate>
+                    <paper-listbox class="dropdown-content" attr-for-selected="value"
+                                   selected="{{currentItemCopy.collectionId}}">
                         <template is="dom-repeat" items="[[collections]]">
                             <paper-item value="[[item.id]]">[[item.name]]</paper-item>
                         </template>
                     </paper-listbox>
                 </paper-dropdown-menu>
 
-                <paper-input data-field-id="uniqueId" label="Unique ID" value="{{currentItemCopy.uniqueId}}"></paper-input>
+                <paper-input data-field-id="uniqueId" label="Unique ID"
+                             value="{{currentItemCopy.uniqueId}}"></paper-input>
             </div>
             <div class="buttons">
                 <paper-button dialog-dismiss>Cancel</paper-button>

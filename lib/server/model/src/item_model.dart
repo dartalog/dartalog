@@ -19,7 +19,8 @@ class ItemModel extends AIdNameBasedModel<Item> {
   Future<Item> getById(String id,
       {bool includeType: false,
       bool includeFields: false,
-      bool includeCopies: false}) async {
+      bool includeCopies: false,
+      bool includeCopyCollection: false}) async {
     Item output = await super.getById(id);
 
     if (includeType) {
@@ -36,8 +37,9 @@ class ItemModel extends AIdNameBasedModel<Item> {
           "Cannot include fields without including the type");
     }
     if (includeCopies) {
-      if (output.copies == null)
-        output.copies = await this.copies.getAllForItem(id);
+      if (output.copies == null) {
+        output.copies = await this.copies.getAllForItem(id, includeCollection: includeCopyCollection);
+      }
     } else {
       output.copies = null;
     }
@@ -56,7 +58,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
 
   Future<ItemCopyId> createWithCopy(Item item, String collectionId,
   {String uniqueId, List<List<int>> files}) async {
-    if (!userAuthenticated()) {
+    if (!_userAuthenticated) {
       throw new NotAuthorizedException();
     }
 
@@ -96,7 +98,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
 
   @override
   Future<String> update(String id, Item item, {List<List<int>> files}) async {
-    if (!userAuthenticated()) {
+    if (!_userAuthenticated) {
       throw new NotAuthorizedException();
     }
 

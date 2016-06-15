@@ -35,21 +35,20 @@ class UserModel extends AIdNameBasedModel<User> {
   }
 
   Future<List<IdNamePair>> getAllIdsAndNames() async {
-    await validateUserPrivilege(USER_PRIVILEGE_CHECKOUT);
+    await _validateUserPrivilege(USER_PRIVILEGE_CHECKOUT);
     return await super.getAllIdsAndNames();
   }
 
   Future<User> getMe() async {
-    if(!userAuthenticated())
+    if(!_userAuthenticated)
       throw new NotAuthorizedException();
 
-    Option<Principal> princ = getUserPrincipal();
-    Option<User> output = await dataSource.getById(princ.get().name);
+    Option<User> output = await dataSource.getById(_userPrincipal.get().name);
     return output.getOrElse(() =>throw new Exception("Authenticated user not present in database"));
   }
 
   Future setPrivileges(String id, List<String> privilege) async {
-    await validateUserPrivilege(USER_PRIVILEGE_ADMIN);
+    await _validateUserPrivilege(USER_PRIVILEGE_ADMIN);
     if(!await dataSource.exists(id))
       throw new NotFoundException("User not found");
 
@@ -58,7 +57,7 @@ class UserModel extends AIdNameBasedModel<User> {
 
   @override
   Future<String> create(User user, {List<String> privileges}) async {
-    await validateUserPrivilege(USER_PRIVILEGE_ADMIN);
+    await _validateUserPrivilege(USER_PRIVILEGE_ADMIN);
 
     String output = await super.create(user);
 
@@ -70,7 +69,7 @@ class UserModel extends AIdNameBasedModel<User> {
 
   @override
   Future<String> update(String id, User user) async {
-    await validateUserPrivilege(USER_PRIVILEGE_ADMIN);
+    await _validateUserPrivilege(USER_PRIVILEGE_ADMIN);
     // Only admin can update...for now
 
     String output = await super.update(id, user);
@@ -87,10 +86,10 @@ class UserModel extends AIdNameBasedModel<User> {
 
   Future changePassword(
       String id, String currentPassword, String newPassword) async {
-    if (!userAuthenticated()) {
+    if (!_userAuthenticated) {
       throw new NotAuthorizedException();
     }
-    if(currentUserId!=id)
+    if(_currentUserId!=id)
       throw new NotAuthorizedException.withMessage("You do not have permission to change another user's password");
 
     String userPassword = (await data_sources.users.getPasswordHash(id)).getOrElse(() => throw new Exception("User ${id} does not have a current password"));

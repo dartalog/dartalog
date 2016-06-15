@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "1d013a889a99e61051b42009ff37d8b9f57abc24",
+ "etag": "4233d64771b1f645deb987335f616338dcfdb7fc",
  "discoveryVersion": "v1",
  "id": "dartalog:0.1",
  "name": "dartalog",
@@ -94,17 +94,11 @@
     "itemId": {
      "type": "string"
     },
-    "itemName": {
-     "type": "string"
-    },
     "copy": {
      "type": "integer",
      "format": "int32"
     },
     "collectionId": {
-     "type": "string"
-    },
-    "collectionName": {
      "type": "string"
     },
     "uniqueId": {
@@ -116,6 +110,12 @@
     "statusName": {
      "type": "string"
     },
+    "userCanCheckout": {
+     "type": "boolean"
+    },
+    "userCanEdit": {
+     "type": "boolean"
+    },
     "eligibleActions": {
      "type": "array",
      "items": {
@@ -124,6 +124,9 @@
     },
     "collection": {
      "$ref": "Collection"
+    },
+    "item": {
+     "$ref": "Item"
     }
    }
   },
@@ -151,6 +154,44 @@
      "items": {
       "type": "string"
      }
+    }
+   }
+  },
+  "Item": {
+   "id": "Item",
+   "type": "object",
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "typeId": {
+     "type": "string"
+    },
+    "dateAdded": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "dateUpdated": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "values": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "string"
+     }
+    },
+    "copies": {
+     "type": "array",
+     "items": {
+      "$ref": "ItemCopy"
+     }
+    },
+    "type": {
+     "$ref": "ItemType"
     }
    }
   },
@@ -222,44 +263,6 @@
     },
     "uniqueId": {
      "type": "string"
-    }
-   }
-  },
-  "Item": {
-   "id": "Item",
-   "type": "object",
-   "properties": {
-    "id": {
-     "type": "string"
-    },
-    "name": {
-     "type": "string"
-    },
-    "typeId": {
-     "type": "string"
-    },
-    "dateAdded": {
-     "type": "string",
-     "format": "date-time"
-    },
-    "dateUpdated": {
-     "type": "string",
-     "format": "date-time"
-    },
-    "values": {
-     "type": "object",
-     "additionalProperties": {
-      "type": "string"
-     }
-    },
-    "copies": {
-     "type": "array",
-     "items": {
-      "$ref": "ItemCopy"
-     }
-    },
-    "type": {
-     "$ref": "ItemType"
     }
    }
   },
@@ -731,6 +734,12 @@
        "description": "Query parameter: 'includeCopies'.",
        "required": false,
        "location": "query"
+      },
+      "includeCopyCollection": {
+       "type": "boolean",
+       "description": "Query parameter: 'includeCopyCollection'.",
+       "required": false,
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -817,6 +826,12 @@
          "description": "Path parameter: 'itemId'.",
          "required": true,
          "location": "path"
+        },
+        "includeCollection": {
+         "type": "boolean",
+         "description": "Query parameter: 'includeCollection'.",
+         "required": false,
+         "location": "query"
         }
        },
        "parameterOrder": [
@@ -871,6 +886,18 @@
          "description": "Path parameter: 'copy'.",
          "required": true,
          "location": "path"
+        },
+        "includeCollection": {
+         "type": "boolean",
+         "description": "Query parameter: 'includeCollection'.",
+         "required": false,
+         "location": "query"
+        },
+        "includeItem": {
+         "type": "boolean",
+         "description": "Query parameter: 'includeItem'.",
+         "required": false,
+         "location": "query"
         }
        },
        "parameterOrder": [

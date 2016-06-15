@@ -881,6 +881,8 @@ class ItemsResourceApi {
    *
    * [includeCopies] - Query parameter: 'includeCopies'.
    *
+   * [includeCopyCollection] - Query parameter: 'includeCopyCollection'.
+   *
    * Completes with a [Item].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
@@ -889,7 +891,7 @@ class ItemsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<Item> getById(core.String id, {core.bool includeType, core.bool includeFields, core.bool includeCopies}) {
+  async.Future<Item> getById(core.String id, {core.bool includeType, core.bool includeFields, core.bool includeCopies, core.bool includeCopyCollection}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -908,6 +910,9 @@ class ItemsResourceApi {
     }
     if (includeCopies != null) {
       _queryParams["includeCopies"] = ["${includeCopies}"];
+    }
+    if (includeCopyCollection != null) {
+      _queryParams["includeCopyCollection"] = ["${includeCopyCollection}"];
     }
 
     _url = 'items/' + commons.Escaper.ecapeVariable('$id') + '/';
@@ -1059,6 +1064,10 @@ class ItemsCopiesResourceApi {
    *
    * [copy] - Path parameter: 'copy'.
    *
+   * [includeCollection] - Query parameter: 'includeCollection'.
+   *
+   * [includeItem] - Query parameter: 'includeItem'.
+   *
    * Completes with a [ItemCopy].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
@@ -1067,7 +1076,7 @@ class ItemsCopiesResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ItemCopy> get(core.String itemId, core.int copy) {
+  async.Future<ItemCopy> get(core.String itemId, core.int copy, {core.bool includeCollection, core.bool includeItem}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -1080,6 +1089,12 @@ class ItemsCopiesResourceApi {
     }
     if (copy == null) {
       throw new core.ArgumentError("Parameter copy is required.");
+    }
+    if (includeCollection != null) {
+      _queryParams["includeCollection"] = ["${includeCollection}"];
+    }
+    if (includeItem != null) {
+      _queryParams["includeItem"] = ["${includeItem}"];
     }
 
     _url = 'items/' + commons.Escaper.ecapeVariable('$itemId') + '/copies/' + commons.Escaper.ecapeVariable('$copy') + '/';
@@ -1099,6 +1114,8 @@ class ItemsCopiesResourceApi {
    *
    * [itemId] - Path parameter: 'itemId'.
    *
+   * [includeCollection] - Query parameter: 'includeCollection'.
+   *
    * Completes with a [ListOfItemCopy].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
@@ -1107,7 +1124,7 @@ class ItemsCopiesResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ListOfItemCopy> getAllForItem(core.String itemId) {
+  async.Future<ListOfItemCopy> getAllForItem(core.String itemId, {core.bool includeCollection}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -1117,6 +1134,9 @@ class ItemsCopiesResourceApi {
 
     if (itemId == null) {
       throw new core.ArgumentError("Parameter itemId is required.");
+    }
+    if (includeCollection != null) {
+      _queryParams["includeCollection"] = ["${includeCollection}"];
     }
 
     _url = 'items/' + commons.Escaper.ecapeVariable('$itemId') + '/copies/';
@@ -2063,14 +2083,15 @@ class ItemActionRequest {
 class ItemCopy {
   Collection collection;
   core.String collectionId;
-  core.String collectionName;
   core.int copy;
   core.List<core.String> eligibleActions;
+  Item item;
   core.String itemId;
-  core.String itemName;
   core.String status;
   core.String statusName;
   core.String uniqueId;
+  core.bool userCanCheckout;
+  core.bool userCanEdit;
 
   ItemCopy();
 
@@ -2081,20 +2102,17 @@ class ItemCopy {
     if (_json.containsKey("collectionId")) {
       collectionId = _json["collectionId"];
     }
-    if (_json.containsKey("collectionName")) {
-      collectionName = _json["collectionName"];
-    }
     if (_json.containsKey("copy")) {
       copy = _json["copy"];
     }
     if (_json.containsKey("eligibleActions")) {
       eligibleActions = _json["eligibleActions"];
     }
+    if (_json.containsKey("item")) {
+      item = new Item.fromJson(_json["item"]);
+    }
     if (_json.containsKey("itemId")) {
       itemId = _json["itemId"];
-    }
-    if (_json.containsKey("itemName")) {
-      itemName = _json["itemName"];
     }
     if (_json.containsKey("status")) {
       status = _json["status"];
@@ -2104,6 +2122,12 @@ class ItemCopy {
     }
     if (_json.containsKey("uniqueId")) {
       uniqueId = _json["uniqueId"];
+    }
+    if (_json.containsKey("userCanCheckout")) {
+      userCanCheckout = _json["userCanCheckout"];
+    }
+    if (_json.containsKey("userCanEdit")) {
+      userCanEdit = _json["userCanEdit"];
     }
   }
 
@@ -2115,20 +2139,17 @@ class ItemCopy {
     if (collectionId != null) {
       _json["collectionId"] = collectionId;
     }
-    if (collectionName != null) {
-      _json["collectionName"] = collectionName;
-    }
     if (copy != null) {
       _json["copy"] = copy;
     }
     if (eligibleActions != null) {
       _json["eligibleActions"] = eligibleActions;
     }
+    if (item != null) {
+      _json["item"] = (item).toJson();
+    }
     if (itemId != null) {
       _json["itemId"] = itemId;
-    }
-    if (itemName != null) {
-      _json["itemName"] = itemName;
     }
     if (status != null) {
       _json["status"] = status;
@@ -2138,6 +2159,12 @@ class ItemCopy {
     }
     if (uniqueId != null) {
       _json["uniqueId"] = uniqueId;
+    }
+    if (userCanCheckout != null) {
+      _json["userCanCheckout"] = userCanCheckout;
+    }
+    if (userCanEdit != null) {
+      _json["userCanEdit"] = userCanEdit;
     }
     return _json;
   }

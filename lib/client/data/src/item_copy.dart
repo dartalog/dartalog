@@ -3,19 +3,21 @@ class ItemCopy extends JsProxy {
   @reflectable
   String collectionId;
   @reflectable
-  String collectionName;
-  @reflectable
   int copy = 0;
   @reflectable
   String itemId;
-  @reflectable
-  String itemName;
   @reflectable
   String status;
   @reflectable
   String statusName;
   @reflectable
   String uniqueId;
+
+  @reflectable
+  Item item;
+
+  @reflectable
+  Collection collection;
 
   List<String> eligibleActions = [];
 
@@ -26,13 +28,23 @@ class ItemCopy extends JsProxy {
   @reflectable
   bool availableForCheckout = false;
 
+  @reflectable
+  bool userCanCheckout = false;
+
+  @reflectable
+  bool userCanEdit = false;
+
+
+  @reflectable
+  bool get hasUniqueId => !isNullOrWhitespace(this.uniqueId);
+
   ItemCopy();
 
   ItemCopy.forItem(this.itemId);
 
   ItemCopy.copyFrom(dynamic input) {
     _copy(input,this);
-    availableForCheckout = eligibleActions.contains(ITEM_ACTION_BORROW);
+    availableForCheckout = userCanCheckout&&eligibleActions.contains(ITEM_ACTION_BORROW);
   }
 
   void copyTo(dynamic output) {
@@ -41,14 +53,18 @@ class ItemCopy extends JsProxy {
 
   void _copy(dynamic from, dynamic to) {
     to.collectionId = from.collectionId;
-    to.collectionName = from.collectionName;
     to.copy = from.copy;
     to.itemId = from.itemId;
-    to.itemName = from.itemName;
     to.status = from.status;
     to.statusName = from.statusName;
     to.uniqueId = from.uniqueId;
     to.eligibleActions = from.eligibleActions;
+    to.userCanCheckout = from.userCanCheckout;
+    to.userCanEdit = from.userCanEdit;
+    if(from.item!=null)
+      to.item = new Item.copy(from.item);
+    if(from.collection!=null)
+      to.collection = new Collection.copy(from.collection);
   }
 
   bool matchesItemCopy(ItemCopy other) {

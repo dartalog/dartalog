@@ -18,8 +18,10 @@
                 </template>
                 <span class="title" style="margin-left:8pt;">[[currentPage.title]]</span>
                 <template is="dom-if" if="[[showSearch]]">
-                    <paper-input on-keypress="searchKeypress" placeholder="Search" class="search_input">
+                    <paper-input on-keypress="searchKeypress" placeholder="Search" class="search_input" value="{{searchText}}">
                         <iron-icon icon="search" prefix></iron-icon>
+                        <paper-icon-button suffix on-tap="clearSearch" icon="clear" alt="clear" title="clear">
+                        </paper-icon-button>
                     </paper-input>
                 </template>
                 <template is="dom-if" if="[[showRefresh]]">

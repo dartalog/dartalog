@@ -246,6 +246,12 @@ class MainApp extends PolymerElement {
     DartalogHttpClient.setAuthKey("");
   }
 
+  @reflectable
+  void clearSearch(event, [_]) {
+    set("searchText", "");
+    this.refreshClicked(event,[_]);
+  }
+
   Future evaluateAuthentication() async {
     bool authed = false;
     try {
@@ -415,12 +421,8 @@ class MainApp extends PolymerElement {
             (currentPage as ASaveablePage).showSaveButton);
   }
 
-  PaperInput get _searchInput {
-    return document.querySelector(".search_input");
-  }
-
-  String get searchText => _searchInput.value;
-  set searchText(String text) => _searchInput.value = text;
+  @property
+  String searchText = "";
 
   void handleException(e, st) {
     if(e is api.DetailedApiRequestError) {

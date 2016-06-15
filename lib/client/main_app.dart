@@ -262,6 +262,9 @@ class MainApp extends PolymerElement {
       setUserObject(new User.copy(apiUser));
 
       set("userCanCheckout", userHasPrivilege(USER_PRIVILEGE_CHECKOUT));
+      set("userIsAdmin", userHasPrivilege(USER_PRIVILEGE_ADMIN));
+      set("userCanAdd", userHasPrivilege(USER_PRIVILEGE_CREATE));
+      set("userCanBorrow", userHasPrivilege(USER_PRIVILEGE_BORROW));
 
       authed = true;
 

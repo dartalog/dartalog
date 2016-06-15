@@ -3,12 +3,16 @@ part of model;
 abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
   AIdNameBasedDataSource<T> get dataSource;
 
-  Future<List<T>> search(String query) => dataSource.search(query);
+  Future<List<T>> search(String query) async {
+    await _validateDefaultPrivilegeRequirement();
+    return await dataSource.search(query);
+  }
 
   Future<String> create(T t) async {
     if (!_userAuthenticated) {
       throw new NotAuthorizedException();
     }
+    await _validateDefaultPrivilegeRequirement();
 
     await validate(t, true);
     return await dataSource.write(t);
@@ -18,20 +22,27 @@ abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
     if (!_userAuthenticated) {
       throw new NotAuthorizedException();
     }
+    await _validateDefaultPrivilegeRequirement();
 
     await dataSource.delete(id);
   }
 
-  Future<List<IdNamePair>> getAllIdsAndNames() =>
-      dataSource.getAllIdsAndNames();
+  Future<List<IdNamePair>> getAllIdsAndNames() async {
+    await _validateDefaultPrivilegeRequirement();
+    return await dataSource.getAllIdsAndNames();
+  }
 
   Future<List<T>> getAll() async {
+    await _validateDefaultPrivilegeRequirement();
+
     List<T> output = await dataSource.getAll();
     for (T t in output) _performAdjustments(t);
     return output;
   }
 
   Future<T> getById(String id) async {
+    await _validateDefaultPrivilegeRequirement();
+
     Option<T> output = await dataSource.getById(id);
 
     if (output.isEmpty) throw new NotFoundException("ID '${id}' not found");
@@ -47,6 +58,8 @@ abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
     if (!_userAuthenticated) {
       throw new NotAuthorizedException();
     }
+    await _validateDefaultPrivilegeRequirement();
+
     await validate(t, id != t.getId);
     return await dataSource.write(t, id);
   }

@@ -5,9 +5,24 @@ class CollectionsModel extends AIdNameBasedModel<Collection> {
   Logger get _logger => _log;
   ACollectionDataSource get dataSource => data_sources.itemCollections;
 
+  String get _defaultPrivilegeRequirement => USER_PRIVILEGE_CREATE;
+
+  Future _verifyUserIsCurator(String collectionId) async {
+    _validateDefaultPrivilegeRequirement();
+    Collection col = await this.getById(collectionId);
+    if(!col.curators.contains(this._currentUserId))
+      throw new NotAuthorizedException.withMessage("You are not a curator for collection \"${col.name}\"");
+  }
+
+  @override
+  Future delete(String id) async {
+    await _verifyUserIsCurator(id);
+    await dataSource.delete(id);
+  }
+
   @override
   Future<List<Collection>> getAll() async {
-    await _validateUserPrivilege(USER_PRIVILEGE_CREATE);
+    await _validateDefaultPrivilegeRequirement();
 
     List output;
 

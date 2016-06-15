@@ -35,6 +35,7 @@ const String ITEM_STATUS_LOST = 'lost';
 
 const String ITEM_DEFAULT_STATUS = ITEM_STATUS_AVAILABLE;
 
+const String USER_PRIVILEGE_NONE = "none";
 const String USER_PRIVILEGE_ADMIN = "admin"; // Implies all other privileges
 const String USER_PRIVILEGE_CREATE = "create";
 const String USER_PRIVILEGE_CHECKOUT = "checkout";

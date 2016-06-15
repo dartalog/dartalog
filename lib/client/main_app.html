@@ -76,10 +76,13 @@
                             <iron-icon icon="label-outline"></iron-icon>
                             <paper-item-body>Browse Items</paper-item-body>
                         </paper-item>
+                        <template is="dom-if" if="[[userCanAdd]]">
                         <paper-item on-tap="drawerItemClicked" data-route="collections">
                             <iron-icon icon="label-outline"></iron-icon>
                             <paper-item-body>Collections</paper-item-body>
                         </paper-item>
+                        </template>
+                        <template is="dom-if" if="[[userIsAdmin]]">
                         Admin
                         <paper-item on-tap="drawerItemClicked" data-route="field_admin">
                             <iron-icon icon="label-outline"></iron-icon>
@@ -93,6 +96,7 @@
                             <iron-icon icon="label-outline"></iron-icon>
                             <paper-item-body>Users</paper-item-body>
                         </paper-item>
+                        </template>
                     </div>
                 </paper-header-panel>
                 <paper-header-panel class="main" main mode="waterfall">

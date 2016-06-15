@@ -9,6 +9,11 @@ abstract class AModel<T> {
   bool get _userAuthenticated =>
       _userPrincipal.map((Principal p) => true).getOrDefault(false);
 
+  String get _defaultPrivilegeRequirement => USER_PRIVILEGE_NONE;
+  Future<bool> _validateDefaultPrivilegeRequirement() => _validateUserPrivilege(_defaultPrivilegeRequirement);
+
+
+
   Option<Principal> get _userPrincipal => authenticatedContext()
       .map((AuthenticatedContext context) => context.principal);
 
@@ -24,6 +29,8 @@ abstract class AModel<T> {
   }
 
   Future<bool> _userHasPrivilege(String privilege) async {
+    if(privilege==USER_PRIVILEGE_NONE)
+      return true; //None is equivalent to not being logged in, or logged in as a user with no privileges
     User user = await _getCurrentUser();
     if (user.privileges.contains(USER_PRIVILEGE_ADMIN) ||
         user.privileges.contains(privilege)) return true;

@@ -9,6 +9,11 @@
     <style include="iron-flex"></style>
 
     <template>
+        <template is="dom-if" if="[[!userHasAccess]]" restamp="true">
+            <paper-card heading="Not authorized" style="margin:8px;" class="vertical layout">
+            </paper-card>
+        </template>
+        <template is="dom-if" if="[[userHasAccess]]" restamp="true">
         <paper-card heading="Collections" style="margin:8px;" class="vertical layout">
             <div class="card-content">
                 <template is="dom-repeat" items="[[collections]]">
@@ -33,12 +38,13 @@
                                     selected-values="{{currentCollection.browsers}}">
                 </combo-list-control>
 
-                <span id="output_error" style="color:red"></span>
+                <span style="color:red">[[errorMessage]]</span>
             </div>
             <div class="buttons">
                 <paper-button on-tap="cancelClicked">Cancel</paper-button>
                 <paper-button on-tap="saveClicked">Save</paper-button>
             </div>
         </paper-dialog>
+            </template>
     </template>
 </dom-module>

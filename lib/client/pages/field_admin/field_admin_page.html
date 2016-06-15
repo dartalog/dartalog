@@ -9,10 +9,14 @@
     <style include="iron-flex"></style>
 
     <template>
+        <template is="dom-if" if="[[!userHasAccess]]" restamp="true">
+            <paper-card heading="Not authorized" style="margin:8px;" class="vertical layout">
+            </paper-card>
+            </template>
+        <template is="dom-if" if="[[userHasAccess]]" restamp="true">
         <paper-card heading="Fields" style="margin:8px;" class="vertical layout">
             <div class="card-content">
                 <template is="dom-repeat" items="{{fields}}">
-                    <hr style="height:1px;"/>
                     <paper-item horizontal on-tap="fieldClicked" data-id$="{{item.id}}" class="flex">{{item.name}}
                     </paper-item>
                 </template>
@@ -35,12 +39,13 @@
                 </paper-dropdown-menu>
                 <paper-input floatinglabel data-field-id="format" label="Format"
                              value="{{currentField.format}}"></paper-input>
-                <span id="output_field_error" style="color:red"></span>
+                <span style="color:red">[[errorMessage]]</span>
             </div>
             <div class="buttons">
                 <paper-button on-tap="cancelClicked">Cancel</paper-button>
                 <paper-button on-tap="saveClicked">Save</paper-button>
             </div>
         </paper-dialog>
+        </template>
     </template>
 </dom-module>

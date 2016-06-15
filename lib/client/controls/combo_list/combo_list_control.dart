@@ -139,7 +139,7 @@ class ComboListControl extends AControl  {
   setInvalid(bool value) {
     set("invalid", value);
   }
-  setErrorMessage(String  value) {
+  setGeneralErrorMessage(String  value) {
     set("errorMessage", value);
   }
 

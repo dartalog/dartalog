@@ -50,6 +50,7 @@ class AControl extends PolymerElement {
   Future activateInternal(Map args);
 
   void clearValidation() {
+    setGeneralErrorMessage("");
     for (Element ele in querySelectorAll('${this.tagName} [data-field-id]')) {
       if (ele is IronInput) {
         IronInput pi = ele as IronInput;
@@ -64,7 +65,7 @@ class AControl extends PolymerElement {
         //ele.errorMessage = ""; TODO: Error messages for toggle buttons?
       } else if(ele is ComboListControl) {
         ComboListControl pi = ele as ComboListControl;
-        pi.setErrorMessage("");
+        pi.setGeneralErrorMessage("");
         pi.setInvalid(false);
       } else if(ele is PaperDropdownMenu) {
         PaperDropdownMenu pi = ele as PaperDropdownMenu;
@@ -76,22 +77,12 @@ class AControl extends PolymerElement {
     }
   }
 
-  Future _handleApiError(commons.DetailedApiRequestError error,
-      {String generalErrorField: ""}) async {
+  Future _handleApiError(commons.DetailedApiRequestError error) async {
     try {
       clearValidation();
       if(error.status==400){
-        if (generalErrorField.length > 0) {
-          dynamic input = $[generalErrorField];
-          if (input != null) {
-            input.text = error.message;
-          } else {
-            showMessage(error.message, "error");
-          }
-        } else {
-          showMessage(error.message, "error");
-        }
-        setErrorMessages(error.errors);
+        setGeneralErrorMessage(error.message);
+        setFieldErrorMessages(error.errors);
       } else if(error.status==401) {
         await this.mainApp.clearAuthentication();
         this.mainApp.promptForAuthentication();
@@ -104,12 +95,11 @@ class AControl extends PolymerElement {
     }
   }
 
-  Future handleApiExceptions(toAwait(),
-      {String generalErrorField: ""}) async {
+  Future handleApiExceptions(toAwait()) async {
     try {
       return await toAwait();
     } on commons.DetailedApiRequestError catch (e, st) {
-      await _handleApiError(e, generalErrorField: generalErrorField);
+      await _handleApiError(e);
     } catch (e, st) {
       handleException(e, st);
     }
@@ -120,7 +110,7 @@ class AControl extends PolymerElement {
     mainApp.handleException(e, st);
   }
 
-  void setErrorMessages(List<commons.ApiRequestErrorDetail> fieldErrors) {
+  void setFieldErrorMessages(List<commons.ApiRequestErrorDetail> fieldErrors) {
     for (commons.ApiRequestErrorDetail detail in fieldErrors) {
       if (detail.message == null || detail.message.length == 0) continue;
 
@@ -153,7 +143,7 @@ class AControl extends PolymerElement {
         //ele.errorMessage = ""; TODO: Error messages for toggle buttons?
       } else if (input is ComboListControl) {
         ComboListControl pi = input as ComboListControl;
-        pi.setErrorMessage(message);
+        pi.setGeneralErrorMessage(message);
         pi.setInvalid(true);
       } else {
         window.alert("Unknown control: " + input.runtimeType.toString());
@@ -164,5 +154,10 @@ class AControl extends PolymerElement {
   }
   void showMessage(String message, [String severity]) {
     mainApp.showMessage(message, severity);
+  }
+
+  void setGeneralErrorMessage(String message) {
+    if (!isNullOrWhitespace(message))
+      showMessage(message, "error");
   }
 }

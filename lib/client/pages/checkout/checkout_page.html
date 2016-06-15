@@ -8,6 +8,11 @@
     <link rel="stylesheet" href="checkout_page.css">
     <style include="iron-flex"></style>
     <template>
+        <template is="dom-if" if="[[!userHasAccess]]" restamp="true">
+            <paper-card heading="Not authorized" style="margin:8px;" class="vertical layout">
+            </paper-card>
+        </template>
+        <template is="dom-if" if="[[userHasAccess]]" restamp="true">
         <paper-card heading="Checkout Cart" style="margin:8pt;" class="vertical layout">
             <div class="card-content">
                 <template is="dom-if" if="[[cartIsEmpty]]">
@@ -40,5 +45,6 @@
             </div>
             </template>
         </paper-card>
+            </template>
     </template>
 </dom-module>

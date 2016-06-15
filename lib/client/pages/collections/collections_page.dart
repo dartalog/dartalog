@@ -41,19 +41,24 @@ class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
   String currentId = "";
   @property Collection currentCollection = new Collection();
 
+  PaperDialog get editDialog =>  this.querySelector('#editDialog');
+
+  @override
+  void setGeneralErrorMessage(String message) => set("errorMessage", message);
+  @Property(notify:true)
+  String errorMessage = "";
+
+  @property
+  bool userHasAccess = false;
+
   /// Constructor used to create instance of MainApp.
   CollectionsPage.created() : super.created("Collection Maintenance");
 
-  PaperDialog get editDialog =>  $['editDialog'];
 
   Future activateInternal(Map args) async {
+    set("userHasAccess", this.userHasPrivilege(dartalog.USER_PRIVILEGE_CREATE));
+    if(userHasAccess)
     await this.refresh();
-  }
-
-  @override
-  void clearValidation() {
-    $['output_error'].text = "";
-    super.clearValidation();
   }
 
   @reflectable

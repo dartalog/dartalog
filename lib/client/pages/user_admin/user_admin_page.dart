@@ -46,7 +46,15 @@ class UserAdminPage extends APage with ARefreshablePage, ACollectionPage {
   /// Constructor used to create instance of MainApp.
   UserAdminPage.created() : super.created("User Admin");
 
-  PaperDialog get editDialog => $['editDialog'];
+  PaperDialog get editDialog =>  this.querySelector('#editDialog');
+
+  @override
+  void setGeneralErrorMessage(String message) => set("errorMessage", message);
+  @Property(notify:true)
+  String errorMessage = "";
+
+  @property
+  bool userHasAccess = false;
 
   Logger get loggerImpl => _log;
 
@@ -60,6 +68,8 @@ class UserAdminPage extends APage with ARefreshablePage, ACollectionPage {
   }
 
   Future activateInternal(Map args) async {
+    set("userHasAccess", this.userHasPrivilege(dartalog.USER_PRIVILEGE_ADMIN));
+    if(userHasAccess)
     await this.refresh();
   }
 
@@ -67,12 +77,6 @@ class UserAdminPage extends APage with ARefreshablePage, ACollectionPage {
   cancelClicked(event, [_]) {
     editDialog.cancel();
     this.reset();
-  }
-
-  @override
-  void clearValidation() {
-    $['output_field_error'].text = "";
-    super.clearValidation();
   }
 
   @reflectable

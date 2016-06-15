@@ -52,12 +52,18 @@ class CheckoutPage extends APage with ARefreshablePage {
   @Property(notify: true)
   String checkoutUser = "";
 
+  @property
+  bool userHasAccess = false;
+
+
   CheckoutPage.created() : super.created("Checkout");
 
   Logger get loggerImpl => _log;
 
   @override
   Future activateInternal(Map args) async {
+    set("userHasAccess", this.userHasPrivilege(dartalog.USER_PRIVILEGE_CHECKOUT));
+      if(userHasAccess)
     await this.refresh();
   }
 

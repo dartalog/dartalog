@@ -32,6 +32,8 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   static final Logger _log = new Logger("FieldAdminPage");
   Logger get loggerImpl => _log;
 
+  @property
+  bool userHasAccess = false;
 
   @property
   List<IdNamePair> fields = new List<IdNamePair>();
@@ -45,16 +47,17 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   @Property(notify: true) Iterable get FIELD_TYPE_KEYS => dartalog.FIELD_TYPES.keys;
   @reflectable String getFieldType(String key) => dartalog.FIELD_TYPES[key];
 
-  PaperDialog get editDialog =>  $['editDialog'];
-
-  Future activateInternal(Map args) async {
-    await this.refresh();
-  }
+  PaperDialog get editDialog =>  this.querySelector('#editDialog');
 
   @override
-  void clearValidation() {
-    $['output_field_error'].text = "";
-    super.clearValidation();
+  void setGeneralErrorMessage(String message) => set("errorMessage", message);
+  @Property(notify:true)
+  String errorMessage = "";
+
+  Future activateInternal(Map args) async {
+    set("userHasAccess", this.userHasPrivilege(dartalog.USER_PRIVILEGE_ADMIN));
+    if(userHasAccess)
+      await this.refresh();
   }
 
   @reflectable

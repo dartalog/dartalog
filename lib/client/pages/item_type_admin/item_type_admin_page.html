@@ -8,6 +8,11 @@
     <link rel="stylesheet" href="item_type_admin_page.css">
 
     <template>
+        <template is="dom-if" if="[[!userHasAccess]]" restamp="true">
+            <paper-card heading="Not authorized" style="margin:8px;" class="vertical layout">
+            </paper-card>
+        </template>
+        <template is="dom-if" if="[[userHasAccess]]" restamp="true">
         <paper-card heading="Item Types" style="margin:8px;" class="vertical layout">
             <div class="card-content">
                 <template is="dom-repeat" items="{{itemTypes}}">
@@ -26,12 +31,13 @@
                                     selected-values="{{currentItemType.fieldIds}}">
                 </combo-list-control>
                 </paper-dialog-scrollable>
-            <span id="output_error" style="color:red"></span>
+            <span style="color:red">[[errorMessage]]</span>
             <div class="buttons">
                 <paper-button on-tap="cancelClicked">Cancel</paper-button>
                 <paper-button on-tap="saveClicked">Save</paper-button>
             </div>
         </paper-dialog>
+            </template>
     </template>
 </dom-module>
 

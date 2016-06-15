@@ -15,6 +15,7 @@ import 'package:polymer_elements/paper_input.dart';
 import 'package:polymer_elements/paper_toggle_button.dart';
 
 import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/tools.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/main_app.dart';
 import 'package:dartalog/client/data/data.dart';

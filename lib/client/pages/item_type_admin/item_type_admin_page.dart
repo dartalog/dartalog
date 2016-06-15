@@ -49,9 +49,20 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
 
   @property String selectedField = "";
 
-  PaperDialog get editDialog =>  $['editDialog'];
+  PaperDialog get editDialog =>  this.querySelector('#editDialog');
+
+  @override
+  void setGeneralErrorMessage(String message) => set("errorMessage", message);
+  @Property(notify:true)
+  String errorMessage = "";
+
+  @property
+  bool userHasAccess = false;
+
 
   Future activateInternal(Map args) async {
+    set("userHasAccess", this.userHasPrivilege(dartalog.USER_PRIVILEGE_ADMIN));
+    if(userHasAccess)
     await this.refresh();
   }
 
@@ -83,10 +94,6 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
     set("currentItemType", new ItemType());
     currentItemId = "";
     clearValidation();
-  }
-
-  @override
-  void clearValidation() {
   }
 
   @override

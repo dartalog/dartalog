@@ -6,8 +6,8 @@ class ItemTypeModel extends AIdNameBasedModel<ItemType> {
   AIdNameBasedDataSource<ItemType> get dataSource => data_sources.itemTypes;
 
   @override
-  Future<ItemType> getById(String id, {bool includeFields: false}) async {
-    ItemType output = await super.getById(id);
+  Future<ItemType> getById(String id, {bool includeFields: false, bool bypassAuth: false}) async {
+    ItemType output = await super.getById(id, bypassAuth: bypassAuth);
     if(includeFields) {
       output.fields = await data_sources.fields.getByIds(output.fieldIds);
     }

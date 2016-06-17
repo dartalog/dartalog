@@ -40,8 +40,9 @@ abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
     return output;
   }
 
-  Future<T> getById(String id) async {
-    await _validateDefaultPrivilegeRequirement();
+  Future<T> getById(String id, {bool bypassAuth: false}) async {
+    if(!bypassAuth)
+      await _validateDefaultPrivilegeRequirement();
 
     Option<T> output = await dataSource.getById(id);
 

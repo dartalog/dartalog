@@ -8,7 +8,7 @@ abstract class AItemCopyDataSource extends _ADataSource {
   Future<bool> existsByItemIdAndCopy(String itemId, int copy);
   Future<Option<ItemCopy>> getByUniqueId(String uniqueId);
   Future<bool> existsByUniqueId(String uniqueId);
-  Future<List<ItemCopy>> getAllForItemId(String itemId);
+  Future<List<ItemCopy>> getAllForItemId(String itemId, {String userName: null});
   Future<ItemCopyId> write(ItemCopy itemCopy, bool update);
   Future<int> getNextCopyNumber(String itemId);
   Future<List<ItemCopy>> getAll(List<ItemCopyId> itemCopies);

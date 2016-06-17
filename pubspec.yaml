@@ -42,6 +42,8 @@ dependencies:
   logging_handlers: ^0.8.0
   # 0.27.3 has a bug with paths on Windows
   analyzer: 0.27.2
+
+  test: any
 transformers:
 - polymer:
     entry_points:

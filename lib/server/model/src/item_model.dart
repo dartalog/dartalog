@@ -20,8 +20,9 @@ class ItemModel extends AIdNameBasedModel<Item> {
       {bool includeType: false,
       bool includeFields: false,
       bool includeCopies: false,
-      bool includeCopyCollection: false}) async {
-    Item output = await super.getById(id);
+      bool includeCopyCollection: false,
+      bool bypassAuth: false}) async {
+    Item output = await super.getById(id,bypassAuth: bypassAuth);
 
     if (includeType) {
       output.type = (await data_sources.itemTypes.getById(output.typeId))

@@ -134,7 +134,7 @@ class ItemCopyModel extends AModel<ItemCopy> {
     if(itemCopy.collection!=null)
       col = itemCopy.collection;
     else
-      col = await collections.getById(itemCopy.collectionId);
+      col = await collections.getById(itemCopy.collectionId, bypassAuth: true);
 
     itemCopy.userCanCheckout = false;
     itemCopy.userCanEdit = false;

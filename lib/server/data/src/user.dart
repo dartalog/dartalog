@@ -13,7 +13,7 @@ class User extends AIdData {
 
   String idNumber = ""; // For library cards and such
 
-  List<String> privileges = new List<String>();
+  String type;
 
   User();
 }

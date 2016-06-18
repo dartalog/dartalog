@@ -141,9 +141,9 @@ class ItemCopyModel extends AModel<ItemCopy> {
 
     if (_userAuthenticated) {
       if (col.curators.contains(_currentUserId)) {
-        itemCopy.userCanEdit = await _userHasPrivilege(USER_PRIVILEGE_CREATE);
+        itemCopy.userCanEdit = await _userHasPrivilege(UserPrivilege.curator);
         itemCopy.userCanCheckout =
-            await _userHasPrivilege(USER_PRIVILEGE_CHECKOUT);
+            await _userHasPrivilege(UserPrivilege.checkout);
       }
     }
   }

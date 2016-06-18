@@ -4,10 +4,10 @@ class MongoUserDataSource extends _AMongoIdDataSource<User>
     with AUserDataSource {
   static final Logger _log = new Logger('MongoUserDataSource');
 
-  static const String PRIVILEGES_FIELD = "privileges";
+  static const String TYPE_FIELD = "type";
   static const String PASSWORD_FIELD = "password";
   Future<List<User>> getAdmins() {
-    return this._getFromDb(where.eq(PRIVILEGES_FIELD, USER_PRIVILEGE_ADMIN));
+    return this._getFromDb(where.eq(TYPE_FIELD, UserPrivilege.admin));
   }
 
   Future<Option<String>> getPasswordHash(String id) async {
@@ -25,10 +25,10 @@ class MongoUserDataSource extends _AMongoIdDataSource<User>
     await _genericUpdate(selector, modifier, multiUpdate: false);
   }
 
-  Future setPrivileges(String id, List<String> privileges) async {
+  Future setType(String id, String type) async {
     SelectorBuilder selector = where.eq(ID_FIELD, id);
 
-    ModifierBuilder modifier = modify.set(PRIVILEGES_FIELD, privileges);
+    ModifierBuilder modifier = modify.set(TYPE_FIELD, type);
     await _genericUpdate(selector, modifier, multiUpdate: false);
   }
 
@@ -36,8 +36,8 @@ class MongoUserDataSource extends _AMongoIdDataSource<User>
     User output = new User();
     output.getId = data[ID_FIELD];
     output.getName = data["name"];
-    if (data.containsKey(PRIVILEGES_FIELD))
-      output.privileges = data[PRIVILEGES_FIELD];
+    if (data.containsKey(TYPE_FIELD))
+      output.type = data[TYPE_FIELD];
     return output;
   }
 

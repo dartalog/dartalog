@@ -4,7 +4,7 @@ class User extends JsProxy {
   @property String id;
   @property String name;
 
-  @property List<String> privileges = [];
+  @property String type;
 
   @reflectable
   String password = "";
@@ -27,7 +27,7 @@ class User extends JsProxy {
   void _copy(dynamic from, dynamic to) {
     to.id = from.id;
     to.name = from.name;
-    to.privileges = from.privileges;
+    to.type = from.type;
     if(from.password==null)
       to.password = "";
     else
@@ -40,5 +40,9 @@ class User extends JsProxy {
       output.add(new User.copy(obj));
     }
     return output;
+  }
+
+  bool evaluateType(String needed) {
+    return UserPrivilege.evaluate(needed, this.type);
   }
 }

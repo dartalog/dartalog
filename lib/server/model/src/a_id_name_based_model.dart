@@ -4,26 +4,18 @@ abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
   AIdNameBasedDataSource<T> get dataSource;
 
   Future<String> create(T t) async {
-    if (!_userAuthenticated) {
-      throw new NotAuthorizedException();
-    }
-    await _validateDefaultPrivilegeRequirement();
-
+    await _validateCreatePrivileges();
     await validate(t, true);
     return await dataSource.write(t);
   }
 
   Future delete(String id) async {
-    if (!_userAuthenticated) {
-      throw new NotAuthorizedException();
-    }
-    await _validateDefaultPrivilegeRequirement();
-
+    await _validateDeletePrivileges(id);
     await dataSource.delete(id);
   }
 
   Future<IdNameList<T>> getAll() async {
-    await _validateDefaultPrivilegeRequirement();
+    await _validateGetAllPrivileges();
 
     List<T> output = await dataSource.getAll();
     for (T t in output) _performAdjustments(t);
@@ -31,12 +23,12 @@ abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
   }
 
   Future<IdNameList<IdNamePair>> getAllIdsAndNames() async {
-    await _validateDefaultPrivilegeRequirement();
+    await _validateGetAllIdsAndNamesPrivileges();
     return await dataSource.getAllIdsAndNames();
   }
 
   Future<T> getById(String id, {bool bypassAuth: false}) async {
-    if (!bypassAuth) await _validateDefaultPrivilegeRequirement();
+    if (!bypassAuth) await _validateGetByIdPrivileges();
 
     Option<T> output = await dataSource.getById(id);
 
@@ -48,7 +40,7 @@ abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
   }
 
   Future<PaginatedIdNameData<T>> getPaginated({int offset: 0}) async {
-    await _validateDefaultPrivilegeRequirement();
+    await _validateGetAllPrivileges();
 
     PaginatedIdNameData<T> output =
         await dataSource.getPaginated(offset: offset);
@@ -58,32 +50,42 @@ abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
 
   Future<PaginatedIdNameData<IdNamePair>> getPaginatedIdsAndNames(
       {int offset: 0}) async {
-    await _validateDefaultPrivilegeRequirement();
+    await _validateGetAllIdsAndNamesPrivileges();
     return await dataSource.getPaginatedIdsAndNames(offset: offset);
   }
 
   Future<IdNameList<T>> search(String query) async {
-    await _validateDefaultPrivilegeRequirement();
+    await _validateSearchPrivileges();
     return await dataSource.search(query);
   }
 
   Future<PaginatedIdNameData<T>> searchPaginated(String query,
       {int offset: 0}) async {
-    await _validateDefaultPrivilegeRequirement();
+    await _validateSearchPrivileges();
     return await dataSource.searchPaginated(query, offset: offset);
   }
 
   Future<String> update(String id, T t) async {
-    if (!_userAuthenticated) {
-      throw new NotAuthorizedException();
-    }
-    await _validateDefaultPrivilegeRequirement();
-
+    await _validateUpdatePrivileges(id);
     await validate(t, id != t.getId);
     return await dataSource.write(t, id);
   }
 
   _performAdjustments(T t) {}
+
+  Future _validateCreatePrivileges() async {
+    if (!_userAuthenticated) {
+      throw new NotAuthorizedException();
+    }
+    await _validateCreatePrivilegeRequirement();
+  }
+
+  Future _validateDeletePrivileges(String id) async {
+    if (!_userAuthenticated) {
+      throw new NotAuthorizedException();
+    }
+    await _validateDeletePrivilegeRequirement();
+  }
 
   @override
   Future<Map<String, String>> _validateFields(T t, bool creating) async {
@@ -117,4 +119,31 @@ abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
 
   Future _validateFieldsInternal(Map field_errors, T t, bool creating) async =>
       {};
+
+  Future _validateGetAllIdsAndNamesPrivileges() async {
+    await _validateGetPrivileges();
+  }
+
+  Future _validateGetAllPrivileges() async {
+    await _validateGetPrivileges();
+  }
+
+  Future _validateGetByIdPrivileges() async {
+    await _validateGetPrivileges();
+  }
+
+  Future _validateGetPrivileges() async {
+    await _validateReadPrivilegeRequirement();
+  }
+
+  Future _validateSearchPrivileges() async {
+    await _validateGetPrivileges();
+  }
+
+  Future _validateUpdatePrivileges(String id) async {
+    if (!_userAuthenticated) {
+      throw new NotAuthorizedException();
+    }
+    await _validateUpdatePrivilegeRequirement();
+  }
 }

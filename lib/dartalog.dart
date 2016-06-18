@@ -37,20 +37,24 @@ const String ITEM_STATUS_LOST = 'lost';
 
 const String ITEM_DEFAULT_STATUS = ITEM_STATUS_AVAILABLE;
 
-const String USER_PRIVILEGE_NONE = "none";
-const String USER_PRIVILEGE_ADMIN = "admin"; // Implies all other privileges
-const String USER_PRIVILEGE_CREATE = "create";
-const String USER_PRIVILEGE_CHECKOUT = "checkout";
-const String USER_PRIVILEGE_BORROW = "borrow"; // All other privileges imply this
+class UserPrivilege {
+  static const String none = "none";
+  static const String authenticated = "authenticated";
+  static const String patron = "patron";
+  static const String checkout = "checkout";
+  static const String curator = "curator";
+  static const String admin = "admin"; // Implies all other privileges
+  static final List values = [
+    none, authenticated, patron, checkout, curator, admin
+  ];
+
+  static bool evaluate(String needed, String have) {
+    return values.indexOf(needed) <= values.indexOf(have);
+  }
+}
 
 const int HTTP_STATUS_SERVER_NEEDS_SETUP = 555;
 
-final List USER_PRIVILEGES = [
-  USER_PRIVILEGE_ADMIN,
-  USER_PRIVILEGE_CREATE,
-  USER_PRIVILEGE_CHECKOUT,
-  USER_PRIVILEGE_BORROW
-];
 
 final Map<String, String> ITEM_COPY_STATUSES = {
   ITEM_STATUS_BORROWED: 'Borrowed',

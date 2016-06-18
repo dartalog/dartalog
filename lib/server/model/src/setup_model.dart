@@ -48,7 +48,7 @@ class SetupModel {
   Future createAdminUser(User user) async {
     await _checkIfSetupRequired();
 
-    user.privileges.add(USER_PRIVILEGE_ADMIN);
+    user.type = UserPrivilege.admin;
     await users.create(user);
   }
 }

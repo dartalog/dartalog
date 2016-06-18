@@ -17,8 +17,7 @@ abstract class AIdResource<T extends AIdData> extends AResource {
       });
 
   Future<List<IdNamePair>> getAllIdsAndNames();
-  Future<List<IdNamePair>> _getAllIdsAndNamesWithCatch(
-          {int offset: 0}) async =>
+  Future<List<IdNamePair>> _getAllIdsAndNamesWithCatch() async =>
       _catchExceptionsAwait(() => idModel.getAllIdsAndNames());
 
   //Future<PaginatedResponse<IdNamePair>> getPaginatedIdsAndNames({int offset: 0});

@@ -5,7 +5,8 @@ class CollectionsModel extends AIdNameBasedModel<Collection> {
   Logger get _logger => _log;
   ACollectionDataSource get dataSource => data_sources.itemCollections;
 
-  String get _defaultPrivilegeRequirement => USER_PRIVILEGE_CREATE;
+  @override
+  String get _defaultPrivilegeRequirement => UserPrivilege.curator;
 
   Future _verifyUserIsCurator(String collectionId) async {
     _validateDefaultPrivilegeRequirement();
@@ -15,18 +16,18 @@ class CollectionsModel extends AIdNameBasedModel<Collection> {
   }
 
   @override
-  Future delete(String id) async {
-    await _verifyUserIsCurator(id);
-    await dataSource.delete(id);
-  }
+  Future _validateDeletePrivileges(String id) => _verifyUserIsCurator(id);
+
+  @override
+  Future _validateUpdatePrivileges(String id) => _verifyUserIsCurator(id);
 
   @override
   Future<List<Collection>> getAll() async {
-    await _validateDefaultPrivilegeRequirement();
+    await _validateGetAllPrivileges();
 
     List output;
 
-    if(await _userHasPrivilege(USER_PRIVILEGE_ADMIN))
+    if(await _userHasPrivilege(UserPrivilege.admin))
       output = await dataSource.getAll();
     else
       output = await dataSource.getAllForCurator(_userPrincipal.get().name);

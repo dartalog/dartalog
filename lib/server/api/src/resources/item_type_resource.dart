@@ -14,7 +14,7 @@ class ItemTypeResource extends AIdResource<ItemType> {
       _catchExceptionsAwait(() => idModel.getById(id, includeFields: includeFields));
 
   @ApiMethod(path: '${API_ITEM_TYPES_PATH}/')
-  Future<PaginatedResponse<IdNamePair>> getAllIdsAndNames({int offset: 0}) => _getAllIdsAndNamesWithCatch(offset: offset);
+  Future<List<IdNamePair>> getAllIdsAndNames() => _getAllIdsAndNamesWithCatch();
 
   @ApiMethod(method: 'PUT', path: '${API_ITEM_TYPES_PATH}/{id}/')
   Future<IdResponse> update(String id, ItemType itemType) =>

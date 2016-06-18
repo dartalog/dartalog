@@ -7,6 +7,9 @@ const String UUID_REGEX_STRING = r"^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}
 
 final RegExp UUID_REGEX = new RegExp(UUID_REGEX_STRING);
 
+
+String getEnumValueString(dynamic enumValue) => enumValue.toString().substring(enumValue.toString().indexOf('.')+1);
+
 String validateRegularExpression(String input) {
   try {
     RegExp test = new RegExp(input);

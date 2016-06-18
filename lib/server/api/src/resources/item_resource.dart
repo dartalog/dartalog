@@ -27,16 +27,14 @@ class ItemResource extends AIdResource<Item> {
   @ApiMethod(method: 'DELETE', path: '${_API_PATH}/{id}/')
   Future<VoidMessage> delete(String id) => _deleteWithCatch(id);
 
-  Future<PaginatedResponse<IdNamePair>> getAllIdsAndNames({int offset: 0}) =>
-      _getAllIdsAndNamesWithCatch(offset: offset);
+  Future<List<IdNamePair>> getAllIdsAndNames() =>
+      _getAllIdsAndNamesWithCatch();
 
   @ApiMethod(path: '${_API_PATH}/')
-  Future<PaginatedResponse<ItemListingResponse>> getAllListings(
+  Future<List<ItemListingResponse>> getAllListings(
           {int offset: 0}) =>
       _catchExceptionsAwait(() async =>
-          new PaginatedResponse<ItemListingResponse>.convertPaginatedData(
-              await model.items.getAll(offset: offset),
-              (item) => new ItemListingResponse.copy(item)));
+      ItemListingResponse.convertList(await model.items.getAll()));
 
   @ApiMethod(path: '${_API_PATH}/{id}/')
   Future<Item> getById(String id,

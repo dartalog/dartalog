@@ -13,16 +13,12 @@ class UserModel extends AIdNameBasedModel<User> {
     if(creating||!isNullOrWhitespace(user.password)){
       _validatePassword(field_errors, user.password);
     }
-    if(user.privileges!=null) {
-      if(user.privileges.length==0) {
-        field_errors["privileges"] = "Required";
+      if(isNullOrWhitespace(user.type)) {
+        field_errors["type"] = "Required";
       } else {
-        for(String privilege in user.privileges) {
-          if(!USER_PRIVILEGES.contains(privilege))
-            field_errors["privileges"] = "Invalid";
-        }
+        if(!UserPrivilege.values.contains(user.type))
+          field_errors["type"] = "Invalid";
       }
-    }
   }
 
   _validatePassword(Map field_errors, String password) {
@@ -34,11 +30,6 @@ class UserModel extends AIdNameBasedModel<User> {
     }
   }
 
-  Future<List<IdNamePair>> getAllIdsAndNames() async {
-    await _validateUserPrivilege(USER_PRIVILEGE_CHECKOUT);
-    return await super.getAllIdsAndNames();
-  }
-
   Future<User> getMe() async {
     if(!_userAuthenticated)
       throw new NotAuthorizedException();
@@ -47,29 +38,29 @@ class UserModel extends AIdNameBasedModel<User> {
     return output.getOrElse(() =>throw new Exception("Authenticated user not present in database"));
   }
 
-  Future setPrivileges(String id, List<String> privilege) async {
-    await _validateUserPrivilege(USER_PRIVILEGE_ADMIN);
+  Future setType(String id, String type) async {
+    await _validateUpdatePrivileges(id);
     if(!await dataSource.exists(id))
       throw new NotFoundException("User not found");
 
-    await dataSource.setPrivileges(id, privilege);
+    await dataSource.setType(id, type);
   }
 
   @override
   Future<String> create(User user, {List<String> privileges}) async {
-    await _validateUserPrivilege(USER_PRIVILEGE_ADMIN);
+    await _validateCreatePrivileges();
 
     String output = await super.create(user);
 
     await _setPassword(output, user.password);
-    await setPrivileges(output, user.privileges);
+    await setType(output, user.type);
 
     return output;
   }
 
   @override
   Future<String> update(String id, User user) async {
-    await _validateUserPrivilege(USER_PRIVILEGE_ADMIN);
+    await _validateUpdatePrivileges(id);
     // Only admin can update...for now
 
     String output = await super.update(id, user);
@@ -77,8 +68,8 @@ class UserModel extends AIdNameBasedModel<User> {
     if(!isNullOrWhitespace(user.password))
       await _setPassword(output, user.password);
 
-    if(user.privileges!=null)
-      await setPrivileges(output, user.privileges);
+    if(user.type!=null)
+      await setType(output, user.type);
 
     return output;
   }

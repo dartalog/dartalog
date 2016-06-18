@@ -4,15 +4,17 @@ abstract class AModel<T> {
   String get _currentUserId =>
       _userPrincipal.map((Principal p) => p.name).getOrDefault("");
 
+  String get _defaultPrivilegeRequirement =>
+      UserPrivilege.admin;
+  String get _defaultCreatePrivilegeRequirement => _defaultPrivilegeRequirement;
+  String get _defaultDeletePrivilegeRequirement => _defaultPrivilegeRequirement;
+  String get _defaultUpdatePrivilegeRequirement => _defaultPrivilegeRequirement;
+  String get _defaultReadPrivilegeRequirement => _defaultPrivilegeRequirement;
+
   Logger get _logger;
 
   bool get _userAuthenticated =>
-      _userPrincipal.map((Principal p) => true).getOrDefault(false);
-
-  String get _defaultPrivilegeRequirement => USER_PRIVILEGE_NONE;
-  Future<bool> _validateDefaultPrivilegeRequirement() => _validateUserPrivilege(_defaultPrivilegeRequirement);
-
-
+      _userPrincipal.map((Principal p) => true).getOrDefault(false); // High-security defaults
 
   Option<Principal> get _userPrincipal => authenticatedContext()
       .map((AuthenticatedContext context) => context.principal);
@@ -28,15 +30,25 @@ abstract class AModel<T> {
         () => throw new NotAuthorizedException.withMessage("User not found"));
   }
 
-  Future<bool> _userHasPrivilege(String privilege) async {
-    if(privilege==USER_PRIVILEGE_NONE)
+  Future<bool> _userHasPrivilege(String userType) async {
+    if (userType == UserPrivilege.none)
       return true; //None is equivalent to not being logged in, or logged in as a user with no privileges
     User user = await _getCurrentUser();
-    if (user.privileges.contains(USER_PRIVILEGE_ADMIN) ||
-        user.privileges.contains(privilege)) return true;
-
-    throw false;
+    return UserPrivilege.evaluate(userType, user.type);
   }
+
+  Future<bool> _validateDefaultPrivilegeRequirement() =>
+      _validateUserPrivilege(_defaultPrivilegeRequirement);
+  Future<bool> _validateCreatePrivilegeRequirement() =>
+      _validateUserPrivilege(_defaultCreatePrivilegeRequirement);
+  Future<bool> _validateUpdatePrivilegeRequirement() =>
+      _validateUserPrivilege(_defaultUpdatePrivilegeRequirement);
+  Future<bool> _validateDeletePrivilegeRequirement() =>
+      _validateUserPrivilege(_defaultDeletePrivilegeRequirement);
+  Future<bool> _validateReadPrivilegeRequirement() =>
+      _validateUserPrivilege(_defaultReadPrivilegeRequirement);
+
+
 
   Future<Map<String, String>> _validateFields(T t, bool creating);
 
@@ -44,5 +56,4 @@ abstract class AModel<T> {
     if (await _userHasPrivilege(privilege)) return true;
     throw new NotAuthorizedException();
   }
-
 }

@@ -13,7 +13,7 @@ class CollectionResource extends AIdResource<Collection> {
   Future<Collection> getById(String id)  => _getByIdWithCatch(id);
 
   @ApiMethod(path: '${API_COLLECTIONS_PATH}/')
-  Future<PaginatedResponse<IdNamePair>> getAllIdsAndNames({int offset: 0}) => _getAllIdsAndNamesWithCatch(offset: offset);
+  Future<List<IdNamePair>> getAllIdsAndNames() => _getAllIdsAndNamesWithCatch();
 
   @ApiMethod(method: 'PUT', path: '${API_COLLECTIONS_PATH}/{id}/')
   Future<IdResponse> update(String id, Collection collection) => _updateWithCatch(id, collection);

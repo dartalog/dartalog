@@ -261,10 +261,10 @@ class MainApp extends PolymerElement {
 
       setUserObject(new User.copy(apiUser));
 
-      set("userCanCheckout", userHasPrivilege(USER_PRIVILEGE_CHECKOUT));
-      set("userIsAdmin", userHasPrivilege(USER_PRIVILEGE_ADMIN));
-      set("userCanAdd", userHasPrivilege(USER_PRIVILEGE_CREATE));
-      set("userCanBorrow", userHasPrivilege(USER_PRIVILEGE_BORROW));
+      set("userCanCheckout", userHasPrivilege(UserPrivilege.checkout));
+      set("userIsAdmin", userHasPrivilege(UserPrivilege.admin));
+      set("userCanAdd", userHasPrivilege(UserPrivilege.curator));
+      set("userCanBorrow", userHasPrivilege(UserPrivilege.patron));
 
       authed = true;
 
@@ -289,9 +289,9 @@ class MainApp extends PolymerElement {
 
   }
 
-  bool userHasPrivilege(String privilege) {
+  bool userHasPrivilege(String needed) {
     return this.currentUser.any((User user) {
-      return user.privileges.contains(privilege)||user.privileges.contains(USER_PRIVILEGE_ADMIN);
+      return user.evaluateType(needed);
     });
   }
 

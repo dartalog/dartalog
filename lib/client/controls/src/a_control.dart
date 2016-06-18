@@ -30,9 +30,9 @@ class AControl extends PolymerElement {
     await activateInternal(lastArgs);
   }
 
-  bool userHasPrivilege(String privilege) {
+  bool userHasPrivilege(String type) {
     return this.currentUser.any((User user) {
-      return user.privileges.contains(privilege)||user.privileges.contains(USER_PRIVILEGE_ADMIN);
+      return user.evaluateType(type);
     });
   }
 

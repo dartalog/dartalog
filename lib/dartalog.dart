@@ -13,6 +13,8 @@ const String HOSTED_IMAGES_PATH = "images/";
 const String HOSTED_IMAGES_ORIGINALS_PATH = "${HOSTED_IMAGES_PATH}originals/";
 const String HOSTED_IMAGES_THUMBNAILS_PATH = "${HOSTED_IMAGES_PATH}thumbnails/";
 
+const int PAGINATED_DATA_LIMIT = 10;
+
 final Map<String, String> FIELD_TYPES = {
   'numeric': 'Numeric',
   'string': 'String',

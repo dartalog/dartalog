@@ -2,6 +2,7 @@ library data_sources.interfaces;
 
 import 'dart:async';
 import 'package:logging/logging.dart';
+import 'package:dartalog/dartalog.dart';
 import 'package:dartalog/server/data/data.dart';
 import 'package:dartalog/server/server.dart';
 import 'package:option/option.dart';

@@ -67,4 +67,10 @@ abstract class _AMongoDataSource {
       return output;
     });
   }
+
+  Future<int> _genericCount(SelectorBuilder selector) async {
+    return await _collectionWrapper((DbCollection collection) async {
+      return collection.count(selector);
+    });
+  }
 }

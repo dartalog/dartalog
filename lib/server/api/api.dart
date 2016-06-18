@@ -41,6 +41,7 @@ part 'src/resources/preset_resource.dart';
 part 'src/resources/user_resource.dart';
 part 'src/responses/data_response.dart';
 part 'src/responses/id_response.dart';
+part 'src/responses/paginated_response.dart';
 
 const String API_COLLECTIONS_PATH = "collections";
 const String API_COPIES_PATH = "copies";

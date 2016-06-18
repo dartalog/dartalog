@@ -9,10 +9,17 @@ abstract class _AMongoObjectDataSource<T> extends _AMongoDataSource {
 
   T _createObject(Map data);
 
+
   Future<List<T>> search(String query) async {
     SelectorBuilder selector = where;
     selector.map[_TEXT_COMMAND] = {_SEARCH_COMMAND: query};
     return await _getFromDb(selector);
+  }
+
+  Future<PaginatedData<T>> searchPaginated(String query, {int offset: 0, int limit: PAGINATED_DATA_LIMIT}) async {
+    SelectorBuilder selector = where;
+    selector.map[_TEXT_COMMAND] = {_SEARCH_COMMAND: query};
+    return await _getPaginatedFromDb(selector, offset: offset, limit: limit);
   }
 
   Future<DbCollection> _getCollection(_MongoDatabase con);
@@ -24,6 +31,20 @@ abstract class _AMongoObjectDataSource<T> extends _AMongoDataSource {
       return new None();
     }
     return new Some(results.first);
+  }
+
+  Future<PaginatedData<T>> _getPaginatedFromDb(SelectorBuilder selector, {int offset: 0, int limit: PAGINATED_DATA_LIMIT}) async {
+    PaginatedData<T> output = new PaginatedData<T>();
+    output.totalCount = await _genericCount(selector);
+    output.limit = limit;
+    output.startIndex = offset;
+
+    if(selector==null)
+      selector == where;
+      selector.limit(limit).skip(offset);
+
+    output.data.addAll(await _getFromDb(selector));
+    return output;
   }
 
   Future<List<T>> _getFromDb(dynamic selector) async {

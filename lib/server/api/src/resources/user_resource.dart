@@ -10,7 +10,7 @@ class UserResource extends AIdResource<User> {
   Future<IdResponse> create(User user) => _createWithCatch(user);
 
   @ApiMethod(path: '${API_USERS_PATH}/')
-  Future<List<IdNamePair>> getAllIdsAndNames() => _getAllIdsAndNamesWithCatch();
+  Future<PaginatedResponse<IdNamePair>> getAllIdsAndNames({int offset: 0}) => _getAllIdsAndNamesWithCatch(offset: offset);
 
   @ApiMethod(path: '${API_USERS_PATH}/{id}/')
   Future<User> getById(String id) => _getByIdWithCatch(id);

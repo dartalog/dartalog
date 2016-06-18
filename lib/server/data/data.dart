@@ -14,7 +14,8 @@ part 'src/exceptions/already_exists_exception.dart';
 
 part 'src/a_data.dart';
 part 'src/a_id_name_based_data.dart';
-
+part 'src/paginated_data.dart';
+part 'src/paginated_id_name_data.dart';
 part 'src/id_name_list.dart';
 part 'src/id_name_pair.dart';
 part 'src/collection.dart';

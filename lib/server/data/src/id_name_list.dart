@@ -3,7 +3,7 @@ part of data;
 class IdNameList<T extends AIdData> extends ListBase<T> {
   final List<T> l = [];
   IdNameList();
-  IdNameList.convert(Iterable<T> source) {
+  IdNameList.copy(Iterable<T> source) {
     this.addAll(source);
   }
 

@@ -68,7 +68,7 @@ dynamic startServer() async {
 
     final staticImagesHandler = createStaticHandler(pathToBuild,
         listDirectories: false, serveFilesOutsidePath: false,
-        useMagicBytesForContentType: true);
+        useHeaderBytesForContentType: true);
 
     _apiServer.addApi(new DartalogApi());
     _apiServer.enableDiscoveryApi();

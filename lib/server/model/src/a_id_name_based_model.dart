@@ -3,11 +3,6 @@ part of model;
 abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
   AIdNameBasedDataSource<T> get dataSource;
 
-  Future<List<T>> search(String query) async {
-    await _validateDefaultPrivilegeRequirement();
-    return await dataSource.search(query);
-  }
-
   Future<String> create(T t) async {
     if (!_userAuthenticated) {
       throw new NotAuthorizedException();
@@ -27,12 +22,7 @@ abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
     await dataSource.delete(id);
   }
 
-  Future<List<IdNamePair>> getAllIdsAndNames() async {
-    await _validateDefaultPrivilegeRequirement();
-    return await dataSource.getAllIdsAndNames();
-  }
-
-  Future<List<T>> getAll() async {
+  Future<IdNameList<T>> getAll() async {
     await _validateDefaultPrivilegeRequirement();
 
     List<T> output = await dataSource.getAll();
@@ -40,9 +30,13 @@ abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
     return output;
   }
 
+  Future<IdNameList<IdNamePair>> getAllIdsAndNames() async {
+    await _validateDefaultPrivilegeRequirement();
+    return await dataSource.getAllIdsAndNames();
+  }
+
   Future<T> getById(String id, {bool bypassAuth: false}) async {
-    if(!bypassAuth)
-      await _validateDefaultPrivilegeRequirement();
+    if (!bypassAuth) await _validateDefaultPrivilegeRequirement();
 
     Option<T> output = await dataSource.getById(id);
 
@@ -53,7 +47,31 @@ abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
     return output.get();
   }
 
-  _performAdjustments(T t) {}
+  Future<PaginatedIdNameData<T>> getPaginated({int offset: 0}) async {
+    await _validateDefaultPrivilegeRequirement();
+
+    PaginatedIdNameData<T> output =
+        await dataSource.getPaginated(offset: offset);
+    for (T t in output.data) _performAdjustments(t);
+    return output;
+  }
+
+  Future<PaginatedIdNameData<IdNamePair>> getPaginatedIdsAndNames(
+      {int offset: 0}) async {
+    await _validateDefaultPrivilegeRequirement();
+    return await dataSource.getPaginatedIdsAndNames(offset: offset);
+  }
+
+  Future<IdNameList<T>> search(String query) async {
+    await _validateDefaultPrivilegeRequirement();
+    return await dataSource.search(query);
+  }
+
+  Future<PaginatedIdNameData<T>> searchPaginated(String query,
+      {int offset: 0}) async {
+    await _validateDefaultPrivilegeRequirement();
+    return await dataSource.searchPaginated(query, offset: offset);
+  }
 
   Future<String> update(String id, T t) async {
     if (!_userAuthenticated) {
@@ -64,6 +82,8 @@ abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
     await validate(t, id != t.getId);
     return await dataSource.write(t, id);
   }
+
+  _performAdjustments(T t) {}
 
   @override
   Future<Map<String, String>> _validateFields(T t, bool creating) async {
@@ -95,5 +115,6 @@ abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
     return field_errors;
   }
 
-  Future _validateFieldsInternal(Map field_errors, T t, bool creating) async => {};
+  Future _validateFieldsInternal(Map field_errors, T t, bool creating) async =>
+      {};
 }

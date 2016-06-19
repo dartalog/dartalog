@@ -10,14 +10,14 @@ class MongoItemDataSource extends _AMongoIdDataSource<Item>
     if (collections.isEmpty) return new None();
 
     return new Some(
-    where.oneFrom("copies.collectionId", collections.idList).sortBy(ID_FIELD));
+    where.oneFrom("copies.collectionId", collections.idList));
   }
 
   Future<IdNameList<Item>> getVisible(String userId) async {
     return (await _generateVisibleCriteria(userId)).cata(
         () => new IdNameList<Item>(),
         (SelectorBuilder selector) async =>
-        await _getIdNameListFromDb(selector));
+        await _getIdNameListFromDb(selector.sortBy(ID_FIELD)));
   }
 
   Future<IdNameList<Item>> searchVisible(String userId, String query) async {
@@ -29,7 +29,7 @@ class MongoItemDataSource extends _AMongoIdDataSource<Item>
   Future<IdNameList<IdNamePair>> getVisibleIdsAndNames(String userId) async {
     return (await _generateVisibleCriteria(userId)).cata(
         () => new IdNameList<IdNamePair>(),
-        (SelectorBuilder selector) async => await getIdsAndNames(selector: selector));
+        (SelectorBuilder selector) async => await getIdsAndNames(selector: selector.sortBy(ID_FIELD)));
   }
 
   Item _createObject(Map data) {

@@ -8,6 +8,7 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:convert';
 
+import 'package:mime/mime.dart' as mime;
 import 'package:dartalog/client/api/dartalog.dart' as API_Library;
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/dartalog.dart';
@@ -205,13 +206,25 @@ class ItemEditControl extends AControl {
 
       this.set("currentItem.fields.${index}.editImageUrl", file.name);
       FileReader reader = new FileReader();
-      reader.readAsDataUrl(file);
+      reader.readAsArrayBuffer(file);
       await for (dynamic fileEvent in reader.onLoad) {
-        this.set("currentItem.fields.${index}.displayImageUrl", reader.result);
-        field.mediaMessage = new API_Library.MediaMessage();
-        List<String> parms = reader.result.toString().split(";");
-        field.mediaMessage.contentType = parms[0].split(":")[1];
-        field.mediaMessage.bytes = BASE64URL.decode(parms[1].split(",")[1]);
+        try {
+          field.mediaMessage = new API_Library.MediaMessage();
+          field.mediaMessage.bytes = reader.result;
+          //List<String> parms = reader.result.toString().split(";");
+          //field.mediaMessage.contentType = parms[0].split(":")[1];
+          //field.mediaMessage.bytes = BASE64URL.decode(parms[1].split(",")[1]);
+
+          field.mediaMessage.contentType = mime.lookupMimeType(
+              file.name, headerBytes: field.mediaMessage.bytes.sublist(0, 10));
+
+
+          String value = new Uri.dataFromBytes(field.mediaMessage.bytes,
+              mimeType: field.mediaMessage.contentType).toString();
+          this.set("currentItem.fields.${index}.displayImageUrl", value);
+        }finally {
+          this.set("currentItem.fields.${index}.imageLoading", false);
+        }
       }
     } finally {
       this.set("currentItem.fields.${index}.imageLoading", false);

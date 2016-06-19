@@ -76,8 +76,8 @@ abstract class _AMongoIdDataSource<T extends AIdData>
     new IdNameList<T>.copy(await _getFromDb(selector));
 
   @override
-  Future<IdNameList<T>> search(String query, {SelectorBuilder selector}) async {
-    List data = await _search(query, selector: selector);
+  Future<IdNameList<T>> search(String query, {SelectorBuilder selector, String sortBy}) async {
+    List data = await _search(query, selector: selector, sortBy: sortBy);
     return new IdNameList.copy(data);
   }
 

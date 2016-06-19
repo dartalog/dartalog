@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "ed331ed898a072daa400f7ef0d7794187730d6fc",
+ "etag": "b9898d905aa90dcb6aa0a986526feed272a9a76c",
  "discoveryVersion": "v1",
  "id": "dartalog:0.1",
  "name": "dartalog",
@@ -696,8 +696,8 @@
       "id"
      ]
     },
-    "getAllListings": {
-     "id": "DartalogApi.items.getAllListings",
+    "getVisibleListings": {
+     "id": "DartalogApi.items.getVisibleListings",
      "path": "items/",
      "httpMethod": "GET",
      "parameters": {
@@ -756,8 +756,8 @@
       "$ref": "Item"
      }
     },
-    "search": {
-     "id": "DartalogApi.items.search",
+    "searchVisible": {
+     "id": "DartalogApi.items.searchVisible",
      "path": "search/{query}/",
      "httpMethod": "GET",
      "parameters": {
@@ -1010,12 +1010,6 @@
        "description": "Path parameter: 'query'.",
        "required": true,
        "location": "path"
-      },
-      "template": {
-       "type": "string",
-       "description": "Query parameter: 'template'.",
-       "required": false,
-       "location": "query"
       },
       "page": {
        "type": "integer",

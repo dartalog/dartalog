@@ -31,10 +31,10 @@ class ItemResource extends AIdResource<Item> {
       _getAllIdsAndNamesWithCatch();
 
   @ApiMethod(path: '${_API_PATH}/')
-  Future<List<ItemListingResponse>> getAllListings(
+  Future<List<ItemListingResponse>> getVisibleListings(
           {int offset: 0}) =>
       _catchExceptionsAwait(() async =>
-      ItemListingResponse.convertList(await model.items.getAll()));
+      ItemListingResponse.convertList(await model.items.getVisible()));
 
   @ApiMethod(path: '${_API_PATH}/{id}/')
   Future<Item> getById(String id,
@@ -49,9 +49,9 @@ class ItemResource extends AIdResource<Item> {
           includeCopyCollection: includeCopyCollection));
 
   @ApiMethod(path: 'search/{query}/')
-  Future<List<ItemListingResponse>> search(String query) =>
+  Future<List<ItemListingResponse>> searchVisible(String query) =>
       _catchExceptionsAwait(() async =>
-          ItemListingResponse.convertList(await model.items.search(query)));
+          ItemListingResponse.convertList(await model.items.searchVisible(query)));
 
   Future<IdResponse> update(String id, Item item) => _updateWithCatch(id, item);
 

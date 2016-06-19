@@ -509,8 +509,6 @@ class ImportResourceApi {
    *
    * [query] - Path parameter: 'query'.
    *
-   * [template] - Query parameter: 'template'.
-   *
    * [page] - Query parameter: 'page'.
    *
    * Completes with a [SearchResults].
@@ -521,7 +519,7 @@ class ImportResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<SearchResults> search(core.String provider, core.String query, {core.String template, core.int page}) {
+  async.Future<SearchResults> search(core.String provider, core.String query, {core.int page}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -534,9 +532,6 @@ class ImportResourceApi {
     }
     if (query == null) {
       throw new core.ArgumentError("Parameter query is required.");
-    }
-    if (template != null) {
-      _queryParams["template"] = [template];
     }
     if (page != null) {
       _queryParams["page"] = ["${page}"];
@@ -841,43 +836,6 @@ class ItemsResourceApi {
   /**
    * Request parameters:
    *
-   * [offset] - Query parameter: 'offset'.
-   *
-   * Completes with a [ListOfItemListingResponse].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
-  async.Future<ListOfItemListingResponse> getAllListings({core.int offset}) {
-    var _url = null;
-    var _queryParams = new core.Map();
-    var _uploadMedia = null;
-    var _uploadOptions = null;
-    var _downloadOptions = commons.DownloadOptions.Metadata;
-    var _body = null;
-
-    if (offset != null) {
-      _queryParams["offset"] = ["${offset}"];
-    }
-
-    _url = 'items/';
-
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
-    return _response.then((data) => new ListOfItemListingResponse.fromJson(data));
-  }
-
-  /**
-   * Request parameters:
-   *
    * [id] - Path parameter: 'id'.
    *
    * [includeType] - Query parameter: 'includeType'.
@@ -935,6 +893,43 @@ class ItemsResourceApi {
   /**
    * Request parameters:
    *
+   * [offset] - Query parameter: 'offset'.
+   *
+   * Completes with a [ListOfItemListingResponse].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<ListOfItemListingResponse> getVisibleListings({core.int offset}) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (offset != null) {
+      _queryParams["offset"] = ["${offset}"];
+    }
+
+    _url = 'items/';
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new ListOfItemListingResponse.fromJson(data));
+  }
+
+  /**
+   * Request parameters:
+   *
    * [query] - Path parameter: 'query'.
    *
    * Completes with a [ListOfItemListingResponse].
@@ -945,7 +940,7 @@ class ItemsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ListOfItemListingResponse> search(core.String query) {
+  async.Future<ListOfItemListingResponse> searchVisible(core.String query) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;

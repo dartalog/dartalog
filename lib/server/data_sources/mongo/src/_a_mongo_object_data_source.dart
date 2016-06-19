@@ -11,7 +11,12 @@ abstract class _AMongoObjectDataSource<T> extends _AMongoDataSource {
 
 
   Future<List<T>> search(String query) async {
-    SelectorBuilder selector = where;
+    return await _search(query);
+  }
+  Future<List<T>> _search(String query, {SelectorBuilder selector}) async {
+    if(selector==null)
+      selector = where;
+
     selector.map[_TEXT_COMMAND] = {_SEARCH_COMMAND: query};
     return await _getFromDb(selector);
   }

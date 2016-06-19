@@ -24,4 +24,8 @@ class IdNameList<T extends AIdData> extends ListBase<T> {
     return getByID(id).any((item) => true);
   }
 
+  List get idList {
+    return this.map((T data) => data.getId).toList();
+  }
+
 }

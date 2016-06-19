@@ -21,6 +21,7 @@ import 'package:polymer_elements/paper_input.dart';
 import 'package:polymer_elements/paper_item.dart';
 import 'package:polymer_elements/paper_dropdown_menu.dart';
 import 'package:polymer_elements/paper_listbox.dart';
+import 'package:polymer_elements/paper_spinner.dart';
 import 'package:polymer_elements/iron_image.dart';
 import 'package:web_components/web_components.dart';
 
@@ -191,24 +192,29 @@ class ItemEditControl extends AControl {
 
   @reflectable
   fileUploadChanged(event, [_]) async {
-    InputElement input = event.target;
-    if (input.files.length == 0) return;
-    File file = input.files[0];
-
     Element parent = getParentElement(event.target, "div");
     int index = int.parse(parent.dataset["index"]);
+    this.set("currentItem.fields.${index}.imageLoading", true);
+    try {
+      InputElement input = event.target;
+      if (input.files.length == 0) return;
+      File file = input.files[0];
 
-    Field field = this.currentItem.fields[index];
 
-    this.set("currentItem.fields.${index}.editImageUrl", file.name);
-    FileReader reader = new FileReader();
-    reader.readAsDataUrl(file);
-    await for (dynamic fileEvent in reader.onLoad) {
-      this.set("currentItem.fields.${index}.displayImageUrl", reader.result);
-      field.mediaMessage = new API_Library.MediaMessage();
-      List<String> parms = reader.result.toString().split(";");
-      field.mediaMessage.contentType = parms[0].split(":")[1];
-      field.mediaMessage.bytes = BASE64URL.decode(parms[1].split(",")[1]);
+      Field field = this.currentItem.fields[index];
+
+      this.set("currentItem.fields.${index}.editImageUrl", file.name);
+      FileReader reader = new FileReader();
+      reader.readAsDataUrl(file);
+      await for (dynamic fileEvent in reader.onLoad) {
+        this.set("currentItem.fields.${index}.displayImageUrl", reader.result);
+        field.mediaMessage = new API_Library.MediaMessage();
+        List<String> parms = reader.result.toString().split(";");
+        field.mediaMessage.contentType = parms[0].split(":")[1];
+        field.mediaMessage.bytes = BASE64URL.decode(parms[1].split(",")[1]);
+      }
+    } finally {
+      this.set("currentItem.fields.${index}.imageLoading", false);
     }
   }
 }

@@ -14,9 +14,18 @@ abstract class _AMongoIdDataSource<T extends AIdData>
       _getPaginatedIdNameListFromDb(where.sortBy(sortField), offset: offset, limit: limit);
 
   Future<IdNameList<IdNamePair>> getAllIdsAndNames(
-      {String sortField: ID_FIELD}) async {
+      {String sortField: ID_FIELD}) => getIdsAndNames(sortField: sortField);
+
+  Future<IdNameList<IdNamePair>> getIdsAndNames(
+      {SelectorBuilder selector, String sortField: ID_FIELD}) async {
     return await _collectionWrapper((DbCollection collection) async {
-      List results = await collection.find(where.sortBy(sortField)).toList();
+
+      if(selector==null)
+        selector = where;
+
+      selector.sortBy(sortField);
+
+      List results = await collection.find(selector).toList();
 
       IdNameList<IdNamePair> output = new IdNameList<IdNamePair>();
 
@@ -67,8 +76,8 @@ abstract class _AMongoIdDataSource<T extends AIdData>
     new IdNameList<T>.copy(await _getFromDb(selector));
 
   @override
-  Future<IdNameList<T>> search(String query) async {
-    List data = await super.search(query);
+  Future<IdNameList<T>> search(String query, {SelectorBuilder selector}) async {
+    List data = await _search(query, selector: selector);
     return new IdNameList.copy(data);
   }
 

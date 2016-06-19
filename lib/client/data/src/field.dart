@@ -30,6 +30,7 @@ class Field extends JsProxy  {
   @reflectable bool isTypeImage = false;
 
   @reflectable String displayImageUrl = "";
+  @reflectable bool imageLoading = false;
 
   @Property(notify:true) String editImageUrl = "";
 

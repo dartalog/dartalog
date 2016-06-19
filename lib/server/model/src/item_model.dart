@@ -17,8 +17,10 @@ class ItemModel extends AIdNameBasedModel<Item> {
   static final List<String> NON_SORTING_WORDS = ["the", "a", "an"];
   // TODO: evaluate more (oh)
   final ItemCopyModel copies = new ItemCopyModel();
+  @override
   AItemDataSource get dataSource => data_sources.items;
 
+  @override
   Logger get _logger => _log;
 
   @override
@@ -33,6 +35,21 @@ class ItemModel extends AIdNameBasedModel<Item> {
 //      item.values[key] = _handleImageLink(item.values[key]);
 //    }
 //  }
+
+  Future<IdNameList<IdNamePair>> getVisibleIdsAndNames() async {
+    await _validateGetAllIdsAndNamesPrivileges();
+    return await dataSource.getVisibleIdsAndNames(this._currentUserId);
+  }
+
+  Future<IdNameList<Item>> getVisible() async {
+    await _validateGetAllIdsAndNamesPrivileges();
+    return await dataSource.getVisible(this._currentUserId);
+  }
+
+  Future<IdNameList<Item>> searchVisible(String query) async {
+    await _validateGetAllIdsAndNamesPrivileges();
+    return await dataSource.searchVisible(this._currentUserId, query);
+  }
 
   @override
   Future<String> create(Item item, {List<List<int>> files}) => throw new Exception("Use createWithCopy");

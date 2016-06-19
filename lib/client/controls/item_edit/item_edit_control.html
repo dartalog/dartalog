@@ -33,7 +33,10 @@
                         <paper-icon-button icon="file-upload" on-tap="uploadClicked"
                                            title="Upload Image"></paper-icon-button>
                         <input type="file" on-change="fileUploadChanged" style="display:none"/>
-                        <iron-image src="[[item.displayImageUrl]]" style="width:100px; height:100px;" sizing="contain"/>
+                        <div>
+                            <iron-image src="[[item.displayImageUrl]]" style="width:100px; height:100px;" sizing="contain"/>
+                            <paper-spinner active="[[item.imageLoading]]" style="position: absolute; left:36px;top:36px;"></paper-spinner>
+                        </div>
                         </div>
                     </template>
             </template>

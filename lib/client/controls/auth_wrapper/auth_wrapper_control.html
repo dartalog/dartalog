@@ -1,0 +1,20 @@
+<!--
+  Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
+  is governed by a BSD-style license that can be found in the LICENSE file.
+-->
+
+<!-- import polymer-element's definition -->
+<dom-module name="auth-wrapper-control">
+    <link rel="stylesheet" href="auth_wrapper_control.css">
+    <style include="iron-flex"></style>
+
+    <template>
+        <template is="dom-if" if="[[!userHasAccess]]" restamp="true">
+            <paper-card heading="Not authorized" style="margin:8px;" class="vertical layout">
+            </paper-card>
+        </template>
+        <template is="dom-if" if="[[userHasAccess]]" restamp="true">
+            <content></content>
+        </template>
+    </template>
+</dom-module>

@@ -122,7 +122,7 @@ class AmazonImportProvider extends AScrapingImportProvider {
     return result;
   }
 
-  Future<SearchResults> search(String query, String type_id,
+  Future<SearchResults> search(String query,
       {int page: 0}) async {
     String item_type = "";
     String url =

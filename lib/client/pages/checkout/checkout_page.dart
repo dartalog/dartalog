@@ -9,6 +9,7 @@ import 'dart:html';
 
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/controls/item_add/item_add_control.dart';
+import 'package:dartalog/client/controls/auth_wrapper/auth_wrapper_control.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/pages/pages.dart';
 import 'package:dartalog/dartalog.dart' as dartalog;
@@ -30,8 +31,7 @@ import 'package:polymer_elements/paper_icon_button.dart';
 import 'package:polymer_elements/paper_input.dart';
 import 'package:polymer_elements/paper_listbox.dart';
 import 'package:web_components/web_components.dart';
-
-import '../../api/dartalog.dart' as API;
+import 'package:dartalog/client/api/dartalog.dart' as API;
 
 @PolymerRegister('checkout-page')
 class CheckoutPage extends APage with ARefreshablePage {
@@ -52,9 +52,7 @@ class CheckoutPage extends APage with ARefreshablePage {
   @Property(notify: true)
   String checkoutUser = "";
 
-  @property
-  bool userHasAccess = false;
-
+  AuthWrapperControl get authWrapper => this.querySelector("auth-wrapper-control");
 
   CheckoutPage.created() : super.created("Checkout");
 
@@ -62,9 +60,8 @@ class CheckoutPage extends APage with ARefreshablePage {
 
   @override
   Future activateInternal(Map args) async {
-    set("userHasAccess", this.userHasPrivilege(dartalog.USER_PRIVILEGE_CHECKOUT));
-      if(userHasAccess)
-    await this.refresh();
+    if(authWrapper.evaluateAuthentication())
+      await this.refresh();
   }
 
   void addToCart(ItemCopy itemCopy) {

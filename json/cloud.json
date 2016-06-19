@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "4233d64771b1f645deb987335f616338dcfdb7fc",
+ "etag": "ed331ed898a072daa400f7ef0d7794187730d6fc",
  "discoveryVersion": "v1",
  "id": "dartalog:0.1",
  "name": "dartalog",
@@ -23,6 +23,9 @@
     },
     "name": {
      "type": "string"
+    },
+    "unique": {
+     "type": "boolean"
     },
     "type": {
      "type": "string"
@@ -457,11 +460,8 @@
     "idNumber": {
      "type": "string"
     },
-    "privileges": {
-     "type": "array",
-     "items": {
-      "type": "string"
-     }
+    "type": {
+     "type": "string"
     }
    }
   },
@@ -700,7 +700,14 @@
      "id": "DartalogApi.items.getAllListings",
      "path": "items/",
      "httpMethod": "GET",
-     "parameters": {},
+     "parameters": {
+      "offset": {
+       "type": "integer",
+       "description": "Query parameter: 'offset'.",
+       "required": false,
+       "location": "query"
+      }
+     },
      "parameterOrder": [],
      "response": {
       "$ref": "ListOfItemListingResponse"

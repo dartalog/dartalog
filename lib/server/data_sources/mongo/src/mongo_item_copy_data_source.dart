@@ -43,10 +43,11 @@ class MongoItemCopyDataSource extends _AMongoObjectDataSource<ItemCopy>
       {bool includeRemoved: false, String userName: null}) async {
     //if (!includeRemoved) where.nin(_STATUS_FIELD, [ITEM_STATUS_REMOVED]);
     // TODO: Make sure removed items don't get returned when not requested
-    List output = _convertList((await _getItemData(itemId))[_ITEM_COPIES_FIELD]);
-    if(output.length==0)
-      return [];
-    IdNameList<Collection> visibleCollections = await data_sources.itemCollections.getVisibleCollections(userName);
+    List output =
+        _convertList((await _getItemData(itemId))[_ITEM_COPIES_FIELD]);
+    if (output.length == 0) return [];
+    IdNameList<Collection> visibleCollections =
+        await data_sources.itemCollections.getVisibleCollections(userName);
     output.retainWhere((ItemCopy ic) {
       return visibleCollections.containsId(ic.collectionId);
     });
@@ -63,13 +64,13 @@ class MongoItemCopyDataSource extends _AMongoObjectDataSource<ItemCopy>
   }
 
   Future<Option<ItemCopy>> getByUniqueId(String uniqueId) async {
-    List results = await _genericFind(
-        where.eq("${_ITEM_COPIES_FIELD}.${_UNIQUE_ID_FIELD}", uniqueId).limit(
-            1));
-    if(results.length>0) {
+    List results = await _genericFind(where
+        .eq("${_ITEM_COPIES_FIELD}.${_UNIQUE_ID_FIELD}", uniqueId)
+        .limit(1));
+    if (results.length > 0) {
       Map data = results[0];
-      for(Map copy in data[_ITEM_COPIES_FIELD]) {
-        if(copy[_UNIQUE_ID_FIELD]==uniqueId) {
+      for (Map copy in data[_ITEM_COPIES_FIELD]) {
+        if (copy[_UNIQUE_ID_FIELD] == uniqueId) {
           ItemCopy output = _createObject(copy);
           output.itemId = data[ID_FIELD];
           return new Some(output);

@@ -1,7 +1,7 @@
 part of import;
 
 abstract class AImportProvider {
-  Future<SearchResults> search(String query, String type_id, {int page: 0});
+  Future<SearchResults> search(String query, {int page: 0});
   Future<ImportResult> import(String id);
 
   Future<String> _downloadPage(String url, {bool stripNewlines: false}) async {

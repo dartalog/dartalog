@@ -1,6 +1,6 @@
 part of model;
 
-abstract class AIdNameBasedModel<T extends AIdData> extends AModel {
+abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel {
   AIdNameBasedDataSource<T> get dataSource;
 
   Future<String> create(T t) async {

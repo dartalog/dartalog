@@ -21,6 +21,10 @@ abstract class AResource {
       exception = e;
       stackTrace = st;
       output = new RpcError(HttpStatus.UNAUTHORIZED, "Not Authorized", e.message);
+    } on ForbiddenException catch(e,st) {
+      exception = e;
+      stackTrace = st;
+      output = new RpcError(HttpStatus.FORBIDDEN, "Forbidden", e.message);
     } on DataMovedException catch(e, st) {
       exception = e;
       stackTrace = st;

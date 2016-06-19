@@ -18,9 +18,10 @@ import 'package:dartalog/client/controls/item_edit/item_edit_control.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/api/dartalog.dart' as API;
+import 'package:dartalog/client/controls/auth_wrapper/auth_wrapper_control.dart';
 
 @PolymerRegister('item-edit-page')
-class ItemEditPage extends APage with ASaveablePage, ASubPage {
+class ItemEditPage extends APage with ASaveablePage {
   static final Logger _log = new Logger("ItemEditPage");
   Logger get loggerImpl => _log;
 
@@ -31,14 +32,20 @@ class ItemEditPage extends APage with ASaveablePage, ASubPage {
 
   ItemEditControl get itemEditControl => $['itemEditPageItemEditControl'];
 
+  AuthWrapperControl get authWrapper => this.querySelector("auth-wrapper-control");
+
   @override
   Future activateInternal(Map args) async {
-    if(isNullOrWhitespace(args[ROUTE_ARG_ITEM_ID_NAME])) {
-      throw new Exception("{$ROUTE_ARG_ITEM_ID_NAME} is required");
-    }
-    this.currentItemId = args[ROUTE_ARG_ITEM_ID_NAME];
+    bool authed = authWrapper.evaluateAuthentication();
+    this.showSaveButton = authed;
+    if(authed) {
+      if (isNullOrWhitespace(args[ROUTE_ARG_ITEM_ID_NAME])) {
+        throw new Exception("{$ROUTE_ARG_ITEM_ID_NAME} is required");
+      }
+      this.currentItemId = args[ROUTE_ARG_ITEM_ID_NAME];
 
-    await itemEditControl.activate(this.api, args);
+      await itemEditControl.activate(this.api, args);
+    }
   }
 
 

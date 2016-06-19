@@ -841,6 +841,8 @@ class ItemsResourceApi {
   /**
    * Request parameters:
    *
+   * [offset] - Query parameter: 'offset'.
+   *
    * Completes with a [ListOfItemListingResponse].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
@@ -849,7 +851,7 @@ class ItemsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ListOfItemListingResponse> getAllListings() {
+  async.Future<ListOfItemListingResponse> getAllListings({core.int offset}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -857,6 +859,9 @@ class ItemsResourceApi {
     var _downloadOptions = commons.DownloadOptions.Metadata;
     var _body = null;
 
+    if (offset != null) {
+      _queryParams["offset"] = ["${offset}"];
+    }
 
     _url = 'items/';
 
@@ -1832,6 +1837,7 @@ class Field {
   core.String id;
   core.String name;
   core.String type;
+  core.bool unique;
 
   Field();
 
@@ -1848,6 +1854,9 @@ class Field {
     if (_json.containsKey("type")) {
       type = _json["type"];
     }
+    if (_json.containsKey("unique")) {
+      unique = _json["unique"];
+    }
   }
 
   core.Map toJson() {
@@ -1863,6 +1872,9 @@ class Field {
     }
     if (type != null) {
       _json["type"] = type;
+    }
+    if (unique != null) {
+      _json["unique"] = unique;
     }
     return _json;
   }
@@ -2650,7 +2662,7 @@ class User {
   core.String idNumber;
   core.String name;
   core.String password;
-  core.List<core.String> privileges;
+  core.String type;
 
   User();
 
@@ -2667,8 +2679,8 @@ class User {
     if (_json.containsKey("password")) {
       password = _json["password"];
     }
-    if (_json.containsKey("privileges")) {
-      privileges = _json["privileges"];
+    if (_json.containsKey("type")) {
+      type = _json["type"];
     }
   }
 
@@ -2686,8 +2698,8 @@ class User {
     if (password != null) {
       _json["password"] = password;
     }
-    if (privileges != null) {
-      _json["privileges"] = privileges;
+    if (type != null) {
+      _json["type"] = type;
     }
     return _json;
   }

@@ -27,6 +27,7 @@ import 'package:polymer_elements/paper_item.dart';
 import 'package:polymer_elements/paper_item_body.dart';
 import 'package:polymer_elements/paper_listbox.dart';
 import 'package:web_components/web_components.dart';
+import 'package:dartalog/client/controls/auth_wrapper/auth_wrapper_control.dart';
 
 @PolymerRegister('user-admin-page')
 class UserAdminPage extends APage with ARefreshablePage, ACollectionPage {
@@ -48,29 +49,31 @@ class UserAdminPage extends APage with ARefreshablePage, ACollectionPage {
 
   PaperDialog get editDialog =>  this.querySelector('#editDialog');
 
+  AuthWrapperControl get authWrapper => this.querySelector("auth-wrapper-control");
+
   @override
   void setGeneralErrorMessage(String message) => set("errorMessage", message);
   @Property(notify:true)
   String errorMessage = "";
 
-  @property
-  bool userHasAccess = false;
 
   Logger get loggerImpl => _log;
 
   @Property(notify: true)
-  Iterable get privileges {
+  Iterable get userTypes {
     List output = [];
-    for (String privilege in dartalog.USER_PRIVILEGES) {
+    for (String privilege in dartalog.UserPrivilege.values) {
       output.add(new IdNamePair(privilege, privilege));
     }
     return output;
   }
 
   Future activateInternal(Map args) async {
-    set("userHasAccess", this.userHasPrivilege(dartalog.USER_PRIVILEGE_ADMIN));
-    if(userHasAccess)
-    await this.refresh();
+    bool authed = authWrapper.evaluateAuthentication();
+    if(authed)
+      await this.refresh();
+    this.showRefreshButton = authed;
+    this.showAddButton = authed;
   }
 
   @reflectable
@@ -84,18 +87,18 @@ class UserAdminPage extends APage with ARefreshablePage, ACollectionPage {
     await handleApiExceptions(() async {
       clearValidation();
       set("creating", false);
-      String id = event.target.dataset["id"];
+      String id = getParentElement(event.target,"paper-item").dataset["id"];
       if (id == null) return;
 
       API.User user = await api.users.getById(id);
 
       if (user == null) throw new Exception("Selected user not found");
 
-      set("currentId", id);
+      currentId = id;
 
       set("currentItem", new User.copy(user));
 
-      editDialog.open();
+      openDialog(editDialog);
     });
   }
 
@@ -104,7 +107,7 @@ class UserAdminPage extends APage with ARefreshablePage, ACollectionPage {
     set("creating", true);
     try {
       this.reset();
-      editDialog.open();
+      openDialog(editDialog);
     } catch (e, st) {
       _log.severe(e, st);
       this.handleException(e, st);

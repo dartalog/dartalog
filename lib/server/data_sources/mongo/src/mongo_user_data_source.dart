@@ -25,12 +25,6 @@ class MongoUserDataSource extends _AMongoIdDataSource<User>
     await _genericUpdate(selector, modifier, multiUpdate: false);
   }
 
-  Future setType(String id, String type) async {
-    SelectorBuilder selector = where.eq(ID_FIELD, id);
-
-    ModifierBuilder modifier = modify.set(TYPE_FIELD, type);
-    await _genericUpdate(selector, modifier, multiUpdate: false);
-  }
 
   User _createObject(Map data) {
     User output = new User();
@@ -47,5 +41,6 @@ class MongoUserDataSource extends _AMongoIdDataSource<User>
   void _updateMap(User user, Map data) {
     data[ID_FIELD] = user.getId;
     data["name"] = user.getName;
+    data["type"] = user.type;
   }
 }

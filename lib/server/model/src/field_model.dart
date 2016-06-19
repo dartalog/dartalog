@@ -6,6 +6,9 @@ class FieldModel extends AIdNameBasedModel<Field> {
   AIdNameBasedDataSource<Field> get dataSource => data_sources.fields;
 
   @override
+  String get _defaultReadPrivilegeRequirement => UserPrivilege.curator;
+
+  @override
   Future _validateFieldsInternal(Map field_errors, Field field, bool creating) async {
     if (isNullOrWhitespace(field.type))
       field_errors["type"] = "Required";

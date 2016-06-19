@@ -25,6 +25,7 @@ import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/tools.dart';
 import 'package:dartalog/client/api/dartalog.dart' as API;
+import 'package:dartalog/client/controls/auth_wrapper/auth_wrapper_control.dart';
 
 /// A Polymer `<field-admin-page>` element.
 @PolymerRegister('collections-page')
@@ -51,14 +52,19 @@ class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
   @property
   bool userHasAccess = false;
 
+  AuthWrapperControl get authWrapper => this.querySelector("auth-wrapper-control");
+
   /// Constructor used to create instance of MainApp.
   CollectionsPage.created() : super.created("Collection Maintenance");
 
 
   Future activateInternal(Map args) async {
-    set("userHasAccess", this.userHasPrivilege(dartalog.USER_PRIVILEGE_CREATE));
-    if(userHasAccess)
-    await this.refresh();
+    bool authed = authWrapper.evaluateAuthentication();
+    if(authed)
+      await this.refresh();
+    this.showRefreshButton = authed;
+    this.showAddButton = authed;
+
   }
 
   @reflectable
@@ -94,7 +100,7 @@ class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
   Future newItem() async {
     try {
       this.reset();
-      editDialog.open();
+      openDialog(editDialog);
     } catch (e, st) {
       _log.severe(e, st);
       this.handleException(e,st);
@@ -117,7 +123,7 @@ class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
 
       set("currentCollection", new Collection.copy(collection));
 
-      editDialog.open();
+      openDialog(editDialog);
     });
   }
 

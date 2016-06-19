@@ -6,6 +6,9 @@ class ItemTypeModel extends AIdNameBasedModel<ItemType> {
   AIdNameBasedDataSource<ItemType> get dataSource => data_sources.itemTypes;
 
   @override
+  String get _defaultReadPrivilegeRequirement => UserPrivilege.curator;
+
+  @override
   Future<ItemType> getById(String id, {bool includeFields: false, bool bypassAuth: false}) async {
     ItemType output = await super.getById(id, bypassAuth: bypassAuth);
     if(includeFields) {

@@ -9,6 +9,8 @@ class Field extends AIdData {
   String get getName => name;
   set getName(String value) => name = value;
 
+  bool unique = false;
+
   String type;
 
   String format = "";

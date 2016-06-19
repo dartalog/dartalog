@@ -19,7 +19,6 @@ import 'package:dartalog/client/main_app.dart';
 
 
 part 'src/a_page.dart';
-part 'src/a_sub_page.dart';
 part 'src/a_refreshable_page.dart';
 part 'src/a_searchable_page.dart';
 part 'src/a_deletable_page.dart';

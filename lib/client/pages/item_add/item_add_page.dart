@@ -27,6 +27,7 @@ import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/tools.dart';
 import 'package:dartalog/client/api/dartalog.dart' as API;
+import 'package:dartalog/client/controls/auth_wrapper/auth_wrapper_control.dart';
 
 /// A Polymer `<template-admin-page>` element.
 @PolymerRegister('item-add-page')
@@ -40,14 +41,20 @@ class ItemAddPage extends APage with ASaveablePage {
 
   ItemEditControl get itemAddControl => document.getElementById('item_add_page_edit_control');
 
+  AuthWrapperControl get authWrapper => this.querySelector("auth-wrapper-control");
+
   @override
   Future activateInternal(Map args) async {
-    if(isNullOrWhitespace(args[ROUTE_ARG_ITEM_TYPE_ID_NAME])) {
-      throw new Exception("{$ROUTE_ARG_ITEM_TYPE_ID_NAME} is required");
-    }
-    this.currentItemTypeId = args[ROUTE_ARG_ITEM_TYPE_ID_NAME];
+    bool authed = authWrapper.evaluateAuthentication();
+    this.showSaveButton = authed;
+    if(authed) {
+      if (isNullOrWhitespace(args[ROUTE_ARG_ITEM_TYPE_ID_NAME])) {
+        throw new Exception("{$ROUTE_ARG_ITEM_TYPE_ID_NAME} is required");
+      }
+      this.currentItemTypeId = args[ROUTE_ARG_ITEM_TYPE_ID_NAME];
 
-    await itemAddControl.activate(this.api, args);
+      await itemAddControl.activate(this.api, args);
+    }
   }
 
   @override

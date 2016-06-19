@@ -15,12 +15,16 @@ class ItemModel extends AIdNameBasedModel<Item> {
 
   static final Directory THUMBNAIL_DIR = new Directory(THUMBNAIL_IMAGE_PATH);
   static final List<String> NON_SORTING_WORDS = ["the", "a", "an"];
+  // TODO: evaluate more (oh)
   final ItemCopyModel copies = new ItemCopyModel();
   AItemDataSource get dataSource => data_sources.items;
 
   Logger get _logger => _log;
 
-  String get _defaultReadPrivilegeRequirement => _defaultPrivilegeRequirement;
+  @override
+  String get _defaultReadPrivilegeRequirement => UserPrivilege.none;
+  @override
+  String get _defaultWritePrivilegeRequirement => UserPrivilege.curator;
 
 //  @override
 //  _performAdjustments(Item item) {
@@ -41,28 +45,22 @@ class ItemModel extends AIdNameBasedModel<Item> {
     item.dateUpdated = new DateTime.now();
     if (!isNullOrWhitespace(item.getName))
       item.getId = await _generateUniqueId(item);
+
+
+    ItemCopy itemCopy = new ItemCopy();
+    itemCopy.collectionId = collectionId;
+    itemCopy.uniqueId = uniqueId;
+    itemCopy.status = ITEM_DEFAULT_STATUS;
+
     await DataValidationException.PerformValidation((Map output) async {
       output.addAll(await _validateFields(item, true));
-      if (isNullOrWhitespace(collectionId)) {
-        output["collectionId"] = "Required";
-      } else if (!await data_sources.itemCollections.exists(collectionId)) {
-        output["collectionId"] = "Invalid";
-      }
-
-      if (!isNullOrWhitespace(uniqueId) &&
-          await data_sources.itemCopies.existsByUniqueId(uniqueId)) {
-        output["uniqueId"] = "Already in use";
-      }
-      return output;
+      output.addAll(await copies._validateFields(itemCopy, true, skipItemIdCheck: true));
     });
 
     await _handleFileUploads(item, files);
     //TODO: More thorough cleanup of files in case of failure
 
     String itemId = await data_sources.items.write(item);
-    ItemCopy itemCopy = new ItemCopy();
-    itemCopy.collectionId = collectionId;
-    itemCopy.uniqueId = uniqueId;
     return await copies.create(itemId, itemCopy);
   }
 
@@ -73,6 +71,8 @@ class ItemModel extends AIdNameBasedModel<Item> {
       bool includeCopies: false,
       bool includeCopyCollection: false,
       bool bypassAuth: false}) async {
+    await _validateGetPrivileges();
+
     Item output = await super.getById(id, bypassAuth: bypassAuth);
 
     if (includeType) {
@@ -102,9 +102,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
 
   @override
   Future<String> update(String id, Item item, {List<List<int>> files}) async {
-    if (!_userAuthenticated) {
-      throw new NotAuthorizedException();
-    }
+    await _validateUpdatePrivileges(id);
 
     item.dateAdded = null;
     item.dateUpdated = new DateTime.now();

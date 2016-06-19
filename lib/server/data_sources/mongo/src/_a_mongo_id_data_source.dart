@@ -65,4 +65,11 @@ abstract class _AMongoIdDataSource<T extends AIdData>
 
   Future<IdNameList<T>> _getIdNameListFromDb(dynamic selector) async =>
     new IdNameList<T>.copy(await _getFromDb(selector));
+
+  @override
+  Future<IdNameList<T>> search(String query) async {
+    List data = await super.search(query);
+    return new IdNameList.copy(data);
+  }
+
 }

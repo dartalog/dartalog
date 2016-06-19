@@ -65,6 +65,10 @@
                     <div>
                         <template is="dom-if" if="[[userLoggedIn]]">
                             <paper-item>[[currentUserProperty.name]]</paper-item>
+                            <paper-item on-tap="drawerItemClicked" data-route="log_out">
+                                <iron-icon icon="label-outline"></iron-icon>
+                                <paper-item-body>Log Out</paper-item-body>
+                            </paper-item>
                         </template>
                         <template is="dom-if" if="[[!userLoggedIn]]">
                             <paper-item on-tap="drawerItemClicked" data-route="log_in">
@@ -77,6 +81,7 @@
                             <paper-item-body>Browse Items</paper-item-body>
                         </paper-item>
                         <template is="dom-if" if="[[userCanAdd]]">
+                        Curating
                         <paper-item on-tap="drawerItemClicked" data-route="collections">
                             <iron-icon icon="label-outline"></iron-icon>
                             <paper-item-body>Collections</paper-item-body>

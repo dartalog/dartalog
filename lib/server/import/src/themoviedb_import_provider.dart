@@ -4,7 +4,7 @@ class TheMovieDbImportProvider extends AAPIImportProvider {
 
   static final List VALID_TYPES = ["movie", "tv"];
 
-  Future<SearchResults> search(String query, String type_id, {int page: 0}) async {
+  Future<SearchResults> search(String query, {int page: 0}) async {
 //    themoviedb.TheMovieDB mdb = new themoviedb.TheMovieDB(
 //        model.options.getString("themoviedb_api_key"));
 //    themoviedb.SearchResults mdbsr = await mdb.searchMulti(query);

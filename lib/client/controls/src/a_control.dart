@@ -26,11 +26,14 @@ class AControl extends PolymerElement {
     this.lastArgs = args;
     await activateInternal(args);
   }
+
   Future reActivate() async {
     await activateInternal(lastArgs);
   }
 
   bool userHasPrivilege(String type) {
+    if(type==UserPrivilege.none)
+      return true;
     return this.currentUser.any((User user) {
       return user.evaluateType(type);
     });
@@ -85,9 +88,10 @@ class AControl extends PolymerElement {
         setFieldErrorMessages(error.errors);
       } else if(error.status==401) {
         await this.mainApp.clearAuthentication();
-        this.mainApp.promptForAuthentication();
+        await this.mainApp.promptForAuthentication();
+        await this.mainApp.evaluateAuthentication();
       } else {
-
+        this.showMessage("API Error: ${error.message} (${error.status})");
       }
     } catch (e, st) {
       loggerImpl.severe(e, st);

@@ -1,27 +1,25 @@
 part of model;
 
-abstract class AModel<T> {
+abstract class AModel {
   String get _currentUserId =>
       _userPrincipal.map((Principal p) => p.name).getOrDefault("");
 
-  String get _defaultPrivilegeRequirement =>
-      UserPrivilege.admin;
-  String get _defaultCreatePrivilegeRequirement => _defaultPrivilegeRequirement;
-  String get _defaultDeletePrivilegeRequirement => _defaultPrivilegeRequirement;
-  String get _defaultUpdatePrivilegeRequirement => _defaultPrivilegeRequirement;
+  String get _defaultCreatePrivilegeRequirement => _defaultWritePrivilegeRequirement ;
+  String get _defaultDeletePrivilegeRequirement => _defaultWritePrivilegeRequirement ;
+  String get _defaultPrivilegeRequirement => UserPrivilege.admin;
   String get _defaultReadPrivilegeRequirement => _defaultPrivilegeRequirement;
+  String get _defaultWritePrivilegeRequirement => _defaultPrivilegeRequirement;
+  String get _defaultUpdatePrivilegeRequirement => _defaultWritePrivilegeRequirement ;
 
   Logger get _logger;
 
-  bool get _userAuthenticated =>
-      _userPrincipal.map((Principal p) => true).getOrDefault(false); // High-security defaults
+  bool get _userAuthenticated => _userPrincipal
+      .map((Principal p) => true)
+      .getOrDefault(false); // High-security defaults
 
   Option<Principal> get _userPrincipal => authenticatedContext()
       .map((AuthenticatedContext context) => context.principal);
 
-  Future validate(T t, bool creating) =>
-      DataValidationException.PerformValidation((Map output) async =>
-          output.addAll(await _validateFields(t, creating)));
 
   Future<User> _getCurrentUser() async {
     Principal p = _userPrincipal.getOrElse(
@@ -37,23 +35,19 @@ abstract class AModel<T> {
     return UserPrivilege.evaluate(userType, user.type);
   }
 
-  Future<bool> _validateDefaultPrivilegeRequirement() =>
-      _validateUserPrivilege(_defaultPrivilegeRequirement);
   Future<bool> _validateCreatePrivilegeRequirement() =>
       _validateUserPrivilege(_defaultCreatePrivilegeRequirement);
-  Future<bool> _validateUpdatePrivilegeRequirement() =>
-      _validateUserPrivilege(_defaultUpdatePrivilegeRequirement);
+  Future<bool> _validateDefaultPrivilegeRequirement() =>
+      _validateUserPrivilege(_defaultPrivilegeRequirement);
   Future<bool> _validateDeletePrivilegeRequirement() =>
       _validateUserPrivilege(_defaultDeletePrivilegeRequirement);
   Future<bool> _validateReadPrivilegeRequirement() =>
       _validateUserPrivilege(_defaultReadPrivilegeRequirement);
-
-
-
-  Future<Map<String, String>> _validateFields(T t, bool creating);
+  Future<bool> _validateUpdatePrivilegeRequirement() =>
+      _validateUserPrivilege(_defaultUpdatePrivilegeRequirement);
 
   Future<bool> _validateUserPrivilege(String privilege) async {
     if (await _userHasPrivilege(privilege)) return true;
-    throw new NotAuthorizedException();
+    throw new ForbiddenException.withMessage("${privilege} required");
   }
 }

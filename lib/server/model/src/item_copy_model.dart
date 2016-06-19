@@ -1,8 +1,11 @@
 part of model;
 
-class ItemCopyModel extends AModel<ItemCopy> {
+class ItemCopyModel extends ATypedModel<ItemCopy> {
   static final Logger _log = new Logger('ItemCopyModel');
   Logger get _logger => _log;
+
+  @override
+  String get _defaultWritePrivilegeRequirement => UserPrivilege.curator;
 
   Future<ItemCopyId> create(String itemId, ItemCopy itemCopy) async {
     if (!_userAuthenticated) {
@@ -18,7 +21,8 @@ class ItemCopyModel extends AModel<ItemCopy> {
     return await data_sources.itemCopies.write(itemCopy, false);
   }
 
-  Future<ItemCopy> get(String itemId, int copy, {bool includeItem: false, bool includeCollection: false}) async {
+  Future<ItemCopy> get(String itemId, int copy,
+      {bool includeItem: false, bool includeCollection: false}) async {
     Option<ItemCopy> optItemCopy =
         await data_sources.itemCopies.getByItemIdAndCopy(itemId, copy);
 
@@ -27,10 +31,10 @@ class ItemCopyModel extends AModel<ItemCopy> {
 
     itemCopy.itemId = itemId;
 
-    if(includeItem) {
+    if (includeItem) {
       itemCopy.item = (await items.getById(itemCopy.itemId));
     }
-    if(includeCollection) {
+    if (includeCollection) {
       itemCopy.collection = (await collections.getById(itemCopy.collectionId));
     }
 
@@ -41,14 +45,16 @@ class ItemCopyModel extends AModel<ItemCopy> {
   Future<List<ItemCopy>> getAllForItem(String itemId,
       {bool includeRemoved: false, bool includeCollection: false}) async {
     List<ItemCopy> output =
-        await data_sources.itemCopies.getAllForItemId(itemId);
+        await data_sources.itemCopies.getAllForItemId(itemId, userName: _currentUserId);
     IdNameList<Collection> foundCollections = new IdNameList<Collection>();
     for (ItemCopy itemCopy in output) {
       itemCopy.itemId = itemId;
-      if(includeCollection) {
-        if(!foundCollections.containsId(itemCopy.collectionId))
-          foundCollections.add(await collections.getById(itemCopy.collectionId));
-        itemCopy.collection = foundCollections.getByID(itemCopy.collectionId).get();
+      if (includeCollection) {
+        if (!foundCollections.containsId(itemCopy.collectionId))
+          foundCollections
+              .add(await collections.getById(itemCopy.collectionId));
+        itemCopy.collection =
+            foundCollections.getByID(itemCopy.collectionId).get();
       }
       await _setAdditionalFields(itemCopy);
     }
@@ -131,7 +137,7 @@ class ItemCopyModel extends AModel<ItemCopy> {
     itemCopy.statusName = ITEM_COPY_STATUSES[itemCopy.status];
 
     Collection col;
-    if(itemCopy.collection!=null)
+    if (itemCopy.collection != null)
       col = itemCopy.collection;
     else
       col = await collections.getById(itemCopy.collectionId, bypassAuth: true);
@@ -148,43 +154,57 @@ class ItemCopyModel extends AModel<ItemCopy> {
     }
   }
 
-  Future _validateFields(ItemCopy itemCopy, bool creating) async {
+  Future _validateFields(ItemCopy itemCopy, bool creating,
+      {bool skipItemIdCheck: false}) async {
     Map<String, String> field_errors = new Map<String, String>();
 
-    if (isNullOrWhitespace(itemCopy.itemId))
-      field_errors["itemId"] = "Required";
-    else {
-      dynamic test = await data_sources.items.getById(itemCopy.itemId);
-      if (test == null) field_errors["itemId"] = "Not found";
-    }
-
-    if (itemCopy.copy == 0)
-      throw new Exception("Copy must be greater than 0");
-    else {
-      bool test = await data_sources.itemCopies
-          .existsByItemIdAndCopy(itemCopy.itemId, itemCopy.copy);
-      if (creating) {
-        if (test) throw new InvalidInputException("Copy already exists");
-      } else {
-        if (!test) throw new NotFoundException("Specified copy not found");
+    if (!skipItemIdCheck) {
+      if (isNullOrWhitespace(itemCopy.itemId))
+        field_errors["itemId"] = "Required";
+      else {
+        dynamic test = await data_sources.items.getById(itemCopy.itemId);
+        if (test == null) field_errors["itemId"] = "Not found";
+      }
+      if (itemCopy.copy == 0)
+        throw new Exception("Copy must be greater than 0");
+      else {
+        bool test = await data_sources.itemCopies
+            .existsByItemIdAndCopy(itemCopy.itemId, itemCopy.copy);
+        if (creating) {
+          if (test) throw new InvalidInputException("Copy already exists");
+        } else {
+          if (!test) throw new NotFoundException("Specified copy not found");
+        }
       }
     }
 
     if (isNullOrWhitespace(itemCopy.collectionId)) {
       field_errors["collectionId"] = "Required";
     } else {
-      if (!await data_sources.itemCollections.exists(itemCopy.collectionId))
+      Option<Collection> col =
+          await data_sources.itemCollections.getById(itemCopy.collectionId);
+      col.map((Collection col) {
+        if (!col.curators.contains(this._currentUserId))
+          field_errors["collectionId"] = "Not a curator";
+      }).orElse(() {
         field_errors["collectionId"] = "Not found";
+      });
     }
 
     if (!isNullOrWhitespace(itemCopy.uniqueId)) {
-      Option<ItemCopy> test =
-          await data_sources.itemCopies.getByUniqueId(itemCopy.uniqueId);
-      test.map((ItemCopy testItemCopy) {
-        if (testItemCopy.itemId != itemCopy.itemId ||
-            testItemCopy.copy != itemCopy.copy)
+      if (skipItemIdCheck) {
+        if (await data_sources.itemCopies.existsByUniqueId(itemCopy.uniqueId)) {
           field_errors["uniqueId"] = "Already used";
-      });
+        }
+      } else {
+        Option<ItemCopy> test =
+            await data_sources.itemCopies.getByUniqueId(itemCopy.uniqueId);
+        test.map((ItemCopy testItemCopy) {
+          if (testItemCopy.itemId != itemCopy.itemId ||
+              testItemCopy.copy != itemCopy.copy)
+            field_errors["uniqueId"] = "Already used";
+        });
+      }
     }
 
     if (creating) {

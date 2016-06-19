@@ -6,8 +6,7 @@ class ImportResource extends AResource {
 
   @ApiMethod(path: '${API_IMPORT_PATH}/{provider}/{id}')
   Future<ImportResult> import(String provider, String id) => _catchExceptionsAwait(() async  {
-      AImportProvider importer = _getProvider(provider);
-      return await importer.import(id);
+    return await model.import.import(provider, id);
   });
 
   @ApiMethod(path: '${API_IMPORT_PATH}/')
@@ -19,20 +18,8 @@ class ImportResource extends AResource {
 
   @ApiMethod(path: '${API_IMPORT_PATH}/{provider}/search/{query}')
   Future<SearchResults> search(String provider, String query,
-      {String template, int page: 0}) => _catchExceptionsAwait(() async {
-      AImportProvider importer = _getProvider(provider);
-      query = Uri.decodeFull(query);
-      return await importer.search(query, template, page: page);
+      {int page: 0}) => _catchExceptionsAwait(() async {
+    return await model.import.search(provider, query, page: page);
   });
 
-  AImportProvider _getProvider(String provider) {
-    switch (provider) {
-      case "amazon":
-        return new AmazonImportProvider();
-      case "themoviedb":
-        return new TheMovieDbImportProvider();
-      default:
-        throw new Exception("Unknown import provider");
-    }
-  }
 }

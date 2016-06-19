@@ -29,8 +29,8 @@ import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/api/dartalog.dart' as API;
 import 'package:dartalog/tools.dart';
 import 'package:dartalog/client/controls/combo_list/combo_list_control.dart';
+import 'package:dartalog/client/controls/auth_wrapper/auth_wrapper_control.dart';
 
-/// A Polymer `<template-admin-page>` element.
 @PolymerRegister('item-type-admin-page')
 class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
   static final Logger _log = new Logger("ItemTypeAdminPage");
@@ -59,11 +59,14 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
   @property
   bool userHasAccess = false;
 
+  AuthWrapperControl get authWrapper => this.querySelector("auth-wrapper-control");
 
   Future activateInternal(Map args) async {
-    set("userHasAccess", this.userHasPrivilege(dartalog.USER_PRIVILEGE_ADMIN));
-    if(userHasAccess)
-    await this.refresh();
+    bool authed = authWrapper.evaluateAuthentication();
+    if(authed)
+      await this.refresh();
+    this.showRefreshButton = authed;
+    this.showAddButton = authed;
   }
 
   Future refresh() async {
@@ -100,7 +103,7 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
   Future newItem() async {
     try {
       this.reset();
-      editDialog.open();
+      openDialog(editDialog);
     } catch (e, st) {
       _log.severe(e, st);
       this.handleException(e,st);
@@ -124,7 +127,7 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
 
       currentItemId = id;
       set("currentItemType", new ItemType.copy(itemType));
-      editDialog.open();
+      openDialog(editDialog);
     });
   }
 

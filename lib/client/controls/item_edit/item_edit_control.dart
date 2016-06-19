@@ -54,9 +54,19 @@ class ItemEditControl extends AControl {
 
   ItemEditControl.created() : super.created();
 
+  void reset() {
+    importResult = null;
+    _setCurrentItem(new Item());
+    set("newCollectionId", "");
+    set("newUniqueId", "");
+    set("currentItemTypeId","");
+    set("isNew", true);
+    originalItemId = "";
+  }
+
   Future activateInternal(Map args) async {
     await handleApiExceptions(() async {
-      importResult = null;
+      reset();
       await loadItemTypes();
       set("isNew", true);
       if (args.containsKey(ROUTE_ARG_ITEM_ID_NAME)) {

@@ -32,8 +32,8 @@ import 'package:polymer_elements/paper_input.dart';
 import 'package:polymer_elements/paper_textarea.dart';
 import 'package:polymer_elements/paper_listbox.dart';
 import 'package:web_components/web_components.dart';
+import 'package:dartalog/client/controls/auth_wrapper/auth_wrapper_control.dart';
 
-/// A Polymer `<template-admin-page>` element.
 @PolymerRegister('item-import-page')
 class ItemImportPage extends APage with ASaveablePage {
   static final Logger _log = new Logger("ItemImportPage");
@@ -57,6 +57,11 @@ class ItemImportPage extends APage with ASaveablePage {
 
   @Property(notify: true)
   List<ImportSearchResult> results = new List<ImportSearchResult>();
+  @Property(notify: true)
+  bool noResults = false;
+  @Property(notify: true)
+  bool searchFinished = false;
+
 
   @Property(notify: true)
   List<BulkImportItem> bulkResults = new List<BulkImportItem>();
@@ -71,13 +76,21 @@ class ItemImportPage extends APage with ASaveablePage {
   IronPages get singleImportPages => $['single_import_pages'];
   IronPages get bulkImportPages => $['bulk_import_pages'];
 
+  AuthWrapperControl get authWrapper => this.querySelector("auth-wrapper-control");
+
+
   @override
   Future activateInternal(Map args) async {
     showSaveButton = false;
-    singleImportPages.selected = "item_search";
-    await loadCollections();
-    //await itemAddControl.activate(this.api, args);
-    _resetSearchFields();
+    showBackButton = false;
+
+    bool authed = authWrapper.evaluateAuthentication();
+    if(authed) {
+      singleImportPages.selected = "item_search";
+      await loadCollections();
+      //await itemAddControl.activate(this.api, args);
+      _resetSearchFields();
+    }
   }
 
   @reflectable
@@ -93,6 +106,8 @@ class ItemImportPage extends APage with ASaveablePage {
   void _resetSearchFields() {
     set("searchQuery", "");
     set("bulkSearchQuery", "");
+    set("searchFinished", false);
+    set("noResults", false);
     clear("results");
     clear("bulkResults");
     switch(this.currentTab) {
@@ -143,13 +158,21 @@ class ItemImportPage extends APage with ASaveablePage {
   }
 
   Future performSingleSearch() async {
+    set("searchFinished", false);
+    set("noResults", false);
     await handleApiExceptions(() async {
-      this.mainApp.startLoading();
-      clear("results");
+      try {
+        this.mainApp.startLoading();
+        clear("results");
 
-      API.SearchResults results =
-          await api.import.search(selectedImportSource, this.searchQuery);
-      addAll("results", ImportSearchResult.convertList(results.results));
+        API.SearchResults results =
+        await api.import.search(selectedImportSource, this.searchQuery);
+        addAll("results", ImportSearchResult.convertList(results.results));
+        set("noResults", this.results.isEmpty);
+        set("searchFinished", true);
+      }finally {
+        this.mainApp.stopLoading();
+      }
     });
   }
 
@@ -165,85 +188,104 @@ class ItemImportPage extends APage with ASaveablePage {
       await itemEditControl.activate(this.api, {ROUTE_ARG_IMPORT_RESULT_NAME: result});
 
       this.showSaveButton = true;
+      this.showBackButton = true;
       singleImportPages.selected = "item_entry";
       this.mainApp.evaluatePage();
     });
   }
 
+  @override
+  Future goBack() {
+    singleImportPages.selected = "item_search";
+    this.showBackButton = false;
+    this.mainApp.evaluatePage();
+  }
+
   @reflectable
   bulkSearchClicked(event, [_]) async {
     await handleApiExceptions(() async {
-      if(isNullOrWhitespace(selectedImportSource)) {
-        throw new Exception("Please select an import source");
+      try {
+        if (isNullOrWhitespace(selectedImportSource)) {
+          throw new Exception("Please select an import source");
+        }
+        if (isNullOrWhitespace(selectedCollectionId)) {
+          throw new Exception("Please select a collection");
+        }
+
+
+        this.mainApp.startLoading();
+        clear("bulkResults");
+
+        if (isNullOrWhitespace(bulkSearchQuery))
+          return;
+
+        List<String> lines = bulkSearchQuery.split("\n");
+
+        for (String line in lines) {
+          if (isNullOrWhitespace(line))
+            continue;
+          API.SearchResults results =
+          await api.import.search(selectedImportSource, line);
+
+          BulkImportItem bii = new BulkImportItem(
+              line, ImportSearchResult.convertList(results.results));
+
+          add("bulkResults", bii);
+        }
+      } finally {
+        this.mainApp.stopLoading();
       }
-      if(isNullOrWhitespace(selectedCollectionId)) {
-        throw new Exception("Please select a collection");
-      }
-
-
-      this.mainApp.startLoading();
-      clear("bulkResults");
-
-      if(isNullOrWhitespace(bulkSearchQuery))
-        return;
-
-      List<String> lines = bulkSearchQuery.split("\n");
-
-      for(String line in lines) {
-        if(isNullOrWhitespace(line))
-          continue;
-        API.SearchResults results =
-        await api.import.search(selectedImportSource, line);
-
-        BulkImportItem bii = new BulkImportItem(line, ImportSearchResult.convertList(results.results));
-
-        add("bulkResults",bii);
-      }
-
     });
   }
 
   @reflectable
   bulkImportSaveClicked(event, [_]) async {
     await handleApiExceptions(() async {
-      this.mainApp.startLoading();
+      try {
+        this.mainApp.startLoading();
 
 
-      for(int i = 0; i< this.bulkResults.length;i++) {
-        BulkImportItem bii = this.bulkResults[i];
-        if(!bii.selected)
-          continue;
+        for (int i = 0; i < this.bulkResults.length; i++) {
+          BulkImportItem bii = this.bulkResults[i];
+          if (!bii.selected)
+            continue;
 
-        Item newItem;
-        if(bii.newItem!=null) {
-          newItem = bii.newItem;
-        } else {
-          API.ImportResult result = await api.import.import(selectedImportSource, bii.selectedResult);
+          Item newItem;
+          if (bii.newItem != null) {
+            newItem = bii.newItem;
+          } else {
+            API.ImportResult result = await api.import.import(
+                selectedImportSource, bii.selectedResult);
 
-          if(isNullOrWhitespace(result.itemId))
-            throw new Exception("Was not able to determine item type for ${bii.selectedResult}, please perform a single import of this item");
+            if (isNullOrWhitespace(result.itemId))
+              throw new Exception("Was not able to determine item type for ${bii
+                  .selectedResult}, please perform a single import of this item");
 
-          API.ItemType itemType = await api.itemTypes.getById(result.itemTypeId, includeFields: true);
+            API.ItemType itemType = await api.itemTypes.getById(
+                result.itemTypeId, includeFields: true);
 
-          if(itemType==null)
-            throw new Exception("Detected item type for ${bii.selectedResult} does not exist on server, please perform a single import of this item");
+            if (itemType == null)
+              throw new Exception("Detected item type for ${bii
+                  .selectedResult} does not exist on server, please perform a single import of this item");
 
 
-          newItem = new Item.forType(new ItemType.copy(itemType));
-          newItem.applyImportResult(result);
+            newItem = new Item.forType(new ItemType.copy(itemType));
+            newItem.applyImportResult(result);
+          }
+
+          API.CreateItemRequest request = new API.CreateItemRequest();
+          request.item = new API.Item();
+          newItem.copyTo(request.item);
+          request.collectionId = this.selectedCollectionId;
+          request.uniqueId = bii.uniqueId;
+
+          await api.items.createItemWithCopy(request);
+          removeAt("bulkResults", i);
+          i--;
         }
-
-        API.CreateItemRequest request = new API.CreateItemRequest();
-        request.item = new API.Item();
-        newItem.copyTo(request.item);
-        request.collectionId = this.selectedCollectionId;
-        request.uniqueId = bii.uniqueId;
-
-        await api.items.createItemWithCopy(request);
-        removeAt("bulkResults",i);
-        i--;
+      }finally{
+        this.mainApp.stopLoading();
       }
-
     });
   }
 

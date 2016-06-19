@@ -33,7 +33,7 @@ import 'package:dartalog/tools.dart';
 import '../../api/dartalog.dart' as API;
 
 @PolymerRegister('item-page')
-class ItemPage extends APage with ARefreshablePage, ADeletablePage, AEditablePage, ASubPage {
+class ItemPage extends APage with ARefreshablePage, ADeletablePage, AEditablePage {
   static final Logger _log = new Logger("ItemPage");
   Logger get loggerImpl => _log;
 

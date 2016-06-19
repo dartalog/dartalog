@@ -9,24 +9,19 @@
     <style include="iron-flex"></style>
 
     <template>
-        <template is="dom-if" if="[[!userHasAccess]]" restamp="true">
-            <paper-card heading="Not authorized" style="margin:8px;" class="vertical layout">
-            </paper-card>
-        </template>
-        <template is="dom-if" if="[[userHasAccess]]" restamp="true">
+        <auth-wrapper-control minimum-privilege="admin">
         <paper-card heading="Users" style="margin:8px;" class="vertical layout">
             <div class="card-content">
                 <template is="dom-repeat" items="[[items]]">
-                    <paper-item horizontal on-tap="itemClicked" data-id$="[[item.id]]" class="flex">
-                        <paper-item-body three-line clas="flex">
+                    <paper-item on-tap="itemClicked" data-id$="[[item.id]]" class="flex">
+                        <paper-item-body three-line class="flex" >
                             <div>[[item.name]]</div>
                             <div secondary><span>ID:</span>
                                 <span>[[item.id]]</span>
                             </div>
-                            <div secondary><span>Privileges:</span>
-                                <template is="dom-repeat" items="[[item.privileges]]" as="privilege">
-                                    <span>[[privilege]]</span>
-                                </template>
+                            <div secondary>
+                                <span>Type:</span>
+                                <span>[[item.type]]</span>
                             </div>
                         </paper-item-body>
                         <paper-icon-button icon="lock" on-tap="changePasswordClicked" title="Change Password"></paper-icon-button>
@@ -49,9 +44,13 @@
                 <paper-input floatinglabel data-field-id="name" label="Name" value="{{currentItem.name}}" required
                              auto-validate></paper-input>
 
-                <combo-list-control data-field-id="privileges" label="Privileges" items="[[privileges]]"
-                                    selected-values="{{currentItem.privileges}}">
-                </combo-list-control>
+                <paper-dropdown-menu floatinglabel label="Type">
+                    <paper-listbox class="dropdown-content" attr-for-selected="value" selected="{{currentItem.type}}">
+                        <template is="dom-repeat" items="[[userTypes]]">
+                            <paper-item value="[[item.id]]">[[item.name]]</paper-item>
+                        </template>
+                    </paper-listbox>
+                </paper-dropdown-menu>
 
                 <paper-input floatinglabel data-field-id="password" label="Password" type="password" value="{{currentItem.password}}" required
                              auto-validate></paper-input>
@@ -64,6 +63,6 @@
                 <paper-button on-tap="saveClicked">Save</paper-button>
             </div>
         </paper-dialog>
-            </template>
+            </auth-wrapper-control>
     </template>
 </dom-module>

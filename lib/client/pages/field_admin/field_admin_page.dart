@@ -25,6 +25,7 @@ import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/tools.dart';
 import 'package:dartalog/client/api/dartalog.dart' as API;
+import 'package:dartalog/client/controls/auth_wrapper/auth_wrapper_control.dart';
 
 /// A Polymer `<field-admin-page>` element.
 @PolymerRegister('field-admin-page')
@@ -47,6 +48,9 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   @Property(notify: true) Iterable get FIELD_TYPE_KEYS => dartalog.FIELD_TYPES.keys;
   @reflectable String getFieldType(String key) => dartalog.FIELD_TYPES[key];
 
+  AuthWrapperControl get authWrapper => this.querySelector("auth-wrapper-control");
+
+
   PaperDialog get editDialog =>  this.querySelector('#editDialog');
 
   @override
@@ -55,9 +59,11 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   String errorMessage = "";
 
   Future activateInternal(Map args) async {
-    set("userHasAccess", this.userHasPrivilege(dartalog.USER_PRIVILEGE_ADMIN));
-    if(userHasAccess)
+    bool authed = authWrapper.evaluateAuthentication();
+    if(authed)
       await this.refresh();
+    this.showRefreshButton = authed;
+    this.showAddButton = authed;
   }
 
   @reflectable

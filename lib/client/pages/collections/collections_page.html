@@ -9,11 +9,7 @@
     <style include="iron-flex"></style>
 
     <template>
-        <template is="dom-if" if="[[!userHasAccess]]" restamp="true">
-            <paper-card heading="Not authorized" style="margin:8px;" class="vertical layout">
-            </paper-card>
-        </template>
-        <template is="dom-if" if="[[userHasAccess]]" restamp="true">
+        <auth-wrapper-control minimum-privilege="curator">
         <paper-card heading="Collections" style="margin:8px;" class="vertical layout">
             <div class="card-content">
                 <template is="dom-repeat" items="[[collections]]">
@@ -24,7 +20,7 @@
 
         <paper-dialog id="editDialog" modal="true">
             <h2>Edit Collection</h2>
-            <div class="vertical">
+            <paper-dialog-scrollable class="vertical">
                 <paper-input floatinglabel data-field-id="id" label="ID" value="{{currentCollection.id}}" required
                              auto-validate></paper-input>
                 <paper-input floatinglabel data-field-id="name" label="Name" value="{{currentCollection.name}}" required
@@ -39,12 +35,12 @@
                 </combo-list-control>
 
                 <span style="color:red">[[errorMessage]]</span>
-            </div>
+            </paper-dialog-scrollable>
             <div class="buttons">
                 <paper-button on-tap="cancelClicked">Cancel</paper-button>
                 <paper-button on-tap="saveClicked">Save</paper-button>
             </div>
         </paper-dialog>
-            </template>
+            </auth-wrapper-control>
     </template>
 </dom-module>

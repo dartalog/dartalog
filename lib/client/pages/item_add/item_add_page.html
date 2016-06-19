@@ -8,48 +8,8 @@
     <link rel="stylesheet" href="item_add_page.css">
     <style include="iron-flex"></style>
     <template>
+        <auth-wrapper-control minimum-privilege="curator">
         <item-edit-control id="item_add_page_edit_control"></item-edit-control>
-
-        <!--<iron-pages id="item_add_pages" attr-for-selected="id" selected="import_item">
-            <div id="import_item">
-
-
-                <paper-input value="{{searchQuery}}" label="search"></paper-input>
-                <paper-button raised on-tap="searchClicked">Search</paper-button>
-
-
-                <paper-card >
-                    <div class="card-content">
-                <template is="dom-repeat" items="{{results}}">
-                    <paper-item on-tap="searchResultClicked" data_sources-id$="{{item.id}}">
-                        <table>
-                            <tr>
-                                <td rowspan="3"><img src="{{item.thumbnail}}" /></td>
-                                <td>{{item.title}}</td>
-                            </tr>
-                        </table>
-                    </paper-item>
-                </template>
-                    </div>
-                </paper-card>
-            </div>
-
-
-            <div id="choose_type">
-                <paper-dropdown-menu id="input_type" floatinglabel label="Item Type" required auto-validate >
-                    <paper-listbox class="dropdown-content" attr-for-selected="value">
-                    <template is="dom-repeat" items="{{itemTypes}}">
-                        <paper-item value="{{item.id}}">{{item.name}}</paper-item>
-                    </template>
-                    </paper-listbox>
-                </paper-dropdown-menu>
-                <paper-button raised on-tap="createClicked">Create</paper-button>
-            </div>
-
-            <div id="item_entry">
-                <item-edit-control></item-edit-control>
-                <paper-button raised on-tap="saveClicked">Save</paper-button>
-            </div>
-        </iron-pages>-->
+</auth-wrapper-control>
     </template>
 </dom-module>

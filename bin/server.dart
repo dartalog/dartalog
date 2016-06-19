@@ -39,7 +39,7 @@ main(List<String> args) {
 //  });
 //
   // Add a simple log handler to log information to a server side file.
-  Logger.root.level = Level.INFO;
+  Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen(new serverLogging.LogPrintHandler());
 
   startServer();

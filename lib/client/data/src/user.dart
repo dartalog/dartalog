@@ -4,7 +4,8 @@ class User extends JsProxy {
   @property String id;
   @property String name;
 
-  @property String type;
+  @reflectable
+  String type;
 
   @reflectable
   String password = "";

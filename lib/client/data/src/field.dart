@@ -10,6 +10,9 @@ class Field extends JsProxy  {
   @reflectable
   String type = "";
 
+  @reflectable
+  bool unique = false;
+
   String _value = "";
   @Property(notify: true)
   String get value => _value;
@@ -56,6 +59,7 @@ class Field extends JsProxy  {
     to.id = from.id;
     to.name = from.name;
     to.type = from.type;
+    to.unique = from.unique;
   }
 
   static List<Field> convertList(Iterable input) {

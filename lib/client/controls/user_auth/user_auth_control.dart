@@ -30,6 +30,11 @@ class UserAuthControl extends AControl {
 
   Completer<bool> _toComplete;
 
+  void reset() {
+    set("userIdValue","");
+    set("passwordValue","");
+    set("errorMessage","");
+  }
   void activateDialog({Completer<bool> toComplete}) {
     try {
       _toComplete = toComplete;
@@ -44,6 +49,7 @@ class UserAuthControl extends AControl {
   void cancelClicked(event, [_]) {
     PaperDialog dialog = $['loginDialog'];
     dialog.close();
+    this.reset();
     if(this._toComplete!=null)
       this._toComplete.complete(false);
   }
@@ -68,6 +74,8 @@ class UserAuthControl extends AControl {
       cacheAuthKey(auth);
       PaperDialog dialog = $['loginDialog'];
       dialog.close();
+
+      this.reset();
 
       if(this._toComplete!=null)
         this._toComplete.complete(true);

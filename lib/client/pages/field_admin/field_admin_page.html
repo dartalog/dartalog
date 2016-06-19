@@ -9,11 +9,7 @@
     <style include="iron-flex"></style>
 
     <template>
-        <template is="dom-if" if="[[!userHasAccess]]" restamp="true">
-            <paper-card heading="Not authorized" style="margin:8px;" class="vertical layout">
-            </paper-card>
-            </template>
-        <template is="dom-if" if="[[userHasAccess]]" restamp="true">
+        <auth-wrapper-control minimum-privilege="admin">
         <paper-card heading="Fields" style="margin:8px;" class="vertical layout">
             <div class="card-content">
                 <template is="dom-repeat" items="{{fields}}">
@@ -46,6 +42,6 @@
                 <paper-button on-tap="saveClicked">Save</paper-button>
             </div>
         </paper-dialog>
-        </template>
+        </auth-wrapper-control>
     </template>
 </dom-module>

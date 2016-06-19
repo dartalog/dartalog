@@ -4,21 +4,23 @@ class UserModel extends AIdNameBasedModel<User> {
   static final Logger _log = new Logger('UserModel');
   Logger get _logger => _log;
 
-  AUserDataSource get dataSource =>
-      data_sources.users;
-
+  AUserDataSource get dataSource => data_sources.users;
 
   @override
-  Future _validateFieldsInternal(Map field_errors, User user, bool creating) async {
-    if(creating||!isNullOrWhitespace(user.password)){
+  String get _defaultReadPrivilegeRequirement => UserPrivilege.checkout;
+
+  @override
+  Future _validateFieldsInternal(
+      Map field_errors, User user, bool creating) async {
+    if (creating || !isNullOrWhitespace(user.password)) {
       _validatePassword(field_errors, user.password);
     }
-      if(isNullOrWhitespace(user.type)) {
-        field_errors["type"] = "Required";
-      } else {
-        if(!UserPrivilege.values.contains(user.type))
-          field_errors["type"] = "Invalid";
-      }
+    if (isNullOrWhitespace(user.type)) {
+      field_errors["type"] = "Required";
+    } else {
+      if (!UserPrivilege.values.contains(user.type))
+        field_errors["type"] = "Invalid";
+    }
   }
 
   _validatePassword(Map field_errors, String password) {
@@ -31,19 +33,11 @@ class UserModel extends AIdNameBasedModel<User> {
   }
 
   Future<User> getMe() async {
-    if(!_userAuthenticated)
-      throw new NotAuthorizedException();
+    if (!_userAuthenticated) throw new NotAuthorizedException();
 
     Option<User> output = await dataSource.getById(_userPrincipal.get().name);
-    return output.getOrElse(() =>throw new Exception("Authenticated user not present in database"));
-  }
-
-  Future setType(String id, String type) async {
-    await _validateUpdatePrivileges(id);
-    if(!await dataSource.exists(id))
-      throw new NotFoundException("User not found");
-
-    await dataSource.setType(id, type);
+    return output.getOrElse(() =>
+        throw new Exception("Authenticated user not present in database"));
   }
 
   @override
@@ -53,7 +47,6 @@ class UserModel extends AIdNameBasedModel<User> {
     String output = await super.create(user);
 
     await _setPassword(output, user.password);
-    await setType(output, user.type);
 
     return output;
   }
@@ -65,25 +58,24 @@ class UserModel extends AIdNameBasedModel<User> {
 
     String output = await super.update(id, user);
 
-    if(!isNullOrWhitespace(user.password))
+    if (!isNullOrWhitespace(user.password))
       await _setPassword(output, user.password);
-
-    if(user.type!=null)
-      await setType(output, user.type);
 
     return output;
   }
-
 
   Future changePassword(
       String id, String currentPassword, String newPassword) async {
     if (!_userAuthenticated) {
       throw new NotAuthorizedException();
     }
-    if(_currentUserId!=id)
-      throw new NotAuthorizedException.withMessage("You do not have permission to change another user's password");
+    if (_currentUserId != id)
+      throw new NotAuthorizedException.withMessage(
+          "You do not have permission to change another user's password");
 
-    String userPassword = (await data_sources.users.getPasswordHash(id)).getOrElse(() => throw new Exception("User ${id} does not have a current password"));
+    String userPassword = (await data_sources.users.getPasswordHash(id))
+        .getOrElse(() =>
+            throw new Exception("User ${id} does not have a current password"));
 
     await DataValidationException.PerformValidation((Map field_errors) async {
       if (isNullOrWhitespace(currentPassword)) {
@@ -102,7 +94,6 @@ class UserModel extends AIdNameBasedModel<User> {
 
     String passwordHash = hashPassword(newPassword);
     await dataSource.setPassword(id, passwordHash);
-
   }
 
   String hashPassword(String password) {
@@ -111,5 +102,4 @@ class UserModel extends AIdNameBasedModel<User> {
 
   bool verifyPassword(String hash, String password) =>
       new Crypt(hash).match(password);
-
 }

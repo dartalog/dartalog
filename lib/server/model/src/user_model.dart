@@ -70,7 +70,7 @@ class UserModel extends AIdNameBasedModel<User> {
       throw new NotAuthorizedException();
     }
     if (_currentUserId != id)
-      throw new NotAuthorizedException.withMessage(
+      throw new ForbiddenException.withMessage(
           "You do not have permission to change another user's password");
 
     String userPassword = (await data_sources.users.getPasswordHash(id))

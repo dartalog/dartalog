@@ -60,7 +60,7 @@
                 </template>
             </paper-toolbar>
 
-            <paper-drawer-panel id="drawerPanel" responsive-width="1000px">
+            <paper-drawer-panel id="drawerPanel" responsive-width="1920px">
                 <paper-header-panel drawer>
                     <div>
                         <template is="dom-if" if="[[userLoggedIn]]">
@@ -104,8 +104,8 @@
                         </template>
                     </div>
                 </paper-header-panel>
-                <paper-header-panel class="main" main mode="waterfall">
-                    <div class="content fit">
+                <paper-header-panel class="main" main mode="waterfall" id="mainPanel">
+                    <div class="content fit" id="contentScroller">
                         <iron-pages attr-for-selected="id" selected="[[visiblePage]]">
                             <item-browse-page id="browse" class="fit"></item-browse-page>
                             <item-page id="item_view" class="fit"></item-page>

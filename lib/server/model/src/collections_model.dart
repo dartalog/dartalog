@@ -12,7 +12,7 @@ class CollectionsModel extends AIdNameBasedModel<Collection> {
     _validateDefaultPrivilegeRequirement();
     Collection col = await this.getById(collectionId);
     if(!col.curators.contains(this._currentUserId))
-      throw new NotAuthorizedException.withMessage("You are not a curator for collection \"${col.name}\"");
+      throw new ForbiddenException.withMessage("You are not a curator for collection \"${col.name}\"");
   }
 
   @override

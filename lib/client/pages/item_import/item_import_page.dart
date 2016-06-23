@@ -139,7 +139,7 @@ class ItemImportPage extends APage with ASaveablePage {
     await handleApiExceptions(() async {
       clear("collections");
       API.ListOfIdNamePair data = await api.collections.getAllIdsAndNames();
-      addAll("collections", IdNamePair.convertList(data));
+      addAll("collections", IdNamePair.copyList(data));
     });
   }
 

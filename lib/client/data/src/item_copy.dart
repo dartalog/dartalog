@@ -40,7 +40,7 @@ class ItemCopy extends JsProxy {
 
   ItemCopy();
 
-  ItemCopy.forItem(this.itemId);
+  ItemCopy.forItem(this.itemId, {this.copy: 0});
 
   ItemCopy.copyFrom(dynamic input) {
     _copy(input,this);

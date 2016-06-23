@@ -10,6 +10,13 @@ abstract class APage<T extends APage> extends AControl {
 
   bool showBackButton = false;
 
+  int lastScrollPosition = 0;
+
+  Future activate(DartalogApi api, Map args) async {
+    await super.activate(api, args);
+  }
+
+
   void setTitle(String newTitle) {
     this.title = newTitle;
     set("title", newTitle);

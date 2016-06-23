@@ -45,6 +45,7 @@ import 'package:polymer_elements/paper_toast.dart';
 import 'package:polymer_elements/paper_toolbar.dart';
 import 'package:route_hierarchical/client.dart';
 import 'package:web_components/web_components.dart';
+import 'package:dartalog/client/data_sources/data_sources.dart' as data_sources;
 
 /// Uses [PaperInput]
 @PolymerRegister('main-app')
@@ -93,6 +94,8 @@ class MainApp extends PolymerElement {
   bool showBack = false;
 
   final Router router = new Router(useFragment: true);
+
+  CheckoutPage get checkoutPage => $['checkout'];
 
   @Property(notify: true)
   APage currentPage = null;
@@ -209,9 +212,8 @@ class MainApp extends PolymerElement {
     }
   }
 
-  void addToCart(ItemCopy itemCopy) {
-    CheckoutPage cp = $['checkout'];
-    cp.addToCart(itemCopy);
+  Future addToCart(ItemCopy itemCopy) async {
+    await checkoutPage.addToCart(itemCopy);
     refreshCartInfo();
   }
 
@@ -227,7 +229,7 @@ class MainApp extends PolymerElement {
 
   Future clearAuthentication() async {
     setUserObject(null);
-    await clearAuthCache();
+    await data_sources.settings.getCachedAuthKey();
     DartalogHttpClient.setAuthKey("");
   }
 
@@ -306,10 +308,11 @@ class MainApp extends PolymerElement {
         throw new Exception(
             "Unknown element type: ${page.runtimeType.toString()}");
       }
-
       set("currentPage", page);
       evaluatePage();
+      window.alert(this.currentPage.scrollTop.toString());
       await this.currentPage.activate(_api, e.parameters);
+
       evaluatePage();
     } catch (e, st) {
       window.alert(e.toString());
@@ -400,9 +403,8 @@ class MainApp extends PolymerElement {
   }
 
   void refreshCartInfo() {
-    CheckoutPage cp = $['checkout'];
-    set("cartCount", cp.cart.length);
-    set("cartEmpty", cp.cart.length == 0);
+    set("cartCount", checkoutPage.cart.length);
+    set("cartEmpty", checkoutPage.cart.length == 0);
   }
 
   @reflectable
@@ -479,6 +481,7 @@ class MainApp extends PolymerElement {
 
   Future startApp() async {
     await evaluateAuthentication();
+    await checkoutPage.activate(_api, {});
     router.listen();
   }
 

@@ -4,12 +4,15 @@ abstract class AModel {
   String get _currentUserId =>
       _userPrincipal.map((Principal p) => p.name).getOrDefault("");
 
-  String get _defaultCreatePrivilegeRequirement => _defaultWritePrivilegeRequirement ;
-  String get _defaultDeletePrivilegeRequirement => _defaultWritePrivilegeRequirement ;
+  String get _defaultCreatePrivilegeRequirement =>
+      _defaultWritePrivilegeRequirement;
+  String get _defaultDeletePrivilegeRequirement =>
+      _defaultWritePrivilegeRequirement;
   String get _defaultPrivilegeRequirement => UserPrivilege.admin;
   String get _defaultReadPrivilegeRequirement => _defaultPrivilegeRequirement;
+  String get _defaultUpdatePrivilegeRequirement =>
+      _defaultWritePrivilegeRequirement;
   String get _defaultWritePrivilegeRequirement => _defaultPrivilegeRequirement;
-  String get _defaultUpdatePrivilegeRequirement => _defaultWritePrivilegeRequirement ;
 
   Logger get _logger;
 
@@ -19,7 +22,6 @@ abstract class AModel {
 
   Option<Principal> get _userPrincipal => authenticatedContext()
       .map((AuthenticatedContext context) => context.principal);
-
 
   Future<User> _getCurrentUser() async {
     Principal p = _userPrincipal.getOrElse(
@@ -37,14 +39,39 @@ abstract class AModel {
 
   Future<bool> _validateCreatePrivilegeRequirement() =>
       _validateUserPrivilege(_defaultCreatePrivilegeRequirement);
+  Future _validateCreatePrivileges() async {
+    if (!_userAuthenticated) {
+      throw new NotAuthorizedException();
+    }
+    await _validateCreatePrivilegeRequirement();
+  }
   Future<bool> _validateDefaultPrivilegeRequirement() =>
       _validateUserPrivilege(_defaultPrivilegeRequirement);
   Future<bool> _validateDeletePrivilegeRequirement() =>
       _validateUserPrivilege(_defaultDeletePrivilegeRequirement);
+  Future _validateDeletePrivileges(String id) async {
+    if (!_userAuthenticated) {
+      throw new NotAuthorizedException();
+    }
+    await _validateDeletePrivilegeRequirement();
+  }
+
+  Future _validateGetPrivileges() async {
+    await _validateReadPrivilegeRequirement();
+  }
+
   Future<bool> _validateReadPrivilegeRequirement() =>
       _validateUserPrivilege(_defaultReadPrivilegeRequirement);
+
   Future<bool> _validateUpdatePrivilegeRequirement() =>
       _validateUserPrivilege(_defaultUpdatePrivilegeRequirement);
+
+  Future _validateUpdatePrivileges(String id) async {
+    if (!_userAuthenticated) {
+      throw new NotAuthorizedException();
+    }
+    await _validateUpdatePrivilegeRequirement();
+  }
 
   Future<bool> _validateUserPrivilege(String privilege) async {
     if (await _userHasPrivilege(privilege)) return true;

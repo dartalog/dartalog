@@ -14,7 +14,7 @@ class IdNamePair extends JsProxy {
     this.name = o.name;
   }
 
-  static List<IdNamePair> convertList(Iterable i) {
+  static List<IdNamePair> copyList(Iterable i) {
     List<IdNamePair> output = new List<IdNamePair>();
     for(dynamic o in i) {
       output.add(new IdNamePair.copy(o));

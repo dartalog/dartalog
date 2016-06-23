@@ -40,19 +40,29 @@ class MongoItemCopyDataSource extends _AMongoObjectDataSource<ItemCopy>
   }
 
   Future<List<ItemCopy>> getAllForItemId(String itemId,
-      {bool includeRemoved: false, String userName: null}) async {
+      {bool includeRemoved: false}) async {
     //if (!includeRemoved) where.nin(_STATUS_FIELD, [ITEM_STATUS_REMOVED]);
     // TODO: Make sure removed items don't get returned when not requested
     List output =
         _convertList((await _getItemData(itemId))[_ITEM_COPIES_FIELD]);
+    return output;
+  }
+
+  Future<List<ItemCopy>> getVisibleForItemId(String itemId, String userName,
+      {bool includeRemoved: false}) async {
+    //if (!includeRemoved) where.nin(_STATUS_FIELD, [ITEM_STATUS_REMOVED]);
+    // TODO: Make sure removed items don't get returned when not requested
+    List output =
+    _convertList((await _getItemData(itemId))[_ITEM_COPIES_FIELD]);
     if (output.length == 0) return [];
     IdNameList<Collection> visibleCollections =
-        await data_sources.itemCollections.getVisibleCollections(userName);
+    await data_sources.itemCollections.getVisibleCollections(userName);
     output.retainWhere((ItemCopy ic) {
       return visibleCollections.containsId(ic.collectionId);
     });
     return output;
   }
+
 
   Future<Option<ItemCopy>> getByItemIdAndCopy(String itemId, int copy) async {
     List<ItemCopy> copies = await getAllForItemId(itemId, includeRemoved: true);

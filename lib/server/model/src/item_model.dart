@@ -109,7 +109,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
       if (output.copies == null) {
         output.copies = await this
             .copies
-            .getAllForItem(id, includeCollection: includeCopyCollection);
+            .getVisibleForItem(id, includeCollection: includeCopyCollection);
       }
     } else {
       output.copies = null;

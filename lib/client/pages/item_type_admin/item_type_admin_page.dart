@@ -81,7 +81,7 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
 
       API.ListOfIdNamePair data = await api.fields.getAllIdsAndNames();
 
-      set("fields", IdNamePair.convertList(data));
+      set("fields", IdNamePair.copyList(data));
     });
   }
 
@@ -89,7 +89,7 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
     await handleApiExceptions(() async {
       clear("itemTypes");
       API.ListOfIdNamePair data = await api.itemTypes.getAllIdsAndNames();
-      set("itemTypes", IdNamePair.convertList(data));
+      set("itemTypes", IdNamePair.copyList(data));
     });
   }
 

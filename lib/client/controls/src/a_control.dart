@@ -90,6 +90,8 @@ class AControl extends PolymerElement {
         await this.mainApp.clearAuthentication();
         await this.mainApp.promptForAuthentication();
         await this.mainApp.evaluateAuthentication();
+      } else if(error.status==413) {
+        this.showMessage("The submitted data was too large, please submit smaller images");
       } else {
         this.showMessage("API Error: ${error.message} (${error.status})");
       }

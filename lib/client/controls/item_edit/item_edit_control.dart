@@ -98,12 +98,12 @@ class ItemEditControl extends AControl {
 
   Future loadCollections() async {
     API_Library.ListOfIdNamePair collections = await  this.api.collections.getAllIdsAndNames();
-    set("collections", IdNamePair.convertList(collections));
+    set("collections", IdNamePair.copyList(collections));
   }
 
   Future loadItemTypes() async {
     API_Library.ListOfIdNamePair itemTypes = await this.api.itemTypes.getAllIdsAndNames();
-    set("itemTypes", IdNamePair.convertList(itemTypes));
+    set("itemTypes", IdNamePair.copyList(itemTypes));
   }
 
   Future<String> save() async {

@@ -119,7 +119,7 @@ class ItemPage extends APage with ARefreshablePage, ADeletablePage, AEditablePag
       dynamic ele = getParentElement(event.target, "paper-item");
       String copy = ele.dataset["copy"];
       API.ItemCopy itemCopy = await api.items.copies.get(this.currentItem.id, int.parse(copy));
-      this.mainApp.addToCart(new ItemCopy.copyFrom(itemCopy));
+      await this.mainApp.addToCart(new ItemCopy.copyFrom(itemCopy));
     });
   }
 
@@ -175,7 +175,7 @@ class ItemPage extends APage with ARefreshablePage, ADeletablePage, AEditablePag
       if(data.length==0)
         throw new Exception("No collections defined");
 
-      set("collections", IdNamePair.convertList(data));
+      set("collections", IdNamePair.copyList(data));
       return true;
     });
     if(output==true)

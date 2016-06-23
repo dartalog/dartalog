@@ -2,13 +2,13 @@ library client;
 
 import 'dart:html';
 import 'dart:async';
-import 'dart:indexed_db' as idb;
 
 import 'package:option/option.dart';
 import 'package:dartalog/tools.dart';
 import 'package:http/http.dart';
 import 'package:http/browser_client.dart';
 import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/client/data_sources/data_sources.dart' as data_source;
 
 part 'src/dartalog_http_client.dart';
 
@@ -75,62 +75,6 @@ class ValidationException implements  Exception {
   ValidationException(this.message);
 }
 
-const String _DARTALOG_IDB_NAME = "dartalog";
-const String _DARTALOG_IDB_SETTINGS_STORE = "settings";
-const int _DARTALOG_IDB_VERSION = 1;
-const String AUTH_KEY_NAME = "authKey";
-
-String _cachedAuthKey = "";
-
-idb.Database _db;
-
-Future openIndexedDb() async {
-  if(_db==null)
-  _db = await window.indexedDB.open(_DARTALOG_IDB_NAME, version: _DARTALOG_IDB_VERSION, onUpgradeNeeded: _onUpgradeNeeded);
-}
-
-void _onUpgradeNeeded(idb.VersionChangeEvent e) {
-  idb.Database db = (e.target as idb.OpenDBRequest).result;
-  if (!db.objectStoreNames.contains(_DARTALOG_IDB_SETTINGS_STORE)) {
-    db.createObjectStore(_DARTALOG_IDB_SETTINGS_STORE, keyPath: 'id');
-  }
-}
-
-Future<Option<String>> getCachedAuthKey() async {
-  if(!isNullOrWhitespace(_cachedAuthKey))
-    return new Some(_cachedAuthKey);
-
-  if (!idb.IdbFactory.supported)
-    return new None(); //TODO: Implement alternative auth caching mechanism
-
-  await openIndexedDb();
-  var trans = _db.transaction(_DARTALOG_IDB_SETTINGS_STORE, 'readonly');
-  var store = trans.objectStore(_DARTALOG_IDB_SETTINGS_STORE);
-  dynamic obj = await store.getObject(AUTH_KEY_NAME);
-  if(obj==null)
-    return new None();
-  Option output = new Some(obj["value"]);
-  output.map((value) => _cachedAuthKey = value);
-  return output;
-}
-
-Future clearAuthCache() async {
-  await openIndexedDb();
-  var trans = _db.transaction(_DARTALOG_IDB_SETTINGS_STORE, 'readwrite');
-  var store = trans.objectStore(_DARTALOG_IDB_SETTINGS_STORE);
-  await store.delete(AUTH_KEY_NAME);
-  _cachedAuthKey = "";
-}
-
-Future cacheAuthKey(String text) async {
-  await openIndexedDb();
-  var trans = _db.transaction(_DARTALOG_IDB_SETTINGS_STORE, 'readwrite');
-  var store = trans.objectStore(_DARTALOG_IDB_SETTINGS_STORE);
-  await store.put({
-    'id': AUTH_KEY_NAME,
-    'value': text
-  });
-}
 
 abstract class HttpHeaders {
   static const String AUTHORIZATION = 'authorization';

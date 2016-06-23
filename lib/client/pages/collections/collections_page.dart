@@ -76,11 +76,11 @@ class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
 
       API.ListOfIdNamePair data = await api.collections.getAllIdsAndNames();
 
-      addAll("collections", IdNamePair.convertList(data));
+      addAll("collections", IdNamePair.copyList(data));
 
       data = await api.users.getAllIdsAndNames();
 
-      addAll("users", IdNamePair.convertList(data));
+      addAll("users", IdNamePair.copyList(data));
     });
   }
 

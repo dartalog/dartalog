@@ -73,19 +73,7 @@ abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel {
 
   _performAdjustments(T t) {}
 
-  Future _validateCreatePrivileges() async {
-    if (!_userAuthenticated) {
-      throw new NotAuthorizedException();
-    }
-    await _validateCreatePrivilegeRequirement();
-  }
 
-  Future _validateDeletePrivileges(String id) async {
-    if (!_userAuthenticated) {
-      throw new NotAuthorizedException();
-    }
-    await _validateDeletePrivilegeRequirement();
-  }
 
   @override
   Future<Map<String, String>> _validateFields(T t, bool creating) async {
@@ -132,18 +120,10 @@ abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel {
     await _validateGetPrivileges();
   }
 
-  Future _validateGetPrivileges() async {
-    await _validateReadPrivilegeRequirement();
-  }
 
   Future _validateSearchPrivileges() async {
     await _validateGetPrivileges();
   }
 
-  Future _validateUpdatePrivileges(String id) async {
-    if (!_userAuthenticated) {
-      throw new NotAuthorizedException();
-    }
-    await _validateUpdatePrivilegeRequirement();
-  }
+
 }

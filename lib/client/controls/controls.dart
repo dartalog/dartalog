@@ -6,6 +6,7 @@ import 'dart:html';
 import 'package:polymer/polymer.dart';
 import 'package:logging/logging.dart';
 import 'package:option/option.dart';
+import 'package:http/http.dart';
 import 'package:_discoveryapis_commons/_discoveryapis_commons.dart' as commons;
 import 'package:polymer_elements/paper_input_behavior.dart';
 import 'package:polymer_elements/paper_dropdown_menu.dart';

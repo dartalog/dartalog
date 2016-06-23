@@ -32,6 +32,7 @@ import 'package:polymer_elements/paper_input.dart';
 import 'package:polymer_elements/paper_listbox.dart';
 import 'package:web_components/web_components.dart';
 import 'package:dartalog/client/api/dartalog.dart' as API;
+import 'package:dartalog/client/data_sources/data_sources.dart' as data_sources;
 
 @PolymerRegister('checkout-page')
 class CheckoutPage extends APage with ARefreshablePage {
@@ -58,17 +59,19 @@ class CheckoutPage extends APage with ARefreshablePage {
 
   Logger get loggerImpl => _log;
 
+  //This is called during app load, so make sure it can refresh without args
   @override
   Future activateInternal(Map args) async {
     if(authWrapper.evaluateAuthentication())
       await this.refresh();
   }
 
-  void addToCart(ItemCopy itemCopy) {
+  Future addToCart(ItemCopy itemCopy) async {
     for (ItemCopy test in this.cart) {
       if (itemCopy.matchesItemCopy(test)) return;
     }
     add("cart", itemCopy);
+    data_sources.cart.setCart(this.cart);
     _evaluateCart();
   }
 
@@ -86,11 +89,14 @@ class CheckoutPage extends APage with ARefreshablePage {
   Future refresh() async {
     await handleApiExceptions(() async {
       clear("users");
-      API.ListOfIdNamePair users = await api.users.getAllIdsAndNames();
-      addAll("users", User.copyList(users));
+      API.ListOfIdNamePair users = await this.api.users.getAllIdsAndNames();
+      addAll("users", IdNamePair.copyList(users));
 
       List<ItemCopy> newCart = [];
-      for (ItemCopy itemCopy in cart) {
+
+      List<ItemCopy> freshCart = await data_sources.cart.getCart();
+
+      for (ItemCopy itemCopy in freshCart) {
         try {
           API.ItemCopy updatedItemCopy =
               await api.items.copies.get(itemCopy.itemId, itemCopy.copy);
@@ -111,7 +117,7 @@ class CheckoutPage extends APage with ARefreshablePage {
   }
 
   @reflectable
-  removeClicked(event, [_]) {
+  removeClicked(event, [_]) async {
     try {
       Element ele = getParentElement(event.target, "paper-item");
       String itemId = ele.dataset["item-id"];
@@ -119,6 +125,7 @@ class CheckoutPage extends APage with ARefreshablePage {
       _getItemCopy(itemId, int.parse(itemCopy)).map((ItemCopy itemCopy) {
         removeItem("cart", itemCopy);
       });
+      await data_sources.cart.setCart(this.cart);
     } catch (e, st) {
       handleException(e, st);
     }

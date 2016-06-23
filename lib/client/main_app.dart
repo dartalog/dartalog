@@ -310,7 +310,6 @@ class MainApp extends PolymerElement {
       }
       set("currentPage", page);
       evaluatePage();
-      window.alert(this.currentPage.scrollTop.toString());
       await this.currentPage.activate(_api, e.parameters);
 
       evaluatePage();

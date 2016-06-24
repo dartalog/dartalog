@@ -71,7 +71,7 @@ class UserAuthControl extends AControl {
       String auth = request.responseHeaders[HttpHeaders.AUTHORIZATION];
       if (isNullOrWhitespace(auth))
         throw new Exception("Auth request did not return a key");
-      DartalogHttpClient.setAuthKey(auth);
+
       await data_source.settings.cacheAuthKey(auth);
       PaperDialog dialog = $['loginDialog'];
       dialog.close();

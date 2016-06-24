@@ -61,7 +61,7 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
 
   AuthWrapperControl get authWrapper => this.querySelector("auth-wrapper-control");
 
-  Future activateInternal(Map args) async {
+  Future activateInternal(Map args, [bool forceRefresh = false]) async {
     bool authed = authWrapper.evaluateAuthentication();
     if(authed)
       await this.refresh();

@@ -66,7 +66,7 @@ class ItemEditControl extends AControl {
     originalItemId = "";
   }
 
-  Future activateInternal(Map args) async {
+  Future activateInternal(Map args, [bool forceRefresh = false]) async {
     await handleApiExceptions(() async {
       reset();
       await loadItemTypes();

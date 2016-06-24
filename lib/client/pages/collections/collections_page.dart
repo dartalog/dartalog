@@ -58,7 +58,7 @@ class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
   CollectionsPage.created() : super.created("Collection Maintenance");
 
 
-  Future activateInternal(Map args) async {
+  Future activateInternal(Map args, [bool forceRefresh = false]) async {
     bool authed = authWrapper.evaluateAuthentication();
     if(authed)
       await this.refresh();

@@ -80,7 +80,7 @@ class ItemImportPage extends APage with ASaveablePage {
 
 
   @override
-  Future activateInternal(Map args) async {
+  Future activateInternal(Map args, [bool forceRefresh = false]) async {
     showSaveButton = false;
     showBackButton = false;
 

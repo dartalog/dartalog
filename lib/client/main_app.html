@@ -7,20 +7,39 @@
     <link rel="stylesheet" href="main_app.css">
     <style include="iron-flex">
 
-        paper-input{
+        paper-input {
             --paper-input-container-color: #bababa;
             --paper-input-container-focus-color: white;
             --paper-input-container-invalid-color: red;
             --paper-input-container-input-color: white;
-            margin-bottom:16pt
+            margin-bottom: 16pt
+        }
+
+        div#loading paper-spinner, div#loading div {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 160pt;
+            height: 160pt;
+            margin-left: -80pt;
+            margin-top: -80pt;
+            text-align: center;
+            --paper-spinner-stroke-width: 6pt;
+
+        }
+
+        div#loading div {
+            display: table;
         }
     </style>
 
+
     <template>
-        <paper-header-panel class="flex">
+        <paper-header-panel class="flex" id="app" hidden="[[appLoadingScreenVisible]]">
             <paper-toolbar>
                 <template is="dom-if" if="[[!showBack]]">
-                    <paper-icon-button icon="menu" on-tap="toggleDrawerClicked" style="margin-right:0;"></paper-icon-button>
+                    <paper-icon-button icon="menu" on-tap="toggleDrawerClicked"
+                                       style="margin-right:0;"></paper-icon-button>
                 </template>
                 <template is="dom-if" if="[[showBack]]">
                     <paper-icon-button icon="chevron-left" on-tap="backClicked"></paper-icon-button>
@@ -50,7 +69,8 @@
                     <paper-icon-button icon="save" on-tap="saveClicked"></paper-icon-button>
                 </template>
                 <template is="dom-if" if="[[userCanCheckout]]" restamp="true">
-                <paper-icon-button id="cartIconButton" icon="shopping-cart" on-tap="cartClicked"></paper-icon-button>
+                    <paper-icon-button id="cartIconButton" icon="shopping-cart"
+                                       on-tap="cartClicked"></paper-icon-button>
                     <template is="dom-if" if="[[!cartEmpty]]">
                         <paper-badge for="cartIconButton" label="[[cartCount]]"></paper-badge>
                     </template>
@@ -81,26 +101,26 @@
                             <paper-item-body>Browse Items</paper-item-body>
                         </paper-item>
                         <template is="dom-if" if="[[userCanAdd]]">
-                        Curating
-                        <paper-item on-tap="drawerItemClicked" data-route="collections">
-                            <iron-icon icon="label-outline"></iron-icon>
-                            <paper-item-body>Collections</paper-item-body>
-                        </paper-item>
+                            Curating
+                            <paper-item on-tap="drawerItemClicked" data-route="collections">
+                                <iron-icon icon="label-outline"></iron-icon>
+                                <paper-item-body>Collections</paper-item-body>
+                            </paper-item>
                         </template>
                         <template is="dom-if" if="[[userIsAdmin]]">
-                        Admin
-                        <paper-item on-tap="drawerItemClicked" data-route="field_admin">
-                            <iron-icon icon="label-outline"></iron-icon>
-                            <paper-item-body>Fields</paper-item-body>
-                        </paper-item>
-                        <paper-item on-tap="drawerItemClicked" data-route="item_type_admin">
-                            <iron-icon icon="label-outline"></iron-icon>
-                            <paper-item-body>Item Types</paper-item-body>
-                        </paper-item>
-                        <paper-item on-tap="drawerItemClicked" data-route="user_admin">
-                            <iron-icon icon="label-outline"></iron-icon>
-                            <paper-item-body>Users</paper-item-body>
-                        </paper-item>
+                            Admin
+                            <paper-item on-tap="drawerItemClicked" data-route="field_admin">
+                                <iron-icon icon="label-outline"></iron-icon>
+                                <paper-item-body>Fields</paper-item-body>
+                            </paper-item>
+                            <paper-item on-tap="drawerItemClicked" data-route="item_type_admin">
+                                <iron-icon icon="label-outline"></iron-icon>
+                                <paper-item-body>Item Types</paper-item-body>
+                            </paper-item>
+                            <paper-item on-tap="drawerItemClicked" data-route="user_admin">
+                                <iron-icon icon="label-outline"></iron-icon>
+                                <paper-item-body>Users</paper-item-body>
+                            </paper-item>
                         </template>
                     </div>
                 </paper-header-panel>
@@ -116,7 +136,7 @@
                             <item-edit-page id="item_edit" class="fit"></item-edit-page>
 
 
-                                <field-admin-page id="field_admin" class="fit"></field-admin-page>
+                            <field-admin-page id="field_admin" class="fit"></field-admin-page>
                             <item-type-admin-page id="item_type_admin" class="fit"></item-type-admin-page>
                             <user-admin-page id="user_admin" class="fit"></user-admin-page>
 
@@ -129,6 +149,13 @@
                 </paper-header-panel>
             </paper-drawer-panel>
         </paper-header-panel>
+
+        <template is="dom-if" if="[[appLoadingScreenVisible]]" restamp="true">
+            <div class="flex" id="loading">
+                <paper-spinner alt="Loading application..." active="[[appLoadingSpinnerActive]]"></paper-spinner>
+                <div><span style=" display: table-cell;vertical-align: middle;">[[appLoadingMessage]]</span></div>
+            </div>
+        </template>
 
         <paper-toast id="global_toast" duration="30000">
             <paper-button on-tap="closeToast" class="white-button">Close</paper-button>

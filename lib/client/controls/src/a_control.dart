@@ -27,8 +27,8 @@ class AControl extends PolymerElement {
     await activateInternal(args);
   }
 
-  Future reActivate() async {
-    await activateInternal(lastArgs);
+  Future reActivate(bool forceRefresh) async {
+    await activateInternal(lastArgs, forceRefresh);
   }
 
   bool userHasPrivilege(String type) {
@@ -50,7 +50,7 @@ class AControl extends PolymerElement {
     return completer.future;
   }
 
-  Future activateInternal(Map args);
+  Future activateInternal(Map args, [bool forceRefresh = false]);
 
   void clearValidation() {
     setGeneralErrorMessage("");

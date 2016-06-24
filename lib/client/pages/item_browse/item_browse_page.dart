@@ -56,7 +56,7 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
   bool showAddControl = false;
 
   @override
-  Future activateInternal(Map args) async {
+  Future activateInternal(Map args, [bool forceRefresh = false]) async {
     set("showAddControl",userHasPrivilege(dartalog.UserPrivilege.curator));
     if(showAddControl) {
       await browseItemAddControl.activate(this.api,args);
@@ -67,10 +67,10 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
         if(isNullOrWhitespace(this.mainApp.searchText))
           this.mainApp.setSearchText(_currentQuery);
         await this.refresh();
-      } else if(!_loaded) {
+      } else if(!_loaded||forceRefresh) {
         await this.refresh();
       }
-    } else if(!_loaded) {
+    } else if(!_loaded||forceRefresh) {
       await this.refresh();
     }
   }

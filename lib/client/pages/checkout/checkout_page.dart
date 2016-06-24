@@ -61,7 +61,7 @@ class CheckoutPage extends APage with ARefreshablePage {
 
   //This is called during app load, so make sure it can refresh without args
   @override
-  Future activateInternal(Map args) async {
+  Future activateInternal(Map args, [bool forceRefresh = false]) async {
     if(authWrapper.evaluateAuthentication())
       await this.refresh();
   }

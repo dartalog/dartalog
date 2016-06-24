@@ -68,7 +68,7 @@ class UserAdminPage extends APage with ARefreshablePage, ACollectionPage {
     return output;
   }
 
-  Future activateInternal(Map args) async {
+  Future activateInternal(Map args, [bool forceRefresh = false]) async {
     bool authed = authWrapper.evaluateAuthentication();
     if(authed)
       await this.refresh();

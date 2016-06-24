@@ -13,6 +13,7 @@ import 'package:dartalog/client/controls/controls.dart';
 import 'package:dartalog/client/controls/paper_toast_queue/paper_toast_queue.dart';
 import 'package:dartalog/client/controls/user_auth/user_auth_control.dart';
 import 'package:dartalog/client/data/data.dart';
+import 'package:dartalog/client/data_sources/data_sources.dart' as data_sources;
 import 'package:dartalog/client/pages/checkout/checkout_page.dart';
 import 'package:dartalog/client/pages/collections/collections_page.dart';
 import 'package:dartalog/client/pages/field_admin/field_admin_page.dart';
@@ -26,6 +27,7 @@ import 'package:dartalog/client/pages/pages.dart';
 import 'package:dartalog/client/pages/user_admin/user_admin_page.dart';
 import 'package:dartalog/dartalog.dart';
 import 'package:dartalog/tools.dart';
+import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 import 'package:logging_handlers/browser_logging_handlers.dart';
 import 'package:option/option.dart';
@@ -45,7 +47,6 @@ import 'package:polymer_elements/paper_toast.dart';
 import 'package:polymer_elements/paper_toolbar.dart';
 import 'package:route_hierarchical/client.dart';
 import 'package:web_components/web_components.dart';
-import 'package:dartalog/client/data_sources/data_sources.dart' as data_sources;
 
 /// Uses [PaperInput]
 @PolymerRegister('main-app')
@@ -53,6 +54,13 @@ class MainApp extends PolymerElement {
   static final Logger _log = new Logger("MainApp");
 
   static api.DartalogApi _api;
+
+  @property
+  bool appLoadingScreenVisible = true;
+  @property
+  bool appLoadingSpinnerActive = true;
+  @property
+  String appLoadingMessage = "Loading application";
 
   @property
   String visiblePage = "item_browse";
@@ -81,7 +89,7 @@ class MainApp extends PolymerElement {
   bool showRefresh = false;
 
   @property
-  bool showSearch = true;
+  bool showSearch = false;
   @property
   bool showAdd = false; // True initially so that it can be found on page load
   @property
@@ -95,27 +103,18 @@ class MainApp extends PolymerElement {
 
   final Router router = new Router(useFragment: true);
 
-  CheckoutPage get checkoutPage => $['checkout'];
-
   @Property(notify: true)
   APage currentPage = null;
 
   @property
   String searchText = "";
 
-  void setSearchText(String value) {
-    set("searchText", value);
-  }
-
   /// Constructor used to create instance of MainApp.
   MainApp.created() : super.created() {
     Logger.root.level = Level.INFO;
     Logger.root.onRecord.listen(new LogPrintHandler());
 
-    _api = new api.DartalogApi(new DartalogHttpClient(),
-        rootUrl: getServerRoot(), servicePath: "api/dartalog/0.1/");
     // Set up the routes for all the pages.
-
     router.root
       ..addRoute(
           name: BROWSE_ROUTE_NAME,
@@ -181,11 +180,13 @@ class MainApp extends PolymerElement {
     startApp();
   }
 
+  CheckoutPage get checkoutPage => $['checkout'];
+
   @property
   User get currentUserProperty => currentUser.getOrElse(() => new User());
 
   set currentUserProperty(User user) {
-    if (user == null)
+    if (user == null||isNullOrWhitespace(user.name))
       this.currentUser = new None();
     else
       this.currentUser = new Some(user);
@@ -229,8 +230,7 @@ class MainApp extends PolymerElement {
 
   Future clearAuthentication() async {
     setUserObject(null);
-    await data_sources.settings.getCachedAuthKey();
-    DartalogHttpClient.setAuthKey("");
+    await data_sources.settings.clearAuthCache();
   }
 
   @reflectable
@@ -256,7 +256,7 @@ class MainApp extends PolymerElement {
       Element ele = getParentElement(event.target, "paper-item");
       if (ele != null) {
         String route = ele.dataset["route"];
-        switch(route) {
+        switch (route) {
           case "log_in":
             promptForAuthentication();
             break;
@@ -274,6 +274,7 @@ class MainApp extends PolymerElement {
       handleException(e, st);
     }
   }
+
   @reflectable
   editClicked(event, [_]) async {
     if (currentPage is AEditablePage) {
@@ -281,7 +282,7 @@ class MainApp extends PolymerElement {
       page.edit();
     }
   }
-//  TemplateAdminPage get templateAdmin=> $['item_type_admin'];
+
   Future enterRoute(RouteEvent e) async {
     try {
       startLoading();
@@ -319,20 +320,16 @@ class MainApp extends PolymerElement {
       stopLoading();
     }
   }
-//  ItemBrowsePage get itemBrowse=> $['browse'];
-//  ItemPage get itemPage=> $['item'];
 
+//  TemplateAdminPage get templateAdmin=> $['item_type_admin'];
   Future evaluateAuthentication() async {
     bool authed = false;
     try {
-      await DartalogHttpClient.primer();
-
       api.User apiUser = await _api.users.getMe();
 
       setUserObject(new User.copy(apiUser));
 
       authed = true;
-
     } on api.DetailedApiRequestError catch (e, st) {
       if (e.status >= 400 && e.status < 500) {
         // Not authenticated, nothing to see here
@@ -341,9 +338,6 @@ class MainApp extends PolymerElement {
         _log.severe("evaluateAuthentication", e, st);
         handleException(e, st);
       }
-    } catch (e, st) {
-      _log.severe("evaluateAuthentication", e, st);
-      handleException(e, st);
     }
 
     set("userCanCheckout", userHasPrivilege(UserPrivilege.checkout));
@@ -351,13 +345,14 @@ class MainApp extends PolymerElement {
     set("userCanAdd", userHasPrivilege(UserPrivilege.curator));
     set("userCanBorrow", userHasPrivilege(UserPrivilege.patron));
 
-
     if (userLoggedIn != authed && this.currentPage != null) {
-      this.currentPage.reActivate();
+      this.currentPage.reActivate(true);
     }
 
     set("userLoggedIn", authed);
   }
+//  ItemBrowsePage get itemBrowse=> $['browse'];
+//  ItemPage get itemPage=> $['item'];
 
   void evaluatePage() {
     dynamic page = currentPage;
@@ -390,11 +385,22 @@ class MainApp extends PolymerElement {
         message.writeln(det.message);
       }
       showMessage(message.toString(), "error", st.toString());
+    }
+    if (e is http.ClientException) {
+      if (e.message.contains("XMLHttpRequest")) {
+        showAppLoadingScreen("Cannot contact server, retrying...");
+        new Timer(new Duration(milliseconds: 1000), () async {
+          await startApp();
+        });
+      }
     } else {
       showMessage(e.toString(), "error", st.toString());
     }
   }
 
+  void hideAppLoadingScreen() {
+    set("appLoadingScreenVisible", false);
+  }
 
   Future promptForAuthentication() async {
     UserAuthControl ele = $['userAuthElement'];
@@ -442,6 +448,10 @@ class MainApp extends PolymerElement {
     }
   }
 
+  void setSearchText(String value) {
+    set("searchText", value);
+  }
+
   setUserObject(User user) {
     if (user == null) {
       set("currentUserProperty.name", "");
@@ -452,6 +462,12 @@ class MainApp extends PolymerElement {
       set("currentUserProperty", user);
       AControl.currentUserStatic = this.currentUser;
     }
+  }
+
+  void showAppLoadingScreen([String message = "Loading application"]) {
+    set("appLoadingMessage", message);
+    set("appLoadingScreenVisible", true);
+    set("appLoadingSpinnerActive", true);
   }
 
   void showMessage(String message, [String severity, String details]) {
@@ -478,14 +494,34 @@ class MainApp extends PolymerElement {
     });
   }
 
+  Future stopApp() async {
+  }
+
+  bool listenerStarted = false;
+
   Future startApp() async {
-    await evaluateAuthentication();
-    await checkoutPage.activate(_api, {});
-    router.listen();
+    try {
+      _api = new api.DartalogApi(new DartalogHttpClient(),
+          rootUrl: getServerRoot(), servicePath: "api/dartalog/0.1/");
+      await evaluateAuthentication();
+      await checkoutPage.activate(_api, {});
+      if (!listenerStarted) {
+        router.listen();
+        listenerStarted = true;
+      }
+      hideAppLoadingScreen();
+    } catch (e, st) {
+      _log.severe("startApp", e, st);
+      handleException(e, st);
+    }
   }
 
   void startLoading() {
     set("loading", true);
+  }
+
+  void stopAppLoadingSpinner() {
+    set("appLoadingSpinnerActive", false);
   }
 
   void stopLoading() {

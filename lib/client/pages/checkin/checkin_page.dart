@@ -68,7 +68,7 @@ class CheckinPage extends APage with ARefreshablePage {
   }
 
   @override
-  Future activateInternal(Map args) async {
+  Future activateInternal(Map args, [bool forceRefresh = false]) async {
     await this.refresh();
   }
 

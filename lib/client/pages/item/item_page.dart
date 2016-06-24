@@ -54,7 +54,7 @@ class ItemPage extends APage with ARefreshablePage, ADeletablePage, AEditablePag
   ItemCopy currentItemCopy = new ItemCopy();
 
   @override
-  Future activateInternal(Map args) async {
+  Future activateInternal(Map args, [bool forceRefresh = false]) async {
     if(isNullOrWhitespace(args[ROUTE_ARG_ITEM_ID_NAME])) {
       throw new Exception("${ROUTE_ARG_ITEM_ID_NAME} is required");
     }

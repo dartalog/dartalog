@@ -37,7 +37,7 @@ class ItemAddControl extends AControl  {
 
   ItemAddControl.created() : super.created();
 
-  Future activateInternal(Map args) async {
+  Future activateInternal(Map args, [bool forceRefresh = false]) async {
     //await this.refresh();
   }
 

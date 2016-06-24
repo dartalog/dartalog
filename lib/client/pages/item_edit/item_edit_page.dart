@@ -35,7 +35,7 @@ class ItemEditPage extends APage with ASaveablePage {
   AuthWrapperControl get authWrapper => this.querySelector("auth-wrapper-control");
 
   @override
-  Future activateInternal(Map args) async {
+  Future activateInternal(Map args, [bool forceRefresh = false]) async {
     bool authed = authWrapper.evaluateAuthentication();
     this.showSaveButton = authed;
     if(authed) {

@@ -58,7 +58,7 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   @Property(notify:true)
   String errorMessage = "";
 
-  Future activateInternal(Map args) async {
+  Future activateInternal(Map args, [bool forceRefresh = false]) async {
     bool authed = authWrapper.evaluateAuthentication();
     if(authed)
       await this.refresh();

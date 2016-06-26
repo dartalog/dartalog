@@ -53,6 +53,7 @@ class UserModel extends AIdNameBasedModel<User> {
 
   @override
   Future<String> update(String id, User user) async {
+    id = _normalizeId(id);
     await _validateUpdatePrivileges(id);
     // Only admin can update...for now
 
@@ -66,6 +67,7 @@ class UserModel extends AIdNameBasedModel<User> {
 
   Future changePassword(
       String id, String currentPassword, String newPassword) async {
+    id = _normalizeId(id);
     if (!_userAuthenticated) {
       throw new NotAuthorizedException();
     }
@@ -88,6 +90,7 @@ class UserModel extends AIdNameBasedModel<User> {
   }
 
   Future _setPassword(String id, String newPassword) async {
+    id = _normalizeId(id);
     await DataValidationException.PerformValidation((Map field_errors) async {
       _validatePassword(field_errors, newPassword);
     });

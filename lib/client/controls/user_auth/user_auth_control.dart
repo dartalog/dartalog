@@ -41,9 +41,25 @@ class UserAuthControl extends AControl {
       _toComplete = toComplete;
       PaperDialog dialog = $['loginDialog'];
       dialog.open();
+      focusPaperInput(this.querySelector("#userNameInput"));
     } catch(e, st) {
       _log.severe("activateDialog", e, st);
       handleException(e,st);
+    }
+  }
+
+  @reflectable
+  Future keypress(event, [_]) async {
+    if (event.original.charCode == 13) {
+      Element ele = getParentElement(event.target, "paper-input");
+      switch(ele.id) {
+        case "userNameInput":
+          focusPaperInput(this.querySelector("#passwordInput"));
+          break;
+        case "passwordInput":
+          logInClicked(null);
+          break;
+      }
     }
   }
 
@@ -88,8 +104,19 @@ class UserAuthControl extends AControl {
     } catch(e, st) {
       request = e.target;
       if(request!=null) {
-        String message = "${request.status} - ${request.statusText} - ${request.responseText}";
-        set("errorMessage", message);
+        String message;
+        switch(request.status) {
+        case 401:
+          message = "Login incorrect";
+          break;
+        default:
+          message = "${request.status} - ${request.statusText} - ${request.responseText}";
+          break;
+      }
+      set("errorMessage", message);
+
+      } else {
+        set("errorMessage", "Unknown error while authenticating");
       }
     }
   }

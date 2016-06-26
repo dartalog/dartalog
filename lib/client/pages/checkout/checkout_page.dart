@@ -114,6 +114,7 @@ class CheckoutPage extends APage with ARefreshablePage {
       addAll("cart", newCart);
       _evaluateCart();
     });
+    this.mainApp.refreshCartInfo();
   }
 
   @reflectable
@@ -126,6 +127,7 @@ class CheckoutPage extends APage with ARefreshablePage {
         removeItem("cart", itemCopy);
       });
       await data_sources.cart.setCart(this.cart);
+      this.mainApp.refreshCartInfo();
     } catch (e, st) {
       handleException(e, st);
     }

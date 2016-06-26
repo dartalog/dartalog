@@ -143,6 +143,7 @@ final Logger _log = new Logger('main');
 
 Future<Option<Principal>> authenticateUser(
     String userName, String password) async {
+  userName = userName.trim().toLowerCase();
   Option<User> user = await data_source.users.getById(userName);
   if (user.isEmpty) return new None();
   Option<String> hashOption = await data_source.users.getPasswordHash(userName);

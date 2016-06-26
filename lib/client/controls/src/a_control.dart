@@ -166,4 +166,16 @@ class AControl extends PolymerElement {
     if (!isNullOrWhitespace(message))
       showMessage(message, "error");
   }
+
+  Future focusPaperInput(Element input) {
+    Completer completer = new Completer();
+    Timer timer = new Timer(new Duration(milliseconds: 100), () {
+      PaperInput pi = input as PaperInput;
+      pi.focus();
+      pi.inputElement.focus();
+      completer.complete();
+    });
+    return completer.future;
+  }
+
 }

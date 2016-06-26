@@ -3,6 +3,11 @@ part of model;
 abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel {
   AIdNameBasedDataSource<T> get dataSource;
 
+  String _normalizeId(String input) {
+    String output = input.trim().toLowerCase();
+    return output;
+  }
+
   Future<String> create(T t) async {
     await _validateCreatePrivileges();
     await validate(t, true);
@@ -10,6 +15,7 @@ abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel {
   }
 
   Future delete(String id) async {
+    id = _normalizeId(id);
     await _validateDeletePrivileges(id);
     await dataSource.delete(id);
   }
@@ -28,6 +34,7 @@ abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel {
   }
 
   Future<T> getById(String id, {bool bypassAuth: false}) async {
+    id = _normalizeId(id);
     if (!bypassAuth) await _validateGetByIdPrivileges();
 
     Option<T> output = await dataSource.getById(id);
@@ -66,6 +73,7 @@ abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel {
   }
 
   Future<String> update(String id, T t) async {
+    id = _normalizeId(id);
     await _validateUpdatePrivileges(id);
     await validate(t, id != t.getId);
     return await dataSource.write(t, id);
@@ -79,7 +87,7 @@ abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel {
   Future<Map<String, String>> _validateFields(T t, bool creating) async {
     Map<String, String> field_errors = new Map<String, String>();
 
-    t.getId = t.getId.trim().toLowerCase();
+    t.getId = _normalizeId(t.getId);
     t.getName = t.getName.trim();
 
     if (isNullOrWhitespace(t.getId))

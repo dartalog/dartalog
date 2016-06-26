@@ -1,8 +1,8 @@
 // Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
 
 // is governed by a BSD-style license that can be found in the LICENSE file.
-library dartalog.client.controls.paper_toast_queue;
 @HtmlImport('paper_toast_queue.html')
+library dartalog.client.controls.paper_toast_queue;
 
 import 'dart:html';
 import 'dart:async';
@@ -26,7 +26,7 @@ class PaperToastQueue extends PolymerElement  {
   closeToast(event, [_]) async {
     toastElement.toggle();
   }
-  void enqueueMessage(String message, [String severity]) {
+  void enqueueMessage(String message, [String severity, String details]) {
 
     PaperToast toastElement = document.getElementById('toaster_element');
 

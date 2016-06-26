@@ -3,7 +3,7 @@ part of data_sources.mongo;
 class MongoFieldDataSource extends _AMongoIdDataSource<Field> with AFieldModel {
   static final Logger _log = new Logger('MongoFieldDataSource');
 
-  Future<List<Field>> getByIds(List<String> ids) async {
+  Future<IdNameList<Field>> getByIds(List<String> ids) async {
     _log.info("Getting all fields for IDs");
 
     if (ids == null) return new List<Field>();
@@ -21,7 +21,11 @@ class MongoFieldDataSource extends _AMongoIdDataSource<Field> with AFieldModel {
 
     List results = await _getFromDb(query);
 
-    return results;
+    IdNameList<Field> output = new IdNameList<Field>.copy(results);
+
+    output.sortBytList(ids);
+
+    return output;
   }
 
   Field _createObject(Map data) {

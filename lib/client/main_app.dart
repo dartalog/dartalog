@@ -288,7 +288,7 @@ class MainApp extends PolymerElement {
       startLoading();
 
       String pageName;
-      set("showBack", (router.activePath.length > 1));
+      //set("showBack", (router.activePath.length > 1));
 
       switch (e.route.name) {
         case SEARCH_ROUTE_NAME:
@@ -299,7 +299,6 @@ class MainApp extends PolymerElement {
           break;
       }
       dynamic page = $[pageName];
-      set("visiblePage", pageName);
 
       if (page == null) {
         throw new Exception("Page not found: ${this.visiblePage}");
@@ -309,9 +308,13 @@ class MainApp extends PolymerElement {
         throw new Exception(
             "Unknown element type: ${page.runtimeType.toString()}");
       }
+
+      await page.activate(_api, e.parameters);
+
+      set("visiblePage", pageName);
       set("currentPage", page);
       evaluatePage();
-      await this.currentPage.activate(_api, e.parameters);
+
 
       evaluatePage();
     } catch (e, st) {
@@ -471,27 +474,11 @@ class MainApp extends PolymerElement {
   }
 
   void showMessage(String message, [String severity, String details]) {
-    PaperToast toastElement = $['global_toast'];
+    PaperToastQueue toastElement = $['global_toast'];
 
-    if (toastElement == null) return;
+    if (toastElement == null) window.alert(message);
 
-    if (toastElement.opened) toastElement.opened = false;
-
-    new Timer(new Duration(milliseconds: 300), () {
-      if (severity == "error") {
-        toastElement.classes.add("error");
-      } else {
-        toastElement.classes.remove("error");
-      }
-
-      if (isNullOrWhitespace(details))
-        toastElement.text = "$message";
-      else
-        toastElement.innerHtml =
-            "<details><summary>${message}</summary><pre>${details}</pre></details>";
-
-      toastElement.show();
-    });
+    toastElement.enqueueMessage(message, severity, details);
   }
 
   Future stopApp() async {

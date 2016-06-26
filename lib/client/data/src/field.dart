@@ -26,6 +26,9 @@ class Field extends JsProxy  {
     }
   }
 
+  @property
+  bool get hasValue => !isNullOrWhitespace(_value);
+
   @reflectable bool isTypeString = false;
   @reflectable bool isTypeImage = false;
 

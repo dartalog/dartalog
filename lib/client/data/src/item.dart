@@ -15,6 +15,12 @@ class Item {
   @Property(notify: true)
   List<Field> fields;
 
+  @property
+  List<Field> get imageFieldsWithValue {
+    List output = this.fields.toList();
+    output.retainWhere((Field f) => f.isTypeImage&&f.hasValue);
+    return output;
+  }
 
 
   Map<String,String> get values {

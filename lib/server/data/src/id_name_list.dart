@@ -28,4 +28,12 @@ class IdNameList<T extends AIdData> extends ListBase<T> {
     return this.map((T data) => data.getId).toList();
   }
 
+  void sortBytList(List<String> ids) {
+    for(int i = 0; i < ids.length; i++) {
+      T item = this.getByID(ids[i]).getOrElse(()=> throw new Exception("${ids[i]} not found in list"));
+      this.remove(item);
+      this.insert(i, item);
+    }
+  }
+
 }

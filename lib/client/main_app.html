@@ -157,9 +157,8 @@
             </div>
         </template>
 
-        <paper-toast id="global_toast" duration="30000">
-            <paper-button on-tap="closeToast" class="white-button">Close</paper-button>
-        </paper-toast>
+        <paper-toast-queue id="global_toast">
+        </paper-toast-queue>
         <user-auth-control id="userAuthElement"></user-auth-control>
     </template>
 </dom-module>

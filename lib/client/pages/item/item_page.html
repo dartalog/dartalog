@@ -8,7 +8,8 @@
     <template>
         <div style="background-color: black" class="horizontal layout center-justified">
             <template is="dom-repeat" items="[[currentItem.imageFieldsWithValue]]">
-                <image-zoomer src="[[getThumbnailUrl(item.value)]]" fullsize="[[getOriginalImageUrl(item.value)]]" style="height:200px;" title="[[item.name]]"></image-zoomer>
+                <image-zoomer src="[[getThumbnailUrl(item.value)]]"
+                              fullsize="[[getOriginalImageUrl(item.value)]]" style="height:200px;" title="[[item.name]]"></image-zoomer>
             </template>
         </div>
         <paper-card style="margin:4pt;" class="vertical layout" heading="Information">

@@ -48,6 +48,7 @@ import 'package:polymer_elements/paper_toolbar.dart';
 import 'package:route_hierarchical/client.dart';
 import 'package:web_components/web_components.dart';
 
+
 /// Uses [PaperInput]
 @PolymerRegister('main-app')
 class MainApp extends PolymerElement {
@@ -177,6 +178,7 @@ class MainApp extends PolymerElement {
           defaultRoute: false,
           enter: enterRoute);
 
+
     startApp();
   }
 
@@ -217,6 +219,8 @@ class MainApp extends PolymerElement {
     await checkoutPage.addToCart(itemCopy);
     refreshCartInfo();
   }
+
+
 
   @reflectable
   backClicked(event, [_]) async {

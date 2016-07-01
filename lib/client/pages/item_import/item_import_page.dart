@@ -33,6 +33,7 @@ import 'package:polymer_elements/paper_textarea.dart';
 import 'package:polymer_elements/paper_listbox.dart';
 import 'package:web_components/web_components.dart';
 import 'package:dartalog/client/controls/auth_wrapper/auth_wrapper_control.dart';
+import 'package:dartalog/client/controls/barcode_scanner/barcode_scanner.dart';
 
 @PolymerRegister('item-import-page')
 class ItemImportPage extends APage with ASaveablePage {
@@ -91,6 +92,11 @@ class ItemImportPage extends APage with ASaveablePage {
       //await itemAddControl.activate(this.api, args);
       _resetSearchFields();
     }
+  }
+
+  @reflectable scanSingle(event, [_]) {
+    BarcodeScannerControl bsc = this.querySelector("#singleBarcodeScanner");
+    bsc.startBarcodeScanner();
   }
 
   @reflectable

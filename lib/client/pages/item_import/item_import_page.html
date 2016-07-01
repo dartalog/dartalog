@@ -32,7 +32,10 @@
                             <div class="flexchild">
                                 <paper-input id="single_search_input" value="{{searchQuery}}" label="Search"
                                              on-keypress="searchKeypress"></paper-input>
+                                <paper-icon-button suffix on-tap="scanSingle" icon="camera-enhance" alt="Scan" title="Scan">
+                                </paper-icon-button>
                             </div>
+                            <barcode-scanner id="singleBarcodeScanner"></barcode-scanner>
                         </div>
                         <div class="card-actions layout horizontal end-justified">
                             <paper-button on-tap="clearClicked">Clear</paper-button>

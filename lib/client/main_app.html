@@ -49,6 +49,8 @@
                     <paper-input on-keypress="searchKeypress" placeholder="Search" style="color:white"
                                  class="search_input" value="{{searchText}}">
                         <iron-icon icon="search" prefix></iron-icon>
+                        <paper-icon-button suffix on-tap="scanSearch" icon="camera-enhance" alt="Scan" title="Scan">
+                        </paper-icon-button>
                         <paper-icon-button suffix on-tap="clearSearch" icon="clear" alt="clear" title="clear">
                         </paper-icon-button>
                     </paper-input>

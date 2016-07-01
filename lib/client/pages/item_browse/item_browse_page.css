@@ -1,5 +1,6 @@
 :host {
     display: block;
+    padding-right:19pt !important;
 }
 
 paper-item {
@@ -28,7 +29,7 @@ img.item_thumbnail {
 
 @media(max-width:600pt) and (min-width:401pt) {
     .item_card {
-        width: calc(50% - 4pt)!important;
+        width: calc(49% - 4pt)!important;
     }
 }
 @media(max-width:800pt) and (min-width:601pt) {
@@ -38,32 +39,37 @@ img.item_thumbnail {
 }
 @media(max-width:1000pt) and (min-width:801pt) {
     .item_card {
-        width: calc(25% - 4pt)!important;
+        width: calc(24.5% - 4pt)!important;
     }
 }
 @media(max-width:1200pt) and (min-width:1001pt) {
     .item_card {
-        width: calc(20% - 4pt)!important;
+        width: calc(19.5% - 4pt)!important;
     }
 }
 @media(max-width:1400pt) and (min-width:1201pt) {
     .item_card {
-        width: calc(16.6% - 4pt)!important;
+        width: calc(16% - 4pt)!important;
     }
 }
 @media(max-width:1600pt) and (min-width:1401pt) {
     .item_card {
-        width: calc(14.28% - 4pt)!important;
+        width: calc(14% - 4pt)!important;
     }
 }
 @media(max-width:1800pt) and (min-width:1601pt) {
     .item_card {
-        width: calc(12.5% - 4pt)!important;
+        width: calc(12% - 4pt)!important;
     }
 }
 @media(max-width:2000pt) and (min-width:1801pt) {
     .item_card {
-        width: calc(12.5% - 4pt)!important;
+        width: calc(11% - 4pt)!important;
+    }
+}
+@media(max-width:2200pt) and (min-width:2001pt) {
+    .item_card {
+        width: calc(9.5% - 4pt)!important;
     }
 }
 

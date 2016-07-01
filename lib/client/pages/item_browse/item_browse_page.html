@@ -12,17 +12,16 @@
             <div style="width:100%;text-align: center;margin:16pt;">No Items Found</div>
         </template>
         <template is="dom-repeat" items="[[itemsList]]" as="item">
-                <paper-material class="item_card" data-id$="[[item.id]]" on-tap="itemClicked" title="[[item.name]]">
-                    <iron-image class="content fit" sizing="cover"
-                                src="[[getThumbnailForImage(item.thumbnail)]]"
-
-                    ></iron-image>
-
-                    <div class="item_title">
-                        <div>[[item.name]]</div>
-                    </div>
-                </paper-material>
-            </template>
+            <paper-material class="item_card" data-id$="[[item.id]]" on-tap="itemClicked" title="[[item.name]]">
+                <a href="[[generateItemLink(item.id)]]">
+                <iron-image class="content fit" sizing="cover"
+                            src="[[getThumbnailForImage(item.thumbnail)]]"></iron-image>
+                <div class="item_title">
+                    <div>[[item.name]]</div>
+                </div>
+                </a>
+            </paper-material>
+        </template>
         <item-add-control id="browse_item_add_control" hidden="[[!showAddControl]]"></item-add-control>
     </template>
 </dom-module>

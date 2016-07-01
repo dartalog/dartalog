@@ -115,6 +115,11 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
   }
 
   @reflectable
+  generateItemLink(String id) {
+    return "#view/${id}";
+  }
+
+  @reflectable
   itemClicked(event, [_]) async {
     try {
       dynamic ele = getParentElement(event.target, "paper-material");

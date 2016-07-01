@@ -117,7 +117,7 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
   @reflectable
   itemClicked(event, [_]) async {
     try {
-      dynamic ele = getParentElement(event.target, "div");
+      dynamic ele = getParentElement(event.target, "paper-material");
       String id = ele.dataset["id"];
       if(isNullOrWhitespace(id))
         return;

@@ -22,13 +22,13 @@ img.item_thumbnail {
 
 @media(max-width:400pt) {
     .item_card {
-        width: calc(100% - 12pt)!important;
+        width: calc(100% - 4pt)!important;
     }
 }
 
 @media(max-width:600pt) and (min-width:401pt) {
     .item_card {
-        width: calc(50% - 8pt)!important;
+        width: calc(50% - 4pt)!important;
     }
 }
 @media(max-width:800pt) and (min-width:601pt) {
@@ -38,12 +38,32 @@ img.item_thumbnail {
 }
 @media(max-width:1000pt) and (min-width:801pt) {
     .item_card {
-        width: calc(25% - 6pt)!important;
+        width: calc(25% - 4pt)!important;
     }
 }
 @media(max-width:1200pt) and (min-width:1001pt) {
     .item_card {
-        width: calc(20% - 6pt)!important;
+        width: calc(20% - 4pt)!important;
+    }
+}
+@media(max-width:1400pt) and (min-width:1201pt) {
+    .item_card {
+        width: calc(16.6% - 4pt)!important;
+    }
+}
+@media(max-width:1600pt) and (min-width:1401pt) {
+    .item_card {
+        width: calc(14.28% - 4pt)!important;
+    }
+}
+@media(max-width:1800pt) and (min-width:1601pt) {
+    .item_card {
+        width: calc(12.5% - 4pt)!important;
+    }
+}
+@media(max-width:2000pt) and (min-width:1801pt) {
+    .item_card {
+        width: calc(12.5% - 4pt)!important;
     }
 }
 

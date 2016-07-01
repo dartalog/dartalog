@@ -22,6 +22,7 @@ import 'package:polymer_elements/paper_dialog_scrollable.dart';
 import 'package:polymer_elements/paper_fab.dart';
 import 'package:polymer_elements/iron_image.dart';
 import 'package:polymer_elements/iron_list.dart';
+import 'package:polymer_elements/iron_ajax.dart';
 import 'package:polymer_elements/iron_flex_layout.dart';
 
 
@@ -116,7 +117,7 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
   @reflectable
   itemClicked(event, [_]) async {
     try {
-      dynamic ele = getParentElement(event.target, "paper-card");
+      dynamic ele = getParentElement(event.target, "div");
       String id = ele.dataset["id"];
       if(isNullOrWhitespace(id))
         return;

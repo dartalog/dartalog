@@ -11,15 +11,18 @@
         <template is="dom-if" if="[[noItemsFound]]">
             <div style="width:100%;text-align: center;margin:16pt;">No Items Found</div>
         </template>
-        <template is="dom-repeat" items="[[itemsList]]">
-            <paper-card class="rate"  data-id$="[[item.id]]" on-tap="itemClicked" style="cursor:pointer;width:300px;height:300px;margin-left:4pt;margin-top:4pt;text-overflow: ellipsis;">
-                <div class="card-header">
-                    <iron-image style="width:300px; height:250px;" sizing="cover"
-                                src="[[getThumbnailForImage(item.thumbnail)]]"></iron-image>
-                </div>
-                <div class="card-content" style="height:34px;padding-bottom:0;padding-top:14px;white-space: nowrap; overflow: hidden;text-overflow: ellipsis;">[[item.name]]</div>
-            </paper-card>
-        </template>
+        <template is="dom-repeat" items="[[itemsList]]" as="item">
+                <paper-material class="item_card" data-id$="[[item.id]]" on-tap="itemClicked" title="[[item.name]]">
+                    <iron-image class="content fit" sizing="cover"
+                                src="[[getThumbnailForImage(item.thumbnail)]]"
+
+                    ></iron-image>
+
+                    <div class="item_title">
+                        <div>[[item.name]]</div>
+                    </div>
+                </paper-material>
+            </template>
         <item-add-control id="browse_item_add_control" hidden="[[!showAddControl]]"></item-add-control>
     </template>
 </dom-module>

@@ -14,7 +14,13 @@ class ItemCopy extends JsProxy {
   String uniqueId;
 
   @reflectable
+  String get itemName => item.name;
+
+  @reflectable
   Item item;
+
+  @reflectable
+  String get collectionName => collection.name;
 
   @reflectable
   Collection collection;

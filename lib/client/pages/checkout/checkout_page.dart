@@ -99,7 +99,7 @@ class CheckoutPage extends APage with ARefreshablePage {
       for (ItemCopy itemCopy in freshCart) {
         try {
           API.ItemCopy updatedItemCopy =
-              await api.items.copies.get(itemCopy.itemId, itemCopy.copy);
+              await api.items.copies.get(itemCopy.itemId, itemCopy.copy, includeCollection: true, includeItem: true);
           newCart.add(new ItemCopy.copyFrom(updatedItemCopy));
         } on API.DetailedApiRequestError catch (e, st) {
           if (e.status == 404) {

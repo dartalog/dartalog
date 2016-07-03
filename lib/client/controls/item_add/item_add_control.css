@@ -6,7 +6,7 @@
 div.fabContainer {
     position: fixed;
     bottom: 16px;
-    right: 16px;
+    right: 24px;
 }
 #addFab {
     display:block;

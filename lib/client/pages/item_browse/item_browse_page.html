@@ -11,6 +11,7 @@
         <template is="dom-if" if="[[noItemsFound]]">
             <div class="no_items">No Items Found</div>
         </template>
+        <div style="padding-right:4pt;position:relative;">
         <template is="dom-repeat" items="[[itemsList]]" as="item">
             <paper-material class="item_card" data-id$="[[item.id]]" on-tap="itemClicked" title="[[item.name]]">
                 <a href="[[generateItemLink(item.id)]]">
@@ -23,5 +24,6 @@
             </paper-material>
         </template>
         <item-add-control id="browse_item_add_control" hidden="[[!showAddControl]]"></item-add-control>
+        </div>
     </template>
 </dom-module>

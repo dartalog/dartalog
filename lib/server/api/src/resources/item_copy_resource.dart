@@ -21,8 +21,8 @@ class ItemCopyResource extends AResource {
       _catchExceptionsAwait(() => model.items.copies.update(itemId, copy,itemCopy));
 
   @ApiMethod(path: '${_API_PATH}/{itemId}/${API_COPIES_PATH}/{copy}/')
-  Future<ItemCopy> get(String itemId, int copy, {bool includeCollection: false, bool includeItem: false}) =>
-      _catchExceptionsAwait(() => model.items.copies.getVisible(itemId, copy, includeCollection: includeCollection, includeItem: includeItem));
+  Future<ItemCopy> get(String itemId, int copy, {bool includeCollection: false, bool includeItemSummary: false}) =>
+      _catchExceptionsAwait(() => model.items.copies.getVisible(itemId, copy, includeCollection: includeCollection, includeItemSummary: includeItemSummary));
 
 
   @ApiMethod(

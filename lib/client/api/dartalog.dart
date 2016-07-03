@@ -895,7 +895,7 @@ class ItemsResourceApi {
    *
    * [offset] - Query parameter: 'offset'.
    *
-   * Completes with a [ListOfItemListingResponse].
+   * Completes with a [ListOfItemSummary].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
@@ -903,7 +903,7 @@ class ItemsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ListOfItemListingResponse> getVisibleListings({core.int offset}) {
+  async.Future<ListOfItemSummary> getVisibleListings({core.int offset}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -924,7 +924,7 @@ class ItemsResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new ListOfItemListingResponse.fromJson(data));
+    return _response.then((data) => new ListOfItemSummary.fromJson(data));
   }
 
   /**
@@ -932,7 +932,7 @@ class ItemsResourceApi {
    *
    * [query] - Path parameter: 'query'.
    *
-   * Completes with a [ListOfItemListingResponse].
+   * Completes with a [ListOfItemSummary].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
@@ -940,7 +940,7 @@ class ItemsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ListOfItemListingResponse> searchVisible(core.String query) {
+  async.Future<ListOfItemSummary> searchVisible(core.String query) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -961,7 +961,7 @@ class ItemsResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new ListOfItemListingResponse.fromJson(data));
+    return _response.then((data) => new ListOfItemSummary.fromJson(data));
   }
 
   /**
@@ -1066,7 +1066,7 @@ class ItemsCopiesResourceApi {
    *
    * [includeCollection] - Query parameter: 'includeCollection'.
    *
-   * [includeItem] - Query parameter: 'includeItem'.
+   * [includeItemSummary] - Query parameter: 'includeItemSummary'.
    *
    * Completes with a [ItemCopy].
    *
@@ -1076,7 +1076,7 @@ class ItemsCopiesResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ItemCopy> get(core.String itemId, core.int copy, {core.bool includeCollection, core.bool includeItem}) {
+  async.Future<ItemCopy> get(core.String itemId, core.int copy, {core.bool includeCollection, core.bool includeItemSummary}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -1093,8 +1093,8 @@ class ItemsCopiesResourceApi {
     if (includeCollection != null) {
       _queryParams["includeCollection"] = ["${includeCollection}"];
     }
-    if (includeItem != null) {
-      _queryParams["includeItem"] = ["${includeItem}"];
+    if (includeItemSummary != null) {
+      _queryParams["includeItemSummary"] = ["${includeItemSummary}"];
     }
 
     _url = 'items/' + commons.Escaper.ecapeVariable('$itemId') + '/copies/' + commons.Escaper.ecapeVariable('$copy') + '/';
@@ -1124,7 +1124,7 @@ class ItemsCopiesResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ListOfItemCopy> getAllForItem(core.String itemId, {core.bool includeCollection}) {
+  async.Future<ListOfItemCopy> getVisibleForItem(core.String itemId, {core.bool includeCollection}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -2092,8 +2092,8 @@ class ItemCopy {
   core.String collectionId;
   core.int copy;
   core.List<core.String> eligibleActions;
-  Item item;
   core.String itemId;
+  ItemSummary itemSummary;
   core.String status;
   core.String statusName;
   core.String uniqueId;
@@ -2115,11 +2115,11 @@ class ItemCopy {
     if (_json.containsKey("eligibleActions")) {
       eligibleActions = _json["eligibleActions"];
     }
-    if (_json.containsKey("item")) {
-      item = new Item.fromJson(_json["item"]);
-    }
     if (_json.containsKey("itemId")) {
       itemId = _json["itemId"];
+    }
+    if (_json.containsKey("itemSummary")) {
+      itemSummary = new ItemSummary.fromJson(_json["itemSummary"]);
     }
     if (_json.containsKey("status")) {
       status = _json["status"];
@@ -2152,11 +2152,11 @@ class ItemCopy {
     if (eligibleActions != null) {
       _json["eligibleActions"] = eligibleActions;
     }
-    if (item != null) {
-      _json["item"] = (item).toJson();
-    }
     if (itemId != null) {
       _json["itemId"] = itemId;
+    }
+    if (itemSummary != null) {
+      _json["itemSummary"] = (itemSummary).toJson();
     }
     if (status != null) {
       _json["status"] = status;
@@ -2204,15 +2204,15 @@ class ItemCopyId {
   }
 }
 
-class ItemListingResponse {
+class ItemSummary {
   core.String id;
   core.String name;
   core.String thumbnail;
   core.String typeId;
 
-  ItemListingResponse();
+  ItemSummary();
 
-  ItemListingResponse.fromJson(core.Map _json) {
+  ItemSummary.fromJson(core.Map _json) {
     if (_json.containsKey("id")) {
       id = _json["id"];
     }
@@ -2338,22 +2338,22 @@ class ListOfItemCopy
   }
 }
 
-class ListOfItemListingResponse
-    extends collection_1.ListBase<ItemListingResponse> {
-  final core.List<ItemListingResponse> _inner;
+class ListOfItemSummary
+    extends collection_1.ListBase<ItemSummary> {
+  final core.List<ItemSummary> _inner;
 
-  ListOfItemListingResponse() : _inner = [];
+  ListOfItemSummary() : _inner = [];
 
-  ListOfItemListingResponse.fromJson(core.List json)
-      : _inner = json.map((value) => new ItemListingResponse.fromJson(value)).toList();
+  ListOfItemSummary.fromJson(core.List json)
+      : _inner = json.map((value) => new ItemSummary.fromJson(value)).toList();
 
   core.List toJson() {
     return _inner.map((value) => (value).toJson()).toList();
   }
 
-  ItemListingResponse operator [](core.int key) => _inner[key];
+  ItemSummary operator [](core.int key) => _inner[key];
 
-  void operator []=(core.int key, ItemListingResponse value) {
+  void operator []=(core.int key, ItemSummary value) {
     _inner[key] = value;
   }
 

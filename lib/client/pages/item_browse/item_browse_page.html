@@ -9,7 +9,7 @@
 
     <template>
         <template is="dom-if" if="[[noItemsFound]]">
-            <div style="width:100%;text-align: center;margin:16pt;">No Items Found</div>
+            <div class="no_items">No Items Found</div>
         </template>
         <template is="dom-repeat" items="[[itemsList]]" as="item">
             <paper-material class="item_card" data-id$="[[item.id]]" on-tap="itemClicked" title="[[item.name]]">

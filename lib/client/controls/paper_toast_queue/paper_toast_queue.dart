@@ -7,7 +7,7 @@ library dartalog.client.controls.paper_toast_queue;
 import 'dart:html';
 import 'dart:async';
 import 'package:logging/logging.dart';
-
+import 'dart:collection';
 import 'package:polymer/polymer.dart';
 import 'package:web_components/web_components.dart';
 import 'package:polymer_elements/paper_toast.dart';
@@ -20,30 +20,71 @@ class PaperToastQueue extends PolymerElement  {
 
   PaperToastQueue.created() : super.created();
 
-  PaperToast get toastElement => document.getElementById('toaster');
+  @property
+  int defaultDuration = 10000;
+
+  @property
+  int duration = 0;
+
+  Queue messages = new Queue();
+
+  PaperToast get toastElement => this.querySelector('paper-toast');
+
+  @Property(notify: true)
+  ToasterQueueMessage message;
 
   @reflectable
-  closeToast(event, [_]) async {
-    toastElement.toggle();
+  closeToast(event, [_]) {
+    toastElement.close();
+    openNextMessage();
   }
+
+  @reflectable
+  toasterClicked(event, [_]) {
+    set("duration",-1);
+  }
+
+  @reflectable
+  toasterClosed(event, [_]) {
+    openNextMessage();
+  }
+
+  void openNextMessage() {
+    if(this.messages.length>0) {
+      ToasterQueueMessage nextMessage = messages.removeFirst();
+
+        if (nextMessage.severity == "error") {
+          toastElement.classes.add("error");
+        } else {
+          toastElement.classes.remove("error");
+        }
+
+        set("message", nextMessage);
+        set("duration", defaultDuration);
+        toastElement.show();
+    }
+  }
+
   void enqueueMessage(String message, [String severity, String details]) {
-
-    PaperToast toastElement = document.getElementById('toaster_element');
-
     if(toastElement==null)
       return;
 
-    if (toastElement.opened) toastElement.opened = false;
+    ToasterQueueMessage newMessage = new ToasterQueueMessage(message, severity: severity, details: details);
 
-    new Timer(new Duration(milliseconds: 300), () {
-      if (severity == "error") {
-        toastElement.classes.add("error");
-      } else {
-        toastElement.classes.remove("error");
-      }
+    this.messages.add(newMessage);
 
-      toastElement.text = "$message";
-      toastElement.show();
-    });
+    if (!toastElement.opened)
+      openNextMessage();
   }
+}
+
+class ToasterQueueMessage extends JsProxy {
+  @reflectable
+  String message;
+  @reflectable
+  String severity;
+  @reflectable
+  String details;
+
+  ToasterQueueMessage(this.message, {this.severity, this.details});
 }

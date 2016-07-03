@@ -25,14 +25,15 @@
                     </paper-dropdown-menu>
                 </template>
                 <template is="dom-repeat" items="[[cart]]">
-                    <paper-item horizontal class="flex" data-item-id$="[[item.itemId]]" data-item-copy$="[[item.copy]]" >
+                    <div data-item-id$="[[item.itemId]]" data-item-copy$="[[item.copy]]" class="layout horizontal">
+                        <iron-image src="[[item.itemSummary.thumbnailUrl]]" style="width:66pt;height:66pt"  sizing="contain"></iron-image>
                         <paper-item-body three-line>
-                            <div>[[item.itemName]]</div>
-                            <div secondary>Collection: <span>[[item.collectionName]]</span></div>
+                            <div>[[item.itemSummary.name]]</div>
+                            <div secondary>Collection: <span>[[item.collection.name]]</span></div>
                             <div secondary>Unique ID: <span>[[item.uniqueId]]</span></div>
                         </paper-item-body>
                         <paper-icon-button icon="remove-circle" on-tap="removeClicked"></paper-icon-button>
-                    </paper-item>
+                    </div>
                 </template>
             </div>
             <template is="dom-if" if="[[showCheckoutButton]]">

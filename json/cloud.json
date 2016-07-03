@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "b9898d905aa90dcb6aa0a986526feed272a9a76c",
+ "etag": "f7a7dce3c312a4a646c5f8c44bf3d8f4b98a94c7",
  "discoveryVersion": "v1",
  "id": "dartalog:0.1",
  "name": "dartalog",
@@ -128,8 +128,8 @@
     "collection": {
      "$ref": "Collection"
     },
-    "item": {
-     "$ref": "Item"
+    "itemSummary": {
+     "$ref": "ItemSummary"
     }
    }
   },
@@ -160,8 +160,8 @@
     }
    }
   },
-  "Item": {
-   "id": "Item",
+  "ItemSummary": {
+   "id": "ItemSummary",
    "type": "object",
    "properties": {
     "id": {
@@ -173,28 +173,8 @@
     "typeId": {
      "type": "string"
     },
-    "dateAdded": {
-     "type": "string",
-     "format": "date-time"
-    },
-    "dateUpdated": {
-     "type": "string",
-     "format": "date-time"
-    },
-    "values": {
-     "type": "object",
-     "additionalProperties": {
-      "type": "string"
-     }
-    },
-    "copies": {
-     "type": "array",
-     "items": {
-      "$ref": "ItemCopy"
-     }
-    },
-    "type": {
-     "$ref": "ItemType"
+    "thumbnail": {
+     "type": "string"
     }
    }
   },
@@ -269,6 +249,44 @@
     }
    }
   },
+  "Item": {
+   "id": "Item",
+   "type": "object",
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "typeId": {
+     "type": "string"
+    },
+    "dateAdded": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "dateUpdated": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "values": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "string"
+     }
+    },
+    "copies": {
+     "type": "array",
+     "items": {
+      "$ref": "ItemCopy"
+     }
+    },
+    "type": {
+     "$ref": "ItemType"
+    }
+   }
+  },
   "MediaMessage": {
    "id": "MediaMessage",
    "type": "object",
@@ -307,29 +325,11 @@
     }
    }
   },
-  "ListOfItemListingResponse": {
-   "id": "ListOfItemListingResponse",
+  "ListOfItemSummary": {
+   "id": "ListOfItemSummary",
    "type": "array",
    "items": {
-    "$ref": "ItemListingResponse"
-   }
-  },
-  "ItemListingResponse": {
-   "id": "ItemListingResponse",
-   "type": "object",
-   "properties": {
-    "id": {
-     "type": "string"
-    },
-    "name": {
-     "type": "string"
-    },
-    "typeId": {
-     "type": "string"
-    },
-    "thumbnail": {
-     "type": "string"
-    }
+    "$ref": "ItemSummary"
    }
   },
   "UpdateItemRequest": {
@@ -710,7 +710,7 @@
      },
      "parameterOrder": [],
      "response": {
-      "$ref": "ListOfItemListingResponse"
+      "$ref": "ListOfItemSummary"
      }
     },
     "getById": {
@@ -772,7 +772,7 @@
       "query"
      ],
      "response": {
-      "$ref": "ListOfItemListingResponse"
+      "$ref": "ListOfItemSummary"
      }
     },
     "updateItem": {
@@ -823,8 +823,8 @@
         "$ref": "ItemCopyId"
        }
       },
-      "getAllForItem": {
-       "id": "DartalogApi.items.copies.getAllForItem",
+      "getVisibleForItem": {
+       "id": "DartalogApi.items.copies.getVisibleForItem",
        "path": "items/{itemId}/copies/",
        "httpMethod": "GET",
        "parameters": {
@@ -900,9 +900,9 @@
          "required": false,
          "location": "query"
         },
-        "includeItem": {
+        "includeItemSummary": {
          "type": "boolean",
-         "description": "Query parameter: 'includeItem'.",
+         "description": "Query parameter: 'includeItemSummary'.",
          "required": false,
          "location": "query"
         }

@@ -41,7 +41,7 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
   Logger get loggerImpl => _log;
 
   @Property(notify: true)
-  List<ItemListing> itemsList = new List<ItemListing>();
+  List<ItemSummary> itemsList = new List<ItemSummary>();
 
   @property
   bool noItemsFound = false;
@@ -97,7 +97,7 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
       } else {
         data = await api.items.searchVisible(_currentQuery);
       }
-      set("itemsList", ItemListing.convertList(data));
+      set("itemsList", ItemSummary.convertList(data));
       set("noItemsFound", itemsList.length==0);
       _loaded = true;
     });

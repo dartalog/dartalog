@@ -7,7 +7,11 @@
 <dom-module name="paper-toast-queue">
     <link rel="stylesheet" href="paper_toast_queue.css">
     <template>
-        <paper-toast id="toaster_element">
+        <paper-toast on-tap="toasterClicked" iron-overlay-closed="toasterClosed" duration="[[duration]]">
+            <details>
+                <summary>[[message.message]]</summary>
+                <pre>[[message.details]]</pre>
+            </details>
             <paper-button on-tap="closeToast" class="white-button">Close</paper-button>
         </paper-toast>
     </template>

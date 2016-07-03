@@ -364,9 +364,12 @@ class MainApp extends PolymerElement {
   void evaluatePage() {
     dynamic page = currentPage;
 
-    set("currentPage.title", currentPage.title);
+    if(page!=null) {
+      set("currentPage.title", page.title);
 
-    set("showBack", page.showBackButton);
+      set("showBack", page.showBackButton);
+    }
+
 
     set("showRefresh", page is ARefreshablePage && page.showRefreshButton);
 

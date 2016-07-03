@@ -99,7 +99,7 @@ class CheckoutPage extends APage with ARefreshablePage {
       for (ItemCopy itemCopy in freshCart) {
         try {
           API.ItemCopy updatedItemCopy =
-              await api.items.copies.get(itemCopy.itemId, itemCopy.copy, includeCollection: true, includeItem: true);
+              await api.items.copies.get(itemCopy.itemId, itemCopy.copy, includeCollection: true, includeItemSummary: true);
           newCart.add(new ItemCopy.copyFrom(updatedItemCopy));
         } on API.DetailedApiRequestError catch (e, st) {
           if (e.status == 404) {
@@ -120,7 +120,7 @@ class CheckoutPage extends APage with ARefreshablePage {
   @reflectable
   removeClicked(event, [_]) async {
     try {
-      Element ele = getParentElement(event.target, "paper-item");
+      Element ele = getParentElement(event.target, "div");
       String itemId = ele.dataset["item-id"];
       String itemCopy = ele.dataset["item-copy"];
       _getItemCopy(itemId, int.parse(itemCopy)).map((ItemCopy itemCopy) {

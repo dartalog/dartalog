@@ -15,5 +15,5 @@ part 'src/item.dart';
 part 'src/item_copy.dart';
 part 'src/collection.dart';
 part 'src/user.dart';
-part 'src/item_listing.dart';
+part 'src/item_summary.dart';
 part 'src/bulk_import_item.dart';

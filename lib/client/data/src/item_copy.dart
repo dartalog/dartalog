@@ -14,13 +14,7 @@ class ItemCopy extends JsProxy {
   String uniqueId;
 
   @reflectable
-  String get itemName => item.name;
-
-  @reflectable
-  Item item;
-
-  @reflectable
-  String get collectionName => collection.name;
+  ItemSummary itemSummary;
 
   @reflectable
   Collection collection;
@@ -67,8 +61,8 @@ class ItemCopy extends JsProxy {
     to.eligibleActions = from.eligibleActions;
     to.userCanCheckout = from.userCanCheckout;
     to.userCanEdit = from.userCanEdit;
-    if(from.item!=null)
-      to.item = new Item.copy(from.item);
+    if(from.itemSummary!=null)
+      to.itemSummary = new ItemSummary.copy(from.itemSummary);
     if(from.collection!=null)
       to.collection = new Collection.copy(from.collection);
   }

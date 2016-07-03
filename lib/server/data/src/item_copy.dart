@@ -13,7 +13,7 @@ class ItemCopy extends AData {
 
   List<String> eligibleActions = [];
   Collection collection;
-  Item item;
+  ItemSummary itemSummary;
 
   ItemCopy();
 

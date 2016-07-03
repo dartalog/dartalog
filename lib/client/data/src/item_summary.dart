@@ -1,6 +1,6 @@
 part of data;
 
-class ItemListing extends JsProxy {
+class ItemSummary extends JsProxy {
   @reflectable
   String id;
   @reflectable
@@ -10,16 +10,13 @@ class ItemListing extends JsProxy {
   @reflectable
   String typeId;
 
-  ItemListing();
+  ItemSummary();
 
 
   @reflectable
-  String getThumbnailUrl() {
-    return getImageUrl(thumbnail, ImageType.THUMBNAIL);
-  }
+  String get thumbnailUrl => getImageUrl(thumbnail, ImageType.THUMBNAIL);
 
-
-  ItemListing.copy(dynamic field) {
+  ItemSummary.copy(dynamic field) {
     _copy(field,this);
   }
 
@@ -34,10 +31,10 @@ class ItemListing extends JsProxy {
     to.thumbnail = from.thumbnail;
   }
 
-  static List<ItemListing> convertList(Iterable input) {
-    List<ItemListing> output = new List<ItemListing>();
+  static List<ItemSummary> convertList(Iterable input) {
+    List<ItemSummary> output = new List<ItemSummary>();
     for(dynamic obj in input) {
-      output.add(new ItemListing.copy(obj));
+      output.add(new ItemSummary.copy(obj));
     }
     return output;
   }

@@ -23,7 +23,7 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
   }
 
   Future<ItemCopy> get(String itemId, int copy,
-      {bool includeItem: false, bool includeCollection: false}) async {
+      {bool includeItemSummary: false, bool includeCollection: false}) async {
     await _validateGetPrivileges();
 
     Option<ItemCopy> optItemCopy =
@@ -32,8 +32,8 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
     ItemCopy itemCopy = optItemCopy.getOrElse(() =>
         throw new NotFoundException("Copy #${copy} of ${itemId} not found"));
 
-    if (includeItem) {
-      itemCopy.item = (await items.getById(itemCopy.itemId));
+    if (includeItemSummary) {
+      itemCopy.itemSummary = new ItemSummary.copy(await items.getById(itemCopy.itemId));
     }
 
     await _setAdditionalFieldsOnList([itemCopy], itemId,
@@ -54,11 +54,11 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
   }
 
   Future<ItemCopy> getVisible(String itemId, int copy,
-      {bool includeItem: false, bool includeCollection: false}) async {
+      {bool includeItemSummary: false, bool includeCollection: false}) async {
     await _validateGetPrivileges();
 
     ItemCopy itemCopy = await get(itemId, copy,
-        includeItem: includeItem, includeCollection: includeCollection);
+        includeItemSummary: includeItemSummary, includeCollection: includeCollection);
 
     IdNameList<Collection> visibleCollection = await data_sources
         .itemCollections

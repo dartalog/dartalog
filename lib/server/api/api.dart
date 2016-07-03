@@ -19,7 +19,6 @@ import 'package:path/path.dart' as path;
 import 'package:rpc/rpc.dart';
 import 'package:stack_trace/stack_trace.dart';
 
-part 'package:dartalog/server/api/src/responses/item_listing_response.dart';
 part 'src/dartalog_api.dart';
 part 'src/exceptions/redirecting_exception.dart';
 part 'src/requests/password_change_request.dart';

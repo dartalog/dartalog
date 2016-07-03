@@ -3,6 +3,10 @@
     padding-right:19pt !important;
 }
 
+.no_items {
+    width:100%;text-align: center;margin:16pt;
+}
+
 paper-item {
     background-color: white;
 }
@@ -29,47 +33,47 @@ img.item_thumbnail {
 
 @media(max-width:600pt) and (min-width:401pt) {
     .item_card {
-        width: calc(49% - 4pt)!important;
+        width: calc(100% / 2 - 4pt)!important;
     }
 }
 @media(max-width:800pt) and (min-width:601pt) {
     .item_card {
-        width: calc(33% - 4pt)!important;
+        width: calc(100% / 3 - 4pt)!important;
     }
 }
 @media(max-width:1000pt) and (min-width:801pt) {
     .item_card {
-        width: calc(24.5% - 4pt)!important;
+        width: calc(100% / 4 - 4pt)!important;
     }
 }
 @media(max-width:1200pt) and (min-width:1001pt) {
     .item_card {
-        width: calc(19.5% - 4pt)!important;
+        width: calc(100% / 5 - 4pt)!important;
     }
 }
 @media(max-width:1400pt) and (min-width:1201pt) {
     .item_card {
-        width: calc(16% - 4pt)!important;
+        width: calc(100% / 6 - 4pt)!important;
     }
 }
 @media(max-width:1600pt) and (min-width:1401pt) {
     .item_card {
-        width: calc(14% - 4pt)!important;
+        width: calc(100% / 7 - 4pt)!important;
     }
 }
 @media(max-width:1800pt) and (min-width:1601pt) {
     .item_card {
-        width: calc(12% - 4pt)!important;
+        width: calc(100% / 8 - 4pt)!important;
     }
 }
 @media(max-width:2000pt) and (min-width:1801pt) {
     .item_card {
-        width: calc(11% - 4pt)!important;
+        width: calc(100% / 9 - 4pt)!important;
     }
 }
 @media(max-width:2200pt) and (min-width:2001pt) {
     .item_card {
-        width: calc(9.5% - 4pt)!important;
+        width: calc(100% / 10 - 4pt)!important;
     }
 }
 

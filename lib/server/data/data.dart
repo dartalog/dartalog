@@ -27,3 +27,4 @@ part 'src/item_copy_history_entry.dart';
 part 'src/item_type.dart';
 part 'src/settings.dart';
 part 'src/user.dart';
+part 'src/item_listing_response.dart';

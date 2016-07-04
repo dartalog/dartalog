@@ -6,10 +6,10 @@ abstract class _AMongoObjectDataSource<T> extends _AMongoDataSource {
   }
 
   Future<PaginatedData<T>> searchPaginated(String query,
-      {int offset: 0, int limit: PAGINATED_DATA_LIMIT}) async {
-    SelectorBuilder selector = where;
-    selector.map[_TEXT_COMMAND] = {_SEARCH_COMMAND: query};
-    return await _getPaginatedFromDb(selector, offset: offset, limit: limit);
+      {SelectorBuilder selector, int offset: 0, int limit: PAGINATED_DATA_LIMIT}) async {
+
+    SelectorBuilder searchSelector =_prepareTextSearch(query, selector: selector);
+    return await _getPaginatedFromDb(searchSelector);
   }
 
   Map _createMap(T object) {
@@ -41,14 +41,19 @@ abstract class _AMongoObjectDataSource<T> extends _AMongoDataSource {
   }
 
   Future<PaginatedData<T>> _getPaginatedFromDb(SelectorBuilder selector,
-      {int offset: 0, int limit: PAGINATED_DATA_LIMIT}) async {
+      {int offset: 0, int limit: PAGINATED_DATA_LIMIT, String sortField}) async {
     PaginatedData<T> output = new PaginatedData<T>();
     output.totalCount = await _genericCount(selector);
     output.limit = limit;
     output.startIndex = offset;
 
     if (selector == null) selector == where;
+    if(!tools.isNullOrWhitespace(sortField))
+      selector.sortBy(sortField);
+
     selector.limit(limit).skip(offset);
+
+
 
     output.data.addAll(await _getFromDb(selector));
     return output;
@@ -61,19 +66,22 @@ abstract class _AMongoObjectDataSource<T> extends _AMongoDataSource {
     });
   }
 
-  Future<List<T>> _search(String query,
-      {SelectorBuilder selector, String sortBy}) async {
+  SelectorBuilder _prepareTextSearch(String query, {SelectorBuilder selector, String sortBy}) {
     SelectorBuilder searchSelector =
-        where.eq(_TEXT_COMMAND, {_SEARCH_COMMAND: query});
-
+      where.eq(_TEXT_COMMAND, {_SEARCH_COMMAND: query});
     if (selector != null) searchSelector = searchSelector.and(selector);
-
     if (!tools.isNullOrWhitespace(sortBy)) {
       searchSelector = searchSelector.sortBy(sortBy);
     } else {
       searchSelector = searchSelector.metaTextScore("score").sortByMetaTextScore("score");
     }
+    return searchSelector;
 
+  }
+
+  Future<List<T>> _search(String query,
+      {SelectorBuilder selector, String sortBy}) async {
+    SelectorBuilder searchSelector =_prepareTextSearch(query, selector: selector);
     return await _getFromDb(searchSelector);
   }
 

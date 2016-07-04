@@ -38,10 +38,14 @@ abstract class _AMongoIdDataSource<T extends AIdData>
   }
 
   Future<PaginatedIdNameData<IdNamePair>> getPaginatedIdsAndNames(
-      {String sortField: ID_FIELD, int offset: 0, int limit: 10}) async {
+      {SelectorBuilder selector, String sortField: ID_FIELD, int offset: 0, int limit: 10}) async {
     return await _collectionWrapper((DbCollection collection) async {
       int count = await collection.count();
-      List results = await collection.find(where.sortBy(sortField).limit(limit).skip(offset)).toList();
+
+      if(selector==null)
+        selector = where;
+
+      List results = await collection.find(selector.sortBy(sortField).limit(limit).skip(offset)).toList();
 
       PaginatedIdNameData<IdNamePair> output = new PaginatedIdNameData<IdNamePair>();
       output.startIndex = offset;
@@ -69,8 +73,13 @@ abstract class _AMongoIdDataSource<T extends AIdData>
     return tmp.getId;
   }
 
-  Future<PaginatedIdNameData<T>> _getPaginatedIdNameListFromDb(dynamic selector, {int offset: 0, int limit: PAGINATED_DATA_LIMIT}) async =>
-      new PaginatedIdNameData<T>.copyPaginatedData(await _getPaginatedFromDb(selector, offset: offset, limit:limit));
+  Future<PaginatedIdNameData<T>> _getPaginatedIdNameListFromDb(SelectorBuilder selector, {int offset: 0, int limit: PAGINATED_DATA_LIMIT, String sortField: ID_FIELD}) async =>
+      new PaginatedIdNameData<T>.copyPaginatedData(await _getPaginatedFromDb(selector, offset: offset, limit:limit, sortField: sortField));
+
+  @override
+  Future<PaginatedIdNameData<T>> searchPaginated(String query,
+      {SelectorBuilder selector, int offset: 0, int limit: PAGINATED_DATA_LIMIT}) async =>
+      new PaginatedIdNameData.copyPaginatedData(await super.searchPaginated(query, offset: offset, limit:  limit));
 
   Future<IdNameList<T>> _getIdNameListFromDb(dynamic selector) async =>
     new IdNameList<T>.copy(await _getFromDb(selector));

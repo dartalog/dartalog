@@ -22,19 +22,20 @@ class ItemResource extends AIdResource<Item> {
   }
 
   // Created only to satisfy the interface; should not be used, as creating a copy with each item should be required
-  Future<IdResponse> create(Item item) => _createWithCatch(item);
+  Future<IdResponse> create(Item item) => throw new Exception("Do not use");
 
   @ApiMethod(method: 'DELETE', path: '${_API_PATH}/{id}/')
   Future<VoidMessage> delete(String id) => _deleteWithCatch(id);
 
-  Future<List<IdNamePair>> getAllIdsAndNames() =>
-      _getAllIdsAndNamesWithCatch();
+  Future<List<IdNamePair>> getAllIdsAndNames() => throw new Exception("Do not use");
 
   @ApiMethod(path: '${_API_PATH}/')
-  Future<List<ItemSummary>> getVisibleListings(
-          {int offset: 0}) =>
+  Future<PaginatedResponse<ItemSummary>> getVisibleSummaries(
+          {int page: 0, int perPage: DEFAULT_PER_PAGE}) =>
       _catchExceptionsAwait(() async =>
-      ItemSummary.convertList(await model.items.getVisible()));
+          new PaginatedResponse.convertPaginatedData(
+              await model.items.getVisible(page: page, perPage: perPage),
+              (Item item) => new ItemSummary.copy(item)));
 
   @ApiMethod(path: '${_API_PATH}/{id}/')
   Future<Item> getById(String id,
@@ -49,9 +50,12 @@ class ItemResource extends AIdResource<Item> {
           includeCopyCollection: includeCopyCollection));
 
   @ApiMethod(path: 'search/{query}/')
-  Future<List<ItemSummary>> searchVisible(String query) =>
+  Future<PaginatedResponse<ItemSummary>> searchVisible(String query,
+          {int page: 0, int perPage: DEFAULT_PER_PAGE}) =>
       _catchExceptionsAwait(() async =>
-          ItemSummary.convertList(await model.items.searchVisible(query)));
+      new PaginatedResponse.convertPaginatedData(
+          await model.items.searchVisible(query, page: page, perPage: perPage),
+          (Item item) => new ItemSummary.copy(item)));
 
   Future<IdResponse> update(String id, Item item) => _updateWithCatch(id, item);
 

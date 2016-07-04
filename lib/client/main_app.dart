@@ -119,7 +119,7 @@ class MainApp extends PolymerElement {
     router.root
       ..addRoute(
           name: BROWSE_ROUTE_NAME,
-          path: "items",
+          path: "items/:page",
           defaultRoute: true,
           enter: enterRoute)
       ..addRoute(

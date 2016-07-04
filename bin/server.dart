@@ -147,12 +147,13 @@ Future<Option<Principal>> authenticateUser(
   Option<User> user = await data_source.users.getById(userName);
   if (user.isEmpty) return new None();
   Option<String> hashOption = await data_source.users.getPasswordHash(userName);
-  return hashOption.map((String hash) {
-    if (model.users.verifyPassword(hash, password))
-      return new Principal(user.get().getId);
-  }).orElse(() => throw new Exception("User does not have a password set"));
+  if(hashOption.isEmpty)
+    throw new Exception("User does not have a password set");
 
-
+  if (model.users.verifyPassword(hashOption.get(), password))
+    return new Some(new Principal(user.get().getId));
+  else
+    return new None();
 }
 
 Future<Option<Principal>> getUser(String userName) async {

@@ -3,7 +3,7 @@ part of data;
 class PaginatedIdNameData<T extends AIdData> extends PaginatedData<T> {
 
   @override
-  IdNameList<T> data = [];
+  IdNameList<T> data = new IdNameList<T>();
 
   PaginatedIdNameData();
   

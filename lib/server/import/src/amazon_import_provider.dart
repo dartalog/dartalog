@@ -19,6 +19,7 @@ class AmazonImportProvider extends AScrapingImportProvider {
         elementSelector: 'span#productTitle + span',
         replaceRegex: {
           r"Hardcover": "book",
+          r"Mass Market Paperback": "book",
           r"Paperback": "book",
           r"Comic": "comic"
         }),

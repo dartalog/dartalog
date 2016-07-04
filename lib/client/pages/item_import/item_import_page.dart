@@ -80,6 +80,9 @@ class ItemImportPage extends APage with ASaveablePage {
   AuthWrapperControl get authWrapper => this.querySelector("auth-wrapper-control");
 
 
+  @Property(notify: true)
+  List<ItemType> itemTypes = [];
+
   @override
   Future activateInternal(Map args, [bool forceRefresh = false]) async {
     showSaveButton = false;
@@ -88,6 +91,7 @@ class ItemImportPage extends APage with ASaveablePage {
     bool authed = authWrapper.evaluateAuthentication();
     if(authed) {
       singleImportPages.selected = "item_search";
+      //await loadItemTypes();
       await loadCollections();
       //await itemAddControl.activate(this.api, args);
       _resetSearchFields();
@@ -146,6 +150,14 @@ class ItemImportPage extends APage with ASaveablePage {
       clear("collections");
       API.ListOfIdNamePair data = await api.collections.getAllIdsAndNames();
       addAll("collections", IdNamePair.copyList(data));
+    });
+  }
+
+  Future loadItemTypes() async {
+    await handleApiExceptions(() async {
+      clear("itemTypes");
+      API.ListOfIdNamePair data = await api.itemTypes.getAllIdsAndNames();
+      addAll("itemTypes", IdNamePair.copyList(data));
     });
   }
 
@@ -263,7 +275,7 @@ class ItemImportPage extends APage with ASaveablePage {
             API.ImportResult result = await api.import.import(
                 selectedImportSource, bii.selectedResult);
 
-            if (isNullOrWhitespace(result.itemId))
+            if (isNullOrWhitespace(result.itemTypeId))
               throw new Exception("Was not able to determine item type for ${bii
                   .selectedResult}, please perform a single import of this item");
 

@@ -17,6 +17,7 @@ import 'package:polymer_elements/paper_button.dart';
 import 'package:polymer_elements/paper_dropdown_menu.dart';
 import 'package:polymer_elements/paper_listbox.dart';
 import 'package:polymer_elements/paper_card.dart';
+import 'package:polymer_elements/paper_menu.dart';
 import 'package:polymer_elements/paper_dialog.dart';
 import 'package:polymer_elements/paper_dialog_scrollable.dart';
 import 'package:polymer_elements/paper_fab.dart';
@@ -54,7 +55,27 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
   bool _loaded = false;
 
   @property
+  bool showPaginator = false;
+  @property
+  bool enableNextPage = false;
+  @property
+  bool enablePreviousPage = false;
+
+  @property
   bool showAddControl = false;
+
+  int lastLoadedPage = -1;
+
+  @property
+  int currentPage = 0;
+  @property
+  int totalPages = 1;
+
+  @property
+  List<int> availablePages = new List<int>();
+
+  @reflectable
+  bool isCurrentPage(int page) => page == currentPage;
 
   @override
   Future activateInternal(Map args, [bool forceRefresh = false]) async {
@@ -62,18 +83,46 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
     if(showAddControl) {
       await browseItemAddControl.activate(this.api,args);
     }
+    bool refresh = false;
+
     if(args.containsKey(ROUTE_ARG_SEARCH_QUERY_NAME)) {
       if(_currentQuery!=args[ROUTE_ARG_SEARCH_QUERY_NAME].toString().trim()) {
         _currentQuery = args[ROUTE_ARG_SEARCH_QUERY_NAME].toString().trim();
         if(isNullOrWhitespace(this.mainApp.searchText))
           this.mainApp.setSearchText(_currentQuery);
-        await this.refresh();
+        refresh = true;
       } else if(!_loaded||forceRefresh) {
-        await this.refresh();
+        refresh = true;
       }
     } else if(!_loaded||forceRefresh) {
-      await this.refresh();
+      refresh = true;
     }
+
+    int requestedPage = 0;
+    if(args.containsKey(ROUTE_ARG_PAGE_NAME)) {
+      requestedPage = int.parse(args[ROUTE_ARG_PAGE_NAME]);
+    }
+    if(requestedPage!=this.lastLoadedPage) {
+      refresh = true;
+      set("currentPage", requestedPage);
+    }
+
+    if(refresh)
+      await this.refresh();
+  }
+
+  void _refreshPaginator() {
+    set("showPaginator", totalPages>1);
+    if(!showPaginator)
+      return;
+
+    clear("availablePages");
+    for(int i = 0; i < totalPages; i++) {
+      add("availablePages", i+1);
+    }
+
+    set("enablePreviousPage",this.currentPage>0);
+    set("enableNextPage",this.currentPage<this.totalPages-1);
   }
 
   @override
@@ -91,14 +140,20 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
       _loaded = false;
       clear("itemsList");
       set("noItemsFound", false);
-      dynamic data;
+      API.PaginatedResponse data;
       if(isNullOrWhitespace(_currentQuery)) {
-        data = await api.items.getVisibleListings();
+        data = await api.items.getVisibleSummaries(page: currentPage);
       } else {
-        data = await api.items.searchVisible(_currentQuery);
+        data = await api.items.searchVisible(_currentQuery, page: currentPage);
       }
-      set("itemsList", ItemSummary.convertList(data));
+      lastLoadedPage = data.page;
+      set("currentPage", data.page);
+      set("totalPages", data.totalPages);
+      set("itemsList", ItemSummary.convertList(data.items));
       set("noItemsFound", itemsList.length==0);
+
+      _refreshPaginator();
+
       _loaded = true;
     });
   }
@@ -137,5 +192,30 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
   @reflectable
   String getThumbnailForImage(String value) {
     return getImageUrl(value, ImageType.THUMBNAIL);
+  }
+
+  @reflectable
+  void nextPage(event, [_]) {
+    if(this.currentPage<this.totalPages-1) {
+      _activatePage(this.currentPage+1);
+    }
+  }
+
+  @reflectable
+  void previousPage(event, [_]) {
+    if(this.currentPage>0) {
+      _activatePage(this.currentPage-1);
+    }
+  }
+
+  @reflectable
+  void pageSelected(event, [_]) {
+    _activatePage(currentPage);
+  }
+
+  void _activatePage(int page) {
+    if(isNullOrWhitespace(this._currentQuery)) {
+      mainApp.activateRoute(BROWSE_ROUTE_PATH, arguments: {ROUTE_ARG_PAGE_NAME: page});
+    }
   }
 }

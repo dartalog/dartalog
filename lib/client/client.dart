@@ -29,6 +29,7 @@ const String ROUTE_ARG_ITEM_ID_NAME = "itemId";
 
 const String ROUTE_ARG_ITEM_TYPE_ID_NAME = "itemTypeId";
 const String ROUTE_ARG_SEARCH_QUERY_NAME = "searchQuery";
+const String ROUTE_ARG_PAGE_NAME = "page";
 const String SEARCH_ROUTE_NAME = "search";
 const String SEARCH_ROUTE_PATH = "${SEARCH_ROUTE_NAME}";
 

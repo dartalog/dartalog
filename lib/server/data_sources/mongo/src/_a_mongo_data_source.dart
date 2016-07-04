@@ -3,6 +3,8 @@ part of data_sources.mongo;
 abstract class _AMongoDataSource {
   static final Logger _log = new Logger('_AMongoDataSource');
 
+  int getOffset(int page, int perPage) => page * perPage;
+
   Future<dynamic> _connectionWrapper(Future statement(_MongoDatabase),
       {retries: 3}) async {
     for (int i = 0; i < retries; i++) {

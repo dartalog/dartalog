@@ -1,6 +1,9 @@
 part of import;
 
-class ScrapingImportCriteria {
+class ScrapingImportCriteria  {
+  static final Logger _log = new Logger('ScrapingImportCriteria');
+
+
   static const INNER_HTML = "innerHtml";
 
   final String field;
@@ -68,17 +71,22 @@ class ScrapingImportCriteria {
   List<String> getFieldValues(Document doc) {
     List<String> output = new List<String>();
     if (!isNullOrWhitespace(elementSelector)) {
+      _log.fine("Using element selector ${elementSelector}");
       List<Element> elements = doc.querySelectorAll(this.elementSelector);
+      _log.fine("${elements.length} elements found");
       if(elementIndex>=0) {
+        _log.fine("Element index ${elementIndex} specified");
         if(elements.length-1>=elementIndex)
           output.addAll(_getFieldValueInternal(elements[elementIndex]));
       } else {
+        _log.fine("Element index not specified, getting all elements");
         for (Element ele in elements) {
           output.addAll(_getFieldValueInternal(ele));
           if (!multipleValues && output.length > 0) break;
         }
       }
     } else if (this._contentsRegex != null) {
+      _log.fine("Element selector not specified, performing global regex search");
       // Element selector not specified, global search yay for performance killers
       output.addAll(this._getRegexValues(doc.outerHtml));
     } else {
@@ -91,6 +99,8 @@ class ScrapingImportCriteria {
         output[i] = output[i].trim();
       }
     }
+    _log.fine("Found values: ${output.join(',')}");
+
     return output;
   }
 

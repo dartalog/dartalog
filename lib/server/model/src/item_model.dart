@@ -36,19 +36,19 @@ class ItemModel extends AIdNameBasedModel<Item> {
 //    }
 //  }
 
-  Future<IdNameList<IdNamePair>> getVisibleIdsAndNames() async {
+  Future<PaginatedIdNameData<IdNamePair>> getVisibleIdsAndNames({int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
     await _validateGetAllIdsAndNamesPrivileges();
-    return await dataSource.getVisibleIdsAndNames(this._currentUserId);
+    return await dataSource.getVisibleIdsAndNamesPaginated(this._currentUserId, page: page, perPage: perPage);
   }
 
-  Future<IdNameList<Item>> getVisible() async {
+  Future<PaginatedIdNameData<Item>> getVisible({int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
     await _validateGetAllIdsAndNamesPrivileges();
-    return await dataSource.getVisible(this._currentUserId);
+    return await dataSource.getVisiblePaginated(this._currentUserId, page: page, perPage: perPage);
   }
 
-  Future<IdNameList<Item>> searchVisible(String query) async {
+  Future<PaginatedIdNameData<Item>> searchVisible(String query, {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
     await _validateGetAllIdsAndNamesPrivileges();
-    return await dataSource.searchVisible(this._currentUserId, query);
+    return await dataSource.searchVisiblePaginated(this._currentUserId, query, page: page, perPage: perPage);
   }
 
   @override

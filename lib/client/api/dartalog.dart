@@ -893,9 +893,11 @@ class ItemsResourceApi {
   /**
    * Request parameters:
    *
-   * [offset] - Query parameter: 'offset'.
+   * [page] - Query parameter: 'page'.
    *
-   * Completes with a [ListOfItemSummary].
+   * [perPage] - Query parameter: 'perPage'.
+   *
+   * Completes with a [PaginatedResponse].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
@@ -903,7 +905,7 @@ class ItemsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ListOfItemSummary> getVisibleListings({core.int offset}) {
+  async.Future<PaginatedResponse> getVisibleSummaries({core.int page, core.int perPage}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -911,8 +913,11 @@ class ItemsResourceApi {
     var _downloadOptions = commons.DownloadOptions.Metadata;
     var _body = null;
 
-    if (offset != null) {
-      _queryParams["offset"] = ["${offset}"];
+    if (page != null) {
+      _queryParams["page"] = ["${page}"];
+    }
+    if (perPage != null) {
+      _queryParams["perPage"] = ["${perPage}"];
     }
 
     _url = 'items/';
@@ -924,7 +929,7 @@ class ItemsResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new ListOfItemSummary.fromJson(data));
+    return _response.then((data) => new PaginatedResponse.fromJson(data));
   }
 
   /**
@@ -932,7 +937,11 @@ class ItemsResourceApi {
    *
    * [query] - Path parameter: 'query'.
    *
-   * Completes with a [ListOfItemSummary].
+   * [page] - Query parameter: 'page'.
+   *
+   * [perPage] - Query parameter: 'perPage'.
+   *
+   * Completes with a [PaginatedResponse].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
@@ -940,7 +949,7 @@ class ItemsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ListOfItemSummary> searchVisible(core.String query) {
+  async.Future<PaginatedResponse> searchVisible(core.String query, {core.int page, core.int perPage}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -950,6 +959,12 @@ class ItemsResourceApi {
 
     if (query == null) {
       throw new core.ArgumentError("Parameter query is required.");
+    }
+    if (page != null) {
+      _queryParams["page"] = ["${page}"];
+    }
+    if (perPage != null) {
+      _queryParams["perPage"] = ["${perPage}"];
     }
 
     _url = 'search/' + commons.Escaper.ecapeVariable('$query') + '/';
@@ -961,7 +976,7 @@ class ItemsResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new ListOfItemSummary.fromJson(data));
+    return _response.then((data) => new PaginatedResponse.fromJson(data));
   }
 
   /**
@@ -2338,32 +2353,6 @@ class ListOfItemCopy
   }
 }
 
-class ListOfItemSummary
-    extends collection_1.ListBase<ItemSummary> {
-  final core.List<ItemSummary> _inner;
-
-  ListOfItemSummary() : _inner = [];
-
-  ListOfItemSummary.fromJson(core.List json)
-      : _inner = json.map((value) => new ItemSummary.fromJson(value)).toList();
-
-  core.List toJson() {
-    return _inner.map((value) => (value).toJson()).toList();
-  }
-
-  ItemSummary operator [](core.int key) => _inner[key];
-
-  void operator []=(core.int key, ItemSummary value) {
-    _inner[key] = value;
-  }
-
-  core.int get length => _inner.length;
-
-  void set length(core.int newLength) {
-    _inner.length = newLength;
-  }
-}
-
 class ListOfString
     extends collection_1.ListBase<core.String> {
   final core.List<core.String> _inner;
@@ -2490,6 +2479,61 @@ class MediaMessage {
     }
     if (updated != null) {
       _json["updated"] = (updated).toIso8601String();
+    }
+    return _json;
+  }
+}
+
+class PaginatedResponse {
+  core.List<ItemSummary> items;
+  core.int page;
+  core.int pageCount;
+  core.int startIndex;
+  core.int totalCount;
+  core.int totalPages;
+
+  PaginatedResponse();
+
+  PaginatedResponse.fromJson(core.Map _json) {
+    if (_json.containsKey("items")) {
+      items = _json["items"].map((value) => new ItemSummary.fromJson(value)).toList();
+    }
+    if (_json.containsKey("page")) {
+      page = _json["page"];
+    }
+    if (_json.containsKey("pageCount")) {
+      pageCount = _json["pageCount"];
+    }
+    if (_json.containsKey("startIndex")) {
+      startIndex = _json["startIndex"];
+    }
+    if (_json.containsKey("totalCount")) {
+      totalCount = _json["totalCount"];
+    }
+    if (_json.containsKey("totalPages")) {
+      totalPages = _json["totalPages"];
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (items != null) {
+      _json["items"] = items.map((value) => (value).toJson()).toList();
+    }
+    if (page != null) {
+      _json["page"] = page;
+    }
+    if (pageCount != null) {
+      _json["pageCount"] = pageCount;
+    }
+    if (startIndex != null) {
+      _json["startIndex"] = startIndex;
+    }
+    if (totalCount != null) {
+      _json["totalCount"] = totalCount;
+    }
+    if (totalPages != null) {
+      _json["totalPages"] = totalPages;
     }
     return _json;
   }

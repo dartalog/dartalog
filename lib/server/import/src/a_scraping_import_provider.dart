@@ -1,6 +1,7 @@
 part of import;
 
 abstract class AScrapingImportProvider extends AImportProvider {
+  static final Logger _log = new Logger('AScrapingImportProvider');
 
   String get importProviderName;
   String getItemURL(String id);
@@ -19,23 +20,31 @@ abstract class AScrapingImportProvider extends AImportProvider {
 
     Document doc = parse(contents);
 
+    _log.fine("Attempting to determine item type");
     for(ScrapingImportCriteria criteria in itemTypeCriteria) {
       List<String> values = criteria.getFieldValues(doc);
       for(String value in values) {
         if(!isNullOrWhitespace(value)) {
+
           Option<ItemType> itemTypeOpt = await data_sources.itemTypes.getById(value);
           itemTypeOpt.map((ItemType itemType) {
+            _log.fine(("Item type determined to be ${itemType.id}"));
             output.itemTypeId = itemType.id;
             output.itemTypeName = itemType.name;
           });
-          if(!isNullOrWhitespace(output.itemTypeId))
+
+          if(!isNullOrWhitespace(output.itemTypeId)) {
             break;
+          }
         }
       }
 
       if(!isNullOrWhitespace(output.itemTypeId))
         break;
     }
+
+    if(isNullOrWhitespace(output.itemTypeId))
+      _log.fine(("Item type could not be determined"));
 
     for(ScrapingImportCriteria field in fieldCriteria) {
       List<String> values = field.getFieldValues(doc);

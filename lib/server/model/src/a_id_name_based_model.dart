@@ -46,30 +46,9 @@ abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel {
     return output.get();
   }
 
-  Future<PaginatedIdNameData<T>> getPaginated({int offset: 0}) async {
-    await _validateGetAllPrivileges();
-
-    PaginatedIdNameData<T> output =
-        await dataSource.getPaginated(offset: offset);
-    for (T t in output.data) _performAdjustments(t);
-    return output;
-  }
-
-  Future<PaginatedIdNameData<IdNamePair>> getPaginatedIdsAndNames(
-      {int offset: 0}) async {
-    await _validateGetAllIdsAndNamesPrivileges();
-    return await dataSource.getPaginatedIdsAndNames(offset: offset);
-  }
-
   Future<IdNameList<T>> search(String query) async {
     await _validateSearchPrivileges();
     return await dataSource.search(query);
-  }
-
-  Future<PaginatedIdNameData<T>> searchPaginated(String query,
-      {int offset: 0}) async {
-    await _validateSearchPrivileges();
-    return await dataSource.searchPaginated(query, offset: offset);
   }
 
   Future<String> update(String id, T t) async {

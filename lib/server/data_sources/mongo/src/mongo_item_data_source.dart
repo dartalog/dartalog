@@ -17,8 +17,22 @@ class MongoItemDataSource extends _AMongoIdDataSource<Item>
     return (await _generateVisibleCriteria(userId)).cata(
         () => new IdNameList<Item>(),
         (SelectorBuilder selector) async =>
-        await _getIdNameListFromDb(selector.sortBy(ID_FIELD)));
+    await _getIdNameListFromDb(selector));
   }
+
+  Future<PaginatedIdNameData<Item>> getVisiblePaginated(String userId, {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
+    return (await _generateVisibleCriteria(userId)).cata(
+        () => new IdNameList<Item>(),
+        (SelectorBuilder selector) async =>
+    await _getPaginatedIdNameListFromDb(selector, limit: perPage, offset: getOffset(page, perPage)));
+  }
+
+  Future<PaginatedIdNameData<Item>> searchVisiblePaginated(String userId, String query, {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
+    return (await _generateVisibleCriteria(userId)).cata(
+        () => new IdNameList<Item>(),
+        (SelectorBuilder selector) async => await searchPaginated(query,selector: selector, limit: perPage, offset: getOffset(page, perPage)));
+  }
+
 
   Future<IdNameList<Item>> searchVisible(String userId, String query) async {
     return (await _generateVisibleCriteria(userId)).cata(
@@ -29,7 +43,13 @@ class MongoItemDataSource extends _AMongoIdDataSource<Item>
   Future<IdNameList<IdNamePair>> getVisibleIdsAndNames(String userId) async {
     return (await _generateVisibleCriteria(userId)).cata(
         () => new IdNameList<IdNamePair>(),
-        (SelectorBuilder selector) async => await getIdsAndNames(selector: selector.sortBy(ID_FIELD)));
+        (SelectorBuilder selector) async => await getIdsAndNames(selector: selector));
+  }
+
+  Future<PaginatedIdNameData<IdNamePair>> getVisibleIdsAndNamesPaginated(String userId, {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
+    return (await _generateVisibleCriteria(userId)).cata(
+        () => new IdNameList<IdNamePair>(),
+        (SelectorBuilder selector) async => await getPaginatedIdsAndNames(selector: selector, limit: perPage, offset: getOffset(page, perPage)));
   }
 
   Item _createObject(Map data) {

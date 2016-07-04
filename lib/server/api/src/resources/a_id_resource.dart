@@ -22,7 +22,7 @@ abstract class AIdResource<T extends AIdData> extends AResource {
 
   //Future<PaginatedResponse<IdNamePair>> getPaginatedIdsAndNames({int offset: 0});
 //  Future<PaginatedResponse<IdNamePair>> _getPaginatedIdsAndNamesWithCatch(
-//      {int offset: 0}) async =>
+//      {int offset: 0, int count: DEFAULT_PER_PAGE}) async =>
 //      _catchExceptionsAwait(() async =>
 //      new PaginatedResponse<IdNamePair>.fromPaginatedData(
 //          await idModel.getAllIdsAndNames()));

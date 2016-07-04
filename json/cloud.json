@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "f7a7dce3c312a4a646c5f8c44bf3d8f4b98a94c7",
+ "etag": "db0568fe6910ded3f3cf172801df1d62ed2e6a35",
  "discoveryVersion": "v1",
  "id": "dartalog:0.1",
  "name": "dartalog",
@@ -325,11 +325,36 @@
     }
    }
   },
-  "ListOfItemSummary": {
-   "id": "ListOfItemSummary",
-   "type": "array",
-   "items": {
-    "$ref": "ItemSummary"
+  "PaginatedResponse": {
+   "id": "PaginatedResponse",
+   "type": "object",
+   "properties": {
+    "startIndex": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "pageCount": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "totalCount": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "page": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "totalPages": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "items": {
+     "type": "array",
+     "items": {
+      "$ref": "ItemSummary"
+     }
+    }
    }
   },
   "UpdateItemRequest": {
@@ -696,21 +721,27 @@
       "id"
      ]
     },
-    "getVisibleListings": {
-     "id": "DartalogApi.items.getVisibleListings",
+    "getVisibleSummaries": {
+     "id": "DartalogApi.items.getVisibleSummaries",
      "path": "items/",
      "httpMethod": "GET",
      "parameters": {
-      "offset": {
+      "page": {
        "type": "integer",
-       "description": "Query parameter: 'offset'.",
+       "description": "Query parameter: 'page'.",
+       "required": false,
+       "location": "query"
+      },
+      "perPage": {
+       "type": "integer",
+       "description": "Query parameter: 'perPage'.",
        "required": false,
        "location": "query"
       }
      },
      "parameterOrder": [],
      "response": {
-      "$ref": "ListOfItemSummary"
+      "$ref": "PaginatedResponse"
      }
     },
     "getById": {
@@ -766,13 +797,25 @@
        "description": "Path parameter: 'query'.",
        "required": true,
        "location": "path"
+      },
+      "page": {
+       "type": "integer",
+       "description": "Query parameter: 'page'.",
+       "required": false,
+       "location": "query"
+      },
+      "perPage": {
+       "type": "integer",
+       "description": "Query parameter: 'perPage'.",
+       "required": false,
+       "location": "query"
       }
      },
      "parameterOrder": [
       "query"
      ],
      "response": {
-      "$ref": "ListOfItemSummary"
+      "$ref": "PaginatedResponse"
      }
     },
     "updateItem": {

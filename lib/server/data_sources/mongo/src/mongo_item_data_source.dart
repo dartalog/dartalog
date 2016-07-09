@@ -22,14 +22,14 @@ class MongoItemDataSource extends _AMongoIdDataSource<Item>
 
   Future<PaginatedIdNameData<Item>> getVisiblePaginated(String userId, {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
     return (await _generateVisibleCriteria(userId)).cata(
-        () => new IdNameList<Item>(),
+        () => new PaginatedIdNameData<Item>(),
         (SelectorBuilder selector) async =>
     await _getPaginatedIdNameListFromDb(selector, limit: perPage, offset: getOffset(page, perPage)));
   }
 
   Future<PaginatedIdNameData<Item>> searchVisiblePaginated(String userId, String query, {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
     return (await _generateVisibleCriteria(userId)).cata(
-        () => new IdNameList<Item>(),
+        () => new PaginatedIdNameData<Item>(),
         (SelectorBuilder selector) async => await searchPaginated(query,selector: selector, limit: perPage, offset: getOffset(page, perPage)));
   }
 

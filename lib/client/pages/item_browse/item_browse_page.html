@@ -12,31 +12,38 @@
             <div class="no_items">No Items Found</div>
         </template>
         <div style="padding-right:48pt;position:relative;">
-        <template is="dom-repeat" items="[[itemsList]]" as="item">
-            <paper-material class="item_card" data-id$="[[item.id]]" on-tap="itemClicked" title="[[item.name]]">
-                <a href="[[generateItemLink(item.id)]]">
-                <iron-image class="content fit" sizing="cover"
-                            src="[[getThumbnailForImage(item.thumbnail)]]"></iron-image>
-                <div class="item_title">
-                    <div>[[item.name]]</div>
-                </div>
-                </a>
-            </paper-material>
+            <template is="dom-repeat" items="[[itemsList]]" as="item">
+                <paper-material class="item_card" data-id$="[[item.id]]" on-tap="itemClicked" title="[[item.name]]">
+                    <a href="[[generateItemLink(item.id)]]">
+                        <iron-image class="content fit" sizing="cover"
+                                    src="[[getThumbnailForImage(item.thumbnail)]]"></iron-image>
+                        <div class="item_title">
+                            <div>[[item.name]]</div>
+                        </div>
+                    </a>
+                </paper-material>
 
-        </template>
+            </template>
         </div>
-            <template is="dom-if" if="[[showPaginator]]">
+        <template is="dom-if" if="[[showPaginator]]">
 
-            <paper-material style="position:fixed; right:16pt;bottom:64pt; background-color: white;padding: 4pt; max-height: 50%">
-                <paper-menu selected="{{currentPage}}" on-iron-select="pageSelected">
+            <paper-material
+                    style="position:fixed; right:16pt;bottom:64pt; background-color: white;padding: 4pt; max-height: calc(100% - 118pt); overflow: hidden; width: 32pt;"
+                    class="layout vertical">
+
+                <paper-menu selected="{{currentPage}}" on-iron-select="pageSelected" style="overflow-y: auto;overflow-x:hidden; width: 100px;"
+                            class="flexchild">
                     <template is="dom-repeat" items="[[availablePages]]" as="item">
-                        <paper-item title="Page [[item]]" style="cursor: pointer" >[[item]]</paper-item>
+                        <paper-item title="Page [[item]]" style="cursor: pointer">[[item]]</paper-item>
                     </template>
                 </paper-menu>
-                <paper-icon-button icon="arrow-back" title="Previous Page" on-tap="previousPage" disabled="[[!enablePreviousPage]]"></paper-icon-button><br/>
-                <paper-icon-button  icon="arrow-forward" title="Next Page" on-tap="nextPage" disabled="[[!enableNextPage]]"></paper-icon-button>
+                <paper-icon-button icon="arrow-back" title="Previous Page" on-tap="previousPage"
+                                   disabled="[[!enablePreviousPage]]"></paper-icon-button>
+                <br/>
+                <paper-icon-button icon="arrow-forward" title="Next Page" on-tap="nextPage"
+                                   disabled="[[!enableNextPage]]"></paper-icon-button>
             </paper-material>
-            </template>
+        </template>
 
         <item-add-control id="browse_item_add_control" hidden="[[!showAddControl]]"></item-add-control>
 

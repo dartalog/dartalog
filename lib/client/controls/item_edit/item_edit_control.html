@@ -9,6 +9,12 @@
     <style include="iron-flex"></style>
 
     <template>
+        <template is="dom-if" if="[[!itemTypesAvailable]]" restamp="true">
+            <paper-card heading="No Item Types Defined" style="margin:8px;" class="vertical layout">
+            </paper-card>
+        </template>
+
+        <template is="dom-if" if="[[itemTypesAvailable]]" restamp="false">
         <paper-card class="vertical layout" style="margin:8px;">
             <div class="card-content layout vertical">
                 <template is="dom-if" if="[[isNew]]" restamp="true">
@@ -58,4 +64,5 @@
             </paper-card>
         </template>
     </template>
+        </template>
 </dom-module>

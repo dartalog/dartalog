@@ -29,6 +29,7 @@ import 'package:web_components/web_components.dart';
 @PolymerRegister('item-edit-control')
 class ItemEditControl extends AControl {
   static final Logger _log = new Logger("ItemEdit");
+  Logger get loggerImpl => _log;
 
   String originalItemId = "";
 
@@ -52,6 +53,9 @@ class ItemEditControl extends AControl {
   @Property(notify: true)
   List<IdNamePair> itemTypes;
 
+  @Property(notify: true)
+  bool itemTypesAvailable = false;
+
   API_Library.ImportResult importResult = null;
 
   ItemEditControl.created() : super.created();
@@ -70,6 +74,7 @@ class ItemEditControl extends AControl {
     await handleApiExceptions(() async {
       reset();
       await loadItemTypes();
+      set("itemTypesAvailable", itemTypes.isNotEmpty);
       set("isNew", true);
       if (args.containsKey(ROUTE_ARG_ITEM_ID_NAME)) {
         await _loadItem(args[ROUTE_ARG_ITEM_ID_NAME]);
@@ -109,6 +114,9 @@ class ItemEditControl extends AControl {
   Future<String> save() async {
     return await handleApiExceptions(() async {
       List<API_Library.MediaMessage> files = new List<API_Library.MediaMessage>();
+
+      if(this.currentItem==null||this.currentItem.fields==null)
+        throw new Exception("Please select an item type");
 
       for (Field f in this.currentItem.fields) {
         if (f.type == "image") {

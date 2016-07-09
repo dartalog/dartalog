@@ -322,7 +322,7 @@ class MainApp extends PolymerElement {
 
       evaluatePage();
     } catch (e, st) {
-      window.alert(e.toString());
+      handleException(e,st);
     } finally {
       stopLoading();
     }

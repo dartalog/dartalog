@@ -13,7 +13,7 @@
             <paper-card heading="Not authorized" style="margin:8px;" class="vertical layout">
             </paper-card>
         </template>
-        <template is="dom-if" if="[[userHasAccess]]" restamp="true">
+        <template is="dom-if" if="[[userHasAccess]]" restamp="[[restamp]]">
             <content></content>
         </template>
     </template>

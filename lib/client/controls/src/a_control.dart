@@ -39,9 +39,17 @@ class AControl extends PolymerElement {
     });
   }
 
+  Future wait({int milliseconds: 100}) {
+    Completer completer = new Completer();
+    Timer timer = new Timer(new Duration(milliseconds: 100), () {
+      completer.complete();
+    });
+    return completer.future;
+  }
+
   // If you open a dialog too soon after changing its contents, it won't center properly.
   // This delays opening the dialog until the system has had a second to process the DOM change.
-  Future openDialog(PaperDialog dialog)  {
+  Future openDialog(PaperDialog dialog) async {
     Completer completer = new Completer();
     Timer timer = new Timer(new Duration(milliseconds: 100), () {
       dialog.open();

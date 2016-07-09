@@ -21,6 +21,9 @@ class AuthWrapperControl extends AControl  {
   Logger get loggerImpl => _log;
 
   @property
+  bool restamp = true;
+
+  @property
   bool userHasAccess = false;
 
   @Property(notify: true, observer: "evaluateAuthentication")

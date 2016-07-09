@@ -16,7 +16,7 @@ class AmazonImportProvider extends AScrapingImportProvider {
 
   static List<ScrapingImportCriteria> _itemTypeCriteria = [
     new ScrapingImportCriteria(
-        elementSelector: 'span#productTitle + span',
+        elementSelector: 'h1#title > span.a-color-secondary',
         replaceRegex: {
           r"Hardcover": "book",
           r"Mass Market Paperback": "book",
@@ -134,6 +134,9 @@ class AmazonImportProvider extends AScrapingImportProvider {
 
     SearchResults output = new SearchResults();
     output.searchUrl = url;
+
+    if(doc.querySelectorAll("#captchacharacters").isNotEmpty)
+      throw new Exception("Amazon is refusing our request due to bot detection, please try again later");
 
     List<Element> top_elements = doc.querySelectorAll(".s-result-item");
 

@@ -20,8 +20,11 @@ abstract class AScrapingImportProvider extends AImportProvider {
 
     Document doc = parse(contents);
 
+    List itemTypes = (await data_sources.itemTypes.getAllIdsAndNames()).idList;
+
     _log.fine("Attempting to determine item type");
     for(ScrapingImportCriteria criteria in itemTypeCriteria) {
+      criteria.acceptedValues = itemTypes;
       List<String> values = criteria.getFieldValues(doc);
       for(String value in values) {
         if(!isNullOrWhitespace(value)) {

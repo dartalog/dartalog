@@ -39,6 +39,7 @@ class ItemAddControl extends AControl  {
 
   Future activateInternal(Map args, [bool forceRefresh = false]) async {
     //await this.refresh();
+    this.clearValidation();
   }
 
   Future start() {

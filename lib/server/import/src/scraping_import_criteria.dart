@@ -22,6 +22,8 @@ class ScrapingImportCriteria  {
   final Map<String, String> replaceRegex;
   final Map<RegExp, String> _replaceRegex = new Map<RegExp, String>();
 
+  List<String> acceptedValues;
+
   final bool multipleValues;
 
   ScrapingImportCriteria(
@@ -35,7 +37,8 @@ class ScrapingImportCriteria  {
       this.contentsRegexGroup: 0,
       this.contentsRegexCaseSensitive: false,
       this.contentsRegexMultiline: true,
-      this.replaceRegex}) {
+      this.replaceRegex,
+      this.acceptedValues: null}) {
     if (!isNullOrWhitespace(contentsRegex)) {
       _contentsRegex = new RegExp(contentsRegex,
           multiLine: this.contentsRegexMultiline,
@@ -114,7 +117,6 @@ class ScrapingImportCriteria  {
       if (matches != null) {
         for (Match m in matches) {
           output.add(m.group(this.contentsRegexGroup));
-          if (!multipleValues) break;
         }
       }
     }
@@ -124,6 +126,13 @@ class ScrapingImportCriteria  {
         output[i] = output[i].replaceAll(regex, this._replaceRegex[regex]);
       }
     }
+
+
+    if(this.acceptedValues!=null)
+      output.removeWhere((String value) => !this.acceptedValues.contains((value)));
+
+    if (!multipleValues&& output.length> 1)
+      return [output[0]];
 
     return output;
   }

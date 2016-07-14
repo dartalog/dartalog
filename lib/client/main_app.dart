@@ -33,7 +33,8 @@ import 'package:logging_handlers/browser_logging_handlers.dart';
 import 'package:option/option.dart';
 import 'package:path/path.dart';
 import 'package:polymer/polymer.dart';
-import 'package:polymer_elements/iron_flex_layout.dart';
+import 'package:polymer_elements/app_location.dart';
+import 'package:polymer_elements/app_route.dart';
 import 'package:polymer_elements/iron_icons.dart';
 import 'package:polymer_elements/iron_pages.dart';
 import 'package:polymer_elements/paper_badge.dart';
@@ -48,13 +49,12 @@ import 'package:polymer_elements/paper_toolbar.dart';
 import 'package:route_hierarchical/client.dart';
 import 'package:web_components/web_components.dart';
 
-
 /// Uses [PaperInput]
 @PolymerRegister('main-app')
 class MainApp extends PolymerElement {
   static final Logger _log = new Logger("MainApp");
 
-  static api.DartalogApi _api;
+  static api.DartalogApi get _api => GLOBAL_API;
 
   @property
   bool appLoadingScreenVisible = true;
@@ -63,8 +63,6 @@ class MainApp extends PolymerElement {
   @property
   String appLoadingMessage = "Loading application";
 
-  @property
-  String visiblePage = "item_browse";
   @property
   int cartCount = 0;
 
@@ -90,8 +88,6 @@ class MainApp extends PolymerElement {
   bool showRefresh = false;
 
   @property
-  bool showSearch = false;
-  @property
   bool showAdd = false; // True initially so that it can be found on page load
   @property
   bool showEdit = false;
@@ -102,93 +98,37 @@ class MainApp extends PolymerElement {
   @property
   bool showBack = false;
 
-  final Router router = new Router(useFragment: true);
+  //final Router router = new Router(useFragment: true);
 
   @Property(notify: true)
-  APage currentPage = null;
+  Map route = {};
 
-  @property
-  String searchText = "";
+  @Property(notify: true)
+  Map routeData = {};
+
+  @Property(notify: true)
+  Map pageRoute = {};
 
   /// Constructor used to create instance of MainApp.
   MainApp.created() : super.created() {
     Logger.root.level = Level.INFO;
     Logger.root.onRecord.listen(new LogPrintHandler());
 
-    // Set up the routes for all the pages.
-    router.root
-      ..addRoute(
-          name: BROWSE_ROUTE_NAME,
-          path: "items/:page",
-          defaultRoute: true,
-          enter: enterRoute)
-      ..addRoute(
-          name: SEARCH_ROUTE_NAME,
-          path: "search/:${ROUTE_ARG_SEARCH_QUERY_NAME}",
-          defaultRoute: false,
-          enter: enterRoute)
-      ..addRoute(
-          name: ITEM_VIEW_ROUTE_NAME,
-          path: "view/:${ROUTE_ARG_ITEM_ID_NAME}",
-          defaultRoute: false,
-          enter: enterRoute)
-      ..addRoute(
-          name: ITEM_EDIT_ROUTE_NAME,
-          path: "edit/:${ROUTE_ARG_ITEM_ID_NAME}",
-          defaultRoute: false,
-          enter: enterRoute)
-      ..addRoute(
-          name: ITEM_ADD_ROUTE_NAME,
-          path: "new/:${ROUTE_ARG_ITEM_TYPE_ID_NAME}",
-          defaultRoute: false,
-          enter: enterRoute)
-      ..addRoute(
-          name: ITEM_IMPORT_ROUTE_NAME,
-          path: "import",
-          defaultRoute: false,
-          enter: enterRoute)
-      ..addRoute(
-          name: "field_admin",
-          path: "fields",
-          defaultRoute: false,
-          enter: enterRoute)
-      ..addRoute(
-          name: "collections",
-          path: "collections",
-          defaultRoute: false,
-          enter: enterRoute)
-      ..addRoute(
-          name: "item_type_admin",
-          path: "item_types",
-          defaultRoute: false,
-          enter: enterRoute)
-      ..addRoute(
-          name: "user_admin",
-          path: "users",
-          defaultRoute: false,
-          enter: enterRoute)
-      ..addRoute(
-          name: CHECKOUT_ROUTE_NAME,
-          path: "checkout",
-          defaultRoute: false,
-          enter: enterRoute)
-      ..addRoute(
-          name: "logging_output",
-          path: "logging_output",
-          defaultRoute: false,
-          enter: enterRoute);
-
-
     startApp();
   }
-
   CheckoutPage get checkoutPage => $['checkout'];
+
+  @property
+  APage get currentPage {
+    if (pages == null) return null;
+    return pages.selectedItem;
+  }
 
   @property
   User get currentUserProperty => currentUser.getOrElse(() => new User());
 
   set currentUserProperty(User user) {
-    if (user == null||isNullOrWhitespace(user.name))
+    if (user == null || isNullOrWhitespace(user.name))
       this.currentUser = new None();
     else
       this.currentUser = new Some(user);
@@ -202,10 +142,7 @@ class MainApp extends PolymerElement {
 
   ItemTypeAdminPage get itemTypeAdmin => $['item_type_admin'];
 
-  activateRoute(String route, {Map<String, String> arguments}) {
-    if (arguments == null) arguments = new Map<String, String>();
-    router.go(route, arguments);
-  }
+  IronPages get pages => this.querySelector("iron-pages");
 
   @reflectable
   addClicked(event, [_]) async {
@@ -220,8 +157,6 @@ class MainApp extends PolymerElement {
     refreshCartInfo();
   }
 
-
-
   @reflectable
   backClicked(event, [_]) async {
     currentPage.goBack();
@@ -229,7 +164,7 @@ class MainApp extends PolymerElement {
 
   @reflectable
   void cartClicked(event, [_]) {
-    this.activateRoute(CHECKOUT_ROUTE_PATH);
+    set("routeData.page", "checkout");
   }
 
   Future clearAuthentication() async {
@@ -239,10 +174,10 @@ class MainApp extends PolymerElement {
 
   @reflectable
   void clearSearch(event, [_]) {
-    set("searchText", "");
     if (currentPage is ASearchablePage) {
       ASearchablePage page = currentPage as ASearchablePage;
-      page.search("");
+      set("currentPage.searchQuery", "");
+      page.search();
     }
   }
 
@@ -269,7 +204,7 @@ class MainApp extends PolymerElement {
             await evaluateAuthentication();
             break;
           default:
-            activateRoute(route);
+            set("routeData.page", route);
             break;
         }
       }
@@ -287,48 +222,6 @@ class MainApp extends PolymerElement {
     }
   }
 
-  Future enterRoute(RouteEvent e) async {
-    try {
-      startLoading();
-
-      String pageName;
-      //set("showBack", (router.activePath.length > 1));
-
-      switch (e.route.name) {
-        case SEARCH_ROUTE_NAME:
-          pageName = BROWSE_ROUTE_NAME;
-          break;
-        default:
-          pageName = e.route.name;
-          break;
-      }
-      dynamic page = $[pageName];
-
-      if (page == null) {
-        throw new Exception("Page not found: ${this.visiblePage}");
-      }
-
-      if (!(page is APage)) {
-        throw new Exception(
-            "Unknown element type: ${page.runtimeType.toString()}");
-      }
-
-      await page.activate(_api, e.parameters);
-
-      set("visiblePage", pageName);
-      set("currentPage", page);
-      evaluatePage();
-
-
-      evaluatePage();
-    } catch (e, st) {
-      handleException(e,st);
-    } finally {
-      stopLoading();
-    }
-  }
-
-//  TemplateAdminPage get templateAdmin=> $['item_type_admin'];
   Future evaluateAuthentication() async {
     bool authed = false;
     try {
@@ -358,30 +251,18 @@ class MainApp extends PolymerElement {
 
     set("userLoggedIn", authed);
   }
-//  ItemBrowsePage get itemBrowse=> $['browse'];
-//  ItemPage get itemPage=> $['item'];
 
   void evaluatePage() {
-    dynamic page = currentPage;
+    notifyPath("currentPage", currentPage);
 
-    if(page!=null) {
-      set("currentPage.title", page.title);
-
-      set("showBack", page.showBackButton);
+    if (currentPage != null && currentPage is ASearchablePage) {
+      ASearchablePage sp = currentPage as ASearchablePage;
+      notifyPath("currentPage.showSearch", sp.showSearch);
+      notifyPath("currentPage.searchQuery", sp.searchQuery);
+    } else {
+      notifyPath("currentPage.showSearch", false);
+      notifyPath("currentPage.searchQuery", "");
     }
-
-
-    set("showRefresh", page is ARefreshablePage && page.showRefreshButton);
-
-    set("showAdd", page is ACollectionPage && page.showAddButton);
-
-    set("showSearch", page is ASearchablePage && page.showSearch);
-
-    set("showDelete", page is ADeletablePage && page.showDeleteButton);
-
-    set("showEdit", page is AEditablePage && page.showEditButton);
-
-    set("showSave", page is ASaveablePage && page.showSaveButton);
   }
 
   void handleException(e, st) {
@@ -412,6 +293,13 @@ class MainApp extends PolymerElement {
     set("appLoadingScreenVisible", false);
   }
 
+  @reflectable
+  void pageChanged(event, [_]) {
+    evaluatePage();
+    if (currentPage != null) currentPage.activate();
+    evaluatePage();
+  }
+
   Future promptForAuthentication() async {
     UserAuthControl ele = $['userAuthElement'];
     await ele.activateDialog();
@@ -435,11 +323,6 @@ class MainApp extends PolymerElement {
     }
   }
 
-  void routeChanged() {
-    if (visiblePage is! String) return;
-    router.go("field_admin", {});
-  }
-
   @reflectable
   saveClicked(event, [_]) async {
     if (currentPage is ASaveablePage) {
@@ -453,7 +336,7 @@ class MainApp extends PolymerElement {
     if (event.original.charCode == 13) {
       if (currentPage is ASearchablePage) {
         ASearchablePage page = currentPage as ASearchablePage;
-        page.search(event.target.value);
+        page.search();
       }
     }
   }
@@ -488,21 +371,13 @@ class MainApp extends PolymerElement {
     toastElement.enqueueMessage(message, severity, details);
   }
 
-  Future stopApp() async {
-  }
-
-  bool listenerStarted = false;
-
   Future startApp() async {
     try {
-      _api = new api.DartalogApi(new DartalogHttpClient(),
-          rootUrl: getServerRoot(), servicePath: "api/dartalog/0.1/");
       await evaluateAuthentication();
-      await checkoutPage.activate(_api, {});
-      if (!listenerStarted) {
-        router.listen();
-        listenerStarted = true;
-      }
+      //await checkoutPage.activate(_api, {});
+
+      if (routeData == null) set("route.path", "/items");
+
       hideAppLoadingScreen();
     } catch (e, st) {
       _log.severe("startApp", e, st);
@@ -513,6 +388,8 @@ class MainApp extends PolymerElement {
   void startLoading() {
     set("loading", true);
   }
+
+  Future stopApp() async {}
 
   void stopAppLoadingSpinner() {
     set("appLoadingSpinnerActive", false);
@@ -526,6 +403,10 @@ class MainApp extends PolymerElement {
   toggleDrawerClicked(event, [_]) {
     PaperDrawerPanel pdp = $['drawerPanel'];
     pdp.togglePanel();
+  }
+
+  void updatePageRoute(Object newPageRoute) {
+    set("pageRoute", newPageRoute);
   }
 
   bool userHasPrivilege(String needed) {

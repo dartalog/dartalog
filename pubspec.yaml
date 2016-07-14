@@ -23,10 +23,10 @@ dependencies:
   image: ^1.1.26
   logging_handlers: ^0.8.0
   mime: ^0.9.3
-  mongo_dart: ^0.2.7
+  mongo_dart: ^0.2.8
   option: ^1.2.0
   options_file: ^0.11.0
-  polymer_elements: ^1.0.0-rc.8
+  polymer_elements: ^1.0.0-rc.9
   polymer: ^1.0.0-rc.17
   quagga_dart: ^0.0.2
   route_hierarchical: ^0.7.0
@@ -36,9 +36,7 @@ dependencies:
   shelf_exception_handler: ^0.1.0
   shelf_route: ^0.13.1
   shelf_rpc: ^0.0.3
-  shelf_static:
-    git: https://github.com/dartalog/shelf_static.git
-  #shelf_static: ^0.2.3
+  shelf_static: ^0.2.4
   #test: any
   web_components: ^0.12.3
 executables:

@@ -91,7 +91,7 @@ class ItemAction {
 
 
 
-final List<String> RESERVED_WORDS = ['id', 'name', 'title'];
+final List<String> RESERVED_WORDS = ['id', 'name', 'title', 'search'];
 
 class ValidationException implements Exception {
   String message;

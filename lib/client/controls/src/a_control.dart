@@ -3,7 +3,7 @@ part of controls;
 class AControl extends PolymerElement {
   Logger get loggerImpl;
   MainApp _mainApp = null;
-  API.DartalogApi api;
+  API.DartalogApi get api => GLOBAL_API;
 
   static Option<User> currentUserStatic = new None();
   Option<User> get currentUser => currentUserStatic;
@@ -21,14 +21,12 @@ class AControl extends PolymerElement {
 
 
   Map lastArgs;
-  Future activate(API.DartalogApi api, Map args) async {
-    this.api = api;
-    this.lastArgs = args;
-    await activateInternal(args);
+  Future activate() async {
+    await activateInternal();
   }
 
   Future reActivate(bool forceRefresh) async {
-    await activateInternal(lastArgs, forceRefresh);
+    await activateInternal(forceRefresh);
   }
 
   bool userHasPrivilege(String type) {
@@ -58,7 +56,7 @@ class AControl extends PolymerElement {
     return completer.future;
   }
 
-  Future activateInternal(Map args, [bool forceRefresh = false]);
+  Future activateInternal([bool forceRefresh = false]);
 
   void clearValidation() {
     setGeneralErrorMessage("");

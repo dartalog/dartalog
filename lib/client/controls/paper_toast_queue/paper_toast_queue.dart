@@ -61,7 +61,7 @@ class PaperToastQueue extends PolymerElement  {
 
         set("message", nextMessage);
         set("duration", defaultDuration);
-        toastElement.show();
+        toastElement.open();
     }
   }
 

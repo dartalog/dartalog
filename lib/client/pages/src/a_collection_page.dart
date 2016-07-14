@@ -2,7 +2,8 @@ part of pages;
 
 
 abstract class ACollectionPage {
-  bool showAddButton = true;
+  bool showAddButton = false;
+  bool showPaginator = false;
 
   Future newItem();
 }

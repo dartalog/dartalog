@@ -50,7 +50,7 @@ class _MongoDatabase {
     dynamic output =
         await con.conn.collection(_ITEM_COPY_HISTORY_MONGO_COLLECTION);
     await con.conn.createIndex(_ITEM_COPY_HISTORY_MONGO_COLLECTION,
-        keys: {"itemId": 1, "copy": 1});
+        keys: {"itemId": 1, "copy": 1}, name: "ItemIdIndex");
     return output;
   }
 
@@ -58,11 +58,11 @@ class _MongoDatabase {
     _checkConnection();
     dynamic output = await con.conn.collection(_ITEMS_MONGO_COLLECTION);
     await con.conn.createIndex(_ITEMS_MONGO_COLLECTION,
-        keys: {"name": "text", "copies.uniqueId": "text"});
+        keys: {r"$**": "text" }, name: "TextIndex");
     await con.conn.createIndex(_ITEMS_MONGO_COLLECTION,
-        keys: {ID_FIELD: 1, "copies.copy": 1}, unique: true);
+        keys: {ID_FIELD: 1, "copies.copy": 1}, unique: true, name: "CopyIndex");
     await con.conn.createIndex(_ITEMS_MONGO_COLLECTION,
-        key: "copies.uniqueId", unique: true, sparse: true);
+        key: "copies.uniqueId", unique: true, sparse: true, name: "UniqueIdIndex");
     return output;
   }
 
@@ -94,7 +94,7 @@ class _MongoDatabase {
     _checkConnection();
     DbCollection output = await con.conn.collection(_USERS_MONGO_COLLECTION);
     await con.conn.createIndex(_USERS_MONGO_COLLECTION,
-        keys: {"id": "text", "name": "text", "idNumber": "text"});
+        keys: {"id": "text", "name": "text", "idNumber": "text"}, name: "TextIndex");
     return output;
   }
 

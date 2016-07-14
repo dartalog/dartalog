@@ -134,7 +134,7 @@ class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
 
   @reflectable
   cancelClicked(event, [_]) {
-    editDialog.cancel();
+    editDialog.close();
     this.reset();
   }
 

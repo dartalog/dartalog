@@ -9,29 +9,11 @@ import 'package:dartalog/tools.dart';
 import 'package:http/browser_client.dart';
 import 'package:http/http.dart';
 import 'package:option/option.dart';
-
+import 'package:dartalog/client/api/dartalog.dart';
 part 'src/dartalog_http_client.dart';
 
-const String BROWSE_ROUTE_NAME = "browse";
-const String BROWSE_ROUTE_PATH = "${BROWSE_ROUTE_NAME}";
-const String CHECKOUT_ROUTE_NAME = "checkout";
-const String CHECKOUT_ROUTE_PATH = "${CHECKOUT_ROUTE_NAME}";
-const String ITEM_ADD_ROUTE_NAME = "item_add";
-const String ITEM_ADD_ROUTE_PATH = "${ITEM_ADD_ROUTE_NAME}";
-const String ITEM_EDIT_ROUTE_NAME = "item_edit";
-const String ITEM_EDIT_ROUTE_PATH = "${ITEM_EDIT_ROUTE_NAME}";
-const String ITEM_IMPORT_ROUTE_NAME = "item_import";
-const String ITEM_IMPORT_ROUTE_PATH = "${ITEM_IMPORT_ROUTE_NAME}";
-const String ITEM_VIEW_ROUTE_NAME = "item_view";
-const String ITEM_VIEW_ROUTE_PATH = "${ITEM_VIEW_ROUTE_NAME}";
-const String ROUTE_ARG_IMPORT_RESULT_NAME = "importResults";
-const String ROUTE_ARG_ITEM_ID_NAME = "itemId";
-
-const String ROUTE_ARG_ITEM_TYPE_ID_NAME = "itemTypeId";
-const String ROUTE_ARG_SEARCH_QUERY_NAME = "searchQuery";
-const String ROUTE_ARG_PAGE_NAME = "page";
-const String SEARCH_ROUTE_NAME = "search";
-const String SEARCH_ROUTE_PATH = "${SEARCH_ROUTE_NAME}";
+final DartalogApi GLOBAL_API = new DartalogApi(new DartalogHttpClient(),
+    rootUrl: getServerRoot(), servicePath: "api/dartalog/0.1/");
 
 Element getChildElement(Element start, String tagName) {
   if (start == null) return null;

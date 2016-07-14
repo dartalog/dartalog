@@ -51,7 +51,8 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
 
   ItemBrowsePage.created() : super.created("Item Browse");
 
-  String _currentQuery = "";
+  String _lastSearchQuery = "";
+
   bool _loaded = false;
 
   @property
@@ -78,30 +79,30 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
   bool isCurrentPage(int page) => page == currentPage;
 
   @override
-  Future activateInternal(Map args, [bool forceRefresh = false]) async {
+  Future activateInternal([bool forceRefresh = false]) async {
     set("showAddControl",userHasPrivilege(dartalog.UserPrivilege.curator));
     if(showAddControl) {
-      await browseItemAddControl.activate(this.api,args);
+      await browseItemAddControl.activate();
     }
     bool refresh = false;
+    int requestedPage = 0;
 
-    if(args.containsKey(ROUTE_ARG_SEARCH_QUERY_NAME)) {
-      if(_currentQuery!=args[ROUTE_ARG_SEARCH_QUERY_NAME].toString().trim()) {
-        _currentQuery = args[ROUTE_ARG_SEARCH_QUERY_NAME].toString().trim();
-        if(isNullOrWhitespace(this.mainApp.searchText))
-          this.mainApp.setSearchText(_currentQuery);
-        refresh = true;
+    if(routeParameters!=null) {
+      if(routeParameters.containsKey("search")) {
+        if(_lastSearchQuery!=routeParameters["search"].toString().trim()) {
+          refresh = true;
+        } else if(!_loaded||forceRefresh) {
+          refresh = true;
+        }
       } else if(!_loaded||forceRefresh) {
         refresh = true;
       }
-    } else if(!_loaded||forceRefresh) {
-      refresh = true;
+
+      if(routeParameters.containsKey("page")) {
+        requestedPage = int.parse(routeParameters["page"]);
+      }
     }
 
-    int requestedPage = 0;
-    if(args.containsKey(ROUTE_ARG_PAGE_NAME)) {
-      requestedPage = int.parse(args[ROUTE_ARG_PAGE_NAME]);
-    }
     if(requestedPage!=this.lastLoadedPage) {
       refresh = true;
       set("currentPage", requestedPage);
@@ -141,10 +142,10 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
       clear("itemsList");
       set("noItemsFound", false);
       API.PaginatedResponse data;
-      if(isNullOrWhitespace(_currentQuery)) {
+      if(isNullOrWhitespace(searchQuery)) {
         data = await api.items.getVisibleSummaries(page: currentPage);
       } else {
-        data = await api.items.searchVisible(_currentQuery, page: currentPage);
+        data = await api.items.searchVisible(searchQuery, page: currentPage);
       }
       lastLoadedPage = data.page;
       set("currentPage", data.page);
@@ -159,34 +160,18 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
   }
 
   @override
-  Future search(String query) async {
-    if(isNullOrWhitespace(query)) {
+  Future search() async {
+    if(isNullOrWhitespace(searchQuery)) {
       _loaded = false;
-      _currentQuery = "";
-      this.mainApp.activateRoute(BROWSE_ROUTE_PATH);
+      set("routeParameters.searchQuery","");
     } else {
-      this.mainApp.activateRoute(SEARCH_ROUTE_PATH, arguments: {ROUTE_ARG_SEARCH_QUERY_NAME: query});
+      set("routeParameters.searchQuery",searchQuery);
     }
   }
 
   @reflectable
   generateItemLink(String id) {
-    return "#view/${id}";
-  }
-
-  @reflectable
-  itemClicked(event, [_]) async {
-    try {
-      dynamic ele = getParentElement(event.target, "paper-material");
-      String id = ele.dataset["id"];
-      if(isNullOrWhitespace(id))
-        return;
-
-      mainApp.activateRoute(ITEM_VIEW_ROUTE_PATH, arguments: {ROUTE_ARG_ITEM_ID_NAME: id});
-    } catch(e,st) {
-      _log.severe(e, st);
-      this.handleException(e,st);
-    }
+    return "#/item/${id}";
   }
 
   @reflectable
@@ -194,28 +179,13 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
     return getImageUrl(value, ImageType.THUMBNAIL);
   }
 
-  @reflectable
-  void nextPage(event, [_]) {
-    if(this.currentPage<this.totalPages-1) {
-      _activatePage(this.currentPage+1);
-    }
+
+  String getPaginationLink(int page) {
+    if(isNullOrWhitespace(this.searchQuery))
+      return "items?page=";
+    else
+      return "items?page=${page}&search=${Uri.encodeQueryComponent(this.searchQuery)}";
   }
 
-  @reflectable
-  void previousPage(event, [_]) {
-    if(this.currentPage>0) {
-      _activatePage(this.currentPage-1);
-    }
-  }
 
-  @reflectable
-  void pageSelected(event, [_]) {
-    _activatePage(currentPage);
-  }
-
-  void _activatePage(int page) {
-    if(isNullOrWhitespace(this._currentQuery)) {
-      mainApp.activateRoute(BROWSE_ROUTE_PATH, arguments: {ROUTE_ARG_PAGE_NAME: page});
-    }
-  }
 }

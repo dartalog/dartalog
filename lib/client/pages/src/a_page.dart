@@ -12,8 +12,22 @@ abstract class APage<T extends APage> extends AControl {
 
   int lastScrollPosition = 0;
 
-  Future activate(DartalogApi api, Map args) async {
-    await super.activate(api, args);
+  @Property(notify: true, observer: "routeChanged")
+  Map get route => mainApp.pageRoute;
+
+  @Property(notify: true)
+  Map routeData = {};
+
+  @Property(notify: true)
+  Map routeParameters = {};
+
+
+  void routeChanged(Object oldRoute, String newRoute) {
+    mainApp.updatePageRoute(newRoute);
+  }
+
+  Future activate() async {
+    await super.activate();
   }
 
 

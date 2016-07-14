@@ -2,7 +2,11 @@ part of pages;
 
 
 abstract class ASearchablePage {
+  @property
   bool showSearch = true;
 
-  Future search(String query);
+  @Property(notify: true)
+  String searchQuery = "";
+
+  Future search();
 }

@@ -101,13 +101,24 @@ class MainApp extends PolymerElement {
   //final Router router = new Router(useFragment: true);
 
   @Property(notify: true)
-  Map route = {};
+  Map route;
 
   @Property(notify: true)
-  Map routeData = {};
+  Map routeData;
 
   @Property(notify: true)
-  Map pageRoute = {};
+  Map pageRoute;
+
+
+  @Property(notify: true)
+  bool showPaginator = false;
+  @Property(notify: true)
+  bool enableNextPage = false;
+  @Property(notify: true)
+  bool enablePreviousPage = false;
+
+  @property
+  List<int> availablePages = new List<int>();
 
   /// Constructor used to create instance of MainApp.
   MainApp.created() : super.created() {
@@ -204,7 +215,6 @@ class MainApp extends PolymerElement {
             await evaluateAuthentication();
             break;
           default:
-            set("routeData.page", route);
             break;
         }
       }
@@ -263,6 +273,39 @@ class MainApp extends PolymerElement {
       notifyPath("currentPage.showSearch", false);
       notifyPath("currentPage.searchQuery", "");
     }
+
+    if (currentPage is ACollectionPage) {
+      ACollectionPage cp = currentPage as ACollectionPage;
+      _refreshPaginator(cp);
+      notifyPath("currentPage.showAddButton", cp.showAddButton);
+    } else {
+      set("showPaginator", false);
+      clear("availablePages");
+      set("enableNextPage", false);
+      set("enablePreviousPage", false);
+
+      notifyPath("currentPage.showAddButton", false);
+      notifyPath("currentPage.currentPage", 0);
+      notifyPath("currentPage.totalPages", 0);
+    }
+  }
+
+  void _refreshPaginator(ACollectionPage cp) {
+    notifyPath("currentPage.currentPage", cp.currentPage);
+    notifyPath("currentPage.totalPages", cp.totalPages);
+
+    set("showPaginator", cp.totalPages>1);
+
+    if(!showPaginator)
+      return;
+
+    clear("availablePages");
+    for(int i = 1; i <= cp.totalPages; i++) {
+      add("availablePages",i+1);
+    }
+
+    set("enablePreviousPage",cp.currentPage>1);
+    set("enableNextPage",cp.currentPage<cp.totalPages);
   }
 
   void handleException(e, st) {
@@ -376,7 +419,8 @@ class MainApp extends PolymerElement {
       await evaluateAuthentication();
       //await checkoutPage.activate(_api, {});
 
-      if (routeData == null) set("route.path", "/items");
+      if (routeData == null || routeData.isEmpty)
+        window.location.hash = "items";
 
       hideAppLoadingScreen();
     } catch (e, st) {

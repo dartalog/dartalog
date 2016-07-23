@@ -37,7 +37,7 @@ import 'package:dartalog/tools.dart';
 import '../../api/dartalog.dart' as API;
 
 @PolymerRegister('item-browse-page')
-class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
+class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage, ACollectionPage {
   static final Logger _log = new Logger("ItemBrowsePage");
   Logger get loggerImpl => _log;
 
@@ -56,27 +56,9 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
   bool _loaded = false;
 
   @property
-  bool showPaginator = false;
-  @property
-  bool enableNextPage = false;
-  @property
-  bool enablePreviousPage = false;
-
-  @property
   bool showAddControl = false;
 
   int lastLoadedPage = -1;
-
-  @property
-  int currentPage = 0;
-  @property
-  int totalPages = 1;
-
-  @property
-  List<int> availablePages = new List<int>();
-
-  @reflectable
-  bool isCurrentPage(int page) => page == currentPage;
 
   @override
   Future activateInternal([bool forceRefresh = false]) async {
@@ -105,26 +87,14 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
 
     if(requestedPage!=this.lastLoadedPage) {
       refresh = true;
-      set("currentPage", requestedPage);
+      currentPage = requestedPage;
     }
 
     if(refresh)
       await this.refresh();
   }
 
-  void _refreshPaginator() {
-    set("showPaginator", totalPages>1);
-    if(!showPaginator)
-      return;
 
-    clear("availablePages");
-    for(int i = 0; i < totalPages; i++) {
-      add("availablePages", i+1);
-    }
-
-    set("enablePreviousPage",this.currentPage>0);
-    set("enableNextPage",this.currentPage<this.totalPages-1);
-  }
 
   @override
   Future refresh() async {
@@ -143,17 +113,17 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
       set("noItemsFound", false);
       API.PaginatedResponse data;
       if(isNullOrWhitespace(searchQuery)) {
-        data = await api.items.getVisibleSummaries(page: currentPage);
+        data = await api.items.getVisibleSummaries(page: currentPage-1);
       } else {
-        data = await api.items.searchVisible(searchQuery, page: currentPage);
+        data = await api.items.searchVisible(searchQuery, page: currentPage-1);
       }
-      lastLoadedPage = data.page;
-      set("currentPage", data.page);
-      set("totalPages", data.totalPages);
+      lastLoadedPage = data.page+1;
+      currentPage =  data.page+1;
+      totalPages = data.totalPages;
       set("itemsList", ItemSummary.convertList(data.items));
       set("noItemsFound", itemsList.length==0);
 
-      _refreshPaginator();
+      mainApp.evaluatePage();
 
       _loaded = true;
     });
@@ -171,7 +141,7 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
 
   @reflectable
   generateItemLink(String id) {
-    return "#/item/${id}";
+    return "#item/${id}";
   }
 
   @reflectable
@@ -180,12 +150,7 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
   }
 
 
-  String getPaginationLink(int page) {
-    if(isNullOrWhitespace(this.searchQuery))
-      return "items?page=";
-    else
-      return "items?page=${page}&search=${Uri.encodeQueryComponent(this.searchQuery)}";
-  }
+
 
 
 }

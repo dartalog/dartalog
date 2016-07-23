@@ -16,6 +16,7 @@ import 'package:dartalog/client/api/dartalog.dart';
 
 import 'package:dartalog/client/controls/controls.dart';
 import 'package:dartalog/client/main_app.dart';
+import 'package:dartalog/tools.dart';
 
 
 part 'src/a_page.dart';

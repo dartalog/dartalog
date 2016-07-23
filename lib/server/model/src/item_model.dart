@@ -37,16 +37,33 @@ class ItemModel extends AIdNameBasedModel<Item> {
 //  }
 
   Future<PaginatedIdNameData<IdNamePair>> getVisibleIdsAndNames({int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
+    if(page<0) {
+      throw new InvalidInputException("Page must be a non-negative number");
+    }
+    if(perPage<0) {
+      throw new InvalidInputException("Per-page must be a non-negative number");
+    }
     await _validateGetAllIdsAndNamesPrivileges();
     return await dataSource.getVisibleIdsAndNamesPaginated(this._currentUserId, page: page, perPage: perPage);
   }
 
   Future<PaginatedIdNameData<Item>> getVisible({int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
-    await _validateGetAllIdsAndNamesPrivileges();
+    if(page<0) {
+      throw new InvalidInputException("Page must be a non-negative number");
+    }
+    if(perPage<0) {
+      throw new InvalidInputException("Per-page must be a non-negative number");
+    }    await _validateGetAllIdsAndNamesPrivileges();
     return await dataSource.getVisiblePaginated(this._currentUserId, page: page, perPage: perPage);
   }
 
   Future<PaginatedIdNameData<Item>> searchVisible(String query, {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
+    if(page<0) {
+      throw new InvalidInputException("Page must be a non-negative number");
+    }
+    if(perPage<0) {
+      throw new InvalidInputException("Per-page must be a non-negative number");
+    }
     await _validateGetAllIdsAndNamesPrivileges();
     return await dataSource.searchVisiblePaginated(this._currentUserId, query, page: page, perPage: perPage);
   }

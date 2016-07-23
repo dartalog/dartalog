@@ -23,11 +23,11 @@ dependencies:
   image: ^1.1.26
   logging_handlers: ^0.8.0
   mime: ^0.9.3
-  mongo_dart: ^0.2.8
+  mongo_dart: ^0.2.9
   option: ^1.2.0
   options_file: ^0.11.0
   polymer_elements: ^1.0.0-rc.9
-  polymer: ^1.0.0-rc.17
+  polymer: ^1.0.0-rc.18
   quagga_dart: ^0.0.2
   route_hierarchical: ^0.7.0
   rpc: ^0.5.6

@@ -24,7 +24,8 @@ class MongoItemDataSource extends _AMongoIdDataSource<Item>
     return (await _generateVisibleCriteria(userId)).cata(
         () => new PaginatedIdNameData<Item>(),
         (SelectorBuilder selector) async =>
-    await _getPaginatedIdNameListFromDb(selector, limit: perPage, offset: getOffset(page, perPage)));
+    await _getPaginatedIdNameListFromDb(selector,
+        limit: perPage, offset: getOffset(page, perPage)));
   }
 
   Future<PaginatedIdNameData<Item>> searchVisiblePaginated(String userId, String query, {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {

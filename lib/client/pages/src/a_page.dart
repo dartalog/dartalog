@@ -16,10 +16,10 @@ abstract class APage<T extends APage> extends AControl {
   Map get route => mainApp.pageRoute;
 
   @Property(notify: true)
-  Map routeData = {};
+  Map routeData;
 
   @Property(notify: true)
-  Map routeParameters = {};
+  Map routeParameters;
 
 
   void routeChanged(Object oldRoute, String newRoute) {

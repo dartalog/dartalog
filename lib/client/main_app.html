@@ -38,7 +38,7 @@
         <app-location route="{{route}}"  use-hash-as-path="true"></app-location>
         <app-route
             route="{{route}}"
-            pattern="/:page"
+            pattern=":page"
             data="{{routeData}}"
             tail="{{pageRoute}}">
         </app-route>
@@ -106,10 +106,13 @@
                                 <paper-item-body>Log In</paper-item-body>
                             </paper-item>
                         </template>
+                        <a href="#items">
                         <paper-item on-tap="drawerItemClicked" data-route="items">
                             <iron-icon icon="label-outline"></iron-icon>
                             <paper-item-body>Browse Items</paper-item-body>
                         </paper-item>
+                        </a>
+                        <a href="#collections">
                         <template is="dom-if" if="[[userCanAdd]]">
                             Curating
                             <paper-item on-tap="drawerItemClicked" data-route="collections">
@@ -117,20 +120,27 @@
                                 <paper-item-body>Collections</paper-item-body>
                             </paper-item>
                         </template>
+                            </a>
                         <template is="dom-if" if="[[userIsAdmin]]">
                             Admin
+                            <a href="#field_admin">
                             <paper-item on-tap="drawerItemClicked" data-route="field_admin">
                                 <iron-icon icon="label-outline"></iron-icon>
                                 <paper-item-body>Fields</paper-item-body>
                             </paper-item>
+                            </a>
+                            <a href="#item_type_admin">
                             <paper-item on-tap="drawerItemClicked" data-route="item_type_admin">
                                 <iron-icon icon="label-outline"></iron-icon>
                                 <paper-item-body>Item Types</paper-item-body>
                             </paper-item>
+                            </a>
+                            <a href="#user_admin">
                             <paper-item on-tap="drawerItemClicked" data-route="user_admin">
                                 <iron-icon icon="label-outline"></iron-icon>
                                 <paper-item-body>Users</paper-item-body>
                             </paper-item>
+                                </a>
                         </template>
                     </div>
                 </paper-header-panel>
@@ -144,6 +154,24 @@
                 </paper-header-panel>
             </paper-drawer-panel>
         </paper-header-panel>
+        <template is="dom-if" if="[[showPaginator]]">
+            <paper-material
+                    style="position:fixed; right:16pt;bottom:64pt; background-color: white;padding: 4pt; max-height: calc(100% - 118pt); overflow: hidden; width: 32pt;"
+                    class="layout vertical">
+
+                <paper-menu selected="[[currentPage.currentPage]]" on-iron-select="pageSelected" style="overflow-y: auto;overflow-x:hidden; width: 100px;"
+                            class="flexchild">
+                    <template is="dom-repeat" items="[[availablePages]]" as="item">
+                        <paper-item title="Page [[item]]" style="cursor: pointer">[[item]]</paper-item>
+                    </template>
+                </paper-menu>
+                <paper-icon-button icon="arrow-back" title="Previous Page" on-tap="previousPage"
+                                   disabled="[[!enablePreviousPage]]"></paper-icon-button>
+                <br/>
+                <paper-icon-button icon="arrow-forward" title="Next Page" on-tap="nextPage"
+                                   disabled="[[!enableNextPage]]"></paper-icon-button>
+            </paper-material>
+        </template>
 
         <template is="dom-if" if="[[appLoadingScreenVisible]]" restamp="true">
             <div class="flex" id="loading">

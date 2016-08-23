@@ -27,8 +27,7 @@ part 'src/a_editable_page.dart';
 part 'src/a_saveable_page.dart';
 part 'src/a_collection_page.dart';
 
-const ITEMS_PAGE_NAME = "items";
-
-class Paths {
-
+class Pages {
+  static const String ITEM_IMPORT = "item_impot";
+  static const String ITEMS = "items";
 }

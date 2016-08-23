@@ -1,4 +1,4 @@
-// Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
+// Copyright (c) 2015, Matthew Barbour. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
 @HtmlImport("item_import_page.html")
@@ -84,7 +84,7 @@ class ItemImportPage extends APage with ASaveablePage {
   List<ItemType> itemTypes = [];
 
   @override
-  Future activateInternal(Map args, [bool forceRefresh = false]) async {
+  Future activateInternal([bool forceRefresh = false]) async {
     showSaveButton = false;
     showBackButton = false;
 

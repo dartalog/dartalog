@@ -1,4 +1,4 @@
-// Copyright (c) 2016, <your name>. All rights reserved. Use of this source code
+// Copyright (c) 2016, Matthew Barbour. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 @HtmlImport('main_app.html')
 library dartalog.client.main_app;
@@ -105,6 +105,8 @@ class MainApp extends PolymerElement {
 
   @Property(notify: true)
   Map routeData;
+  @Property(notify: true)
+  Map routeParameters;
 
   @Property(notify: true)
   Map pageRoute;
@@ -175,7 +177,11 @@ class MainApp extends PolymerElement {
 
   @reflectable
   void cartClicked(event, [_]) {
-    set("routeData.page", "checkout");
+    changeRoute("checkout");
+  }
+
+  void changeRoute(String page, [Map data]) {
+    set("routeData.page", page);
   }
 
   Future clearAuthentication() async {
@@ -256,7 +262,7 @@ class MainApp extends PolymerElement {
     set("userCanBorrow", userHasPrivilege(UserPrivilege.patron));
 
     if (userLoggedIn != authed && this.currentPage != null) {
-      this.currentPage.reActivate(true);
+      await this.currentPage.reActivate(true);
     }
 
     set("userLoggedIn", authed);
@@ -300,12 +306,17 @@ class MainApp extends PolymerElement {
       return;
 
     clear("availablePages");
-    for(int i = 1; i <= cp.totalPages; i++) {
+    for(int i = 0; i <= cp.totalPages; i++) {
       add("availablePages",i+1);
     }
 
     set("enablePreviousPage",cp.currentPage>1);
     set("enableNextPage",cp.currentPage<cp.totalPages);
+  }
+
+  void setCurrentPage(int page) {
+    this.routeParameters["page"] = page;
+    notifyPath("routeParameters.page");
   }
 
   void handleException(e, st) {
@@ -337,10 +348,12 @@ class MainApp extends PolymerElement {
   }
 
   @reflectable
-  void pageChanged(event, [_]) {
+  pageChanged(event, [_]) async {
+    this.startLoading();
     evaluatePage();
-    if (currentPage != null) currentPage.activate();
+    if (currentPage != null) await currentPage.activate();
     evaluatePage();
+    this.stopLoading();
   }
 
   Future promptForAuthentication() async {

@@ -1,4 +1,4 @@
-// Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
+// Copyright (c) 2015, Matthew Barbour. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
 @HtmlImport("item_browse_page.html")
@@ -113,12 +113,12 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage, AColl
       set("noItemsFound", false);
       API.PaginatedResponse data;
       if(isNullOrWhitespace(searchQuery)) {
-        data = await api.items.getVisibleSummaries(page: currentPage-1);
+        data = await api.items.getVisibleSummaries(page: currentPage);
       } else {
-        data = await api.items.searchVisible(searchQuery, page: currentPage-1);
+        data = await api.items.searchVisible(searchQuery, page: currentPage);
       }
-      lastLoadedPage = data.page+1;
-      currentPage =  data.page+1;
+      lastLoadedPage = data.page;
+      currentPage =  data.page;
       totalPages = data.totalPages;
       set("itemsList", ItemSummary.convertList(data.items));
       set("noItemsFound", itemsList.length==0);

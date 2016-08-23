@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:args/args.dart' as argsLib;
-import 'package:crypt/crypt.dart';
+import 'package:dartalog/dartalog.dart';
 import 'package:dartalog/server/api/api.dart';
 import 'package:dartalog/server/data/data.dart';
 import 'package:dartalog/server/data_sources/data_sources.dart' as data_source;
@@ -11,7 +10,6 @@ import 'package:dartalog/server/server.dart';
 import 'package:logging/logging.dart';
 import 'package:logging_handlers/server_logging_handlers.dart' as serverLogging;
 import 'package:option/option.dart';
-import 'package:options_file/options_file.dart';
 import 'package:path/path.dart' show join, dirname;
 import 'package:rpc/rpc.dart';
 import 'package:shelf/shelf.dart' as shelf;
@@ -21,11 +19,8 @@ import 'package:shelf_exception_handler/shelf_exception_handler.dart';
 import 'package:shelf_route/shelf_route.dart';
 import 'package:shelf_rpc/shelf_rpc.dart' as shelf_rpc;
 import 'package:shelf_static/shelf_static.dart';
-import 'package:stack_trace/stack_trace.dart';
-
 
 HttpServer server;
-
 
 main(List<String> args) {
 //  var parser = new argsLib.ArgParser()
@@ -128,7 +123,7 @@ dynamic startServer() async {
         await io.serve(handler, model.settings.serverBindToAddress, model.settings.serverPort);
 
     SERVER_ROOT = "http://${server.address.host}:${server.port}/";
-    SERVER_API_ROOT = "${SERVER_ROOT}api/dartalog/0.1/";
+    SERVER_API_ROOT = "${SERVER_ROOT}${API_PATH}";
     print('Serving at ${SERVER_ROOT}');
   } catch (e, s) {
     _log.severe("Error while starting server", e, s);

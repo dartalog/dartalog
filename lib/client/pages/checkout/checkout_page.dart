@@ -1,4 +1,4 @@
-// Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
+// Copyright (c) 2015, Matthew Barbour. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
 @HtmlImport("checkout_page.html")
@@ -61,7 +61,7 @@ class CheckoutPage extends APage with ARefreshablePage {
 
   //This is called during app load, so make sure it can refresh without args
   @override
-  Future activateInternal(Map args, [bool forceRefresh = false]) async {
+  Future activateInternal([bool forceRefresh = false]) async {
     if(authWrapper.evaluateAuthentication())
       await this.refresh();
   }

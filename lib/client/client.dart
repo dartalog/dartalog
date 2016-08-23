@@ -1,19 +1,15 @@
-library client;
-
-import 'dart:async';
 import 'dart:html';
 
-import 'package:dartalog/client/data_sources/data_sources.dart' as data_source;
 import 'package:dartalog/dartalog.dart';
-import 'package:dartalog/tools.dart';
-import 'package:http/browser_client.dart';
-import 'package:http/http.dart';
-import 'package:option/option.dart';
-import 'package:dartalog/client/api/dartalog.dart';
-part 'src/dartalog_http_client.dart';
+
+import 'api/dartalog.dart';
+import 'src/dartalog_http_client.dart';
+
+export 'api/dartalog.dart' show DartalogApi;
+export 'src/http_headers.dart';
 
 final DartalogApi GLOBAL_API = new DartalogApi(new DartalogHttpClient(),
-    rootUrl: getServerRoot(), servicePath: "api/dartalog/0.1/");
+    rootUrl: getServerRoot(), servicePath: API_PATH);
 
 Element getChildElement(Element start, String tagName) {
   if (start == null) return null;
@@ -70,10 +66,6 @@ String getServerRoot() {
   if (window.location.port.length >= 5) return "http://localhost:3278/";
 
   return output.toString();
-}
-
-abstract class HttpHeaders {
-  static const String AUTHORIZATION = 'authorization';
 }
 
 enum ImageType { ORIGINAL, THUMBNAIL }

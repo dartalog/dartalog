@@ -1,5 +1,5 @@
 <!--
-  Copyright (c) 2016, <your name>. All rights reserved. Use of this source code
+  Copyright (c) 2016, Matthew Barbour. All rights reserved. Use of this source code
   is governed by a BSD-style license that can be found in the LICENSE file.
 -->
 
@@ -25,7 +25,6 @@
             margin-top: -80pt;
             text-align: center;
             --paper-spinner-stroke-width: 6pt;
-
         }
 
         div#loading div {
@@ -35,12 +34,13 @@
 
 
     <template>
-        <app-location route="{{route}}"  use-hash-as-path="true"></app-location>
+        <app-location route="{{route}}" use-hash-as-path="true"></app-location>
         <app-route
-            route="{{route}}"
-            pattern=":page"
-            data="{{routeData}}"
-            tail="{{pageRoute}}">
+                route="{{route}}"
+                pattern=":page"
+                data="{{routeData}}"
+                query-params="{{routeParameters}}"
+                tail="{{pageRoute}}">
         </app-route>
 
         <paper-header-panel class="flex" id="app" hidden="[[appLoadingScreenVisible]]">
@@ -107,62 +107,83 @@
                             </paper-item>
                         </template>
                         <a href="#items">
-                        <paper-item on-tap="drawerItemClicked" data-route="items">
-                            <iron-icon icon="label-outline"></iron-icon>
-                            <paper-item-body>Browse Items</paper-item-body>
-                        </paper-item>
+                            <paper-item on-tap="drawerItemClicked" data-route="items">
+                                <iron-icon icon="label-outline"></iron-icon>
+                                <paper-item-body>Browse Items</paper-item-body>
+                            </paper-item>
                         </a>
                         <a href="#collections">
-                        <template is="dom-if" if="[[userCanAdd]]">
-                            Curating
-                            <paper-item on-tap="drawerItemClicked" data-route="collections">
-                                <iron-icon icon="label-outline"></iron-icon>
-                                <paper-item-body>Collections</paper-item-body>
-                            </paper-item>
-                        </template>
-                            </a>
+                            <template is="dom-if" if="[[userCanAdd]]">
+                                Curating
+                                <paper-item on-tap="drawerItemClicked" data-route="collections">
+                                    <iron-icon icon="label-outline"></iron-icon>
+                                    <paper-item-body>Collections</paper-item-body>
+                                </paper-item>
+                            </template>
+                        </a>
                         <template is="dom-if" if="[[userIsAdmin]]">
                             Admin
                             <a href="#field_admin">
-                            <paper-item on-tap="drawerItemClicked" data-route="field_admin">
-                                <iron-icon icon="label-outline"></iron-icon>
-                                <paper-item-body>Fields</paper-item-body>
-                            </paper-item>
+                                <paper-item on-tap="drawerItemClicked" data-route="field_admin">
+                                    <iron-icon icon="label-outline"></iron-icon>
+                                    <paper-item-body>Fields</paper-item-body>
+                                </paper-item>
                             </a>
                             <a href="#item_type_admin">
-                            <paper-item on-tap="drawerItemClicked" data-route="item_type_admin">
-                                <iron-icon icon="label-outline"></iron-icon>
-                                <paper-item-body>Item Types</paper-item-body>
-                            </paper-item>
+                                <paper-item on-tap="drawerItemClicked" data-route="item_type_admin">
+                                    <iron-icon icon="label-outline"></iron-icon>
+                                    <paper-item-body>Item Types</paper-item-body>
+                                </paper-item>
                             </a>
                             <a href="#user_admin">
-                            <paper-item on-tap="drawerItemClicked" data-route="user_admin">
-                                <iron-icon icon="label-outline"></iron-icon>
-                                <paper-item-body>Users</paper-item-body>
-                            </paper-item>
-                                </a>
+                                <paper-item on-tap="drawerItemClicked" data-route="user_admin">
+                                    <iron-icon icon="label-outline"></iron-icon>
+                                    <paper-item-body>Users</paper-item-body>
+                                </paper-item>
+                            </a>
                         </template>
                     </div>
                 </paper-header-panel>
                 <paper-header-panel class="main" main mode="waterfall" id="mainPanel">
-                    <div class="content fit" >
+                    <div class="content fit">
                         TEST WORD <span>[[routeData.page]]</span>
-                        <iron-pages attr-for-selected="data-page" selected="[[routeData.page]]" on-iron-select="pageChanged">
+                        <iron-pages attr-for-selected="data-page" selected="[[routeData.page]]"
+                                    on-iron-select="pageChanged">
+                            <!-- General user pages -->
                             <item-browse-page id="itemBrowsePage" data-page="items" class="fit"></item-browse-page>
+                            <item-page id="itemViewPage" data-page="item" class="fit"></item-page>
+
+                            <!-- Curator pages -->
+                            <collections-page id="collectionsPage" data-page="collections"
+                                              class="fit"></collections-page>
+                            <checkout-page id="checkoutPage" data-page="checkout" class="fit"></checkout-page>
+
+                            <!-- Administration pages -->
+                            <field-admin-page id="fieldAdminPage" data-page="field_admin"
+                                              class="fit"></field-admin-page>
+                            <item-type-admin-page id="itemTypeAdminPage" data-page="item_type_admin"
+                                                  class="fit"></item-type-admin-page>
+                            <user-admin-page id="userAdminPage" data-page="user_admin" class="fit"></user-admin-page>
+
                         </iron-pages>
                     </div>
                 </paper-header-panel>
             </paper-drawer-panel>
         </paper-header-panel>
+
+
         <template is="dom-if" if="[[showPaginator]]">
             <paper-material
                     style="position:fixed; right:16pt;bottom:64pt; background-color: white;padding: 4pt; max-height: calc(100% - 118pt); overflow: hidden; width: 32pt;"
                     class="layout vertical">
 
-                <paper-menu selected="[[currentPage.currentPage]]" on-iron-select="pageSelected" style="overflow-y: auto;overflow-x:hidden; width: 100px;"
+                <paper-menu selected="{{routeParameters.page}}"
+                            attr-for-selected="data-page"
+                            on-iron-select="pageSelected"
+                            style="overflow-y: auto;overflow-x:hidden; width: 100px;"
                             class="flexchild">
                     <template is="dom-repeat" items="[[availablePages]]" as="item">
-                        <paper-item title="Page [[item]]" style="cursor: pointer">[[item]]</paper-item>
+                        <paper-item title="Page [[item]]" data-page="[[item]]" style="cursor: pointer">[[item]]</paper-item>
                     </template>
                 </paper-menu>
                 <paper-icon-button icon="arrow-back" title="Previous Page" on-tap="previousPage"

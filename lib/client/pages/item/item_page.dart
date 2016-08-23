@@ -1,4 +1,4 @@
-// Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
+// Copyright (c) 2015, Matthew Barbour. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
 @HtmlImport("item_page.html")
@@ -56,11 +56,17 @@ class ItemPage extends APage
   Logger get loggerImpl => _log;
 
   @override
-  Future activateInternal(Map args, [bool forceRefresh = false]) async {
-    if (isNullOrWhitespace(args[ROUTE_ARG_ITEM_ID_NAME])) {
-      throw new Exception("${ROUTE_ARG_ITEM_ID_NAME} is required");
+  Future activateInternal([bool forceRefresh = false]) async {
+    if(routeData!=null) {
+      if(!routeData.containsKey("item")||
+          isNullOrWhitespace(routeData["item"])) {
+        throw new Exception("Item is required");
+      }
+      this.currentItemId = routeData["item"];
+    } else {
+      // TODO: Handle no parameters for item page
     }
-    this.currentItemId = args[ROUTE_ARG_ITEM_ID_NAME];
+
     await this.refresh();
   }
 
@@ -90,15 +96,14 @@ class ItemPage extends APage
       if (!window.confirm("Are you sure you want to delete this item?")) return;
       await api.items.delete(currentItem.id);
       showMessage("Item deleted");
-      mainApp.activateRoute(BROWSE_ROUTE_NAME);
+      mainApp.changeRoute("items");
     });
   }
 
   @override
   Future edit() async {
     try {
-      mainApp.activateRoute(ITEM_EDIT_ROUTE_PATH,
-          arguments: {ROUTE_ARG_ITEM_ID_NAME: currentItemId});
+      mainApp.changeRoute("item_edit", {"item": currentItemId});
     } catch (e, st) {
       _log.severe(e, st);
       this.handleException(e, st);
@@ -133,7 +138,7 @@ class ItemPage extends APage
 
   @override
   Future goBack() async {
-    this.mainApp.activateRoute(BROWSE_ROUTE_PATH);
+    mainApp.changeRoute("items");
   }
 
   Future<bool> loadAvailableCollections() async {

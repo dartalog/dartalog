@@ -1,11 +1,18 @@
 <!--
-  Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
+  Copyright (c) 2015, Matthew Barbour. All rights reserved. Use of this source code
   is governed by a BSD-style license that can be found in the LICENSE file.
 -->
 
 <dom-module name="item-page">
     <link rel="stylesheet" href="item_page.css">
     <template>
+        <app-route
+                route="{{pageRoute}}"
+                pattern="/:item"
+                data="{{routeData}}"
+                query-params="{{routeParameters}}">
+        </app-route>
+
         <div style="background-color: black" class="horizontal layout center-justified">
             <template is="dom-repeat" items="[[currentItem.imageFieldsWithValue]]">
                 <image-zoomer src="[[getThumbnailUrl(item.value)]]"

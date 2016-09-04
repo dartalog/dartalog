@@ -40,7 +40,9 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   List<IdNamePair> fields = new List<IdNamePair>();
 
   String currentId = "";
-  @property Field currentField = new Field();
+
+  @property
+  Field currentField = new Field();
 
   /// Constructor used to create instance of MainApp.
   FieldAdminPage.created() : super.created("Field Admin");
@@ -49,7 +51,6 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   @reflectable String getFieldType(String key) => dartalog.FIELD_TYPES[key];
 
   AuthWrapperControl get authWrapper => this.querySelector("auth-wrapper-control");
-
 
   PaperDialog get editDialog =>  this.querySelector('#editDialog');
 

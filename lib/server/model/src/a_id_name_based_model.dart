@@ -5,6 +5,7 @@ abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel {
 
   String _normalizeId(String input) {
     String output = input.trim().toLowerCase();
+    output = Uri.decodeQueryComponent(output);
     return output;
   }
 

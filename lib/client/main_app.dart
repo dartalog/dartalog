@@ -348,7 +348,7 @@ class MainApp extends PolymerElement {
   }
 
   @reflectable
-  pageChanged(event, [_]) async {
+  ironPageChanged(event, [_]) async {
     this.startLoading();
     evaluatePage();
     if (currentPage != null) await currentPage.activate();

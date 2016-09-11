@@ -1,5 +1,5 @@
-part of pages;
-
+import 'dart:async';
+import 'package:polymer/polymer.dart';
 
 abstract class ASearchablePage {
   @Property(notify: true)

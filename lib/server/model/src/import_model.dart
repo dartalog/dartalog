@@ -7,30 +7,33 @@ class ImportModel extends AModel {
   @override
   String get _defaultReadPrivilegeRequirement => UserPrivilege.curator;
 
+  Future<Map<String,String>> getAvailableImportProviders() async {
+    await _validateReadPrivilegeRequirement();
+
+    Map<String,String> output = new Map<String,String>();
+
+    output[ImportProvider.AMAZON] = "Amazon";
+    output[ImportProvider.AMAZON] = "Amazon";
+
+    //output[ImportProvider.MOVIEDB] = "The MovieDB";
+
+    return output;
+  }
 
   Future<ImportResult> import(String provider, String id) async  {
     await _validateReadPrivilegeRequirement();
-    AImportProvider importer = _getProvider(provider);
+    AImportProvider importer = ImportProvider.getProvider(provider);
     return await importer.import(id);
   }
 
   Future<SearchResults> search(String provider, String query,
       {int page: 0}) async {
     await _validateReadPrivilegeRequirement();
-    AImportProvider importer = _getProvider(provider);
+    AImportProvider importer = ImportProvider.getProvider(provider);
     query = Uri.decodeFull(query);
     return await importer.search(query, page: page);
   }
 
-  AImportProvider _getProvider(String provider) {
-    switch (provider) {
-      case "amazon":
-        return new AmazonImportProvider();
-      case "themoviedb":
-        return new TheMovieDbImportProvider();
-      default:
-        throw new Exception("Unknown import provider");
-    }
-  }
+
 
 }

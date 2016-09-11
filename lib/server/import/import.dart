@@ -30,3 +30,20 @@ part 'src/a_scraping_import_provider.dart';
 part 'src/a_api_import_provider.dart';
 part 'src/amazon_import_provider.dart';
 part 'src/themoviedb_import_provider.dart';
+
+class ImportProvider {
+  static const AMAZON = AmazonImportProvider.NAME;
+  static const MOVIEDB = "themoviedb";
+
+  static AImportProvider getProvider(String provider) {
+    switch (provider) {
+      case ImportProvider.AMAZON:
+        return new AmazonImportProvider();
+      case ImportProvider.MOVIEDB:
+        return new TheMovieDbImportProvider();
+      default:
+        throw new Exception("Unknown import provider");
+    }
+  }
+
+}

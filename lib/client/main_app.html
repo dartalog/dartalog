@@ -63,20 +63,20 @@
                         </paper-icon-button>
                     </paper-input>
                 </template>
-                <template is="dom-if" if="[[showRefresh]]">
-                    <paper-icon-button icon="refresh" on-tap="refreshClicked"></paper-icon-button>
-                </template>
-                <template is="dom-if" if="[[showDelete]]">
+                <template is="dom-if" if="[[currentPage.showDeleteButton]]">
                     <paper-icon-button icon="delete" on-tap="deleteClicked"></paper-icon-button>
                 </template>
-                <template is="dom-if" if="[[showEdit]]">
+                <template is="dom-if" if="[[currentPage.showEditButton]]">
                     <paper-icon-button icon="create" on-tap="editClicked"></paper-icon-button>
                 </template>
-                <template is="dom-if" if="[[showAdd]]">
+                <template is="dom-if" if="[[currentPage.showAddButton]]">
                     <paper-icon-button icon="add" on-tap="addClicked"></paper-icon-button>
                 </template>
-                <template is="dom-if" if="[[showSave]]">
+                <template is="dom-if" if="[[currentPage.showSaveButton]]">
                     <paper-icon-button icon="save" on-tap="saveClicked"></paper-icon-button>
+                </template>
+                <template is="dom-if" if="[[currentPage.showRefreshButton]]">
+                    <paper-icon-button icon="refresh" on-tap="refreshClicked"></paper-icon-button>
                 </template>
                 <template is="dom-if" if="[[userCanCheckout]]" restamp="true">
                     <paper-icon-button id="cartIconButton" icon="shopping-cart"
@@ -146,7 +146,6 @@
                 </paper-header-panel>
                 <paper-header-panel class="main" main mode="waterfall" id="mainPanel">
                     <div class="content fit">
-                        TEST WORD <span>[[routeData.page]]</span>
                         <iron-pages attr-for-selected="data-page" selected="[[routeData.page]]"
                                     on-iron-select="ironPageChanged">
                             <!-- General user pages -->
@@ -157,6 +156,8 @@
                             <collections-page id="collectionsPage" data-page="collections"
                                               class="fit"></collections-page>
                             <checkout-page id="checkoutPage" data-page="checkout" class="fit"></checkout-page>
+
+                            <item-import-page id="itemImportPage" data-page="import" class="fit"></item-import-page>
 
                             <!-- Administration pages -->
                             <field-admin-page id="fieldAdminPage" data-page="field_admin"

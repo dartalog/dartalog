@@ -1,5 +1,7 @@
-part of pages;
-
+import 'dart:async';
+import 'package:polymer/polymer.dart';
+import 'package:dartalog/tools.dart';
+import 'a_searchable_page.dart';
 
 abstract class ACollectionPage {
   @Property(notify: true)

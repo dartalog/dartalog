@@ -19,6 +19,9 @@ class Item extends AIdData {
   List<ItemCopy> copies;
   ItemType type;
 
+  bool canEdit = false;
+  bool canDelete = false;
+
   Item();
 
   Option<ItemCopy> getCopy(int copy) {

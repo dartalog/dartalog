@@ -15,6 +15,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
 
   static final Directory THUMBNAIL_DIR = new Directory(THUMBNAIL_IMAGE_PATH);
   static final List<String> NON_SORTING_WORDS = ["the", "a", "an"];
+
   // TODO: evaluate more (oh)
   final ItemCopyModel copies = new ItemCopyModel();
   @override
@@ -27,6 +28,8 @@ class ItemModel extends AIdNameBasedModel<Item> {
   String get _defaultReadPrivilegeRequirement => UserPrivilege.none;
   @override
   String get _defaultWritePrivilegeRequirement => UserPrivilege.curator;
+  @override
+  String get _defaultDeletePrivilegeRequirement => UserPrivilege.admin;
 
 //  @override
 //  _performAdjustments(Item item) {
@@ -130,6 +133,18 @@ class ItemModel extends AIdNameBasedModel<Item> {
       }
     } else {
       output.copies = null;
+    }
+    try {
+      await _validateUpdatePrivileges(id);
+      output.canEdit = true;
+    } catch(e) {
+      output.canEdit = false;
+    }
+    try {
+      await _validateDeletePrivileges(id);
+      output.canDelete = true;
+    } catch(e) {
+      output.canDelete = false;
     }
     return output;
   }

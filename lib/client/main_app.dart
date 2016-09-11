@@ -20,7 +20,6 @@ import 'package:dartalog/client/pages/field_admin/field_admin_page.dart';
 import 'package:dartalog/client/pages/item/item_page.dart';
 import 'package:dartalog/client/pages/item_add/item_add_page.dart';
 import 'package:dartalog/client/pages/item_browse/item_browse_page.dart';
-import 'package:dartalog/client/pages/item_edit/item_edit_page.dart';
 import 'package:dartalog/client/pages/item_import/item_import_page.dart';
 import 'package:dartalog/client/pages/item_type_admin/item_type_admin_page.dart';
 import 'package:dartalog/client/pages/pages.dart';
@@ -48,6 +47,8 @@ import 'package:polymer_elements/paper_toast.dart';
 import 'package:polymer_elements/paper_toolbar.dart';
 import 'package:route_hierarchical/client.dart';
 import 'package:web_components/web_components.dart';
+
+import 'package:dartalog/client/pages/pages.dart';
 
 /// Uses [PaperInput]
 @PolymerRegister('main-app')
@@ -268,8 +269,11 @@ class MainApp extends PolymerElement {
     set("userLoggedIn", authed);
   }
 
-  void evaluatePage() {
+  void evaluateCurrentPage() {
     notifyPath("currentPage", currentPage);
+
+    notifyPath("currentPage.title", currentPage.title);
+    document.title = "dartalog -  ${currentPage.title}";
 
     if (currentPage != null && currentPage is ASearchablePage) {
       ASearchablePage sp = currentPage as ASearchablePage;
@@ -294,6 +298,28 @@ class MainApp extends PolymerElement {
       notifyPath("currentPage.currentPage", 0);
       notifyPath("currentPage.totalPages", 0);
     }
+
+    if(currentPage is AEditablePage) {
+      AEditablePage ep = currentPage as AEditablePage;
+      notifyPath("currentPage.showEditButton", ep.showEditButton);
+    } else {
+      notifyPath("currentPage.showEditButton", false);
+    }
+
+    if(currentPage is ADeletablePage) {
+      ADeletablePage dp = currentPage as ADeletablePage;
+      notifyPath("currentPage.showDeleteButton", dp.showDeleteButton);
+    } else {
+      notifyPath("currentPage.showDeleteButton", false);
+    }
+
+    if(currentPage is ARefreshablePage) {
+      ARefreshablePage rp = currentPage as ARefreshablePage;
+      notifyPath("currentPage.showRefreshButton", rp.showRefreshButton);
+    } else {
+      notifyPath("currentPage.showRefreshButton", false);
+    }
+
   }
 
   void _refreshPaginator(ACollectionPage cp) {
@@ -347,13 +373,21 @@ class MainApp extends PolymerElement {
     set("appLoadingScreenVisible", false);
   }
 
+  String _lastPage = "";
   @reflectable
   ironPageChanged(event, [_]) async {
-    this.startLoading();
-    evaluatePage();
-    if (currentPage != null) await currentPage.activate();
-    evaluatePage();
-    this.stopLoading();
+    try {
+      if (_lastPage==this.routeData["page"]) {
+        return;
+      }
+      _lastPage = this.routeData["page"];
+      this.startLoading();
+      evaluatePage();
+      if (currentPage != null) await currentPage.activate();
+    } finally {
+      evaluatePage();
+      this.stopLoading();
+    }
   }
 
   Future promptForAuthentication() async {

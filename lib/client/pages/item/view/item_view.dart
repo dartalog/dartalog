@@ -1,8 +1,8 @@
 // Copyright (c) 2015, Matthew Barbour. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
-@HtmlImport("item_page.html")
-library dartalog.client.pages.item_page;
+@HtmlImport("item_view.html")
+library dartalog.client.pages.item_view;
 
 import 'dart:async';
 import 'dart:html';
@@ -30,10 +30,10 @@ import 'package:web_components/web_components.dart';
 import 'package:dartalog/client/api/dartalog.dart' as API;
 import 'package:dartalog/client/controls/image_zoomer/image_zoomer.dart';
 
-@PolymerRegister('item-page')
-class ItemPage extends APage
+@PolymerRegister('item-view')
+class ItemViewPage extends APage
     with ARefreshablePage, ADeletablePage, AEditablePage {
-  static final Logger _log = new Logger("ItemPage");
+  static final Logger _log = new Logger("ItemViewPage");
   @property
   String currentItemId = "";
 
@@ -49,7 +49,7 @@ class ItemPage extends APage
   @property
   bool createCopy = false;
 
-  ItemPage.created() : super.created("Item View") {
+  ItemViewPage.created() : super.created("Item View") {
     this.showBackButton = true;
   }
 

@@ -66,7 +66,7 @@ class ItemAddControl extends AControl  {
   @reflectable
   importClicked(event, [_]) {
     addItemMethodDialog.close();
-    this.mainApp.changeRoute(Pages.ITEM_IMPORT);
+    this.mainApp.changeRoute(Pages.IMPORT);
   }
 
   @reflectable

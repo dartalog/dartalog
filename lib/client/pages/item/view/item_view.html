@@ -1,0 +1,98 @@
+<!--
+  Copyright (c) 2015, Matthew Barbour. All rights reserved. Use of this source code
+  is governed by a BSD-style license that can be found in the LICENSE file.
+-->
+
+<dom-module name="item-view">
+    <link rel="stylesheet" href="item_view.css">
+    <template>
+        <app-route
+                route="{{pageRoute}}"
+                pattern="/:item/edit"
+                data="{{routeData}}"
+                active="{{editActive}}">
+        </app-route>
+        <app-route
+                route="{{pageRoute}}"
+                pattern="/:item"
+                data="{{routeData}}">
+        </app-route>
+
+        <div style="background-color: black" class="horizontal layout center-justified">
+            <template is="dom-repeat" items="[[currentItem.imageFieldsWithValue]]">
+                <image-zoomer src="[[getThumbnailUrl(item.value)]]"
+                              fullsize="[[getOriginalImageUrl(item.value)]]" style="height:200px;" title="[[item.name]]"></image-zoomer>
+            </template>
+        </div>
+        <paper-card style="margin:4pt;" class="vertical layout" heading="Information">
+            <div class="card-content">
+                <template is="dom-repeat" items="[[currentItem.fields]]">
+                    <template is="dom-if" if="[[item.isTypeString]]" restamp="true">
+                        <paper-item data-id="[[item.id]]">
+                            <paper-item-body two-line>
+                                <div>[[item.name]]</div>
+                                <div secondary>[[item.value]]</div>
+                            </paper-item-body>
+                        </paper-item>
+                    </template>
+                </template>
+            </div>
+        </paper-card>
+        <paper-card style="margin:4pt;" class="vertical layout" heading="Copies">
+            <div class="card-content">
+                <template is="dom-repeat" items="[[currentItem.copies]]">
+                    <paper-item class="layout horizontal" data-copy$="[[item.copy]]">
+                        <paper-item-body two-line>
+                            <div><span>Collection: </span>[[item.collection.name]]</div>
+                            <div secondary is="dom=if" id="[[item.hasUniqueId]]">
+                                <span>Unique ID: </span>[[item.uniqueId]]
+                            </div>
+                        </paper-item-body>
+                        <div>[[item.statusName]]</div>
+                        <template is="dom-if" if="[[item.userCanEdit]]" restamp="true">
+                            <paper-icon-button icon="create" on-tap="editItemCopyClicked"></paper-icon-button>
+                        </template>
+                        <template is="dom-if" if="[[item.availableForCheckout]]" restamp="true">
+                            <paper-icon-button icon="add-shopping-cart" disabled="[[item.inCart]]"
+                                               on-tap="addCartCopyClicked"></paper-icon-button>
+                        </template>
+                    </paper-item>
+                </template>
+                <paper-item on-tap="addCopyClicked">Add Copy...</paper-item>
+            </div>
+        </paper-card>
+
+        <paper-dialog id="copyEditDialog" modal="true">
+            <h2>
+                <template is="dom-if" if="[[createCopy]]" restamp="true">Create Copy</template>
+                <template is="dom-if" if="[[!createCopy]]" restamp="true">Edit Copy</template>
+            </h2>
+            <div class="vertical">
+                <paper-dropdown-menu data-field-id="collectionId" floatinglabel label="Collection" required
+                                     auto-validate>
+                    <paper-listbox class="dropdown-content" attr-for-selected="value"
+                                   selected="{{currentItemCopy.collectionId}}">
+                        <template is="dom-repeat" items="[[collections]]">
+                            <paper-item value="[[item.id]]">[[item.name]]</paper-item>
+                        </template>
+                    </paper-listbox>
+                </paper-dropdown-menu>
+
+                <paper-input data-field-id="uniqueId" label="Unique ID"
+                             value="{{currentItemCopy.uniqueId}}"></paper-input>
+            </div>
+            <div class="buttons">
+                <paper-button dialog-dismiss>Cancel</paper-button>
+                <paper-button on-tap="saveItemCopyClicked">Save</paper-button>
+            </div>
+        </paper-dialog>
+
+        <paper-dialog id="copyActionDialog" modal="true">
+            <h2>Select an action</h2>
+            <div class="buttons">
+                <paper-button dialog-dismiss>Cancel</paper-button>
+                <paper-button on-tap="saveItemCopyClicked">Add To Cart</paper-button>
+            </div>
+        </paper-dialog>
+    </template>
+</dom-module>

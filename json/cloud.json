@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "db0568fe6910ded3f3cf172801df1d62ed2e6a35",
+ "etag": "9a0367af8507f1b5f49a98f5e495bf9d7d6014a5",
  "discoveryVersion": "v1",
  "id": "dartalog:0.1",
  "name": "dartalog",
@@ -284,6 +284,12 @@
     },
     "type": {
      "$ref": "ItemType"
+    },
+    "canEdit": {
+     "type": "boolean"
+    },
+    "canDelete": {
+     "type": "boolean"
     }
    }
   },

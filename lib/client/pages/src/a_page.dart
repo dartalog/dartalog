@@ -23,6 +23,7 @@ abstract class APage<T extends APage> extends AControl {
     this.route(newRoute);
   }
 
+  @override
   Future activate() async {
     notifyPath("pageRoute", this.pageRoute);
     await super.activate();

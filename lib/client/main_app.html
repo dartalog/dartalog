@@ -66,11 +66,11 @@
                 <template is="dom-if" if="[[currentPage.showDeleteButton]]">
                     <paper-icon-button icon="delete" on-tap="deleteClicked"></paper-icon-button>
                 </template>
+                <a href$="{{currentPage.editLink}}" target="_self">
                 <template is="dom-if" if="[[currentPage.showEditButton]]" restamp="true">
-                    <a href$="{{currentPage.editLink}}">
                         <paper-icon-button icon="create"></paper-icon-button>
-                    </a>
                 </template>
+                </a>
                 <template is="dom-if" if="[[currentPage.showAddButton]]">
                     <paper-icon-button icon="add" on-tap="addClicked"></paper-icon-button>
                 </template>
@@ -207,5 +207,8 @@
         <paper-toast-queue id="global_toast">
         </paper-toast-queue>
         <user-auth-control id="userAuthElement"></user-auth-control>
+        <div style="position:absolute; right:0;bottom:0;">
+            Test: <span>{{currentPage.editLink}}</span>
+        </div>
     </template>
 </dom-module>

@@ -171,7 +171,6 @@ class ItemViewPage extends APage
       notifyPath("currentItem.copies", newItem.copies);
 
       this.showDeleteButton = item.canDelete;
-      this.showEditButton  = item.canEdit;
 
       setTitle(newItem.name);
     });

@@ -1,9 +1,13 @@
 import 'dart:async';
 import 'package:polymer/polymer.dart';
+import 'package:dartalog/tools.dart';
 
 abstract class AEditablePage {
   @Property(notify: true)
-  bool showEditButton = true;
+  bool get showEditButton { return !isNullOrWhitespace(editLink); }
 
-  Future edit();
+  @Property(notify:true)
+  String get editLink { return "#test"; }
+
+  //Future edit();
 }

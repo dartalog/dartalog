@@ -10,7 +10,7 @@ import 'dart:html';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/pages/pages.dart';
-import 'package:dartalog/dartalog.dart' as dartalog;
+import 'package:dartalog/dartalog.dart';
 import 'package:dartalog/tools.dart';
 import 'package:logging/logging.dart';
 import 'package:polymer/polymer.dart';
@@ -48,6 +48,14 @@ class ItemPage extends APage
 
   @property
   bool createCopy = false;
+
+  @override
+  @Property(notify:true)
+  String get editLink {
+    if(currentItem!=null&&currentItem.canEdit)
+      return this.generateLink("${Pages.ITEM_EDIT}/${currentItem.id}");
+    return EMPTY_STRING;
+  }
 
   ItemPage.created() : super.created("Item View") {
     this.showBackButton = true;
@@ -96,19 +104,10 @@ class ItemPage extends APage
       if (!window.confirm("Are you sure you want to delete this item?")) return;
       await api.items.delete(currentItem.id);
       showMessage("Item deleted");
-      mainApp.changeRoute("items");
+      navigate(Pages.ITEMS);
     });
   }
 
-  @override
-  Future edit() async {
-    try {
-      mainApp.changeRoute("item_edit", {"item": currentItemId});
-    } catch (e, st) {
-      _log.severe(e, st);
-      this.handleException(e, st);
-    }
-  }
 
   @reflectable
   editItemCopyClicked(event, [_]) async {
@@ -171,7 +170,6 @@ class ItemPage extends APage
       notifyPath("currentItem.copies", newItem.copies);
 
       this.showDeleteButton = item.canDelete;
-      this.showEditButton  = item.canEdit;
 
       setTitle(newItem.name);
     });

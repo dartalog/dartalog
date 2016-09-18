@@ -231,14 +231,6 @@ class MainApp extends PolymerElement {
     }
   }
 
-  @reflectable
-  editClicked(event, [_]) async {
-    if (currentPage is AEditablePage) {
-      AEditablePage page = currentPage as AEditablePage;
-      page.edit();
-    }
-  }
-
   Future evaluateAuthentication() async {
     bool authed = false;
     try {
@@ -302,8 +294,10 @@ class MainApp extends PolymerElement {
     if(currentPage is AEditablePage) {
       AEditablePage ep = currentPage as AEditablePage;
       notifyPath("currentPage.showEditButton", ep.showEditButton);
+      notifyPath("currentPage.editLink", ep.editLink);
     } else {
       notifyPath("currentPage.showEditButton", false);
+      notifyPath("currentPage.editLink", EMPTY_STRING);
     }
 
     if(currentPage is ADeletablePage) {
@@ -382,10 +376,10 @@ class MainApp extends PolymerElement {
       }
       _lastPage = this.routeData["page"];
       this.startLoading();
-      evaluatePage();
+      evaluateCurrentPage();
       if (currentPage != null) await currentPage.activate();
     } finally {
-      evaluatePage();
+      evaluateCurrentPage();
       this.stopLoading();
     }
   }

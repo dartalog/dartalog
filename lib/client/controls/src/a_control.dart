@@ -24,25 +24,28 @@ import 'package:dartalog/client/controls/combo_list/combo_list_control.dart';
 
 class AControl extends PolymerElement {
   Logger get loggerImpl;
-  MainApp _mainApp = null;
+  MainApp _mainAppCache = null;
   API.DartalogApi get api => GLOBAL_API;
 
   static Option<User> currentUserStatic = new None();
   Option<User> get currentUser => currentUserStatic;
 
-  MainApp get mainApp {
-    if (_mainApp == null) {
-      _mainApp = getParentElement(this.parent, "main-app");
-      if (_mainApp == null)
+  MainApp get _mainApp {
+    if (_mainAppCache == null) {
+      _mainAppCache = getParentElement(this.parent, "main-app");
+      if (_mainAppCache == null)
         throw new Exception("Main app element could not be found");
     }
-    return _mainApp;
+    return _mainAppCache;
   }
+
+  @Property(notify: true, observer: "routeChanged")
+  Map get pageRoute => _mainApp.pageRoute;
 
   AControl.created() : super.created();
 
   void evaluatePage()  {
-    this.mainApp.evaluateCurrentPage();
+    this._mainApp.evaluateCurrentPage();
   }
 
   Map lastArgs;
@@ -118,9 +121,9 @@ class AControl extends PolymerElement {
         setGeneralErrorMessage(error.message);
         setFieldErrorMessages(error.errors);
       } else if(error.status==401) {
-        await this.mainApp.clearAuthentication();
-        await this.mainApp.promptForAuthentication();
-        await this.mainApp.evaluateAuthentication();
+        await this._mainApp.clearAuthentication();
+        await this._mainApp.promptForAuthentication();
+        await this._mainApp.evaluateAuthentication();
       } else if(error.status==413) {
         this.showMessage("The submitted data was too large, please submit smaller images");
       } else {
@@ -144,7 +147,7 @@ class AControl extends PolymerElement {
 
   void handleException(e, st) {
     loggerImpl.severe(this.tagName, e, st);
-    mainApp.handleException(e, st);
+    _mainApp.handleException(e, st);
   }
 
   void setFieldErrorMessages(List<commons.ApiRequestErrorDetail> fieldErrors) {
@@ -190,12 +193,33 @@ class AControl extends PolymerElement {
     }
   }
   void showMessage(String message, [String severity]) {
-    mainApp.showMessage(message, severity);
+    _mainApp.showMessage(message, severity);
   }
 
   void setGeneralErrorMessage(String message) {
     if (!isNullOrWhitespace(message))
       showMessage(message, "error");
+  }
+
+  String generateLink(String root, {Map args: null}) {
+    String output = "#${root}";
+    if(args!=null&&args.length>0) {
+      List<String> argList = new List<String>();
+      for(dynamic key in args.keys) {
+        argList.add("${key.toString()}=${args[key].toString()}");
+      }
+      output = Uri.encodeFull("${output}?${argList.join("&")}");
+    }
+    return output;
+  }
+
+  void navigate(String root) {
+    String target = generateLink(root);
+    window.location.hash = target;
+  }
+
+  void route(String page, {Map data: null}) {
+    this._mainApp.changeRoute(page,data);
   }
 
   Future focusPaperInput(Element input) {

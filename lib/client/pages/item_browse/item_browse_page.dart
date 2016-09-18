@@ -123,7 +123,7 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage, AColl
       set("itemsList", ItemSummary.convertList(data.items));
       set("noItemsFound", itemsList.length==0);
 
-      mainApp.evaluatePage();
+      this.evaluatePage();
 
       _loaded = true;
     });
@@ -140,8 +140,12 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage, AColl
   }
 
   @reflectable
-  generateItemLink(String id) {
-    return "#item/${id}";
+  String generateItemLink(String id) {
+    return this.generateLink(_generateItemLink(id));
+  }
+
+  String _generateItemLink(String id) {
+    return "${Pages.ITEM}/${id}";
   }
 
   @reflectable

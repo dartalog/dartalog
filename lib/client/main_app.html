@@ -66,8 +66,10 @@
                 <template is="dom-if" if="[[currentPage.showDeleteButton]]">
                     <paper-icon-button icon="delete" on-tap="deleteClicked"></paper-icon-button>
                 </template>
-                <template is="dom-if" if="[[currentPage.showEditButton]]">
-                    <paper-icon-button icon="create" on-tap="editClicked"></paper-icon-button>
+                <template is="dom-if" if="[[currentPage.showEditButton]]" restamp="true">
+                    <a href$="{{currentPage.editLink}}">
+                        <paper-icon-button icon="create"></paper-icon-button>
+                    </a>
                 </template>
                 <template is="dom-if" if="[[currentPage.showAddButton]]">
                     <paper-icon-button icon="add" on-tap="addClicked"></paper-icon-button>

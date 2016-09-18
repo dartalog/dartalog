@@ -10,4 +10,6 @@ export 'src/a_collection_page.dart';
 class Pages {
   static const String IMPORT = "import";
   static const String ITEMS = "items";
+  static const String ITEM = "item";
+  static const String ITEM_EDIT = "${ITEM}/edit";
 }

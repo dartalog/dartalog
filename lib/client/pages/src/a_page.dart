@@ -12,9 +12,6 @@ abstract class APage<T extends APage> extends AControl {
 
   int lastScrollPosition = 0;
 
-  @Property(notify: true, observer: "routeChanged")
-  Map get pageRoute => mainApp.pageRoute;
-
   @Property(notify: true)
   Map routeData;
 
@@ -23,7 +20,7 @@ abstract class APage<T extends APage> extends AControl {
 
 
   void routeChanged(Object oldRoute, String newRoute) {
-    mainApp.updatePageRoute(newRoute);
+    this.route(newRoute);
   }
 
   Future activate() async {

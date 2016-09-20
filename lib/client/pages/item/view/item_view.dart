@@ -34,6 +34,8 @@ import 'package:dartalog/client/controls/image_zoomer/image_zoomer.dart';
 class ItemViewPage extends APage
     with ARefreshablePage, ADeletablePage, AEditablePage {
   static final Logger _log = new Logger("ItemViewPage");
+  Logger get loggerImpl => _log;
+
   @property
   String currentItemId = "";
 
@@ -53,21 +55,9 @@ class ItemViewPage extends APage
     this.showBackButton = true;
   }
 
-  Logger get loggerImpl => _log;
-
-  @override
-  Future activateInternal([bool forceRefresh = false]) async {
-    if(routeData!=null) {
-      if(!routeData.containsKey("item")||
-          isNullOrWhitespace(routeData["item"])) {
-        throw new Exception("Item is required");
-      }
-      this.currentItemId = routeData["item"];
-    } else {
-      // TODO: Handle no parameters for item page
-    }
-
-    await this.refresh();
+   attached() {
+    super.attached();
+    this.loadItem();
   }
 
   @Observe('cart.*')
@@ -158,6 +148,18 @@ class ItemViewPage extends APage
 
   Future loadItem() async {
     await handleApiExceptions(() async {
+
+      if(routeData!=null) {
+        if(!routeData.containsKey("item")||
+            isNullOrWhitespace(routeData["item"])) {
+          throw new Exception("Item is required");
+        }
+        this.currentItemId = routeData["item"];
+      } else {
+        // TODO: Handle no parameters for item page
+      }
+
+
       API.Item item = await api.items.getById(this.currentItemId,
           includeType: true,
           includeFields: true,

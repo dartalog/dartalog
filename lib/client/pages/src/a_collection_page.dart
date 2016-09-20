@@ -7,7 +7,6 @@ abstract class ACollectionPage {
   @Property(notify: true)
   bool showAddButton = false;
 
-
   @Property(notify: true)
   int currentPage = 1;
 
@@ -19,8 +18,6 @@ abstract class ACollectionPage {
 
   @reflectable
   bool isCurrentPage(int page) => page == currentPage;
-
-
 
   @reflectable
   String getPaginationLink(int page) {

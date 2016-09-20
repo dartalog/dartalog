@@ -62,7 +62,7 @@ final Map<String, String> ITEM_COPY_STATUSES = {
   ITEM_STATUS_AVAILABLE: 'Available'
 };
 
-final List<String> RESERVED_WORDS = ['id', 'name', 'title', 'search'];
+final List<String> RESERVED_WORDS = ['id', 'name', 'title', 'search', 'edit'];
 
 class ItemAction {
   String id;

@@ -335,8 +335,15 @@ class MainApp extends PolymerElement {
   }
 
   void setCurrentPage(int page) {
-    this.routeParameters["page"] = page;
-    notifyPath("routeParameters.page");
+    set("routeParameters.page", page);
+  }
+
+  void nextPage(event,[_]) {
+    if(this.currentPage is ACollectionPage) {
+      ACollectionPage cp = this.currentPage as ACollectionPage;
+      if(cp.totalPages>cp.currentPage)
+        this.setCurrentPage(cp.currentPage+1);
+    }
   }
 
   void handleException(e, st) {
@@ -500,12 +507,29 @@ class MainApp extends PolymerElement {
     });
   }
 
+  routeChanged(event, [_]) {
+    notifyPath("browseVisible",browseVisible);
+    notifyPath("itemVisible",itemVisible);
+  }
+
+  @property
+  bool get browseVisible => getMapValue(routeData,"page")=="items";
+  @property
+  bool get itemVisible => getMapValue(routeData,"page")=="item";
+
+  String getMapValue(Map data, String key, [String defaultValue = EMPTY_STRING]) {
+    if(data==null||!data.containsKey(key))
+      return defaultValue;
+    return data[key];
+  }
+
   // Optional lifecycle methods - uncomment if needed.
 
-//  /// Called when an instance of main-app is inserted into the DOM.
-//  attached() {
-//    super.attached();
-//  }
+  /// Called when an instance of main-app is inserted into the DOM.
+  attached() {
+    super.attached();
+    routeChanged(null);
+  }
 
 //  /// Called when an instance of main-app is removed from the DOM.
 //  detached() {

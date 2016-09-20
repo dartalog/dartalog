@@ -56,7 +56,7 @@ class ItemAddPage extends APage with ASaveablePage {
 
   @override
   Future activateInternal([bool forceRefresh = false]) async {
-    bool authed = authWrapper.evaluateAuthentication();
+    bool authed = authWrapper.evaluatePageAuthentication();
     this.showSaveButton = authed;
     if (authed) {
       if (isNullOrWhitespace(args[ROUTE_ARG_ITEM_TYPE_ID_NAME])) {

@@ -98,12 +98,14 @@ class UserAuthControl extends AControl {
       if(this._toComplete!=null)
         this._toComplete.complete(true);
 
-      this.mainApp.evaluateAuthentication();
+
+      this.evaluatePageAuthentication();
     } on Exception catch(e,st) {
       set("errorMessage", e.toString());
       _log.severe("logInClicked", e, st);
     } catch(e, st) {
       request = e.target;
+      window.alert(e.runtimeType.toString());
       if(request!=null) {
         String message;
         switch(request.status) {

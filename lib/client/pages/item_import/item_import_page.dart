@@ -88,7 +88,7 @@ class ItemImportPage extends APage with ASaveablePage {
     showSaveButton = false;
     showBackButton = false;
 
-    bool authed = authWrapper.evaluateAuthentication();
+    bool authed = authWrapper.evaluatePageAuthentication();
     if(authed) {
       singleImportPages.selected = "item_search";
       //await loadItemTypes();

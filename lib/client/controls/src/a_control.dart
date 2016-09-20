@@ -39,18 +39,31 @@ class AControl extends PolymerElement {
     return _mainAppCache;
   }
 
-  @Property(notify: true, observer: "routeChanged")
-  Map get pageRoute => _mainApp.pageRoute;
+//  @Property(notify: true, observer: "routeChanged")
+  @Property(notify: true)
+  Map get route;
+  @Property(notify: true)
+  Map routeData;
+  @Property(notify: true)
+  Map routeParameters;
 
   AControl.created() : super.created();
+//
+//  void routeChanged(Object oldRoute, String newRoute) {
+//    this.route(newRoute);
+//  }
 
   void evaluatePage()  {
     this._mainApp.evaluateCurrentPage();
   }
 
+  Future evaluateAuthentication() async {
+    return await this._mainApp.evaluateAuthentication();
+  }
+
   Map lastArgs;
-  Future activate() async {
-    await activateInternal();
+  Future activate([bool forceRefresh = false]) async {
+    await activateInternal(forceRefresh);
   }
 
   Future reActivate(bool forceRefresh) async {
@@ -218,9 +231,9 @@ class AControl extends PolymerElement {
     window.location.hash = target;
   }
 
-  void route(String page, {Map data: null}) {
-    this._mainApp.changeRoute(page,data);
-  }
+//  void route(String page, {Map data: null}) {
+//    this._mainApp.changeRoute(page,data);
+//  }
 
   Future focusPaperInput(Element input) {
     Completer completer = new Completer();

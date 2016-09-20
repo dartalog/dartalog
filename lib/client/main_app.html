@@ -40,7 +40,8 @@
                 pattern=":page"
                 data="{{routeData}}"
                 query-params="{{routeParameters}}"
-                tail="{{pageRoute}}">
+                tail="{{pageRoute}}"
+                changed="routeChanged">
         </app-route>
 
         <paper-header-panel class="flex" id="app" hidden="[[appLoadingScreenVisible]]">
@@ -148,25 +149,30 @@
                 </paper-header-panel>
                 <paper-header-panel class="main" main mode="waterfall" id="mainPanel">
                     <div class="content fit">
+                        <!-- General user pages -->
+                        <template is="dom-if" if="[[browseVisible]]" restamp="true">
+                            <item-browse-page id="itemBrowsePage" route="{{pageRoute}}" data-page="items" class="fit"></item-browse-page>
+                        </template>
+                        <template is="dom-if" if="[[itemVisible]]" restamp="true">
+                            <item-page id="itemViewPage" route="{{pageRoute}}" data-page="item" class="fit"></item-page>
+                        </template>
                         <iron-pages attr-for-selected="data-page" selected="[[routeData.page]]"
                                     on-iron-select="ironPageChanged">
-                            <!-- General user pages -->
-                            <item-browse-page id="itemBrowsePage" data-page="items" class="fit"></item-browse-page>
-                            <item-page id="itemViewPage" data-page="item" class="fit"></item-page>
+
 
                             <!-- Curator pages -->
-                            <collections-page id="collectionsPage" data-page="collections"
+                            <collections-page id="collectionsPage" route="{{pageRoute}}" data-page="collections"
                                               class="fit"></collections-page>
-                            <checkout-page id="checkoutPage" data-page="checkout" class="fit"></checkout-page>
+                            <checkout-page id="checkoutPage" route="{{pageRoute}}" data-page="checkout" class="fit"></checkout-page>
 
-                            <item-import-page id="itemImportPage" data-page="import" class="fit"></item-import-page>
+                            <item-import-page id="itemImportPage" route="{{pageRoute}}" data-page="import" class="fit"></item-import-page>
 
                             <!-- Administration pages -->
-                            <field-admin-page id="fieldAdminPage" data-page="field_admin"
+                            <field-admin-page id="fieldAdminPage" route="{{pageRoute}}" data-page="field_admin"
                                               class="fit"></field-admin-page>
-                            <item-type-admin-page id="itemTypeAdminPage" data-page="item_type_admin"
+                            <item-type-admin-page id="itemTypeAdminPage" route="{{pageRoute}}" data-page="item_type_admin"
                                                   class="fit"></item-type-admin-page>
-                            <user-admin-page id="userAdminPage" data-page="user_admin" class="fit"></user-admin-page>
+                            <user-admin-page id="userAdminPage" route="{{pageRoute}}" data-page="user_admin" class="fit"></user-admin-page>
 
                         </iron-pages>
                     </div>
@@ -182,11 +188,10 @@
 
                 <paper-menu selected="{{routeParameters.page}}"
                             attr-for-selected="data-page"
-                            on-iron-select="pageSelected"
                             style="overflow-y: auto;overflow-x:hidden; width: 100px;"
                             class="flexchild">
                     <template is="dom-repeat" items="[[availablePages]]" as="item">
-                        <paper-item title="Page [[item]]" data-page="[[item]]" style="cursor: pointer">[[item]]</paper-item>
+                            <paper-item title="Page [[item]]" data-page="[[item]]" style="cursor: pointer"><a href="[[currentPage.getPaginationLink(item)]]">[[item]]</a></paper-item>
                     </template>
                 </paper-menu>
                 <paper-icon-button icon="arrow-back" title="Previous Page" on-tap="previousPage"

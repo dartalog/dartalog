@@ -99,7 +99,7 @@ class UserAuthControl extends AControl {
         this._toComplete.complete(true);
 
 
-      this.evaluatePageAuthentication();
+      this.evaluateAuthentication();
     } on Exception catch(e,st) {
       set("errorMessage", e.toString());
       _log.severe("logInClicked", e, st);

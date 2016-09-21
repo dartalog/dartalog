@@ -39,19 +39,19 @@ class AControl extends PolymerElement {
     return _mainAppCache;
   }
 
-//  @Property(notify: true, observer: "routeChanged")
-  @Property(notify: true)
-  Map get route;
-  @Property(notify: true)
-  Map routeData;
-  @Property(notify: true)
-  Map routeParameters;
+  @Property(notify: true, observer: "routeChangedEvent")
+  Map route;
 
   AControl.created() : super.created();
-//
-//  void routeChanged(Object oldRoute, String newRoute) {
-//    this.route(newRoute);
-//  }
+
+  @reflectable
+  void routeChangedEvent(oldRoute, newRoute) {
+    this.routeChanged();
+  }
+
+  void routeChanged() {
+
+  }
 
   void evaluatePage()  {
     this._mainApp.evaluateCurrentPage();
@@ -59,15 +59,6 @@ class AControl extends PolymerElement {
 
   Future evaluateAuthentication() async {
     return await this._mainApp.evaluateAuthentication();
-  }
-
-  Map lastArgs;
-  Future activate([bool forceRefresh = false]) async {
-    await activateInternal(forceRefresh);
-  }
-
-  Future reActivate(bool forceRefresh) async {
-    await activateInternal(forceRefresh);
   }
 
   bool userHasPrivilege(String type) {
@@ -146,6 +137,14 @@ class AControl extends PolymerElement {
       loggerImpl.severe(e, st);
       this.handleException(e, st);
     }
+  }
+
+  startLoading() {
+    this._mainApp.startLoading();
+  }
+
+  stopLoading() {
+    this._mainApp.stopLoading();
   }
 
   Future handleApiExceptions(toAwait()) async {

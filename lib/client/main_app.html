@@ -156,8 +156,9 @@
                         <template is="dom-if" if="[[itemVisible]]" restamp="true">
                             <item-page id="itemViewPage" route="{{pageRoute}}" data-page="item" class="fit"></item-page>
                         </template>
+
                         <iron-pages attr-for-selected="data-page" selected="[[routeData.page]]"
-                                    on-iron-select="ironPageChanged">
+                                    >
 
 
                             <!-- Curator pages -->
@@ -186,12 +187,16 @@
                     style="position:fixed; right:16pt;bottom:64pt; background-color: white;padding: 4pt; max-height: calc(100% - 118pt); overflow: hidden; width: 32pt;"
                     class="layout vertical">
 
-                <paper-menu selected="{{routeParameters.page}}"
+                <paper-menu selected="[[currentPage.currentPage]]"
                             attr-for-selected="data-page"
                             style="overflow-y: auto;overflow-x:hidden; width: 100px;"
                             class="flexchild">
                     <template is="dom-repeat" items="[[availablePages]]" as="item">
-                            <paper-item title="Page [[item]]" data-page="[[item]]" style="cursor: pointer"><a href="[[currentPage.getPaginationLink(item)]]">[[item]]</a></paper-item>
+                        <a href="[[getPaginationLink(item)]]">
+                            <paper-item title="Page [[item]]" data-page="[[item]]" style="cursor: pointer">
+                                [[item]]
+                            </paper-item>
+                        </a>
                     </template>
                 </paper-menu>
                 <paper-icon-button icon="arrow-back" title="Previous Page" on-tap="previousPage"

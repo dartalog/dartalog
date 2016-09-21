@@ -101,7 +101,7 @@ class MainApp extends PolymerElement {
 
   //final Router router = new Router(useFragment: true);
 
-  @Property(notify: true)
+  @Property(notify: true, observer: "routeChanged")
   Map route;
 
   @Property(notify: true)
@@ -134,6 +134,12 @@ class MainApp extends PolymerElement {
 
   @property
   APage get currentPage {
+    if(routeData!=null) {
+      dynamic output = this.querySelector(
+          "[data-page='" + routeData["page"] + "']");
+      if (output != null)
+        return output;
+    }
     if (pages == null) return null;
     return pages.selectedItem;
   }
@@ -254,14 +260,18 @@ class MainApp extends PolymerElement {
     set("userCanAdd", userHasPrivilege(UserPrivilege.curator));
     set("userCanBorrow", userHasPrivilege(UserPrivilege.patron));
 
-    if (userLoggedIn != authed && this.currentPage != null) {
-      await this.currentPage.reActivate(true);
+    if (userLoggedIn != authed && this.currentPage != null && this.currentPage is ARefreshablePage) {
+      ARefreshablePage rp = this.currentPage as ARefreshablePage;
+      await rp.refresh();
     }
 
     set("userLoggedIn", authed);
   }
 
   void evaluateCurrentPage() {
+    if(currentPage==null)
+      return;
+
     notifyPath("currentPage", currentPage);
 
     notifyPath("currentPage.title", currentPage.title);
@@ -374,22 +384,6 @@ class MainApp extends PolymerElement {
     set("appLoadingScreenVisible", false);
   }
 
-  String _lastPage = "";
-  @reflectable
-  ironPageChanged(event, [_]) async {
-    try {
-      if (_lastPage==this.routeData["page"]) {
-        return;
-      }
-      _lastPage = this.routeData["page"];
-      this.startLoading();
-      evaluateCurrentPage();
-      if (currentPage != null) await currentPage.activate();
-    } finally {
-      evaluateCurrentPage();
-      this.stopLoading();
-    }
-  }
 
   Future promptForAuthentication() async {
     UserAuthControl ele = $['userAuthElement'];
@@ -465,7 +459,6 @@ class MainApp extends PolymerElement {
   Future startApp() async {
     try {
       await evaluateAuthentication();
-      //await checkoutPage.activate(_api, {});
 
       if (routeData == null || routeData.isEmpty)
         window.location.hash = "items";
@@ -507,9 +500,15 @@ class MainApp extends PolymerElement {
     });
   }
 
-  routeChanged(event, [_]) {
+  @reflectable
+  routeChanged(oldValue, newValue) {
     notifyPath("browseVisible",browseVisible);
     notifyPath("itemVisible",itemVisible);
+    if(this.currentPage!=null&&this.currentPage is ARefreshablePage) {
+      ARefreshablePage rp = this.currentPage as ARefreshablePage;
+      rp.refresh();
+    }
+    evaluateCurrentPage();
   }
 
   @property
@@ -520,7 +519,17 @@ class MainApp extends PolymerElement {
   String getMapValue(Map data, String key, [String defaultValue = EMPTY_STRING]) {
     if(data==null||!data.containsKey(key))
       return defaultValue;
-    return data[key];
+    dynamic output =data[key];
+    return output;
+  }
+
+  @reflectable
+  String getPaginationLink(int page) {
+    if(this.currentPage==null||!(this.currentPage is ACollectionPage))
+      return EMPTY_STRING;
+
+    ACollectionPage cp = this.currentPage as ACollectionPage;
+    return "#${cp.getPaginationLink(page)}";
   }
 
   // Optional lifecycle methods - uncomment if needed.
@@ -528,7 +537,7 @@ class MainApp extends PolymerElement {
   /// Called when an instance of main-app is inserted into the DOM.
   attached() {
     super.attached();
-    routeChanged(null);
+    //routeChanged(null);
   }
 
 //  /// Called when an instance of main-app is removed from the DOM.

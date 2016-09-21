@@ -51,6 +51,9 @@ class ItemViewPage extends APage
   @property
   bool createCopy = false;
 
+  @Property(notify: true)
+  Map routeData;
+
   ItemViewPage.created() : super.created("Item View") {
     this.showBackButton = true;
   }
@@ -157,7 +160,8 @@ class ItemViewPage extends APage
         this.currentItemId = routeData["item"];
       } else {
         // TODO: Handle no parameters for item page
-      }
+
+    }
 
 
       API.Item item = await api.items.getById(this.currentItemId,

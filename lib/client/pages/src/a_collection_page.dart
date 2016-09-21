@@ -23,13 +23,22 @@ abstract class ACollectionPage {
   String getPaginationLink(int page) {
     if(this is ASearchablePage) {
       ASearchablePage sp = this as ASearchablePage;
-      if(isNullOrWhitespace(sp.searchQuery)) {
-        return "items?page=${page}&search=${Uri.encodeQueryComponent(
-            sp.searchQuery)}";
+      if(!isNullOrWhitespace(sp.searchQuery)) {
+        return "items/search/${Uri.encodeQueryComponent(sp.searchQuery)}/page/${page}";
       }
     }
-    return "items?page=${page}";
+    return "items/page/${page}";
   }
 
+  @reflectable
+  String getNextPageLink(int page) {
+    if(this is ASearchablePage) {
+      ASearchablePage sp = this as ASearchablePage;
+      if(!isNullOrWhitespace(sp.searchQuery)) {
+        return "items/search/${Uri.encodeQueryComponent(sp.searchQuery)}/page/${page}";
+      }
+    }
+    return "items/page/${page}";
+  }
 
 }

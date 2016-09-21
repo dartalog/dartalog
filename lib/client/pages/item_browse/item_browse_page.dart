@@ -42,58 +42,40 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage, AColl
   Logger get loggerImpl => _log;
 
   @Property(notify: true)
+  Map routeData;
+
+  @Property(notify: true)
+  Map subRoute;
+
+  @Property(notify: true)
   List<ItemSummary> itemsList = new List<ItemSummary>();
 
   @property
   bool noItemsFound = false;
 
+  @property
+  bool searchActive = false;
+
+  @property
+  bool pageRouteActive = false;
+
   ItemAddControl get browseItemAddControl =>  $['browse_item_add_control'];
 
   ItemBrowsePage.created() : super.created("Item Browse");
 
-  String _lastSearchQuery = "";
-
-  bool _loaded = false;
-
   @property
   bool showAddControl = false;
 
-  int lastLoadedPage = -1;
-
-  @override
-  Future activateInternal([bool forceRefresh = false]) async {
+  attached() {
+    super.attached();
     set("showAddControl",userHasPrivilege(dartalog.UserPrivilege.curator));
-    if(showAddControl) {
-      await browseItemAddControl.activate();
-    }
-    bool refresh = false;
-    int requestedPage = 0;
-
-    if(routeParameters!=null) {
-      if(routeParameters.containsKey("search")) {
-        if(_lastSearchQuery!=routeParameters["search"].toString().trim()) {
-          refresh = true;
-        } else if(!_loaded||forceRefresh) {
-          refresh = true;
-        }
-      } else if(!_loaded||forceRefresh) {
-        refresh = true;
-      }
-
-      if(routeParameters.containsKey("page")) {
-        requestedPage = int.parse(routeParameters["page"]);
-      }
-    }
-
-    if(requestedPage!=this.lastLoadedPage) {
-      refresh = true;
-      currentPage = requestedPage;
-    }
-
-    if(refresh)
-      await this.refresh();
+    this.loadItems();
   }
 
+  @override
+  routeChanged() {
+    this.loadItems();
+  }
 
 
   @override
@@ -108,34 +90,53 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage, AColl
 
   Future loadItems() async {
     await handleApiExceptions(() async {
-      _loaded = false;
-      clear("itemsList");
-      set("noItemsFound", false);
-      API.PaginatedResponse data;
-      if(isNullOrWhitespace(searchQuery)) {
-        data = await api.items.getVisibleSummaries(page: currentPage);
-      } else {
-        data = await api.items.searchVisible(searchQuery, page: currentPage);
+      try {
+        this.startLoading();
+        this.currentPage = 1;
+        this.searchQuery = EMPTY_STRING;
+        if(this.routeData!=null) {
+          if (this.routeData.containsKey("page") &&
+              !isNullOrWhitespace(this.routeData["page"])&&
+              (searchActive||pageRouteActive)) {
+            this.currentPage = int.parse(this.routeData["page"]);
+          }
+
+
+          if (this.routeData.containsKey("search") &&
+              !isNullOrWhitespace(this.routeData["search"])&&
+              searchActive) {
+            this.searchQuery = this.routeData["search"];
+          }
+        }
+        clear("itemsList");
+        set("noItemsFound", false);
+        API.PaginatedResponse data;
+        if (isNullOrWhitespace(searchQuery)) {
+          data = await api.items.getVisibleSummaries(page: currentPage);
+        } else {
+          data = await api.items.searchVisible(searchQuery, page: currentPage);
+        }
+
+        currentPage = data.page;
+        totalPages = data.totalPages;
+        set("itemsList", ItemSummary.convertList(data.items));
+        set("noItemsFound", itemsList.length == 0);
+
+        this.evaluatePage();
+      } finally {
+        this.stopLoading();
       }
-      lastLoadedPage = data.page;
-      currentPage =  data.page;
-      totalPages = data.totalPages;
-      set("itemsList", ItemSummary.convertList(data.items));
-      set("noItemsFound", itemsList.length==0);
-
-      this.evaluatePage();
-
-      _loaded = true;
     });
   }
 
   @override
   Future search() async {
     if(isNullOrWhitespace(searchQuery)) {
-      _loaded = false;
-      set("routeParameters.searchQuery","");
+      window.location.hash = "items/page/1";
+      //set("routeData.search","");
     } else {
-      set("routeParameters.searchQuery",searchQuery);
+      window.location.hash = "items/search/${searchQuery}/page/1";
+      //set("routeData.search",searchQuery);
     }
   }
 

@@ -10,11 +10,17 @@
     <template>
         <app-route
                 route="{{route}}"
-                pattern="/:page"
-                data="{{routeData}}"
-                query-params="{{routeParameters}}">
+                active="{{pageRouteActive}}"
+                pattern="/page/:page"
+                data="{{routeData}}">
         </app-route>
 
+        <app-route
+                route="{{route}}"
+                pattern="/search/:search/page/:page"
+                data="{{routeData}}"
+                active="{{searchActive}}">
+        </app-route>
 
         <template is="dom-if" if="[[noItemsFound]]">
             <div class="no_items">No Items Found</div>
@@ -34,8 +40,8 @@
             </template>
         </div>
 
-
-        <item-add-control id="browse_item_add_control" hidden="[[!showAddControl]]"></item-add-control>
-
+        <template is="dom-if" if="[[showAddControl]]" restamp="true">
+            <item-add-control id="browse_item_add_control"></item-add-control>
+        </template>
     </template>
 </dom-module>

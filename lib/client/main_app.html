@@ -68,9 +68,9 @@
                     <paper-icon-button icon="delete" on-tap="deleteClicked"></paper-icon-button>
                 </template>
                 <a href$="{{currentPage.editLink}}" target="_self">
-                <template is="dom-if" if="[[currentPage.showEditButton]]" restamp="true">
+                    <template is="dom-if" if="[[currentPage.showEditButton]]" restamp="true">
                         <paper-icon-button icon="create"></paper-icon-button>
-                </template>
+                    </template>
                 </a>
                 <template is="dom-if" if="[[currentPage.showAddButton]]">
                     <paper-icon-button icon="add" on-tap="addClicked"></paper-icon-button>
@@ -126,19 +126,19 @@
                         </a>
                         <template is="dom-if" if="[[userIsAdmin]]">
                             Admin
-                            <a href="#field_admin">
+                            <a href="#fields">
                                 <paper-item on-tap="drawerItemClicked" data-route="field_admin">
                                     <iron-icon icon="label-outline"></iron-icon>
                                     <paper-item-body>Fields</paper-item-body>
                                 </paper-item>
                             </a>
-                            <a href="#item_type_admin">
+                            <a href="#item_types">
                                 <paper-item on-tap="drawerItemClicked" data-route="item_type_admin">
                                     <iron-icon icon="label-outline"></iron-icon>
                                     <paper-item-body>Item Types</paper-item-body>
                                 </paper-item>
                             </a>
-                            <a href="#user_admin">
+                            <a href="#users">
                                 <paper-item on-tap="drawerItemClicked" data-route="user_admin">
                                     <iron-icon icon="label-outline"></iron-icon>
                                     <paper-item-body>Users</paper-item-body>
@@ -151,31 +151,43 @@
                     <div class="content fit">
                         <!-- General user pages -->
                         <template is="dom-if" if="[[browseVisible]]" restamp="true">
-                            <item-browse-page id="itemBrowsePage" route="{{pageRoute}}" data-page="items" class="fit"></item-browse-page>
+                            <item-browse-page id="itemBrowsePage" route="{{pageRoute}}" data-page="items"
+                                              class="fit"></item-browse-page>
                         </template>
                         <template is="dom-if" if="[[itemVisible]]" restamp="true">
                             <item-page id="itemViewPage" route="{{pageRoute}}" data-page="item" class="fit"></item-page>
                         </template>
 
-                        <iron-pages attr-for-selected="data-page" selected="[[routeData.page]]"
-                                    >
 
-
-                            <!-- Curator pages -->
+                        <!-- Curator pages -->
+                        <template is="dom-if" if="[[collectionsVisible]]" restamp="true">
                             <collections-page id="collectionsPage" route="{{pageRoute}}" data-page="collections"
                                               class="fit"></collections-page>
-                            <checkout-page id="checkoutPage" route="{{pageRoute}}" data-page="checkout" class="fit"></checkout-page>
+                        </template>
+                        <template is="dom-if" if="[[checkoutVisible]]" restamp="true">
+                            <checkout-page id="checkoutPage" route="{{pageRoute}}" data-page="checkout"
+                                           class="fit"></checkout-page>
+                        </template>
+                        <template is="dom-if" if="[[importVisible]]" restamp="true">
+                            <item-import-page id="itemImportPage" route="{{pageRoute}}" data-page="import"
+                                              class="fit"></item-import-page>
+                        </template>
 
-                            <item-import-page id="itemImportPage" route="{{pageRoute}}" data-page="import" class="fit"></item-import-page>
-
-                            <!-- Administration pages -->
-                            <field-admin-page id="fieldAdminPage" route="{{pageRoute}}" data-page="field_admin"
+                        <!-- Administration pages -->
+                        <template is="dom-if" if="[[fieldsVisible]]" restamp="true">
+                            <field-admin-page id="fieldAdminPage" route="{{pageRoute}}" data-page="fields"
                                               class="fit"></field-admin-page>
-                            <item-type-admin-page id="itemTypeAdminPage" route="{{pageRoute}}" data-page="item_type_admin"
+                        </template>
+                        <template is="dom-if" if="[[itemTypesVisible]]" restamp="true">
+                            <item-type-admin-page id="itemTypeAdminPage" route="{{pageRoute}}" data-page="item_types"
                                                   class="fit"></item-type-admin-page>
-                            <user-admin-page id="userAdminPage" route="{{pageRoute}}" data-page="user_admin" class="fit"></user-admin-page>
+                        </template>
+                        <template is="dom-if" if="[[usersVisible]]" restamp="true">
+                            <user-admin-page id="userAdminPage" route="{{pageRoute}}" data-page="users"
+                                             class="fit"></user-admin-page>
+                        </template>
 
-                        </iron-pages>
+
                     </div>
                 </paper-header-panel>
             </paper-drawer-panel>

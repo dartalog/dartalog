@@ -34,31 +34,24 @@ class ItemEditPage extends APage with ASaveablePage {
 
   AuthWrapperControl get authWrapper => this.querySelector("auth-wrapper-control");
 
-  @override
-  Future activateInternal([bool forceRefresh = false]) async {
-    bool authed = authWrapper.evaluatePageAuthentication();
+  attached() {
+    super.attached();
+    _loadPage();
+  }
+
+  Future _loadPage() async {
+    bool authed = await authWrapper.evaluatePageAuthentication();
     this.showSaveButton = authed;
-    if(authed) {
-      if (isNullOrWhitespace(args[ROUTE_ARG_ITEM_ID_NAME])) {
-        throw new Exception("{$ROUTE_ARG_ITEM_ID_NAME} is required");
-      }
-      this.currentItemId = args[ROUTE_ARG_ITEM_ID_NAME];
-
-      await itemEditControl.activate(this.api, args);
-    }
   }
 
-
-  @override
-  Future goBack() async {
-    this.mainApp.activateRoute(ITEM_VIEW_ROUTE_PATH, arguments: {ROUTE_ARG_ITEM_ID_NAME: this.currentItemId});
-  }
 
   @override
   Future save() async {
     String id = await itemEditControl.save();
     if(!isNullOrWhitespace(id)) {
       showMessage("Item saved");
+      window.location.hash = "item/${routeData["item"]}";
+
       this.mainApp.activateRoute(ITEM_VIEW_ROUTE_PATH,
           arguments: {ROUTE_ARG_ITEM_ID_NAME: id});
     }

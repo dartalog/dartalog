@@ -7,7 +7,7 @@ abstract class AEditablePage {
   bool get showEditButton { return !isNullOrWhitespace(editLink); }
 
   @Property(notify:true)
-  String get editLink { return "#test"; }
+  String get editLink => EMPTY_STRING;
 
   //Future edit();
 }

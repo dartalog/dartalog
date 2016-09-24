@@ -31,7 +31,8 @@ class AuthWrapperControl extends AControl  {
 
   AuthWrapperControl.created() : super.created();
 
-  bool evaluatePageAuthentication([_]) {
+  Future<bool> evaluatePageAuthentication([_]) async {
+    await this.evaluateAuthentication();
     set("userHasAccess", this.userHasPrivilege(minimumPrivilege));
     return userHasAccess;
   }

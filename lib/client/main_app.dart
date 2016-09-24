@@ -336,8 +336,8 @@ class MainApp extends PolymerElement {
       return;
 
     clear("availablePages");
-    for(int i = 0; i <= cp.totalPages; i++) {
-      add("availablePages",i+1);
+    for(int i = 1; i <= cp.totalPages; i++) {
+      add("availablePages",i);
     }
 
     set("enablePreviousPage",cp.currentPage>1);
@@ -504,6 +504,12 @@ class MainApp extends PolymerElement {
   routeChanged(oldValue, newValue) {
     notifyPath("browseVisible",browseVisible);
     notifyPath("itemVisible",itemVisible);
+    notifyPath("collectionsVisible",collectionsVisible);
+    notifyPath("checkoutVisible",checkoutVisible);
+    notifyPath("importVisible",importVisible);
+    notifyPath("fieldsVisible",fieldsVisible);
+    notifyPath("itemTypesVisible",itemTypesVisible);
+    notifyPath("usersVisible",usersVisible);
     if(this.currentPage!=null&&this.currentPage is ARefreshablePage) {
       ARefreshablePage rp = this.currentPage as ARefreshablePage;
       rp.refresh();
@@ -515,6 +521,18 @@ class MainApp extends PolymerElement {
   bool get browseVisible => getMapValue(routeData,"page")=="items";
   @property
   bool get itemVisible => getMapValue(routeData,"page")=="item";
+  @property
+  bool get collectionsVisible => getMapValue(routeData,"page")=="collections";
+  @property
+  bool get checkoutVisible => getMapValue(routeData,"page")=="checkout";
+  @property
+  bool get importVisible => getMapValue(routeData,"page")=="import";
+  @property
+  bool get fieldsVisible => getMapValue(routeData,"page")=="fields";
+  @property
+  bool get itemTypesVisible => getMapValue(routeData,"page")=="item_types";
+  @property
+  bool get usersVisible => getMapValue(routeData,"page")=="users";
 
   String getMapValue(Map data, String key, [String defaultValue = EMPTY_STRING]) {
     if(data==null||!data.containsKey(key))

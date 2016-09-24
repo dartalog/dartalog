@@ -45,7 +45,7 @@ class UserAdminPage extends APage with ARefreshablePage, ACollectionPage {
   User currentItem = new User();
 
   /// Constructor used to create instance of MainApp.
-  UserAdminPage.created() : super.created("User Admin");
+  UserAdminPage.created() : super.created("Users");
 
   PaperDialog get editDialog =>  this.querySelector('#editDialog');
 
@@ -68,12 +68,18 @@ class UserAdminPage extends APage with ARefreshablePage, ACollectionPage {
     return output;
   }
 
-  Future activateInternal([bool forceRefresh = false]) async {
-    bool authed = authWrapper.evaluatePageAuthentication();
-    if(authed)
-      await this.refresh();
+  attached() {
+    super.attached();
+    _loadPage();
+  }
+
+
+  Future _loadPage() async {
+    bool authed = await authWrapper.evaluatePageAuthentication();
     this.showRefreshButton = authed;
     this.showAddButton = authed;
+    if(authed)
+      await this.refresh();
   }
 
   @reflectable
@@ -117,13 +123,19 @@ class UserAdminPage extends APage with ARefreshablePage, ACollectionPage {
   @reflectable
   Future refresh() async {
     await handleApiExceptions(() async {
-      this.reset();
-      clear("items");
+      try {
+        this.startLoading();
+        this.reset();
+        clear("items");
 
-      API.ListOfIdNamePair data = await api.users.getAllIdsAndNames();
+        API.ListOfIdNamePair data = await api.users.getAllIdsAndNames();
 
-      for (API.IdNamePair pair in data) {
-        add("items", new IdNamePair.copy(pair));
+        for (API.IdNamePair pair in data) {
+          add("items", new IdNamePair.copy(pair));
+        }
+      } finally {
+        this.stopLoading();
+        this.evaluatePage();
       }
     });
   }

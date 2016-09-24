@@ -22,6 +22,7 @@ abstract class APage<T extends APage> extends AControl {
 
   }
 
+
   bool evaluate(APage page, bool evaluate(T page)) {
     if(page is T) {
       return evaluate(page);

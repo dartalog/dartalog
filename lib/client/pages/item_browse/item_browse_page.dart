@@ -108,6 +108,8 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage, AColl
             this.searchQuery = this.routeData["search"];
           }
         }
+        this.currentPage  = this.currentPage - 1;
+
         clear("itemsList");
         set("noItemsFound", false);
         API.PaginatedResponse data;

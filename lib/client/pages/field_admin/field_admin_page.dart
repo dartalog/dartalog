@@ -45,7 +45,7 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   Field currentField = new Field();
 
   /// Constructor used to create instance of MainApp.
-  FieldAdminPage.created() : super.created("Field Admin");
+  FieldAdminPage.created() : super.created("Fields");
 
   @Property(notify: true) Iterable get FIELD_TYPE_KEYS => dartalog.FIELD_TYPES.keys;
   @reflectable String getFieldType(String key) => dartalog.FIELD_TYPES[key];
@@ -59,24 +59,35 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   @Property(notify:true)
   String errorMessage = "";
 
-  Future activateInternal([bool forceRefresh = false]) async {
-    bool authed = authWrapper.evaluatePageAuthentication();
-    if(authed)
-      await this.refresh();
+  attached() {
+    super.attached();
+    _loadPage();
+  }
+
+  Future _loadPage() async {
+    bool authed = await authWrapper.evaluatePageAuthentication();
     this.showRefreshButton = authed;
     this.showAddButton = authed;
+    if(authed)
+      await this.refresh();
   }
 
   @reflectable
   Future refresh() async {
     await handleApiExceptions(() async {
-      this.reset();
-      clear("fields");
+      try {
+        startLoading();
+        this.reset();
+        clear("fields");
 
-      API.ListOfIdNamePair data = await api.fields.getAllIdsAndNames();
+        API.ListOfIdNamePair data = await api.fields.getAllIdsAndNames();
 
-      for(API.IdNamePair pair  in data) {
-        add("fields", new IdNamePair.copy(pair));
+        for (API.IdNamePair pair in data) {
+          add("fields", new IdNamePair.copy(pair));
+        }
+      } finally{
+        stopLoading();
+        this.evaluatePage();
       }
     });
   }

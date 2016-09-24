@@ -53,6 +53,11 @@ class AControl extends PolymerElement {
 
   }
 
+  void addToCart(ItemCopy itemCopy) {
+    this._mainApp.addToCart(itemCopy);
+  }
+
+
   void evaluatePage()  {
     this._mainApp.evaluateCurrentPage();
   }

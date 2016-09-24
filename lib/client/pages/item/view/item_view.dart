@@ -36,9 +36,6 @@ class ItemViewPage extends APage
   static final Logger _log = new Logger("ItemViewPage");
   Logger get loggerImpl => _log;
 
-  @property
-  String currentItemId = "";
-
   @Property(notify: true)
   Item currentItem = new Item();
 
@@ -54,11 +51,27 @@ class ItemViewPage extends APage
   @Property(notify: true)
   Map routeData;
 
+  String get _itemId {
+    if (routeData != null&&routeData.containsKey("item")) {
+      return routeData["item"];
+    }
+    return EMPTY_STRING;
+  }
+
+  @override
+  String get editLink {
+    if(isNullOrWhitespace(_itemId))
+      return EMPTY_STRING;
+    
+    return "#item/edit/${_itemId}";
+  }
+
+
   ItemViewPage.created() : super.created("Item View") {
     this.showBackButton = true;
   }
 
-   attached() {
+  attached() {
     super.attached();
     this.loadItem();
   }
@@ -70,7 +83,7 @@ class ItemViewPage extends APage
       String copy = ele.dataset["copy"];
       API.ItemCopy itemCopy =
           await api.items.copies.get(this.currentItem.id, int.parse(copy));
-      await this.mainApp.addToCart(new ItemCopy.copyFrom(itemCopy));
+      await this.addToCart(new ItemCopy.copyFrom(itemCopy));
     });
   }
 
@@ -89,18 +102,8 @@ class ItemViewPage extends APage
       if (!window.confirm("Are you sure you want to delete this item?")) return;
       await api.items.delete(currentItem.id);
       showMessage("Item deleted");
-      mainApp.changeRoute("items");
+      window.location.hash = "items";
     });
-  }
-
-  @override
-  Future edit() async {
-    try {
-      mainApp.changeRoute("item_edit", {"item": currentItemId});
-    } catch (e, st) {
-      _log.severe(e, st);
-      this.handleException(e, st);
-    }
   }
 
   @reflectable
@@ -129,11 +132,6 @@ class ItemViewPage extends APage
     return output;
   }
 
-  @override
-  Future goBack() async {
-    mainApp.changeRoute("items");
-  }
-
   Future<bool> loadAvailableCollections() async {
     bool output = await handleApiExceptions(() async {
       clear("collections");
@@ -151,34 +149,30 @@ class ItemViewPage extends APage
 
   Future loadItem() async {
     await handleApiExceptions(() async {
-
-      if(routeData!=null) {
-        if(!routeData.containsKey("item")||
-            isNullOrWhitespace(routeData["item"])) {
+      try {
+        startLoading();
+        if(isNullOrWhitespace(this._itemId))
           throw new Exception("Item is required");
-        }
-        this.currentItemId = routeData["item"];
-      } else {
-        // TODO: Handle no parameters for item page
 
-    }
+        API.Item item = await api.items.getById(this._itemId,
+            includeType: true,
+            includeFields: true,
+            includeCopies: true,
+            includeCopyCollection: true);
+        Item newItem = new Item.copy(item);
+        set("currentItem", newItem);
+        notifyPath(
+            "currentItem.imageFieldsWithValue", newItem.imageFieldsWithValue);
+        notifyPath("currentItem.fields", newItem.fields);
+        notifyPath("currentItem.copies", newItem.copies);
 
+        this.showDeleteButton = item.canDelete;
 
-      API.Item item = await api.items.getById(this.currentItemId,
-          includeType: true,
-          includeFields: true,
-          includeCopies: true,
-          includeCopyCollection: true);
-      Item newItem = new Item.copy(item);
-      set("currentItem", newItem);
-      notifyPath(
-          "currentItem.imageFieldsWithValue", newItem.imageFieldsWithValue);
-      notifyPath("currentItem.fields", newItem.fields);
-      notifyPath("currentItem.copies", newItem.copies);
-
-      this.showDeleteButton = item.canDelete;
-
-      setTitle(newItem.name);
+        setTitle(newItem.name);
+      } finally {
+        this.stopLoading();
+        this.evaluatePage();
+      }
     });
   }
 

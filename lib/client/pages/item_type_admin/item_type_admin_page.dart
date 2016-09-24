@@ -36,7 +36,7 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
   static final Logger _log = new Logger("ItemTypeAdminPage");
   Logger get loggerImpl => _log;
 
-  ItemTypeAdminPage.created() : super.created( "Item Type Admin");
+  ItemTypeAdminPage.created() : super.created( "Item Types");
 
   @Property(notify: true)
   List<IdNamePair> itemTypes = new List<IdNamePair>();
@@ -61,36 +61,46 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
 
   AuthWrapperControl get authWrapper => this.querySelector("auth-wrapper-control");
 
-  Future activateInternal([bool forceRefresh = false]) async {
-    bool authed = authWrapper.evaluatePageAuthentication();
-    if(authed)
-      await this.refresh();
+  attached() {
+    super.attached();
+    _loadPage();
+  }
+
+  Future _loadPage() async {
+    bool authed = await authWrapper.evaluatePageAuthentication();
     this.showRefreshButton = authed;
     this.showAddButton = authed;
+    if(authed)
+      await this.refresh();
   }
 
   Future refresh() async {
-    this.reset();
-    await loadAvailableFields();
-    await loadItemTypes();
+    await handleApiExceptions(() async {
+      try {
+        this.startLoading();
+        this.reset();
+
+        await _loadAvailableFields();
+        await _loadItemTypes();
+      } finally{
+        this.stopLoading();
+        this.evaluatePage();
+      }
+    });
   }
 
-  Future loadAvailableFields() async {
-    await handleApiExceptions(() async {
+  Future _loadAvailableFields() async {
       clear("fields");
 
       API.ListOfIdNamePair data = await api.fields.getAllIdsAndNames();
 
       set("fields", IdNamePair.copyList(data));
-    });
   }
 
-  Future loadItemTypes() async {
-    await handleApiExceptions(() async {
+  Future _loadItemTypes() async {
       clear("itemTypes");
       API.ListOfIdNamePair data = await api.itemTypes.getAllIdsAndNames();
       set("itemTypes", IdNamePair.copyList(data));
-    });
   }
 
   void reset() {

@@ -58,28 +58,42 @@ class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
   CollectionsPage.created() : super.created("Collection Maintenance");
 
 
-  Future activateInternal([bool forceRefresh = false]) async {
-    bool authed = authWrapper.evaluatePageAuthentication();
-    if(authed)
-      await this.refresh();
+  attached() {
+    super.attached();
+    _loadPage();
+  }
+
+
+  Future _loadPage() async {
+    bool authed = await authWrapper.evaluatePageAuthentication();
     this.showRefreshButton = authed;
     this.showAddButton = authed;
+    if(authed)
+      await this.refresh();
   }
 
   @reflectable
   Future refresh() async {
     await handleApiExceptions(() async {
-      this.reset();
-      clear("collections");
-      clear("users");
+      startLoading();
+      try {
+        this.reset();
+        clear("collections");
+        clear("users");
 
-      API.ListOfIdNamePair data = await api.collections.getAllIdsAndNames();
 
-      addAll("collections", IdNamePair.copyList(data));
+        API.ListOfIdNamePair data = await api.collections.getAllIdsAndNames();
 
-      data = await api.users.getAllIdsAndNames();
+        addAll("collections", IdNamePair.copyList(data));
 
-      addAll("users", IdNamePair.copyList(data));
+        data = await api.users.getAllIdsAndNames();
+
+        addAll("users", IdNamePair.copyList(data));
+
+      } finally {
+        stopLoading();
+        this.evaluatePage();
+      }
     });
   }
 

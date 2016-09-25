@@ -164,6 +164,10 @@
                             <collections-page id="collectionsPage" route="{{pageRoute}}" data-page="collections"
                                               class="fit"></collections-page>
                         </template>
+                        <template is="dom-if" if="[[addItemVisible]]" restamp="true">
+                            <item-add-page id="addItemPage" route="{{pageRoute}}" data-page="add"
+                                              class="fit"></item-add-page>
+                        </template>
                         <template is="dom-if" if="[[checkoutVisible]]" restamp="true">
                             <checkout-page id="checkoutPage" route="{{pageRoute}}" data-page="checkout"
                                            class="fit"></checkout-page>
@@ -196,7 +200,7 @@
 
         <template is="dom-if" if="[[showPaginator]]">
             <paper-material
-                    style="position:fixed; right:16pt;bottom:64pt; background-color: white;padding: 4pt; max-height: calc(100% - 118pt); overflow: hidden; width: 32pt;"
+                    style="position:fixed; right:16pt;top:52pt; background-color: white;padding: 4pt; max-height: calc(100% - 118pt); overflow: hidden; width: 32pt;"
                     class="layout vertical">
 
                 <paper-menu selected="[[currentPage.currentPage]]"
@@ -229,8 +233,5 @@
         <paper-toast-queue id="global_toast">
         </paper-toast-queue>
         <user-auth-control id="userAuthElement"></user-auth-control>
-        <div style="position:absolute; right:0;bottom:0;">
-            Test: <span>{{currentPage.editLink}}</span>
-        </div>
     </template>
 </dom-module>

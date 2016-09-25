@@ -10,13 +10,18 @@
 
     <template>
         <div class="fabContainer">
-        <paper-fab id="addFab" icon="add"></paper-fab>
+            <paper-fab id="addFab" icon="add"></paper-fab>
 
-        <paper-fab id="addManualFab" on-tap="manualClicked" mini icon="create" title="Add Manual Item"></paper-fab>
+            <a href="#add">
+                <paper-fab id="addManualFab" mini icon="create" title="Add Manual Item"></paper-fab>
+            </a>
 
-        <paper-tooltip for="addManualFab"  position="left" >Add Manual Item</paper-tooltip>
+            <paper-tooltip for="addManualFab" position="left">Add Manual Item</paper-tooltip>
 
-            <paper-fab id="importFab" icon="search" on-tap="importClicked" title="Import Item"></paper-fab>
+            <a href="#import">
+                <paper-fab id="importFab" icon="search" title="Import Item"></paper-fab>
+            </a>
+
             <paper-tooltip for="importFab" position="left">Import Item</paper-tooltip>
         </div>
 

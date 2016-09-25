@@ -15,11 +15,11 @@
 
         <span>[[routeData.item]]</span>
         <template is="dom-if" if="[[!editPageActive]]" restamp="true">
-            <item-view id="itemViewPage" route="{{route}}" class="fit" id="itemViewPage"></item-view>
+            <item-view id="itemViewPage" route="{{route}}" class="fit" ></item-view>
         </template>
 
         <template is="dom-if" if="[[editPageActive]]" restamp="true">
-            EDIT
+            <item-edit-page id="itemEditPage" route="{{editPageRoute}}" class="fit" ></item-edit-page>
         </template>
     </template>
 </dom-module>

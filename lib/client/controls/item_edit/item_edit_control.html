@@ -9,6 +9,12 @@
     <style include="iron-flex"></style>
 
     <template>
+        <app-route
+                route="{{route}}"
+                pattern="/:item"
+                data="{{routeData}}">
+        </app-route>
+
         <template is="dom-if" if="[[!itemTypesAvailable]]" restamp="true">
             <paper-card heading="No Item Types Defined" style="margin:8px;" class="vertical layout">
             </paper-card>
@@ -19,7 +25,7 @@
             <div class="card-content layout vertical">
                 <template is="dom-if" if="[[isNew]]" restamp="true">
                 <paper-dropdown-menu data-field-id="itemTypeId" floatinglabel label="Item Type">
-                    <paper-listbox class="dropdown-content" attr-for-selected="value" selected="{{currentItemTypeId}}">
+                    <paper-listbox class="dropdown-content" attr-for-selected="value" selected="{{itemTypeId}}">
                         <template is="dom-repeat" items="[[itemTypes]]">
                             <paper-item value="[[item.id]]">[[item.name]]</paper-item>
                         </template>

@@ -34,6 +34,7 @@ class ItemEditPage extends APage with ASaveablePage {
 
   AuthWrapperControl get authWrapper => this.querySelector("auth-wrapper-control");
 
+
   attached() {
     super.attached();
     _loadPage();
@@ -42,6 +43,7 @@ class ItemEditPage extends APage with ASaveablePage {
   Future _loadPage() async {
     bool authed = await authWrapper.evaluatePageAuthentication();
     this.showSaveButton = authed;
+    this.evaluatePage();
   }
 
 
@@ -50,10 +52,7 @@ class ItemEditPage extends APage with ASaveablePage {
     String id = await itemEditControl.save();
     if(!isNullOrWhitespace(id)) {
       showMessage("Item saved");
-      window.location.hash = "item/${routeData["item"]}";
-
-      this.mainApp.activateRoute(ITEM_VIEW_ROUTE_PATH,
-          arguments: {ROUTE_ARG_ITEM_ID_NAME: id});
+      window.location.hash = "item/${id}";
     }
   }
 }

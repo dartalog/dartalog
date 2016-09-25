@@ -34,13 +34,13 @@ class ItemEditControl extends AControl {
   String originalItemId = "";
 
   @property
-  bool isNew = true;
+  bool newItem = true;
 
   @Property(notify: true)
   Item currentItem = new Item();
 
   @Property(notify: true, observer: "itemTypeChanged")
-  String currentItemTypeId = "";
+  String itemTypeId = "";
 
   @Property(notify: true)
   String newCollectionId;
@@ -56,98 +56,125 @@ class ItemEditControl extends AControl {
   @Property(notify: true)
   bool itemTypesAvailable = false;
 
-  API_Library.ImportResult importResult = null;
+  API_Library.ImportResult _importResult = null;
+
+  @Property(notify: true)
+  Map routeData;
+
+  String get routeItemId {
+    if (routeData != null && routeData.containsKey("item")) {
+      return routeData["item"];
+    }
+    return EMPTY_STRING;
+  }
 
   ItemEditControl.created() : super.created();
 
   void reset() {
-    importResult = null;
+    _importResult = null;
     _setCurrentItem(new Item());
     set("newCollectionId", "");
     set("newUniqueId", "");
-    set("currentItemTypeId","");
+    set("currentItemTypeId", "");
     set("isNew", true);
     originalItemId = "";
   }
 
-  Future activateInternal([bool forceRefresh = false]) async {
+  attached() {
+    super.attached();
+    _loadPage();
+  }
+
+  Future _loadPage() async {
     await handleApiExceptions(() async {
-      reset();
-      await loadItemTypes();
-      set("itemTypesAvailable", itemTypes.isNotEmpty);
-      set("isNew", true);
-      if (args.containsKey(ROUTE_ARG_ITEM_ID_NAME)) {
-        await _loadItem(args[ROUTE_ARG_ITEM_ID_NAME]);
-        set("isNew", false);
-      } else if (args.containsKey(ROUTE_ARG_ITEM_TYPE_ID_NAME)) {
-        set("currentItemTypeId", args[ROUTE_ARG_ITEM_TYPE_ID_NAME]);
-      } else if (args.containsKey("imported_item")) {
-        dynamic newItem = args["imported_item"];
-        if (!(newItem is Item)) {
-          throw new Exception("Imported item must be of type Item");
-        }
-        originalItemId = "";
-        _setCurrentItem(newItem);
-      } else if (args.containsKey(ROUTE_ARG_IMPORT_RESULT_NAME)) {
-        dynamic result = args[ROUTE_ARG_IMPORT_RESULT_NAME];
-        if (!(result is API_Library.ImportResult)) {
-          throw new Exception("Imported item must be of type ImportResult");
-        }
-        originalItemId = "";
-        importResult = result;
-        set("currentItemTypeId", result.itemTypeId);
+      try {
+        startLoading();
+
+        reset();
+        await loadItemTypes();
+        await loadCollections();
+
+        set("itemTypesAvailable", itemTypes.isNotEmpty);
+        set("isNew", true);
+
+        if (!isNullOrWhitespace(routeItemId)) {
+          await _loadItem(routeItemId);
+          set("isNew", false);
+        } else if (!isNullOrWhitespace(itemTypeId)) {
+          //set("itemTypeId", itemTypeId);
+        } else {}
+      } finally {
+        stopLoading();
+        this.evaluatePage();
       }
-      await loadCollections();
     });
   }
 
+  Future loadImportResult(API_Library.ImportResult importResults) async {
+    this._importResult = importResults;
+    set("itemTypeId", importResults.itemTypeId);
+    //await this.switchItemType();
+  }
+
   Future loadCollections() async {
-    API_Library.ListOfIdNamePair collections = await  this.api.collections.getAllIdsAndNames();
+    API_Library.ListOfIdNamePair collections =
+        await this.api.collections.getAllIdsAndNames();
     set("collections", IdNamePair.copyList(collections));
   }
 
   Future loadItemTypes() async {
-    API_Library.ListOfIdNamePair itemTypes = await this.api.itemTypes.getAllIdsAndNames();
+    API_Library.ListOfIdNamePair itemTypes =
+        await this.api.itemTypes.getAllIdsAndNames();
     set("itemTypes", IdNamePair.copyList(itemTypes));
   }
 
   Future<String> save() async {
     return await handleApiExceptions(() async {
-      List<API_Library.MediaMessage> files = new List<API_Library.MediaMessage>();
+      try {
+        startLoading();
 
-      if(this.currentItem==null||this.currentItem.fields==null)
-        throw new Exception("Please select an item type");
+        List<API_Library.MediaMessage> files =
+        new List<API_Library.MediaMessage>();
 
-      for (Field f in this.currentItem.fields) {
-        if (f.type == "image") {
-          if (f.mediaMessage != null) {
-            files.add(f.mediaMessage);
-            f.value = "${FILE_UPLOAD_PREFIX}${files.length-1}";
+        if (this.currentItem == null || this.currentItem.fields == null)
+          throw new Exception("Please select an item type");
+
+        for (Field f in this.currentItem.fields) {
+          if (f.type == "image") {
+            if (f.mediaMessage != null) {
+              files.add(f.mediaMessage);
+              f.value = "${FILE_UPLOAD_PREFIX}${files.length - 1}";
+            }
           }
         }
+
+        API_Library.Item newItem = new API_Library.Item();
+        currentItem.copyTo(newItem);
+
+        if (!isNullOrWhitespace(this.originalItemId)) {
+          API_Library.UpdateItemRequest request =
+          new API_Library.UpdateItemRequest();
+          request.item = newItem;
+          request.files = files;
+          API_Library.IdResponse idResponse =
+          await api.items.updateItem(request, this.originalItemId);
+          return idResponse.id;
+        } else {
+          API_Library.CreateItemRequest request =
+          new API_Library.CreateItemRequest();
+          request.item = newItem;
+          request.uniqueId = newUniqueId;
+          request.collectionId = newCollectionId;
+          request.files = files;
+
+          API_Library.ItemCopyId itemCopyId =
+          await api.items.createItemWithCopy(request);
+          return itemCopyId.itemId;
+        }
+      } finally {
+        stopLoading();
+        this.evaluatePage();
       }
-
-      API_Library.Item newItem = new API_Library.Item();
-      currentItem.copyTo(newItem);
-
-      if (!isNullOrWhitespace(this.originalItemId)) {
-        API_Library.UpdateItemRequest request = new API_Library.UpdateItemRequest();
-        request.item = newItem;
-        request.files = files;
-        API_Library.IdResponse idResponse =
-            await api.items.updateItem(request, this.originalItemId);
-        return idResponse.id;
-      } else {
-        API_Library.CreateItemRequest request = new API_Library.CreateItemRequest();
-        request.item = newItem;
-        request.uniqueId = newUniqueId;
-        request.collectionId = newCollectionId;
-        request.files = files;
-
-        API_Library.ItemCopyId itemCopyId = await api.items.createItemWithCopy(request);
-        return itemCopyId.itemId;
-      }
-      return "";
     });
   }
 
@@ -163,18 +190,25 @@ class ItemEditControl extends AControl {
 
   @reflectable
   Future itemTypeChanged([_, __]) async {
-    if(api==null)
-      return;
+    await switchItemType();
+  }
 
-    API_Library.ItemType type = await api.itemTypes.getById(this.currentItemTypeId, includeFields: true);
+  Future switchItemType() async {
+    if (api == null) return;
+
+    API_Library.ItemType type = await api.itemTypes
+        .getById(this.itemTypeId, includeFields: true);
+
     if (type == null)
       throw new Exception("Specified Item Type not found on server");
 
-    Item newItem = new Item.forType(new ItemType.copy(type));
+    ItemType itemType  = new ItemType.copy(type);
+
+    Item newItem = new Item.forType(itemType);
+
     originalItemId = "";
 
-    if(importResult!=null)
-      newItem.applyImportResult(importResult);
+    if (_importResult != null) newItem.applyImportResult(_importResult);
 
     _setCurrentItem(newItem);
   }
@@ -209,7 +243,6 @@ class ItemEditControl extends AControl {
       if (input.files.length == 0) return;
       File file = input.files[0];
 
-
       Field field = this.currentItem.fields[index];
 
       this.set("currentItem.fields.${index}.editImageUrl", file.name);
@@ -223,14 +256,14 @@ class ItemEditControl extends AControl {
           //field.mediaMessage.contentType = parms[0].split(":")[1];
           //field.mediaMessage.bytes = BASE64URL.decode(parms[1].split(",")[1]);
 
-          field.mediaMessage.contentType = mime.lookupMimeType(
-              file.name, headerBytes: field.mediaMessage.bytes.sublist(0, 10));
-
+          field.mediaMessage.contentType = mime.lookupMimeType(file.name,
+              headerBytes: field.mediaMessage.bytes.sublist(0, 10));
 
           String value = new Uri.dataFromBytes(field.mediaMessage.bytes,
-              mimeType: field.mediaMessage.contentType).toString();
+                  mimeType: field.mediaMessage.contentType)
+              .toString();
           this.set("currentItem.fields.${index}.displayImageUrl", value);
-        }finally {
+        } finally {
           this.set("currentItem.fields.${index}.imageLoading", false);
         }
       }

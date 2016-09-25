@@ -68,8 +68,13 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage, AColl
 
   attached() {
     super.attached();
+    _loadPage();
+  }
+
+  _loadPage() async {
+    await evaluateAuthentication();
     set("showAddControl",userHasPrivilege(dartalog.UserPrivilege.curator));
-    this.loadItems();
+    await this.loadItems();
   }
 
   @override

@@ -1,5 +1,4 @@
 export 'src/a_page.dart';
-export 'src/a_nested_page.dart';
 export 'src/a_refreshable_page.dart';
 export 'src/a_searchable_page.dart';
 export 'src/a_deletable_page.dart';

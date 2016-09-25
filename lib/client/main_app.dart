@@ -140,8 +140,7 @@ class MainApp extends PolymerElement {
       if (output != null)
         return output;
     }
-    if (pages == null) return null;
-    return pages.selectedItem;
+    return null;
   }
 
   @property
@@ -161,8 +160,6 @@ class MainApp extends PolymerElement {
   ItemAddPage get itemAddAdmin => $['item_add'];
 
   ItemTypeAdminPage get itemTypeAdmin => $['item_type_admin'];
-
-  IronPages get pages => this.querySelector("iron-pages");
 
   @reflectable
   addClicked(event, [_]) async {
@@ -308,6 +305,14 @@ class MainApp extends PolymerElement {
     } else {
       notifyPath("currentPage.showEditButton", false);
       notifyPath("currentPage.editLink", EMPTY_STRING);
+    }
+
+
+    if(currentPage is ASaveablePage) {
+      ASaveablePage sp = currentPage as ASaveablePage;
+      notifyPath("currentPage.showSaveButton", sp.showSaveButton);
+    } else {
+      notifyPath("currentPage.showSaveButton", false);
     }
 
     if(currentPage is ADeletablePage) {
@@ -510,6 +515,7 @@ class MainApp extends PolymerElement {
     notifyPath("fieldsVisible",fieldsVisible);
     notifyPath("itemTypesVisible",itemTypesVisible);
     notifyPath("usersVisible",usersVisible);
+    notifyPath("addItemVisible",addItemVisible);
     if(this.currentPage!=null&&this.currentPage is ARefreshablePage) {
       ARefreshablePage rp = this.currentPage as ARefreshablePage;
       rp.refresh();
@@ -533,6 +539,8 @@ class MainApp extends PolymerElement {
   bool get itemTypesVisible => getMapValue(routeData,"page")=="item_types";
   @property
   bool get usersVisible => getMapValue(routeData,"page")=="users";
+  @property
+  bool get addItemVisible => getMapValue(routeData,"page")=="add";
 
   String getMapValue(Map data, String key, [String defaultValue = EMPTY_STRING]) {
     if(data==null||!data.containsKey(key))

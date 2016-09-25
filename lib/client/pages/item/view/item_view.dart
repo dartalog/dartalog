@@ -62,7 +62,7 @@ class ItemViewPage extends APage
   String get editLink {
     if(isNullOrWhitespace(_itemId))
       return EMPTY_STRING;
-    
+
     return "#item/edit/${_itemId}";
   }
 

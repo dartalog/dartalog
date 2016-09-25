@@ -63,19 +63,6 @@ class ItemAddControl extends AControl  {
     openDialog(selectItemTypeDialog);
   }
 
-  @reflectable
-  importClicked(event, [_]) {
-    addItemMethodDialog.close();
-    this.mainApp.changeRoute(Pages.IMPORT);
-  }
-
-  @reflectable
-  itemTypeClicked(event, [_]) {
-    selectItemTypeDialog.close();
-    PaperItem item = getParentElement(event.target,"paper-item");
-    String id = item.dataset["id"];
-    this.mainApp.activateRoute(ITEM_ADD_ROUTE_PATH, arguments: {ROUTE_ARG_ITEM_TYPE_ID_NAME: id});
-  }
 
   @reflectable
   chooseImportSourceClicked(event, [_]) {

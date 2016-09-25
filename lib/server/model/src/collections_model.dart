@@ -1,6 +1,7 @@
 part of model;
 
 class CollectionsModel extends AIdNameBasedModel<Collection> {
+  // TODO: Currently denys admins the ability to save collections that they are not curators for
   static final Logger _log = new Logger('CollectionsModel');
   Logger get _logger => _log;
   ACollectionDataSource get dataSource => data_sources.itemCollections;

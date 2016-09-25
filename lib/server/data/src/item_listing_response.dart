@@ -12,6 +12,9 @@ class ItemSummary {
     this.id = o.id;
     this.name = o.name;
     this.typeId = o.typeId;
+    if(o.values==null)
+      throw new Exception("Null value object");
+
     if (o.values.containsKey(thumbnailField)) {
       this.thumbnail = o.values[thumbnailField];
     }

@@ -1,4 +1,4 @@
-// Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
+// Copyright (c) 2015, Matthew Barbour. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
 @HtmlImport("item_edit_page.html")
@@ -34,33 +34,25 @@ class ItemEditPage extends APage with ASaveablePage {
 
   AuthWrapperControl get authWrapper => this.querySelector("auth-wrapper-control");
 
-  @override
-  Future activateInternal(Map args, [bool forceRefresh = false]) async {
-    bool authed = authWrapper.evaluateAuthentication();
+
+  attached() {
+    super.attached();
+    _loadPage();
+  }
+
+  Future _loadPage() async {
+    bool authed = await authWrapper.evaluatePageAuthentication();
     this.showSaveButton = authed;
-    if(authed) {
-      if (isNullOrWhitespace(args[ROUTE_ARG_ITEM_ID_NAME])) {
-        throw new Exception("{$ROUTE_ARG_ITEM_ID_NAME} is required");
-      }
-      this.currentItemId = args[ROUTE_ARG_ITEM_ID_NAME];
-
-      await itemEditControl.activate(this.api, args);
-    }
+    this.evaluatePage();
   }
 
-
-  @override
-  Future goBack() async {
-    this.mainApp.activateRoute(ITEM_VIEW_ROUTE_PATH, arguments: {ROUTE_ARG_ITEM_ID_NAME: this.currentItemId});
-  }
 
   @override
   Future save() async {
     String id = await itemEditControl.save();
     if(!isNullOrWhitespace(id)) {
       showMessage("Item saved");
-      this.mainApp.activateRoute(ITEM_VIEW_ROUTE_PATH,
-          arguments: {ROUTE_ARG_ITEM_ID_NAME: id});
+      window.location.hash = "item/${id}";
     }
   }
 }

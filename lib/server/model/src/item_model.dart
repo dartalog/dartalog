@@ -15,6 +15,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
 
   static final Directory THUMBNAIL_DIR = new Directory(THUMBNAIL_IMAGE_PATH);
   static final List<String> NON_SORTING_WORDS = ["the", "a", "an"];
+
   // TODO: evaluate more (oh)
   final ItemCopyModel copies = new ItemCopyModel();
   @override
@@ -27,6 +28,8 @@ class ItemModel extends AIdNameBasedModel<Item> {
   String get _defaultReadPrivilegeRequirement => UserPrivilege.none;
   @override
   String get _defaultWritePrivilegeRequirement => UserPrivilege.curator;
+  @override
+  String get _defaultDeletePrivilegeRequirement => UserPrivilege.admin;
 
 //  @override
 //  _performAdjustments(Item item) {
@@ -37,16 +40,33 @@ class ItemModel extends AIdNameBasedModel<Item> {
 //  }
 
   Future<PaginatedIdNameData<IdNamePair>> getVisibleIdsAndNames({int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
+    if(page<0) {
+      throw new InvalidInputException("Page must be a non-negative number");
+    }
+    if(perPage<0) {
+      throw new InvalidInputException("Per-page must be a non-negative number");
+    }
     await _validateGetAllIdsAndNamesPrivileges();
     return await dataSource.getVisibleIdsAndNamesPaginated(this._currentUserId, page: page, perPage: perPage);
   }
 
   Future<PaginatedIdNameData<Item>> getVisible({int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
-    await _validateGetAllIdsAndNamesPrivileges();
+    if(page<0) {
+      throw new InvalidInputException("Page must be a non-negative number");
+    }
+    if(perPage<0) {
+      throw new InvalidInputException("Per-page must be a non-negative number");
+    }    await _validateGetAllIdsAndNamesPrivileges();
     return await dataSource.getVisiblePaginated(this._currentUserId, page: page, perPage: perPage);
   }
 
   Future<PaginatedIdNameData<Item>> searchVisible(String query, {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
+    if(page<0) {
+      throw new InvalidInputException("Page must be a non-negative number");
+    }
+    if(perPage<0) {
+      throw new InvalidInputException("Per-page must be a non-negative number");
+    }
     await _validateGetAllIdsAndNamesPrivileges();
     return await dataSource.searchVisiblePaginated(this._currentUserId, query, page: page, perPage: perPage);
   }
@@ -113,6 +133,18 @@ class ItemModel extends AIdNameBasedModel<Item> {
       }
     } else {
       output.copies = null;
+    }
+    try {
+      await _validateUpdatePrivileges(id);
+      output.canEdit = true;
+    } catch(e) {
+      output.canEdit = false;
+    }
+    try {
+      await _validateDeletePrivileges(id);
+      output.canDelete = true;
+    } catch(e) {
+      output.canDelete = false;
     }
     return output;
   }

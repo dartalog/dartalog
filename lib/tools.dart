@@ -7,6 +7,7 @@ const String UUID_REGEX_STRING = r"^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}
 
 final RegExp UUID_REGEX = new RegExp(UUID_REGEX_STRING);
 
+const String EMPTY_STRING = "";
 
 String getEnumValueString(dynamic enumValue) => enumValue.toString().substring(enumValue.toString().indexOf('.')+1);
 
@@ -56,7 +57,7 @@ bool isNullOrWhitespace(String input) {
     return true;
   }
 
-  if(input.trim()=="") {
+  if(input.trim()==EMPTY_STRING) {
     return true;
   }
 

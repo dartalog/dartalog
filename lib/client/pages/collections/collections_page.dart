@@ -1,4 +1,4 @@
-// Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
+// Copyright (c) 2015, Matthew Barbour. All rights reserved. Use of this source code
 
 // is governed by a BSD-style license that can be found in the LICENSE file.
 @HtmlImport('collections_page.html')
@@ -58,29 +58,42 @@ class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
   CollectionsPage.created() : super.created("Collection Maintenance");
 
 
-  Future activateInternal(Map args, [bool forceRefresh = false]) async {
-    bool authed = authWrapper.evaluateAuthentication();
-    if(authed)
-      await this.refresh();
+  attached() {
+    super.attached();
+    _loadPage();
+  }
+
+
+  Future _loadPage() async {
+    bool authed = await authWrapper.evaluatePageAuthentication();
     this.showRefreshButton = authed;
     this.showAddButton = authed;
-
+    if(authed)
+      await this.refresh();
   }
 
   @reflectable
   Future refresh() async {
     await handleApiExceptions(() async {
-      this.reset();
-      clear("collections");
-      clear("users");
+      startLoading();
+      try {
+        this.reset();
+        clear("collections");
+        clear("users");
 
-      API.ListOfIdNamePair data = await api.collections.getAllIdsAndNames();
 
-      addAll("collections", IdNamePair.copyList(data));
+        API.ListOfIdNamePair data = await api.collections.getAllIdsAndNames();
 
-      data = await api.users.getAllIdsAndNames();
+        addAll("collections", IdNamePair.copyList(data));
 
-      addAll("users", IdNamePair.copyList(data));
+        data = await api.users.getAllIdsAndNames();
+
+        addAll("users", IdNamePair.copyList(data));
+
+      } finally {
+        stopLoading();
+        this.evaluatePage();
+      }
     });
   }
 
@@ -134,7 +147,7 @@ class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
 
   @reflectable
   cancelClicked(event, [_]) {
-    editDialog.cancel();
+    editDialog.close();
     this.reset();
   }
 

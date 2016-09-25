@@ -1,0 +1,9 @@
+:host {
+    display: block;
+}
+paper-item {
+    background-color: white;
+}
+paper-item span:first-of-type {
+    font-weight: bold;
+}

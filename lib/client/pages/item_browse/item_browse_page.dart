@@ -1,4 +1,4 @@
-// Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
+// Copyright (c) 2015, Matthew Barbour. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
 @HtmlImport("item_browse_page.html")
@@ -37,9 +37,15 @@ import 'package:dartalog/tools.dart';
 import '../../api/dartalog.dart' as API;
 
 @PolymerRegister('item-browse-page')
-class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
+class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage, ACollectionPage {
   static final Logger _log = new Logger("ItemBrowsePage");
   Logger get loggerImpl => _log;
+
+  @Property(notify: true)
+  Map routeData;
+
+  @Property(notify: true)
+  Map subRoute;
 
   @Property(notify: true)
   List<ItemSummary> itemsList = new List<ItemSummary>();
@@ -47,83 +53,35 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
   @property
   bool noItemsFound = false;
 
+  @property
+  bool searchActive = false;
+
+  @property
+  bool pageRouteActive = false;
+
   ItemAddControl get browseItemAddControl =>  $['browse_item_add_control'];
 
   ItemBrowsePage.created() : super.created("Item Browse");
 
-  String _currentQuery = "";
-  bool _loaded = false;
-
-  @property
-  bool showPaginator = false;
-  @property
-  bool enableNextPage = false;
-  @property
-  bool enablePreviousPage = false;
-
   @property
   bool showAddControl = false;
 
-  int lastLoadedPage = -1;
+  attached() {
+    super.attached();
+    _loadPage();
+  }
 
-  @property
-  int currentPage = 0;
-  @property
-  int totalPages = 1;
-
-  @property
-  List<int> availablePages = new List<int>();
-
-  @reflectable
-  bool isCurrentPage(int page) => page == currentPage;
+  _loadPage() async {
+    await evaluateAuthentication();
+    set("showAddControl",userHasPrivilege(dartalog.UserPrivilege.curator));
+    await this.loadItems();
+  }
 
   @override
-  Future activateInternal(Map args, [bool forceRefresh = false]) async {
-    set("showAddControl",userHasPrivilege(dartalog.UserPrivilege.curator));
-    if(showAddControl) {
-      await browseItemAddControl.activate(this.api,args);
-    }
-    bool refresh = false;
-
-    if(args.containsKey(ROUTE_ARG_SEARCH_QUERY_NAME)) {
-      if(_currentQuery!=args[ROUTE_ARG_SEARCH_QUERY_NAME].toString().trim()) {
-        _currentQuery = args[ROUTE_ARG_SEARCH_QUERY_NAME].toString().trim();
-        if(isNullOrWhitespace(this.mainApp.searchText))
-          this.mainApp.setSearchText(_currentQuery);
-        refresh = true;
-      } else if(!_loaded||forceRefresh) {
-        refresh = true;
-      }
-    } else if(!_loaded||forceRefresh) {
-      refresh = true;
-    }
-
-    int requestedPage = 0;
-    if(args.containsKey(ROUTE_ARG_PAGE_NAME)) {
-      requestedPage = int.parse(args[ROUTE_ARG_PAGE_NAME]);
-    }
-    if(requestedPage!=this.lastLoadedPage) {
-      refresh = true;
-      set("currentPage", requestedPage);
-    }
-
-    if(refresh)
-      await this.refresh();
+  routeChanged() {
+    this.loadItems();
   }
 
-  void _refreshPaginator() {
-    set("showPaginator", totalPages>1);
-    if(!showPaginator)
-      return;
-
-    clear("availablePages");
-    for(int i = 0; i < totalPages; i++) {
-      add("availablePages", i+1);
-    }
-
-    set("enablePreviousPage",this.currentPage>0);
-    set("enableNextPage",this.currentPage<this.totalPages-1);
-  }
 
   @override
   Future refresh() async {
@@ -137,56 +95,65 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
 
   Future loadItems() async {
     await handleApiExceptions(() async {
-      _loaded = false;
-      clear("itemsList");
-      set("noItemsFound", false);
-      API.PaginatedResponse data;
-      if(isNullOrWhitespace(_currentQuery)) {
-        data = await api.items.getVisibleSummaries(page: currentPage);
-      } else {
-        data = await api.items.searchVisible(_currentQuery, page: currentPage);
+      try {
+        this.startLoading();
+        this.currentPage = 1;
+        this.searchQuery = EMPTY_STRING;
+        if(this.routeData!=null) {
+          if (this.routeData.containsKey("page") &&
+              !isNullOrWhitespace(this.routeData["page"])&&
+              (searchActive||pageRouteActive)) {
+            this.currentPage = int.parse(this.routeData["page"]);
+          }
+
+
+          if (this.routeData.containsKey("search") &&
+              !isNullOrWhitespace(this.routeData["search"])&&
+              searchActive) {
+            this.searchQuery = this.routeData["search"];
+          }
+        }
+        this.currentPage  = this.currentPage - 1;
+
+        clear("itemsList");
+        set("noItemsFound", false);
+        API.PaginatedResponse data;
+        if (isNullOrWhitespace(searchQuery)) {
+          data = await api.items.getVisibleSummaries(page: currentPage);
+        } else {
+          data = await api.items.searchVisible(searchQuery, page: currentPage);
+        }
+
+        currentPage = data.page;
+        totalPages = data.totalPages;
+        set("itemsList", ItemSummary.convertList(data.items));
+        set("noItemsFound", itemsList.length == 0);
+
+        this.evaluatePage();
+      } finally {
+        this.stopLoading();
       }
-      lastLoadedPage = data.page;
-      set("currentPage", data.page);
-      set("totalPages", data.totalPages);
-      set("itemsList", ItemSummary.convertList(data.items));
-      set("noItemsFound", itemsList.length==0);
-
-      _refreshPaginator();
-
-      _loaded = true;
     });
   }
 
   @override
-  Future search(String query) async {
-    if(isNullOrWhitespace(query)) {
-      _loaded = false;
-      _currentQuery = "";
-      this.mainApp.activateRoute(BROWSE_ROUTE_PATH);
+  Future search() async {
+    if(isNullOrWhitespace(searchQuery)) {
+      window.location.hash = "items/page/1";
+      //set("routeData.search","");
     } else {
-      this.mainApp.activateRoute(SEARCH_ROUTE_PATH, arguments: {ROUTE_ARG_SEARCH_QUERY_NAME: query});
+      window.location.hash = "items/search/${searchQuery}/page/1";
+      //set("routeData.search",searchQuery);
     }
   }
 
   @reflectable
-  generateItemLink(String id) {
-    return "#view/${id}";
+  String generateItemLink(String id) {
+    return this.generateLink(_generateItemLink(id));
   }
 
-  @reflectable
-  itemClicked(event, [_]) async {
-    try {
-      dynamic ele = getParentElement(event.target, "paper-material");
-      String id = ele.dataset["id"];
-      if(isNullOrWhitespace(id))
-        return;
-
-      mainApp.activateRoute(ITEM_VIEW_ROUTE_PATH, arguments: {ROUTE_ARG_ITEM_ID_NAME: id});
-    } catch(e,st) {
-      _log.severe(e, st);
-      this.handleException(e,st);
-    }
+  String _generateItemLink(String id) {
+    return "${Pages.ITEM}/${id}";
   }
 
   @reflectable
@@ -194,28 +161,8 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage {
     return getImageUrl(value, ImageType.THUMBNAIL);
   }
 
-  @reflectable
-  void nextPage(event, [_]) {
-    if(this.currentPage<this.totalPages-1) {
-      _activatePage(this.currentPage+1);
-    }
-  }
 
-  @reflectable
-  void previousPage(event, [_]) {
-    if(this.currentPage>0) {
-      _activatePage(this.currentPage-1);
-    }
-  }
 
-  @reflectable
-  void pageSelected(event, [_]) {
-    _activatePage(currentPage);
-  }
 
-  void _activatePage(int page) {
-    if(isNullOrWhitespace(this._currentQuery)) {
-      mainApp.activateRoute(BROWSE_ROUTE_PATH, arguments: {ROUTE_ARG_PAGE_NAME: page});
-    }
-  }
+
 }

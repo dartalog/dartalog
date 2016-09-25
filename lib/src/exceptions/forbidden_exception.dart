@@ -1,6 +1,4 @@
-part of dartalog;
-
-class ForbiddenException implements  Exception {
+class ForbiddenException implements Exception {
   String message = "Forbidden";
 
   ForbiddenException();
@@ -9,6 +7,4 @@ class ForbiddenException implements  Exception {
   String toString() {
     return message;
   }
-
 }
-

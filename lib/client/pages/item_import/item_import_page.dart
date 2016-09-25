@@ -1,4 +1,4 @@
-// Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
+// Copyright (c) 2015, Matthew Barbour. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
 @HtmlImport("item_import_page.html")
@@ -83,12 +83,16 @@ class ItemImportPage extends APage with ASaveablePage {
   @Property(notify: true)
   List<ItemType> itemTypes = [];
 
-  @override
-  Future activateInternal(Map args, [bool forceRefresh = false]) async {
+  attached() {
+    super.attached();
+    _loadPage();
+  }
+
+  Future _loadPage() async {
     showSaveButton = false;
     showBackButton = false;
 
-    bool authed = authWrapper.evaluateAuthentication();
+    bool authed = await authWrapper.evaluatePageAuthentication();
     if(authed) {
       singleImportPages.selected = "item_search";
       //await loadItemTypes();
@@ -161,12 +165,13 @@ class ItemImportPage extends APage with ASaveablePage {
     });
   }
 
+
   @override
   Future save() async {
     String id = await itemEditControl.save();
     if(!isNullOrWhitespace(id)) {
-      showMessage("Item created");
-      this.mainApp.activateRoute(ITEM_VIEW_ROUTE_PATH, arguments: {ROUTE_ARG_ITEM_ID_NAME: id});
+      showMessage("Item added");
+      window.location.hash = "item/${id}";
     }
   }
 
@@ -180,7 +185,7 @@ class ItemImportPage extends APage with ASaveablePage {
     set("noResults", false);
     await handleApiExceptions(() async {
       try {
-        this.mainApp.startLoading();
+        this.startLoading();
         clear("results");
 
         API.SearchResults results =
@@ -189,7 +194,7 @@ class ItemImportPage extends APage with ASaveablePage {
         set("noResults", this.results.isEmpty);
         set("searchFinished", true);
       }finally {
-        this.mainApp.stopLoading();
+        this.stopLoading();
       }
     });
   }
@@ -203,20 +208,13 @@ class ItemImportPage extends APage with ASaveablePage {
       API.ImportResult result = await api.import.import(selectedImportSource, id);
       importResult = result;
 
-      await itemEditControl.activate(this.api, {ROUTE_ARG_IMPORT_RESULT_NAME: result});
+      await itemEditControl.loadImportResult(result);
 
       this.showSaveButton = true;
       this.showBackButton = true;
       singleImportPages.selected = "item_entry";
-      this.mainApp.evaluatePage();
+      this.evaluatePage();
     });
-  }
-
-  @override
-  Future goBack() {
-    singleImportPages.selected = "item_search";
-    this.showBackButton = false;
-    this.mainApp.evaluatePage();
   }
 
   @reflectable
@@ -231,7 +229,7 @@ class ItemImportPage extends APage with ASaveablePage {
         }
 
 
-        this.mainApp.startLoading();
+        this.startLoading();
         clear("bulkResults");
 
         if (isNullOrWhitespace(bulkSearchQuery))
@@ -251,7 +249,7 @@ class ItemImportPage extends APage with ASaveablePage {
           add("bulkResults", bii);
         }
       } finally {
-        this.mainApp.stopLoading();
+        this.stopLoading();
       }
     });
   }
@@ -260,7 +258,7 @@ class ItemImportPage extends APage with ASaveablePage {
   bulkImportSaveClicked(event, [_]) async {
     await handleApiExceptions(() async {
       try {
-        this.mainApp.startLoading();
+        this.startLoading();
 
 
         for (int i = 0; i < this.bulkResults.length; i++) {
@@ -302,7 +300,7 @@ class ItemImportPage extends APage with ASaveablePage {
           i--;
         }
       }finally{
-        this.mainApp.stopLoading();
+        this.stopLoading();
       }
     });
   }

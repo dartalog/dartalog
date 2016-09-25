@@ -1,5 +1,5 @@
 <!--
-  Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
+  Copyright (c) 2015, Matthew Barbour. All rights reserved. Use of this source code
   is governed by a BSD-style license that can be found in the LICENSE file.
 -->
 
@@ -10,12 +10,18 @@
 
     <template>
         <div class="fabContainer">
-        <paper-fab id="addFab" icon="add"></paper-fab>
+            <paper-fab id="addFab" icon="add"></paper-fab>
 
-        <paper-fab id="addManualFab" on-tap="manualClicked" mini icon="create" title="Add Manual Item"></paper-fab>
-        <paper-tooltip for="addManualFab"  position="left" >Add Manual Item</paper-tooltip>
+            <a href="#add">
+                <paper-fab id="addManualFab" mini icon="create" title="Add Manual Item"></paper-fab>
+            </a>
 
-            <paper-fab id="importFab" icon="search" on-tap="importClicked" title="Import Item"></paper-fab>
+            <paper-tooltip for="addManualFab" position="left">Add Manual Item</paper-tooltip>
+
+            <a href="#import">
+                <paper-fab id="importFab" icon="search" title="Import Item"></paper-fab>
+            </a>
+
             <paper-tooltip for="importFab" position="left">Import Item</paper-tooltip>
         </div>
 

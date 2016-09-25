@@ -2007,6 +2007,8 @@ class ImportResult {
 }
 
 class Item {
+  core.bool canDelete;
+  core.bool canEdit;
   core.List<ItemCopy> copies;
   core.DateTime dateAdded;
   core.DateTime dateUpdated;
@@ -2019,6 +2021,12 @@ class Item {
   Item();
 
   Item.fromJson(core.Map _json) {
+    if (_json.containsKey("canDelete")) {
+      canDelete = _json["canDelete"];
+    }
+    if (_json.containsKey("canEdit")) {
+      canEdit = _json["canEdit"];
+    }
     if (_json.containsKey("copies")) {
       copies = _json["copies"].map((value) => new ItemCopy.fromJson(value)).toList();
     }
@@ -2047,6 +2055,12 @@ class Item {
 
   core.Map toJson() {
     var _json = new core.Map();
+    if (canDelete != null) {
+      _json["canDelete"] = canDelete;
+    }
+    if (canEdit != null) {
+      _json["canEdit"] = canEdit;
+    }
     if (copies != null) {
       _json["copies"] = copies.map((value) => (value).toJson()).toList();
     }

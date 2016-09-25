@@ -1,0 +1,1 @@
+class SetupDisabledException implements Exception {}

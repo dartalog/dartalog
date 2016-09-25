@@ -9,6 +9,8 @@ class Item {
   @reflectable
   ItemType type;
 
+  bool canEdit = false;
+
   @Property(notify: true)
   List<ItemCopy> copies = new List<ItemCopy>();
 
@@ -100,6 +102,7 @@ class Item {
     to.name = from.name;
     to.typeId = from.typeId;
     to.values = from.values;
+    to.canEdit = from.canEdit;
   }
 
   static List<Item> convertList(Iterable input) {

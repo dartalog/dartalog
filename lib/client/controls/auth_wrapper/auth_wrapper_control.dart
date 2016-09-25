@@ -1,4 +1,4 @@
-// Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
+// Copyright (c) 2015, Matthew Barbour. All rights reserved. Use of this source code
 
 // is governed by a BSD-style license that can be found in the LICENSE file.
 @HtmlImport('auth_wrapper_control.html')
@@ -31,7 +31,8 @@ class AuthWrapperControl extends AControl  {
 
   AuthWrapperControl.created() : super.created();
 
-  bool evaluateAuthentication([_]) {
+  Future<bool> evaluatePageAuthentication([_]) async {
+    await this.evaluateAuthentication();
     set("userHasAccess", this.userHasPrivilege(minimumPrivilege));
     return userHasAccess;
   }

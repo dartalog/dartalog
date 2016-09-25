@@ -1,5 +1,5 @@
 <!--
-  Copyright (c) 2016, <your name>. All rights reserved. Use of this source code
+  Copyright (c) 2016, Matthew Barbour. All rights reserved. Use of this source code
   is governed by a BSD-style license that can be found in the LICENSE file.
 -->
 
@@ -25,7 +25,6 @@
             margin-top: -80pt;
             text-align: center;
             --paper-spinner-stroke-width: 6pt;
-
         }
 
         div#loading div {
@@ -35,6 +34,16 @@
 
 
     <template>
+        <app-location route="{{route}}" use-hash-as-path="true"></app-location>
+        <app-route
+                route="{{route}}"
+                pattern=":page"
+                data="{{routeData}}"
+                query-params="{{routeParameters}}"
+                tail="{{pageRoute}}"
+                changed="routeChanged">
+        </app-route>
+
         <paper-header-panel class="flex" id="app" hidden="[[appLoadingScreenVisible]]">
             <paper-toolbar>
                 <template is="dom-if" if="[[!showBack]]">
@@ -45,9 +54,9 @@
                     <paper-icon-button icon="chevron-left" on-tap="backClicked"></paper-icon-button>
                 </template>
                 <span class="title" style="margin-left:8pt;">[[currentPage.title]]</span>
-                <template is="dom-if" if="[[showSearch]]">
+                <template is="dom-if" if="[[currentPage.showSearch]]">
                     <paper-input on-keypress="searchKeypress" placeholder="Search" style="color:white"
-                                 class="search_input" value="{{searchText}}">
+                                 class="search_input" value="{{currentPage.searchQuery}}">
                         <iron-icon icon="search" prefix></iron-icon>
                         <paper-icon-button suffix on-tap="scanSearch" icon="camera-enhance" alt="Scan" title="Scan">
                         </paper-icon-button>
@@ -55,20 +64,22 @@
                         </paper-icon-button>
                     </paper-input>
                 </template>
-                <template is="dom-if" if="[[showRefresh]]">
-                    <paper-icon-button icon="refresh" on-tap="refreshClicked"></paper-icon-button>
-                </template>
-                <template is="dom-if" if="[[showDelete]]">
+                <template is="dom-if" if="[[currentPage.showDeleteButton]]">
                     <paper-icon-button icon="delete" on-tap="deleteClicked"></paper-icon-button>
                 </template>
-                <template is="dom-if" if="[[showEdit]]">
-                    <paper-icon-button icon="create" on-tap="editClicked"></paper-icon-button>
-                </template>
-                <template is="dom-if" if="[[showAdd]]">
+                <a href$="{{currentPage.editLink}}" target="_self">
+                    <template is="dom-if" if="[[currentPage.showEditButton]]" restamp="true">
+                        <paper-icon-button icon="create"></paper-icon-button>
+                    </template>
+                </a>
+                <template is="dom-if" if="[[currentPage.showAddButton]]">
                     <paper-icon-button icon="add" on-tap="addClicked"></paper-icon-button>
                 </template>
-                <template is="dom-if" if="[[showSave]]">
+                <template is="dom-if" if="[[currentPage.showSaveButton]]">
                     <paper-icon-button icon="save" on-tap="saveClicked"></paper-icon-button>
+                </template>
+                <template is="dom-if" if="[[currentPage.showRefreshButton]]">
+                    <paper-icon-button icon="refresh" on-tap="refreshClicked"></paper-icon-button>
                 </template>
                 <template is="dom-if" if="[[userCanCheckout]]" restamp="true">
                     <paper-icon-button id="cartIconButton" icon="shopping-cart"
@@ -98,59 +109,119 @@
                                 <paper-item-body>Log In</paper-item-body>
                             </paper-item>
                         </template>
-                        <paper-item on-tap="drawerItemClicked" data-route="browse">
-                            <iron-icon icon="label-outline"></iron-icon>
-                            <paper-item-body>Browse Items</paper-item-body>
-                        </paper-item>
-                        <template is="dom-if" if="[[userCanAdd]]">
-                            Curating
-                            <paper-item on-tap="drawerItemClicked" data-route="collections">
+                        <a href="#items">
+                            <paper-item on-tap="drawerItemClicked" data-route="items">
                                 <iron-icon icon="label-outline"></iron-icon>
-                                <paper-item-body>Collections</paper-item-body>
+                                <paper-item-body>Browse Items</paper-item-body>
                             </paper-item>
-                        </template>
+                        </a>
+                        <a href="#collections">
+                            <template is="dom-if" if="[[userCanAdd]]">
+                                Curating
+                                <paper-item on-tap="drawerItemClicked" data-route="collections">
+                                    <iron-icon icon="label-outline"></iron-icon>
+                                    <paper-item-body>Collections</paper-item-body>
+                                </paper-item>
+                            </template>
+                        </a>
                         <template is="dom-if" if="[[userIsAdmin]]">
                             Admin
-                            <paper-item on-tap="drawerItemClicked" data-route="field_admin">
-                                <iron-icon icon="label-outline"></iron-icon>
-                                <paper-item-body>Fields</paper-item-body>
-                            </paper-item>
-                            <paper-item on-tap="drawerItemClicked" data-route="item_type_admin">
-                                <iron-icon icon="label-outline"></iron-icon>
-                                <paper-item-body>Item Types</paper-item-body>
-                            </paper-item>
-                            <paper-item on-tap="drawerItemClicked" data-route="user_admin">
-                                <iron-icon icon="label-outline"></iron-icon>
-                                <paper-item-body>Users</paper-item-body>
-                            </paper-item>
+                            <a href="#fields">
+                                <paper-item on-tap="drawerItemClicked" data-route="field_admin">
+                                    <iron-icon icon="label-outline"></iron-icon>
+                                    <paper-item-body>Fields</paper-item-body>
+                                </paper-item>
+                            </a>
+                            <a href="#item_types">
+                                <paper-item on-tap="drawerItemClicked" data-route="item_type_admin">
+                                    <iron-icon icon="label-outline"></iron-icon>
+                                    <paper-item-body>Item Types</paper-item-body>
+                                </paper-item>
+                            </a>
+                            <a href="#users">
+                                <paper-item on-tap="drawerItemClicked" data-route="user_admin">
+                                    <iron-icon icon="label-outline"></iron-icon>
+                                    <paper-item-body>Users</paper-item-body>
+                                </paper-item>
+                            </a>
                         </template>
                     </div>
                 </paper-header-panel>
                 <paper-header-panel class="main" main mode="waterfall" id="mainPanel">
-                    <div class="content fit" >
-                        <iron-pages attr-for-selected="id" selected="[[visiblePage]]">
-                            <item-browse-page id="browse" class="fit"></item-browse-page>
-                            <item-page id="item_view" class="fit"></item-page>
+                    <div class="content fit">
+                        <!-- General user pages -->
+                        <template is="dom-if" if="[[browseVisible]]" restamp="true">
+                            <item-browse-page id="itemBrowsePage" route="{{pageRoute}}" data-page="items"
+                                              class="fit"></item-browse-page>
+                        </template>
+                        <template is="dom-if" if="[[itemVisible]]" restamp="true">
+                            <item-page id="itemViewPage" route="{{pageRoute}}" data-page="item" class="fit"></item-page>
+                        </template>
 
-                            <collections-page id="collections" class="fit"></collections-page>
-                            <item-add-page id="item_add" class="fit"></item-add-page>
-                            <item-import-page id="item_import" class="fit"></item-import-page>
-                            <item-edit-page id="item_edit" class="fit"></item-edit-page>
+
+                        <!-- Curator pages -->
+                        <template is="dom-if" if="[[collectionsVisible]]" restamp="true">
+                            <collections-page id="collectionsPage" route="{{pageRoute}}" data-page="collections"
+                                              class="fit"></collections-page>
+                        </template>
+                        <template is="dom-if" if="[[addItemVisible]]" restamp="true">
+                            <item-add-page id="addItemPage" route="{{pageRoute}}" data-page="add"
+                                              class="fit"></item-add-page>
+                        </template>
+                        <template is="dom-if" if="[[checkoutVisible]]" restamp="true">
+                            <checkout-page id="checkoutPage" route="{{pageRoute}}" data-page="checkout"
+                                           class="fit"></checkout-page>
+                        </template>
+                        <template is="dom-if" if="[[importVisible]]" restamp="true">
+                            <item-import-page id="itemImportPage" route="{{pageRoute}}" data-page="import"
+                                              class="fit"></item-import-page>
+                        </template>
+
+                        <!-- Administration pages -->
+                        <template is="dom-if" if="[[fieldsVisible]]" restamp="true">
+                            <field-admin-page id="fieldAdminPage" route="{{pageRoute}}" data-page="fields"
+                                              class="fit"></field-admin-page>
+                        </template>
+                        <template is="dom-if" if="[[itemTypesVisible]]" restamp="true">
+                            <item-type-admin-page id="itemTypeAdminPage" route="{{pageRoute}}" data-page="item_types"
+                                                  class="fit"></item-type-admin-page>
+                        </template>
+                        <template is="dom-if" if="[[usersVisible]]" restamp="true">
+                            <user-admin-page id="userAdminPage" route="{{pageRoute}}" data-page="users"
+                                             class="fit"></user-admin-page>
+                        </template>
 
 
-                            <field-admin-page id="field_admin" class="fit"></field-admin-page>
-                            <item-type-admin-page id="item_type_admin" class="fit"></item-type-admin-page>
-                            <user-admin-page id="user_admin" class="fit"></user-admin-page>
-
-                            <checkout-page id="checkout" class="fit"></checkout-page>
-                            <div class="fit" id="logging_output">
-
-                            </div>
-                        </iron-pages>
                     </div>
                 </paper-header-panel>
             </paper-drawer-panel>
         </paper-header-panel>
+
+
+        <template is="dom-if" if="[[showPaginator]]">
+            <paper-material
+                    style="position:fixed; right:16pt;top:52pt; background-color: white;padding: 4pt; max-height: calc(100% - 118pt); overflow: hidden; width: 32pt;"
+                    class="layout vertical">
+
+                <paper-menu selected="[[currentPage.currentPage]]"
+                            attr-for-selected="data-page"
+                            style="overflow-y: auto;overflow-x:hidden; width: 100px;"
+                            class="flexchild">
+                    <template is="dom-repeat" items="[[availablePages]]" as="item">
+                        <a href="[[getPaginationLink(item)]]">
+                            <paper-item title="Page [[item]]" data-page="[[item]]" style="cursor: pointer">
+                                [[item]]
+                            </paper-item>
+                        </a>
+                    </template>
+                </paper-menu>
+                <paper-icon-button icon="arrow-back" title="Previous Page" on-tap="previousPage"
+                                   disabled="[[!enablePreviousPage]]"></paper-icon-button>
+                <br/>
+                <paper-icon-button icon="arrow-forward" title="Next Page" on-tap="nextPage"
+                                   disabled="[[!enableNextPage]]"></paper-icon-button>
+            </paper-material>
+        </template>
 
         <template is="dom-if" if="[[appLoadingScreenVisible]]" restamp="true">
             <div class="flex" id="loading">

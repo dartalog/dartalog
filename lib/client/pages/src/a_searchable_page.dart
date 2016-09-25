@@ -1,8 +1,13 @@
-part of pages;
-
+import 'dart:async';
+import 'package:polymer/polymer.dart';
 
 abstract class ASearchablePage {
+  @Property(notify: true)
   bool showSearch = true;
 
-  Future search(String query);
+  @Property(notify: true)
+  String searchQuery = "";
+
+  @reflectable
+  Future search();
 }

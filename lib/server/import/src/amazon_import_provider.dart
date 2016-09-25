@@ -12,7 +12,7 @@ class AmazonImportProvider extends AScrapingImportProvider {
       multiLine: true,
       caseSensitive: false);
 
-  static final String NAME = "amazon";
+  static const String NAME = "amazon";
 
   static List<ScrapingImportCriteria> _itemTypeCriteria = [
     new ScrapingImportCriteria(

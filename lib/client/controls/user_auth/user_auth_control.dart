@@ -1,4 +1,4 @@
-// Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
+// Copyright (c) 2015, Matthew Barbour. All rights reserved. Use of this source code
 
 // is governed by a BSD-style license that can be found in the LICENSE file.
 @HtmlImport('user_auth_control.html')
@@ -15,6 +15,7 @@ import 'package:polymer_elements/paper_input.dart';
 import 'package:polymer_elements/paper_dialog.dart';
 
 import 'package:dartalog/tools.dart';
+import 'package:dartalog/dartalog.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/controls/controls.dart';
 import 'package:dartalog/client/data_sources/data_sources.dart' as data_source;
@@ -97,12 +98,14 @@ class UserAuthControl extends AControl {
       if(this._toComplete!=null)
         this._toComplete.complete(true);
 
-      this.mainApp.evaluateAuthentication();
+
+      this.evaluateAuthentication();
     } on Exception catch(e,st) {
       set("errorMessage", e.toString());
       _log.severe("logInClicked", e, st);
     } catch(e, st) {
       request = e.target;
+      window.alert(e.runtimeType.toString());
       if(request!=null) {
         String message;
         switch(request.status) {

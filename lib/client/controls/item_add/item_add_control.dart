@@ -1,4 +1,4 @@
-// Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
+// Copyright (c) 2015, Matthew Barbour. All rights reserved. Use of this source code
 
 // is governed by a BSD-style license that can be found in the LICENSE file.
 @HtmlImport('item_add_control.html')
@@ -19,6 +19,8 @@ import 'package:dartalog/client/controls/controls.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/api/dartalog.dart' as API;
+import 'package:dartalog/client/pages/pages.dart';
+
 
 @PolymerRegister('item-add-control')
 class ItemAddControl extends AControl  {
@@ -37,7 +39,7 @@ class ItemAddControl extends AControl  {
 
   ItemAddControl.created() : super.created();
 
-  Future activateInternal(Map args, [bool forceRefresh = false]) async {
+  Future activateInternal([bool forceRefresh = false]) async {
     //await this.refresh();
     this.clearValidation();
   }
@@ -61,19 +63,6 @@ class ItemAddControl extends AControl  {
     openDialog(selectItemTypeDialog);
   }
 
-  @reflectable
-  importClicked(event, [_]) {
-    addItemMethodDialog.close();
-    this.mainApp.activateRoute(ITEM_IMPORT_ROUTE_PATH);
-  }
-
-  @reflectable
-  itemTypeClicked(event, [_]) {
-    selectItemTypeDialog.close();
-    PaperItem item = getParentElement(event.target,"paper-item");
-    String id = item.dataset["id"];
-    this.mainApp.activateRoute(ITEM_ADD_ROUTE_PATH, arguments: {ROUTE_ARG_ITEM_TYPE_ID_NAME: id});
-  }
 
   @reflectable
   chooseImportSourceClicked(event, [_]) {

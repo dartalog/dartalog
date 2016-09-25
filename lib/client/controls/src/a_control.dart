@@ -1,34 +1,69 @@
-part of controls;
+import 'dart:async';
+import 'dart:html';
+
+import 'package:polymer/polymer.dart';
+import 'package:logging/logging.dart';
+import 'package:option/option.dart';
+import 'package:http/http.dart';
+import 'package:_discoveryapis_commons/_discoveryapis_commons.dart' as commons;
+import 'package:polymer_elements/paper_input_behavior.dart';
+import 'package:polymer_elements/paper_dropdown_menu.dart';
+import 'package:polymer_elements/paper_dialog.dart';
+import 'package:polymer_elements/iron_input.dart';
+import 'package:polymer_elements/paper_input.dart';
+import 'package:polymer_elements/paper_toggle_button.dart';
+
+import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/tools.dart';
+import 'package:dartalog/client/client.dart';
+import 'package:dartalog/client/main_app.dart';
+import 'package:dartalog/client/data/data.dart';
+import 'package:dartalog/client/api/dartalog.dart' as API;
+import 'package:dartalog/client/controls/combo_list/combo_list_control.dart';
+
 
 class AControl extends PolymerElement {
   Logger get loggerImpl;
-  MainApp _mainApp = null;
-  API.DartalogApi api;
+  MainApp _mainAppCache = null;
+  API.DartalogApi get api => GLOBAL_API;
 
   static Option<User> currentUserStatic = new None();
   Option<User> get currentUser => currentUserStatic;
 
-  MainApp get mainApp {
-    if (_mainApp == null) {
-      _mainApp = getParentElement(this.parent, "main-app");
-      if (_mainApp == null)
+  MainApp get _mainApp {
+    if (_mainAppCache == null) {
+      _mainAppCache = getParentElement(this.parent, "main-app");
+      if (_mainAppCache == null)
         throw new Exception("Main app element could not be found");
     }
-    return _mainApp;
+    return _mainAppCache;
   }
+
+  @Property(notify: true, observer: "routeChangedEvent")
+  Map route;
 
   AControl.created() : super.created();
 
-
-  Map lastArgs;
-  Future activate(API.DartalogApi api, Map args) async {
-    this.api = api;
-    this.lastArgs = args;
-    await activateInternal(args);
+  @reflectable
+  void routeChangedEvent(oldRoute, newRoute) {
+    this.routeChanged();
   }
 
-  Future reActivate(bool forceRefresh) async {
-    await activateInternal(lastArgs, forceRefresh);
+  void routeChanged() {
+
+  }
+
+  void addToCart(ItemCopy itemCopy) {
+    this._mainApp.addToCart(itemCopy);
+  }
+
+
+  void evaluatePage()  {
+    this._mainApp.evaluateCurrentPage();
+  }
+
+  Future evaluateAuthentication() async {
+    return await this._mainApp.evaluateAuthentication();
   }
 
   bool userHasPrivilege(String type) {
@@ -58,7 +93,7 @@ class AControl extends PolymerElement {
     return completer.future;
   }
 
-  Future activateInternal(Map args, [bool forceRefresh = false]);
+  Future activateInternal([bool forceRefresh = false]);
 
   void clearValidation() {
     setGeneralErrorMessage("");
@@ -95,9 +130,9 @@ class AControl extends PolymerElement {
         setGeneralErrorMessage(error.message);
         setFieldErrorMessages(error.errors);
       } else if(error.status==401) {
-        await this.mainApp.clearAuthentication();
-        await this.mainApp.promptForAuthentication();
-        await this.mainApp.evaluateAuthentication();
+        await this._mainApp.clearAuthentication();
+        await this._mainApp.promptForAuthentication();
+        await this._mainApp.evaluateAuthentication();
       } else if(error.status==413) {
         this.showMessage("The submitted data was too large, please submit smaller images");
       } else {
@@ -107,6 +142,14 @@ class AControl extends PolymerElement {
       loggerImpl.severe(e, st);
       this.handleException(e, st);
     }
+  }
+
+  startLoading() {
+    this._mainApp.startLoading();
+  }
+
+  stopLoading() {
+    this._mainApp.stopLoading();
   }
 
   Future handleApiExceptions(toAwait()) async {
@@ -121,7 +164,7 @@ class AControl extends PolymerElement {
 
   void handleException(e, st) {
     loggerImpl.severe(this.tagName, e, st);
-    mainApp.handleException(e, st);
+    _mainApp.handleException(e, st);
   }
 
   void setFieldErrorMessages(List<commons.ApiRequestErrorDetail> fieldErrors) {
@@ -167,13 +210,34 @@ class AControl extends PolymerElement {
     }
   }
   void showMessage(String message, [String severity]) {
-    mainApp.showMessage(message, severity);
+    _mainApp.showMessage(message, severity);
   }
 
   void setGeneralErrorMessage(String message) {
     if (!isNullOrWhitespace(message))
       showMessage(message, "error");
   }
+
+  String generateLink(String root, {Map args: null}) {
+    String output = "#${root}";
+    if(args!=null&&args.length>0) {
+      List<String> argList = new List<String>();
+      for(dynamic key in args.keys) {
+        argList.add("${key.toString()}=${args[key].toString()}");
+      }
+      output = Uri.encodeFull("${output}?${argList.join("&")}");
+    }
+    return output;
+  }
+
+  void navigate(String root) {
+    String target = generateLink(root);
+    window.location.hash = target;
+  }
+
+//  void route(String page, {Map data: null}) {
+//    this._mainApp.changeRoute(page,data);
+//  }
 
   Future focusPaperInput(Element input) {
     Completer completer = new Completer();

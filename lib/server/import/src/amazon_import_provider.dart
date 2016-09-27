@@ -37,10 +37,10 @@ class AmazonImportProvider extends AScrapingImportProvider {
         replaceRegex: {r"\[Blu-ray\]": ""}),
     new ScrapingImportCriteria(
         field: "front_cover",
-        elementSelector: 'img#imgBlkFront',
+        elementSelector: 'img#imgBlkFront, div#imgTagWrapperId img',
         elementAttribute: 'data-a-dynamic-image',
-        contentsRegex: r'"(https?://.+?)":',
-        contentsRegexGroup: 1,
+        contentsRegex: r'("|&quot;)(https?:\/\/.+?)("|&quot;):',
+        contentsRegexGroup: 2,
         replaceRegex: {r"\.[_A-Z0-9,]+\.": "."}),
     new ScrapingImportCriteria(
         field: "front_cover",
@@ -196,6 +196,8 @@ class AmazonImportProvider extends AScrapingImportProvider {
           result.thumbnail = image_url;
           output.results.add(result);
         }
+      } else if(sub_elements.length==0) {
+        output.results.add(top_result);
       } else {
         //throw new Exception("Too many matches");
       }

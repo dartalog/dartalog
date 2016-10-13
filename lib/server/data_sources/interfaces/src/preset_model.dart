@@ -1,6 +1,7 @@
-part of data_sources.interfaces;
+import 'package:logging/logging.dart';
+import 'a_data_source.dart';
 
-abstract class PresetModel extends _ADataSource {
+abstract class PresetModel extends ADataSource {
   static final Logger _log = new Logger('PresetModel');
 
   PresetModel();

@@ -1,4 +1,6 @@
-part of import;
+import 'a_api_import_provider.dart';
+import 'dart:async';
+import 'search_results.dart';
 
 class TheMovieDbImportProvider extends AAPIImportProvider {
 

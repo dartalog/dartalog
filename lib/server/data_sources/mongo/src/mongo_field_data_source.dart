@@ -1,6 +1,11 @@
-part of data_sources.mongo;
+import 'dart:async';
+import 'package:logging/logging.dart';
+import 'package:dartalog/server/data/data.dart';
+import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
+import 'package:mongo_dart/mongo_dart.dart';
+import 'a_mongo_id_data_source.dart';
 
-class MongoFieldDataSource extends _AMongoIdDataSource<Field> with AFieldModel {
+class MongoFieldDataSource extends AMongoIdDataSource<Field> with AFieldModel {
   static final Logger _log = new Logger('MongoFieldDataSource');
 
   Future<IdNameList<Field>> getByIds(List<String> ids) async {
@@ -19,7 +24,7 @@ class MongoFieldDataSource extends _AMongoIdDataSource<Field> with AFieldModel {
       }
     }
 
-    List results = await _getFromDb(query);
+    List results = await getFromDb(query);
 
     IdNameList<Field> output = new IdNameList<Field>.copy(results);
 
@@ -28,7 +33,8 @@ class MongoFieldDataSource extends _AMongoIdDataSource<Field> with AFieldModel {
     return output;
   }
 
-  Field _createObject(Map data) {
+  @override
+  Field createObject(Map data) {
     Field output = new Field();
     output.getId = data[ID_FIELD];
     output.getName = data["name"];
@@ -40,10 +46,12 @@ class MongoFieldDataSource extends _AMongoIdDataSource<Field> with AFieldModel {
     return output;
   }
 
-  Future<DbCollection> _getCollection(_MongoDatabase con) =>
+  @override
+  Future<DbCollection> getCollection(MongoDatabase con) =>
       con.getFieldsCollection();
 
-  void _updateMap(Field field, Map data) {
+  @override
+  void updateMap(Field field, Map data) {
     data[ID_FIELD] = field.getId;
     data["name"] = field.getName;
     data["type"] = field.type;

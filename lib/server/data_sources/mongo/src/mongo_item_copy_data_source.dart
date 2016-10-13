@@ -1,6 +1,16 @@
-part of data_sources.mongo;
+import 'dart:async';
+import 'package:logging/logging.dart';
+import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/tools.dart' as tools;
+import 'package:dartalog/server/data/data.dart';
+import 'package:dartalog/server/data_sources/data_sources.dart' as data_sources;
+import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
+import 'package:mongo_dart/mongo_dart.dart';
+import 'package:option/option.dart';
+import 'a_mongo_object_data_source.dart';
+import 'a_mongo_id_data_source.dart';
 
-class MongoItemCopyDataSource extends _AMongoObjectDataSource<ItemCopy>
+class MongoItemCopyDataSource extends AMongoObjectDataSource<ItemCopy>
     with AItemCopyDataSource {
   static final Logger _log = new Logger('MongoItemCopyDataSource');
 
@@ -14,7 +24,7 @@ class MongoItemCopyDataSource extends _AMongoObjectDataSource<ItemCopy>
   static const String _ITEM_COPIES_COPY_FIELD_PATH =
       "${_ITEM_COPIES_FIELD}.${_COPY_FIELD}";
 
-  Future delete(String itemId, int copy) => _genericUpdate(
+  Future delete(String itemId, int copy) => genericUpdate(
       where.eq(ID_FIELD, itemId),
       modify.pull(_ITEM_COPIES_FIELD, {_COPY_FIELD: copy}));
 
@@ -27,7 +37,7 @@ class MongoItemCopyDataSource extends _AMongoObjectDataSource<ItemCopy>
   }
 
   Future<bool> existsByUniqueId(String uniqueId) =>
-      _exists(where.eq("${_ITEM_COPIES_FIELD}.${_UNIQUE_ID_FIELD}", uniqueId));
+      this.exists(where.eq("${_ITEM_COPIES_FIELD}.${_UNIQUE_ID_FIELD}", uniqueId));
 
   Future<List<ItemCopy>> getAll(List<ItemCopyId> itemCopies) async {
     List<ItemCopy> output = [];
@@ -74,14 +84,14 @@ class MongoItemCopyDataSource extends _AMongoObjectDataSource<ItemCopy>
   }
 
   Future<Option<ItemCopy>> getByUniqueId(String uniqueId) async {
-    List results = await _genericFind(where
+    List results = await genericFind(where
         .eq("${_ITEM_COPIES_FIELD}.${_UNIQUE_ID_FIELD}", uniqueId)
         .limit(1));
     if (results.length > 0) {
       Map data = results[0];
       for (Map copy in data[_ITEM_COPIES_FIELD]) {
         if (copy[_UNIQUE_ID_FIELD] == uniqueId) {
-          ItemCopy output = _createObject(copy);
+          ItemCopy output = createObject(copy);
           output.itemId = data[ID_FIELD];
           return new Some(output);
         }
@@ -118,12 +128,12 @@ class MongoItemCopyDataSource extends _AMongoObjectDataSource<ItemCopy>
     }
     ModifierBuilder modifier =
         modify.set("${_ITEM_COPIES_FIELD}.\$.${_STATUS_FIELD}", status);
-    await _genericUpdate(selector, modifier, multiUpdate: true);
+    await genericUpdate(selector, modifier, multiUpdate: true);
   }
 
   Future<ItemCopyId> write(ItemCopy itemCopy, bool update) async {
     Map data = new Map();
-    _updateMap(itemCopy, data);
+    updateMap(itemCopy, data);
     dynamic selector;
     dynamic modifier;
     if (update) {
@@ -140,24 +150,27 @@ class MongoItemCopyDataSource extends _AMongoObjectDataSource<ItemCopy>
       modifier = modify.push(_ITEM_COPIES_FIELD, data);
     }
 
-    await _genericUpdate(selector, modifier);
+    await genericUpdate(selector, modifier);
 
     return new ItemCopyId.fromItemCopy(itemCopy);
   }
 
-  ItemCopy _createObject(Map data) => _staticCreateObject(data);
+  @override
+  ItemCopy createObject(Map data) => _staticCreateObject(data);
 
-  Future<DbCollection> _getCollection(_MongoDatabase con) =>
+  @override
+  Future<DbCollection> getCollection(MongoDatabase con) =>
       con.getItemsCollection();
   Future<Map> _getItemData(String itemId) async {
     dynamic criteria = where.eq(ID_FIELD, itemId);
-    List results = await _genericFind(criteria);
+    List results = await genericFind(criteria);
     if (results.length == 0)
       throw new NotFoundException("Requested item not found");
     return results[0];
   }
 
-  void _updateMap(ItemCopy itemCopy, Map data) {
+  @override
+  void updateMap(ItemCopy itemCopy, Map data) {
     data[_COLLECTION_ID_FIELD] = itemCopy.collectionId;
     data[_COPY_FIELD] = itemCopy.copy;
     if (!tools.isNullOrWhitespace(itemCopy.uniqueId))

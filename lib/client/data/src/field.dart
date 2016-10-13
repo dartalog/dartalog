@@ -1,4 +1,8 @@
-part of data;
+import 'package:polymer/polymer.dart';
+import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/tools.dart';
+import 'package:dartalog/client/client.dart';
+import 'package:dartalog/client/api/dartalog.dart' as API;
 
 class Field extends JsProxy  {
   @reflectable

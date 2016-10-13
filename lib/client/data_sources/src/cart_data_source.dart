@@ -1,9 +1,14 @@
-part of data_sources;
+import 'dart:async';
+import 'dart:indexed_db' as idb;
+
+import 'package:dartalog/client/data/data.dart';
+
+import 'a_data_source.dart';
 
 class CartDataSource extends ADataSource {
   Future<List<ItemCopy>> getCart() async {
-    return await _wrapTransaction(
-        ADataSource._DARTALOG_IDB_CART_STORE, ADataSource.READ_ONLY,
+    return await wrapTransaction(
+        ADataSource.DARTALOG_IDB_CART_STORE, ADataSource.READ_ONLY,
         (idb.ObjectStore store) async {
 
      Stream<idb.CursorWithValue> stream = store.openCursor(autoAdvance:true);
@@ -19,8 +24,8 @@ class CartDataSource extends ADataSource {
   }
 
   Future setCart(List<ItemCopy> cart) async {
-    await _wrapTransaction(
-        ADataSource._DARTALOG_IDB_CART_STORE, ADataSource.READ_WRITE,
+    await wrapTransaction(
+        ADataSource.DARTALOG_IDB_CART_STORE, ADataSource.READ_WRITE,
         (idb.ObjectStore store) async {
           await store.clear();
           for(ItemCopy itemCopy in cart) {
@@ -30,8 +35,8 @@ class CartDataSource extends ADataSource {
   }
 
   Future clearCart(List<ItemCopy> cart) async {
-    await _wrapTransaction(
-        ADataSource._DARTALOG_IDB_CART_STORE, ADataSource.READ_WRITE,
+    await wrapTransaction(
+        ADataSource.DARTALOG_IDB_CART_STORE, ADataSource.READ_WRITE,
         (idb.ObjectStore store) async {
       await store.clear();
     });

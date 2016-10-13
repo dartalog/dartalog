@@ -14,7 +14,7 @@ import 'package:dartalog/client/controls/paper_toast_queue/paper_toast_queue.dar
 import 'package:dartalog/client/controls/user_auth/user_auth_control.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/data_sources/data_sources.dart' as data_sources;
-import 'package:dartalog/client/pages/checkout/checkout_page.dart';
+import 'package:dartalog/client/controls/checkout/checkout_control.dart';
 import 'package:dartalog/client/pages/collections/collections_page.dart';
 import 'package:dartalog/client/pages/field_admin/field_admin_page.dart';
 import 'package:dartalog/client/pages/item/item_page.dart';
@@ -130,7 +130,7 @@ class MainApp extends PolymerElement {
 
     startApp();
   }
-  CheckoutPage get checkoutPage => $['checkout'];
+  CheckoutControl get checkoutControl => this.querySelector("#checkoutControl");
 
   @property
   APage get currentPage {
@@ -170,18 +170,13 @@ class MainApp extends PolymerElement {
   }
 
   Future addToCart(ItemCopy itemCopy) async {
-    await checkoutPage.addToCart(itemCopy);
-    refreshCartInfo();
+    await checkoutControl.addToCart(itemCopy);
+    await refreshCartInfo();
   }
 
   @reflectable
   backClicked(event, [_]) async {
     currentPage.goBack();
-  }
-
-  @reflectable
-  void cartClicked(event, [_]) {
-    changeRoute("checkout");
   }
 
   void changeRoute(String page, [Map data]) {
@@ -385,6 +380,11 @@ class MainApp extends PolymerElement {
     }
   }
 
+  @reflectable
+  void cartClicked(event, [_]) {
+    this.checkoutControl.open();
+  }
+
   void hideAppLoadingScreen() {
     set("appLoadingScreenVisible", false);
   }
@@ -395,9 +395,10 @@ class MainApp extends PolymerElement {
     await ele.activateDialog();
   }
 
-  void refreshCartInfo() {
-    set("cartCount", checkoutPage.cart.length);
-    set("cartEmpty", checkoutPage.cart.length == 0);
+  Future refreshCartInfo() async {
+    int length = (await data_sources.cart.getCart()).length;
+    set("cartCount",  length);
+    set("cartEmpty", length == 0);
   }
 
   @reflectable

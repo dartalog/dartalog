@@ -1,4 +1,9 @@
-part of data;
+import 'package:polymer/polymer.dart';
+import 'package:dartalog/client/api/dartalog.dart' as API;
+import 'item_type.dart';
+import 'item_copy.dart';
+import 'field.dart';
+
 class Item {
   @reflectable
   String id;

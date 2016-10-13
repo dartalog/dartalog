@@ -1,4 +1,19 @@
-part of model;
+import 'dart:async';
+import 'dart:io';
+import 'package:crypto/crypto.dart';
+import 'package:logging/logging.dart';
+import 'package:path/path.dart' as path;
+import 'package:option/option.dart';
+import 'package:image/image.dart';
+import 'package:dartalog/tools.dart';
+import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/server/server.dart';
+import 'package:dartalog/server/data/data.dart';
+import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
+import 'package:dartalog/server/data_sources/data_sources.dart' as data_sources;
+import 'a_id_name_based_model.dart';
+import 'item_copy_model.dart';
+import 'package:dartalog/server/model/model.dart';
 
 class ItemModel extends AIdNameBasedModel<Item> {
   static final Logger _log = new Logger('ItemModel');
@@ -22,14 +37,14 @@ class ItemModel extends AIdNameBasedModel<Item> {
   AItemDataSource get dataSource => data_sources.items;
 
   @override
-  Logger get _logger => _log;
+  Logger get childLogger => _log;
 
   @override
-  String get _defaultReadPrivilegeRequirement => UserPrivilege.none;
+  String get defaultReadPrivilegeRequirement => UserPrivilege.none;
   @override
-  String get _defaultWritePrivilegeRequirement => UserPrivilege.curator;
+  String get defaultWritePrivilegeRequirement => UserPrivilege.curator;
   @override
-  String get _defaultDeletePrivilegeRequirement => UserPrivilege.admin;
+  String get defaultDeletePrivilegeRequirement => UserPrivilege.admin;
 
 //  @override
 //  _performAdjustments(Item item) {
@@ -46,8 +61,8 @@ class ItemModel extends AIdNameBasedModel<Item> {
     if(perPage<0) {
       throw new InvalidInputException("Per-page must be a non-negative number");
     }
-    await _validateGetAllIdsAndNamesPrivileges();
-    return await dataSource.getVisibleIdsAndNamesPaginated(this._currentUserId, page: page, perPage: perPage);
+    await validateGetAllIdsAndNamesPrivileges();
+    return await dataSource.getVisibleIdsAndNamesPaginated(this.currentUserId, page: page, perPage: perPage);
   }
 
   Future<PaginatedIdNameData<Item>> getVisible({int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
@@ -56,8 +71,8 @@ class ItemModel extends AIdNameBasedModel<Item> {
     }
     if(perPage<0) {
       throw new InvalidInputException("Per-page must be a non-negative number");
-    }    await _validateGetAllIdsAndNamesPrivileges();
-    return await dataSource.getVisiblePaginated(this._currentUserId, page: page, perPage: perPage);
+    }    await validateGetAllIdsAndNamesPrivileges();
+    return await dataSource.getVisiblePaginated(this.currentUserId, page: page, perPage: perPage);
   }
 
   Future<PaginatedIdNameData<Item>> searchVisible(String query, {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
@@ -67,8 +82,8 @@ class ItemModel extends AIdNameBasedModel<Item> {
     if(perPage<0) {
       throw new InvalidInputException("Per-page must be a non-negative number");
     }
-    await _validateGetAllIdsAndNamesPrivileges();
-    return await dataSource.searchVisiblePaginated(this._currentUserId, query, page: page, perPage: perPage);
+    await validateGetAllIdsAndNamesPrivileges();
+    return await dataSource.searchVisiblePaginated(this.currentUserId, query, page: page, perPage: perPage);
   }
 
   @override
@@ -76,7 +91,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
 
   Future<ItemCopyId> createWithCopy(Item item, String collectionId,
       {String uniqueId, List<List<int>> files}) async {
-    await _validateCreatePrivileges();
+    await validateCreatePrivileges();
 
     item.dateAdded = new DateTime.now();
     item.dateUpdated = new DateTime.now();
@@ -90,8 +105,8 @@ class ItemModel extends AIdNameBasedModel<Item> {
     itemCopy.status = ITEM_DEFAULT_STATUS;
 
     await DataValidationException.PerformValidation((Map output) async {
-      output.addAll(await _validateFields(item, true));
-      output.addAll(await copies._validateFields(itemCopy, true, skipItemIdCheck: true));
+      output.addAll(await validateFields(item, true));
+      output.addAll(await copies.validateFields(itemCopy, true, skipItemIdCheck: true));
     });
 
     await _handleFileUploads(item, files);
@@ -108,7 +123,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
       bool includeCopies: false,
       bool includeCopyCollection: false,
       bool bypassAuth: false}) async {
-    await _validateGetPrivileges();
+    await validateGetPrivileges();
 
     Item output = await super.getById(id, bypassAuth: bypassAuth);
 
@@ -135,13 +150,13 @@ class ItemModel extends AIdNameBasedModel<Item> {
       output.copies = null;
     }
     try {
-      await _validateUpdatePrivileges(id);
+      await validateUpdatePrivileges(id);
       output.canEdit = true;
     } catch(e) {
       output.canEdit = false;
     }
     try {
-      await _validateDeletePrivileges(id);
+      await validateDeletePrivileges(id);
       output.canDelete = true;
     } catch(e) {
       output.canDelete = false;
@@ -151,7 +166,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
 
   @override
   Future<String> update(String id, Item item, {List<List<int>> files}) async {
-    await _validateUpdatePrivileges(id);
+    await validateUpdatePrivileges(id);
 
     item.dateAdded = null;
     item.dateUpdated = new DateTime.now();

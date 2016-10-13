@@ -1,4 +1,9 @@
-part of data;
+import 'package:polymer/polymer.dart';
+import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/tools.dart';
+import 'item_summary.dart';
+import 'collection.dart';
+
 class ItemCopy extends JsProxy {
   @reflectable
   String collectionId;

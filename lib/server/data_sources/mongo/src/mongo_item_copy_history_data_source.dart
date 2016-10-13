@@ -1,17 +1,23 @@
-part of data_sources.mongo;
+import 'dart:async';
+import 'package:logging/logging.dart';
+import 'package:dartalog/server/data/data.dart';
+import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
+import 'package:mongo_dart/mongo_dart.dart';
+import 'a_mongo_object_data_source.dart';
 
-class MongoItemCopyHistoryDataSource extends _AMongoObjectDataSource<ItemCopyHistoryEntry>
+class MongoItemCopyHistoryDataSource extends AMongoObjectDataSource<ItemCopyHistoryEntry>
     with AItemCopyHistoryModel {
   static final Logger _log = new Logger('MongoItemCopyHistoryDataSource');
 
   Future<List<ItemCopyHistoryEntry>> getForItemCopy(
           String itemId, int copy) =>
-      _getFromDb(where.eq("itemId", itemId).eq("copy", copy));
+      getFromDb(where.eq("itemId", itemId).eq("copy", copy));
 
   Future write(ItemCopyHistoryEntry itemCopyHistory) =>
-      _insertIntoDb(itemCopyHistory);
+      insertIntoDb(itemCopyHistory);
 
-  ItemCopyHistoryEntry _createObject(Map data) {
+  @override
+  ItemCopyHistoryEntry createObject(Map data) {
     ItemCopyHistoryEntry output = new ItemCopyHistoryEntry();
     output.copy = data["copy"];
     output.itemId = data["itemId"];
@@ -23,10 +29,12 @@ class MongoItemCopyHistoryDataSource extends _AMongoObjectDataSource<ItemCopyHis
     return output;
   }
 
-  Future<DbCollection> _getCollection(_MongoDatabase con) =>
+  @override
+  Future<DbCollection> getCollection(MongoDatabase con) =>
       con.getItemCopyHistoryCollection();
 
-  void _updateMap(ItemCopyHistoryEntry itemCopyHistory, Map data) {
+  @override
+  void updateMap(ItemCopyHistoryEntry itemCopyHistory, Map data) {
     data["copy"] = itemCopyHistory.copy;
     data["itemId"] = itemCopyHistory.itemId;
     data["action"] = itemCopyHistory.action;

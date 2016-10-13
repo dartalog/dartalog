@@ -1,80 +1,114 @@
-part of model;
+import 'dart:async';
+import 'package:logging/logging.dart';
+import 'package:option/option.dart';
+import 'package:shelf_auth/shelf_auth.dart';
+import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/server/server.dart';
+import 'package:dartalog/server/data/data.dart';
+import 'package:dartalog/server/data_sources/data_sources.dart' as data_sources;
+import 'package:meta/meta.dart';
 
 abstract class AModel {
-  String get _currentUserId =>
-      _userPrincipal.map((Principal p) => p.name).getOrDefault("");
+  @protected
+  String get currentUserId =>
+      userPrincipal.map((Principal p) => p.name).getOrDefault("");
 
-  String get _defaultCreatePrivilegeRequirement =>
-      _defaultWritePrivilegeRequirement;
-  String get _defaultDeletePrivilegeRequirement =>
-      _defaultWritePrivilegeRequirement;
-  String get _defaultPrivilegeRequirement => UserPrivilege.admin;
-  String get _defaultReadPrivilegeRequirement => _defaultPrivilegeRequirement;
-  String get _defaultUpdatePrivilegeRequirement =>
-      _defaultWritePrivilegeRequirement;
-  String get _defaultWritePrivilegeRequirement => _defaultPrivilegeRequirement;
+  @protected
+  String get defaultCreatePrivilegeRequirement =>
+      defaultWritePrivilegeRequirement;
+  @protected
+  String get defaultDeletePrivilegeRequirement =>
+      defaultWritePrivilegeRequirement;
+  @protected
+  String get defaultPrivilegeRequirement => UserPrivilege.admin;
+  @protected
+  String get defaultReadPrivilegeRequirement => defaultPrivilegeRequirement;
+  @protected
+  String get defaultUpdatePrivilegeRequirement =>
+      defaultWritePrivilegeRequirement;
+  @protected
+  String get defaultWritePrivilegeRequirement => defaultPrivilegeRequirement;
 
-  Logger get _logger;
+  @protected
+  Logger get childLogger;
 
-  bool get _userAuthenticated => _userPrincipal
+  @protected
+  bool get userAuthenticated => userPrincipal
       .map((Principal p) => true)
       .getOrDefault(false); // High-security defaults
 
-  Option<Principal> get _userPrincipal => authenticatedContext()
+  @protected
+  Option<Principal> get userPrincipal => authenticatedContext()
       .map((AuthenticatedContext context) => context.principal);
 
-  Future<User> _getCurrentUser() async {
-    Principal p = _userPrincipal.getOrElse(
+  @protected
+  Future<User> getCurrentUser() async {
+    Principal p = userPrincipal.getOrElse(
         () => throw new NotAuthorizedException.withMessage("Please log in"));
     return (await data_sources.users.getById(p.name)).getOrElse(
         () => throw new NotAuthorizedException.withMessage("User not found"));
   }
 
-  Future<bool> _userHasPrivilege(String userType) async {
+  @protected
+  Future<bool> userHasPrivilege(String userType) async {
     if (userType == UserPrivilege.none)
       return true; //None is equivalent to not being logged in, or logged in as a user with no privileges
-    User user = await _getCurrentUser();
+    User user = await getCurrentUser();
     return UserPrivilege.evaluate(userType, user.type);
   }
 
-  Future<bool> _validateCreatePrivilegeRequirement() =>
-      _validateUserPrivilege(_defaultCreatePrivilegeRequirement);
-  Future _validateCreatePrivileges() async {
-    if (!_userAuthenticated) {
+  @protected
+  Future<bool> validateCreatePrivilegeRequirement() =>
+      validateUserPrivilege(defaultCreatePrivilegeRequirement);
+
+  @protected
+  Future validateCreatePrivileges() async {
+    if (!userAuthenticated) {
       throw new NotAuthorizedException();
     }
-    await _validateCreatePrivilegeRequirement();
+    await validateCreatePrivilegeRequirement();
   }
-  Future<bool> _validateDefaultPrivilegeRequirement() =>
-      _validateUserPrivilege(_defaultPrivilegeRequirement);
-  Future<bool> _validateDeletePrivilegeRequirement() =>
-      _validateUserPrivilege(_defaultDeletePrivilegeRequirement);
-  Future _validateDeletePrivileges(String id) async {
-    if (!_userAuthenticated) {
+
+  @protected
+  Future<bool> validateDefaultPrivilegeRequirement() =>
+      validateUserPrivilege(defaultPrivilegeRequirement);
+
+  @protected
+  Future<bool> validateDeletePrivilegeRequirement() =>
+      validateUserPrivilege(defaultDeletePrivilegeRequirement);
+
+  @protected
+  Future validateDeletePrivileges(String id) async {
+    if (!userAuthenticated) {
       throw new NotAuthorizedException();
     }
-    await _validateDeletePrivilegeRequirement();
+    await validateDeletePrivilegeRequirement();
   }
 
-  Future _validateGetPrivileges() async {
-    await _validateReadPrivilegeRequirement();
+  @protected
+  Future validateGetPrivileges() async {
+    await validateReadPrivilegeRequirement();
   }
 
-  Future<bool> _validateReadPrivilegeRequirement() =>
-      _validateUserPrivilege(_defaultReadPrivilegeRequirement);
+  @protected
+  Future<bool> validateReadPrivilegeRequirement() =>
+      validateUserPrivilege(defaultReadPrivilegeRequirement);
 
-  Future<bool> _validateUpdatePrivilegeRequirement() =>
-      _validateUserPrivilege(_defaultUpdatePrivilegeRequirement);
+  @protected
+  Future<bool> validateUpdatePrivilegeRequirement() =>
+      validateUserPrivilege(defaultUpdatePrivilegeRequirement);
 
-  Future _validateUpdatePrivileges(String id) async {
-    if (!_userAuthenticated) {
+  @protected
+  Future validateUpdatePrivileges(String id) async {
+    if (!userAuthenticated) {
       throw new NotAuthorizedException();
     }
-    await _validateUpdatePrivilegeRequirement();
+    await validateUpdatePrivilegeRequirement();
   }
 
-  Future<bool> _validateUserPrivilege(String privilege) async {
-    if (await _userHasPrivilege(privilege)) return true;
+  @protected
+  Future<bool> validateUserPrivilege(String privilege) async {
+    if (await userHasPrivilege(privilege)) return true;
     throw new ForbiddenException.withMessage("${privilege} required");
   }
 }

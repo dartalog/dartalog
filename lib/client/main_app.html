@@ -82,8 +82,7 @@
                     <paper-icon-button icon="refresh" on-tap="refreshClicked"></paper-icon-button>
                 </template>
                 <template is="dom-if" if="[[userCanCheckout]]" restamp="true">
-                    <paper-icon-button id="cartIconButton" icon="shopping-cart"
-                                       on-tap="cartClicked"></paper-icon-button>
+                        <paper-icon-button id="cartIconButton" icon="shopping-cart" on-tap="cartClicked"></paper-icon-button>
                     <template is="dom-if" if="[[!cartEmpty]]">
                         <paper-badge for="cartIconButton" label="[[cartCount]]"></paper-badge>
                     </template>
@@ -168,10 +167,6 @@
                             <item-add-page id="addItemPage" route="{{pageRoute}}" data-page="add"
                                               class="fit"></item-add-page>
                         </template>
-                        <template is="dom-if" if="[[checkoutVisible]]" restamp="true">
-                            <checkout-page id="checkoutPage" route="{{pageRoute}}" data-page="checkout"
-                                           class="fit"></checkout-page>
-                        </template>
                         <template is="dom-if" if="[[importVisible]]" restamp="true">
                             <item-import-page id="itemImportPage" route="{{pageRoute}}" data-page="import"
                                               class="fit"></item-import-page>
@@ -223,12 +218,16 @@
             </paper-material>
         </template>
 
+        <checkout-control id="checkoutControl"></checkout-control>
+
+
         <template is="dom-if" if="[[appLoadingScreenVisible]]" restamp="true">
             <div class="flex" id="loading">
                 <paper-spinner alt="Loading application..." active="[[appLoadingSpinnerActive]]"></paper-spinner>
                 <div><span style=" display: table-cell;vertical-align: middle;">[[appLoadingMessage]]</span></div>
             </div>
         </template>
+
 
         <paper-toast-queue id="global_toast">
         </paper-toast-queue>

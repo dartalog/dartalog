@@ -1,4 +1,4 @@
-part of data;
+import 'package:polymer/polymer.dart';
 
 class ImportSearchResult extends JsProxy {
   @reflectable

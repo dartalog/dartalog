@@ -1,4 +1,6 @@
-part of data;
+import 'paginated_data.dart';
+import 'a_id_data.dart';
+import 'id_name_list.dart';
 
 class PaginatedIdNameData<T extends AIdData> extends PaginatedData<T> {
 

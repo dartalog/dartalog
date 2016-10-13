@@ -1,4 +1,5 @@
-part of data;
+import 'package:polymer/polymer.dart';
+import 'field.dart';
 
 class ItemType extends JsProxy {
   @reflectable

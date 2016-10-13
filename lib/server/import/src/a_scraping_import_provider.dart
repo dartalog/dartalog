@@ -1,4 +1,14 @@
-part of import;
+import 'a_import_provider.dart';
+import 'package:logging/logging.dart';
+import 'scraping_import_criteria.dart';
+import 'dart:async';
+import 'import_result.dart';
+import 'package:html/dom.dart';
+import 'package:dartalog/server/data_sources/data_sources.dart' as data_sources;
+import 'package:dartalog/tools.dart';
+import 'package:option/option.dart';
+import 'package:dartalog/server/data/data.dart';
+import 'package:html/parser.dart' show parse;
 
 abstract class AScrapingImportProvider extends AImportProvider {
   static final Logger _log = new Logger('AScrapingImportProvider');
@@ -16,7 +26,7 @@ abstract class AScrapingImportProvider extends AImportProvider {
     output.itemId = id;
     output.itemSource = importProviderName;
 
-    String contents = await this._downloadPage(itemUrl, stripNewlines: true);
+    String contents = await this.downloadPage(itemUrl, stripNewlines: true);
 
     Document doc = parse(contents);
 

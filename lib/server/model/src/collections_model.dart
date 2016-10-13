@@ -1,39 +1,46 @@
-part of model;
+import 'dart:async';
+import 'package:logging/logging.dart';
+import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/server/data/data.dart';
+import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
+import 'package:dartalog/server/data_sources/data_sources.dart' as data_sources;
+import 'a_id_name_based_model.dart';
 
 class CollectionsModel extends AIdNameBasedModel<Collection> {
   // TODO: Currently denys admins the ability to save collections that they are not curators for
   static final Logger _log = new Logger('CollectionsModel');
-  Logger get _logger => _log;
+  @override
+  Logger get childLogger => _log;
   ACollectionDataSource get dataSource => data_sources.itemCollections;
 
   @override
-  String get _defaultPrivilegeRequirement => UserPrivilege.curator;
+  String get defaultPrivilegeRequirement => UserPrivilege.curator;
 
   Future _verifyUserIsCurator(String collectionId) async {
-    _validateDefaultPrivilegeRequirement();
+    validateDefaultPrivilegeRequirement();
     Collection col = await this.getById(collectionId);
-    if(!col.curators.contains(this._currentUserId))
+    if(!col.curators.contains(this.currentUserId))
       throw new ForbiddenException.withMessage("You are not a curator for collection \"${col.name}\"");
   }
 
   @override
-  Future _validateDeletePrivileges(String id) => _verifyUserIsCurator(id);
+  Future validateDeletePrivileges(String id) => _verifyUserIsCurator(id);
 
   @override
-  Future _validateUpdatePrivileges(String id) => _verifyUserIsCurator(id);
+  Future validateUpdatePrivileges(String id) => _verifyUserIsCurator(id);
 
   @override
   Future<List<Collection>> getAll() async {
-    await _validateGetAllPrivileges();
+    await validateGetAllPrivileges();
 
     List output;
 
-    if(await _userHasPrivilege(UserPrivilege.admin))
+    if(await userHasPrivilege(UserPrivilege.admin))
       output = await dataSource.getAll();
     else
-      output = await dataSource.getAllForCurator(_userPrincipal.get().name);
+      output = await dataSource.getAllForCurator(userPrincipal.get().name);
 
-    for (dynamic t in output) _performAdjustments(t);
+    for (dynamic t in output) performAdjustments(t);
     return output;
 
   }

@@ -1,10 +1,16 @@
-part of data_sources.mongo;
+import 'dart:async';
+import 'package:logging/logging.dart';
+import 'package:dartalog/server/data/data.dart';
+import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
+import 'package:mongo_dart/mongo_dart.dart';
+import 'a_mongo_id_data_source.dart';
 
-class MongoItemTypeDataSource extends _AMongoIdDataSource<ItemType>
+class MongoItemTypeDataSource extends AMongoIdDataSource<ItemType>
     with AItemTypeModel {
   static final Logger _log = new Logger('MongoItemTypeDataSource');
 
-  ItemType _createObject(Map data) {
+  @override
+  ItemType createObject(Map data) {
     ItemType template = new ItemType();
     template.getId = data[ID_FIELD];
     template.getName = data["name"];
@@ -12,10 +18,12 @@ class MongoItemTypeDataSource extends _AMongoIdDataSource<ItemType>
     return template;
   }
 
-  Future<DbCollection> _getCollection(_MongoDatabase con) =>
+  @override
+  Future<DbCollection> getCollection(MongoDatabase con) =>
       con.getItemTypesCollection();
 
-  void _updateMap(ItemType template, Map data) {
+  @override
+  void updateMap(ItemType template, Map data) {
     data[ID_FIELD] = template.getId;
     data["name"] = template.getName;
     data["fieldIds"] = template.fieldIds;

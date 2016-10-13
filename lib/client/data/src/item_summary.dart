@@ -1,4 +1,6 @@
-part of data;
+import 'package:polymer/polymer.dart';
+import 'package:dartalog/client/client.dart';
+
 
 class ItemSummary extends JsProxy {
   @reflectable

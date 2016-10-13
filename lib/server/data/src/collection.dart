@@ -1,4 +1,4 @@
-part of data;
+import 'a_id_data.dart';
 
 class Collection extends AIdData {
   String id = "";

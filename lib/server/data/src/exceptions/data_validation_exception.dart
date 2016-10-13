@@ -1,4 +1,4 @@
-part of data;
+import 'dart:async';
 
 class DataValidationException implements  Exception {
   String message;

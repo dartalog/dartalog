@@ -1,12 +1,19 @@
-part of model;
+import 'dart:async';
+import 'package:logging/logging.dart';
+import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/server/data/data.dart';
+import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
+import 'package:dartalog/server/data_sources/data_sources.dart' as data_sources;
+import 'a_id_name_based_model.dart';
 
 class ItemTypeModel extends AIdNameBasedModel<ItemType> {
   static final Logger _log = new Logger('ItemTypeModel');
-  Logger get _logger => _log;
+  @override
+  Logger get childLogger => _log;
   AIdNameBasedDataSource<ItemType> get dataSource => data_sources.itemTypes;
 
   @override
-  String get _defaultReadPrivilegeRequirement => UserPrivilege.curator;
+  String get defaultReadPrivilegeRequirement => UserPrivilege.curator;
 
   @override
   Future<ItemType> getById(String id, {bool includeFields: false, bool bypassAuth: false}) async {
@@ -18,7 +25,7 @@ class ItemTypeModel extends AIdNameBasedModel<ItemType> {
   }
 
   @override
-  Future _validateFieldsInternal(Map<String, String> field_errors, ItemType itemType, bool creating) async {
+  Future validateFieldsInternal(Map<String, String> field_errors, ItemType itemType, bool creating) async {
     if (itemType.fieldIds == null || itemType.fieldIds.length == 0)
       field_errors["fieldIds"] = "Required";
     else {

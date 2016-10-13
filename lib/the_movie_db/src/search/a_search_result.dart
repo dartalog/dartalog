@@ -1,4 +1,4 @@
-part of the_movie_db;
+import '../config.dart';
 
 class ASearchResult {
     String id;

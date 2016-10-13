@@ -1,4 +1,7 @@
-part of data;
+import 'package:polymer/polymer.dart';
+import 'import_search_result.dart';
+import 'item.dart';
+
 
 class BulkImportItem extends JsProxy {
   @Property(notify: true)

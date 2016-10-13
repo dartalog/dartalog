@@ -1,4 +1,6 @@
-part of import;
+import 'package:logging/logging.dart';
+import 'package:dartalog/tools.dart';
+import 'package:html/dom.dart';
 
 class ScrapingImportCriteria  {
   static final Logger _log = new Logger('ScrapingImportCriteria');

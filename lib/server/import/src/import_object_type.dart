@@ -1,5 +1,3 @@
-part of import;
-
 enum ImportObjectType {
   All,
   VHS,

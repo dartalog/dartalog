@@ -1,6 +1,10 @@
-part of data_sources.interfaces;
+import 'dart:async';
+import 'package:logging/logging.dart';
+import 'package:dartalog/server/data/data.dart';
+import 'package:option/option.dart';
+import 'a_data_source.dart';
 
-abstract class AItemCopyDataSource extends _ADataSource {
+abstract class AItemCopyDataSource extends ADataSource {
   static final Logger _log = new Logger('AItemCopyModel');
 
   Future delete(String itemId, int copy);

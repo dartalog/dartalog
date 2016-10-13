@@ -1,4 +1,13 @@
-part of import;
+import 'a_scraping_import_provider.dart';
+import 'scraping_import_criteria.dart';
+import 'package:logging/logging.dart';
+import 'dart:async';
+import 'search_result.dart';
+import 'import_result.dart';
+import 'search_results.dart';
+import 'package:html/dom.dart';
+import 'package:dartalog/tools.dart';
+import 'package:html/parser.dart' show parse;
 
 class AmazonImportProvider extends AScrapingImportProvider {
   static final Logger _log = new Logger('AmazonImportProvider');
@@ -128,7 +137,7 @@ class AmazonImportProvider extends AScrapingImportProvider {
     String item_type = "";
     String url =
         "http://${BASE_URL}/exec/obidos/external-search?ie=UTF8&index=${item_type}&keyword=${Uri.encodeComponent(query)}&page=${page}";
-    String contents = await this._downloadPage(url, stripNewlines: true);
+    String contents = await this.downloadPage(url, stripNewlines: true);
 
     Document doc = parse(contents);
 

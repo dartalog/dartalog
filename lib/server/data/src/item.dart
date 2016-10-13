@@ -1,4 +1,7 @@
-part of data;
+import 'a_id_data.dart';
+import 'item_copy.dart';
+import 'item_type.dart';
+import 'package:option/option.dart';
 
 class Item extends AIdData {
   String id = "";

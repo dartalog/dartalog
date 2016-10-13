@@ -21,6 +21,8 @@ import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/api/dartalog.dart' as API;
 import 'package:dartalog/client/controls/combo_list/combo_list_control.dart';
 
+export 'package:_discoveryapis_commons/_discoveryapis_commons.dart' show ApiRequestErrorDetail;
+
 
 class AControl extends PolymerElement {
   Logger get loggerImpl;
@@ -57,6 +59,9 @@ class AControl extends PolymerElement {
     this._mainApp.addToCart(itemCopy);
   }
 
+  Future refreshCartInfo() async {
+    await this._mainApp.refreshCartInfo();
+  }
 
   void evaluatePage()  {
     this._mainApp.evaluateCurrentPage();
@@ -96,7 +101,7 @@ class AControl extends PolymerElement {
   Future activateInternal([bool forceRefresh = false]);
 
   void clearValidation() {
-    setGeneralErrorMessage("");
+    setGeneralErrorMessage(EMPTY_STRING);
     for (Element ele in querySelectorAll('${this.tagName} [data-field-id]')) {
       if (ele is IronInput) {
         IronInput pi = ele as IronInput;
@@ -104,19 +109,19 @@ class AControl extends PolymerElement {
       } else if(ele is PaperInput) {
         PaperInput pi = ele as PaperInput;
         ele.invalid = false;
-        ele.errorMessage = "";
+        ele.errorMessage = EMPTY_STRING;
       } else if(ele is PaperToggleButton) {
         PaperToggleButton pi = ele as PaperToggleButton;
         ele.invalid = false;
         //ele.errorMessage = ""; TODO: Error messages for toggle buttons?
       } else if(ele is ComboListControl) {
         ComboListControl pi = ele as ComboListControl;
-        pi.setGeneralErrorMessage("");
+        pi.setGeneralErrorMessage(EMPTY_STRING);
         pi.setInvalid(false);
       } else if(ele is PaperDropdownMenu) {
         PaperDropdownMenu pi = ele as PaperDropdownMenu;
-        ele.invalid = false; //TODO: Once error messages are properly supported, clear them
-        //ele.errorMessage = "";
+        pi.invalid = false;
+        pi.errorMessage = EMPTY_STRING;
       } else {
         window.alert("Unknown control: " + ele.runtimeType.toString());
       }
@@ -128,7 +133,7 @@ class AControl extends PolymerElement {
       clearValidation();
       if(error.status==400){
         setGeneralErrorMessage(error.message);
-        setFieldErrorMessages(error.errors);
+        handleErrorDetails(error.errors);
       } else if(error.status==401) {
         await this._mainApp.clearAuthentication();
         await this._mainApp.promptForAuthentication();
@@ -167,15 +172,18 @@ class AControl extends PolymerElement {
     _mainApp.handleException(e, st);
   }
 
-  void setFieldErrorMessages(List<commons.ApiRequestErrorDetail> fieldErrors) {
+  void handleErrorDetails(List<commons.ApiRequestErrorDetail> fieldErrors) {
     for (commons.ApiRequestErrorDetail detail in fieldErrors) {
       if (detail.message == null || detail.message.length == 0) continue;
+      handleErrorDetail(detail);
+    }
+  }
 
-      if (detail.locationType == "field") {
-        setFieldMessage(detail.location,detail.message);
-      } else {
-        showMessage(detail.message, "error");
-      }
+  void handleErrorDetail(commons.ApiRequestErrorDetail detail) {
+    if (detail.locationType == "field") {
+      setFieldMessage(detail.location,detail.message);
+    } else {
+      showMessage(detail.message, "error");
     }
   }
 
@@ -191,8 +199,7 @@ class AControl extends PolymerElement {
         pi.invalid = true;
       } else if (input is PaperDropdownMenu) {
         PaperDropdownMenu pi = input as PaperDropdownMenu;
-        pi.attributes["error"] =
-            message; //TODO: Not properly supported yet
+        pi.errorMessage = message;
         pi.invalid = true;
       } else if(input is PaperToggleButton) {
         PaperToggleButton pi = input as PaperToggleButton;

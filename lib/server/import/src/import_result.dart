@@ -1,5 +1,3 @@
-part of import;
-
 class ImportResult {
   String itemUrl;
   String itemId;

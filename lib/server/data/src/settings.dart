@@ -1,4 +1,5 @@
-part of data;
+import 'a_data.dart';
+import 'dart:async';
 
 class ImportSettings extends AData {
   String name;

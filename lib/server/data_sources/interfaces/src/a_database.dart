@@ -1,5 +1,3 @@
-part of data_sources.interfaces;
-
 abstract class ADatabase {
 
   //Future<dynamic> startTransaction();

@@ -1,4 +1,4 @@
-part of import;
+import 'search_result.dart';
 
 class SearchResults  {
   int currentPage, totalPages, totalResults;

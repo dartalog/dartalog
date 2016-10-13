@@ -1,4 +1,5 @@
-part of data;
+import 'a_id_data.dart';
+import 'field.dart';
 
 class ItemType extends AIdData {
   String id = "";

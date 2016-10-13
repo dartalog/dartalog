@@ -1,4 +1,7 @@
-part of model;
+import 'dart:io';
+
+import 'package:logging/logging.dart';
+import 'package:options_file/options_file.dart';
 
 class SettingsModel {
   static final Logger _log = new Logger('SettingsModel');

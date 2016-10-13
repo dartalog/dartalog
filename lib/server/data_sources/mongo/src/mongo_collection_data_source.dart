@@ -1,6 +1,11 @@
-part of data_sources.mongo;
+import 'dart:async';
+import 'package:logging/logging.dart';
+import 'package:dartalog/server/data/data.dart';
+import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
+import 'package:mongo_dart/mongo_dart.dart';
+import 'a_mongo_id_data_source.dart';
 
-class MongoCollectionDataSource extends _AMongoIdDataSource<Collection>
+class MongoCollectionDataSource extends AMongoIdDataSource<Collection>
     with ACollectionDataSource {
   static final Logger _log = new Logger('MongoItemCollectionDataSource');
 
@@ -10,18 +15,19 @@ class MongoCollectionDataSource extends _AMongoIdDataSource<Collection>
 
   Future<IdNameList<Collection>> getAllForCurator(String userId)  async {
     SelectorBuilder selector = where.eq(CURATORS_FIELD, userId);
-    return  await _getIdNameListFromDb(selector);
+    return  await getIdNameListFromDb(selector);
   }
 
   Future<IdNameList<Collection>> getVisibleCollections(String userId) async {
     SelectorBuilder selector = where.eq(PUBLICLY_BROWSABLE_FIELD, true)
         .or(where.eq(CURATORS_FIELD, userId))
         .or(where.eq(BROWSERS_FIELD, userId));
-    return await _getIdNameListFromDb(selector);
+    return await getIdNameListFromDb(selector);
   }
 
 
-  Collection _createObject(Map data) {
+  @override
+  Collection createObject(Map data) {
     Collection output = new Collection();
     output.id = data[ID_FIELD];
     output.name= data[NAME_FIELD];
@@ -34,10 +40,12 @@ class MongoCollectionDataSource extends _AMongoIdDataSource<Collection>
     return output;
   }
 
-  Future<DbCollection> _getCollection(_MongoDatabase con) =>
+  @override
+  Future<DbCollection> getCollection(MongoDatabase con) =>
       con.getCollectionsCollection();
 
-  void _updateMap(Collection collection, Map data) {
+  @override
+  void updateMap(Collection collection, Map data) {
     data[ID_FIELD] = collection.id;
     data[NAME_FIELD] = collection.name;
     data[PUBLICLY_BROWSABLE_FIELD] = collection.publiclyBrowsable;

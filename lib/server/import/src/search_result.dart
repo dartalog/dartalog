@@ -1,5 +1,3 @@
-part of import;
-
 class SearchResult {
   String url;
   String id;

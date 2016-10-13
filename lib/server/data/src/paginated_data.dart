@@ -1,4 +1,4 @@
-part of data;
+import 'package:dartalog/dartalog.dart';
 
 class PaginatedData<T> {
   int startIndex = 0;

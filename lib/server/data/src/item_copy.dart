@@ -1,4 +1,6 @@
-part of data;
+import 'a_data.dart';
+import 'collection.dart';
+import 'item_summary.dart';
 
 class ItemCopy extends AData {
   String itemId = "";

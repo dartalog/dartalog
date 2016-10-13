@@ -1,4 +1,5 @@
-part of the_movie_db;
+import '../config.dart';
+import 'a_search_result.dart';
 
 class SearchResults  {
   int currentPage, totalPages, totalResults;

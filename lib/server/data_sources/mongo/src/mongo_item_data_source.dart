@@ -1,6 +1,14 @@
-part of data_sources.mongo;
+import 'dart:async';
+import 'package:logging/logging.dart';
+import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/server/data/data.dart';
+import 'package:dartalog/server/data_sources/data_sources.dart' as data_sources;
+import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
+import 'package:mongo_dart/mongo_dart.dart';
+import 'package:option/option.dart';
+import 'a_mongo_id_data_source.dart';
 
-class MongoItemDataSource extends _AMongoIdDataSource<Item>
+class MongoItemDataSource extends AMongoIdDataSource<Item>
     with AItemDataSource {
   static final Logger _log = new Logger('MongoItemDataSource');
 
@@ -17,14 +25,14 @@ class MongoItemDataSource extends _AMongoIdDataSource<Item>
     return (await _generateVisibleCriteria(userId)).cata(
         () => new IdNameList<Item>(),
         (SelectorBuilder selector) async =>
-    await _getIdNameListFromDb(selector));
+    await getIdNameListFromDb(selector));
   }
 
   Future<PaginatedIdNameData<Item>> getVisiblePaginated(String userId, {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
     return (await _generateVisibleCriteria(userId)).cata(
         () => new PaginatedIdNameData<Item>(),
         (SelectorBuilder selector) async =>
-    await _getPaginatedIdNameListFromDb(selector,
+    await getPaginatedIdNameListFromDb(selector,
         limit: perPage, offset: getOffset(page, perPage)));
   }
 
@@ -53,7 +61,8 @@ class MongoItemDataSource extends _AMongoIdDataSource<Item>
         (SelectorBuilder selector) async => await getPaginatedIdsAndNames(selector: selector, limit: perPage, offset: getOffset(page, perPage)));
   }
 
-  Item _createObject(Map data) {
+  @override
+  Item createObject(Map data) {
     Item output = new Item();
 
     output.id = data[ID_FIELD];
@@ -66,10 +75,12 @@ class MongoItemDataSource extends _AMongoIdDataSource<Item>
     return output;
   }
 
-  Future<DbCollection> _getCollection(_MongoDatabase con) =>
+  @override
+  Future<DbCollection> getCollection(MongoDatabase con) =>
       con.getItemsCollection();
 
-  void _updateMap(Item item, Map data) {
+  @override
+  void updateMap(Item item, Map data) {
     data[ID_FIELD] = item.id;
     data["name"] = item.getName;
     data["typeId"] = item.typeId;

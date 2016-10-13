@@ -1,14 +1,19 @@
-part of model;
+import 'dart:async';
+import 'package:logging/logging.dart';
+import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/server/import/import.dart';
+import 'a_model.dart';
 
 class ImportModel extends AModel {
   static final Logger _log = new Logger('ImportModel');
-  Logger get _logger => _log;
+  @override
+  Logger get childLogger => _log;
 
   @override
-  String get _defaultReadPrivilegeRequirement => UserPrivilege.curator;
+  String get defaultReadPrivilegeRequirement => UserPrivilege.curator;
 
   Future<Map<String,String>> getAvailableImportProviders() async {
-    await _validateReadPrivilegeRequirement();
+    await validateReadPrivilegeRequirement();
 
     Map<String,String> output = new Map<String,String>();
 
@@ -21,14 +26,14 @@ class ImportModel extends AModel {
   }
 
   Future<ImportResult> import(String provider, String id) async  {
-    await _validateReadPrivilegeRequirement();
+    await validateReadPrivilegeRequirement();
     AImportProvider importer = ImportProvider.getProvider(provider);
     return await importer.import(id);
   }
 
   Future<SearchResults> search(String provider, String query,
       {int page: 0}) async {
-    await _validateReadPrivilegeRequirement();
+    await validateReadPrivilegeRequirement();
     AImportProvider importer = ImportProvider.getProvider(provider);
     query = Uri.decodeFull(query);
     return await importer.search(query, page: page);

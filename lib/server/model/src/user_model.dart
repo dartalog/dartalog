@@ -1,8 +1,19 @@
-part of model;
+import 'dart:async';
+import 'package:crypt/crypt.dart';
+import 'package:logging/logging.dart';
+import 'package:option/option.dart';
+import 'package:dartalog/tools.dart';
+import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/server/server.dart';
+import 'package:dartalog/server/data/data.dart';
+import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
+import 'package:dartalog/server/data_sources/data_sources.dart' as data_sources;
+import 'a_id_name_based_model.dart';
 
 class UserModel extends AIdNameBasedModel<User> {
   static final Logger _log = new Logger('UserModel');
-  Logger get _logger => _log;
+  @override
+  Logger get childLogger => _log;
 
   AUserDataSource get dataSource => data_sources.users;
 
@@ -33,16 +44,16 @@ class UserModel extends AIdNameBasedModel<User> {
   }
 
   Future<User> getMe() async {
-    if (!_userAuthenticated) throw new NotAuthorizedException();
+    if (!userAuthenticated) throw new NotAuthorizedException();
 
-    Option<User> output = await dataSource.getById(_userPrincipal.get().name);
+    Option<User> output = await dataSource.getById(userPrincipal.get().name);
     return output.getOrElse(() =>
         throw new Exception("Authenticated user not present in database"));
   }
 
   @override
   Future<String> create(User user, {List<String> privileges}) async {
-    await _validateCreatePrivileges();
+    await validateCreatePrivileges();
 
     String output = await super.create(user);
 
@@ -53,8 +64,8 @@ class UserModel extends AIdNameBasedModel<User> {
 
   @override
   Future<String> update(String id, User user) async {
-    id = _normalizeId(id);
-    await _validateUpdatePrivileges(id);
+    id = normalizeId(id);
+    await validateUpdatePrivileges(id);
     // Only admin can update...for now
 
     String output = await super.update(id, user);
@@ -67,11 +78,11 @@ class UserModel extends AIdNameBasedModel<User> {
 
   Future changePassword(
       String id, String currentPassword, String newPassword) async {
-    id = _normalizeId(id);
-    if (!_userAuthenticated) {
+    id = normalizeId(id);
+    if (!userAuthenticated) {
       throw new NotAuthorizedException();
     }
-    if (_currentUserId != id)
+    if (currentUserId != id)
       throw new ForbiddenException.withMessage(
           "You do not have permission to change another user's password");
 
@@ -90,7 +101,7 @@ class UserModel extends AIdNameBasedModel<User> {
   }
 
   Future _setPassword(String id, String newPassword) async {
-    id = _normalizeId(id);
+    id = normalizeId(id);
     await DataValidationException.PerformValidation((Map field_errors) async {
       _validatePassword(field_errors, newPassword);
     });

@@ -1,5 +1,3 @@
-part of the_movie_db;
-
 enum SearchType {
   company,
   collection,

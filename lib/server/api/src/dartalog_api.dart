@@ -1,4 +1,5 @@
-part of api;
+import 'package:rpc/rpc.dart';
+import 'package:dartalog/server/api/resources/resources.dart';
 
 @ApiClass(version: '0.1', name: 'dartalog', description: 'Dartalog REST API')
 class DartalogApi {

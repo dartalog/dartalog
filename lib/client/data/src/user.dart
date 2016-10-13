@@ -1,4 +1,6 @@
-part of data;
+import 'package:polymer/polymer.dart';
+import 'package:dartalog/dartalog.dart';
+
 
 class User extends JsProxy {
   @property String id;

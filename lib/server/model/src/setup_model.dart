@@ -1,8 +1,16 @@
-part of model;
+import 'dart:async';
+import 'dart:io';
+import 'package:logging/logging.dart';
+import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/server/server.dart';
+import 'package:dartalog/server/data/data.dart';
+import 'package:dartalog/server/data_sources/data_sources.dart' as data_sources;
+import 'package:dartalog/server/model/model.dart';
 
 class SetupModel {
   static final Logger _log = new Logger('UserModel');
-  Logger get _logger => _log;
+  @override
+  Logger get childLogger => _log;
 
   Future _checkIfSetupRequired() async {
     if(!await isSetupRequired()) {

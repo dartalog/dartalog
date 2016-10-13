@@ -1,4 +1,3 @@
-part of data;
 
 class ItemCopyHistoryEntry {
   String itemId = "";

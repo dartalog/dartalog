@@ -1,0 +1,50 @@
+<!--
+  Copyright (c) 2015, Matthew Barbour. All rights reserved. Use of this source code
+  is governed by a BSD-style license that can be found in the LICENSE file.
+-->
+
+<!-- import polymer-element's definition -->
+<dom-module name="checkout-control">
+    <link rel="stylesheet" href="checkout_control.css">
+    <style include="iron-flex"></style>
+    <template>
+        <paper-dialog always-on-top="true" modal="true">
+            <h2>Checkout Cart</h2>
+            <paper-dialog-scrollable>
+                <template is="dom-if" if="[[cartIsEmpty]]">
+                    <paper-item class="flex">Cart is empty</paper-item>
+                </template>
+                <template is="dom-if" if="[[!cartIsEmpty]]">
+                    <paper-dropdown-menu floatinglabel label="User to checkout items to" data-field-id="user" >
+                        <paper-listbox class="dropdown-content" attr-for-selected="value"
+                                       selected="{{checkoutUser}}">
+                            <template is="dom-repeat" items="[[users]]">
+                                <paper-item value="[[item.id]]">[[item.name]]</paper-item>
+                            </template>
+                        </paper-listbox>
+                    </paper-dropdown-menu>
+                </template>
+                <template is="dom-repeat" items="[[cart]]">
+                    <div data-item-id$="[[item.itemId]]" data-item-copy$="[[item.copy]]" class="layout horizontal">
+                        <iron-image src="[[item.itemSummary.thumbnailUrl]]" style="width:66pt;height:66pt"  sizing="contain"></iron-image>
+                        <paper-item-body three-line>
+                            <div>[[item.itemSummary.name]]</div>
+                            <div secondary>Collection: <span>[[item.collection.name]]</span></div>
+                            <div secondary>Unique ID: <span>[[item.uniqueId]]</span></div>
+                        </paper-item-body>
+                        <paper-icon-button icon="remove-circle" on-tap="removeClicked"></paper-icon-button>
+                    </div>
+                </template>
+
+            </paper-dialog-scrollable>
+            <div class="buttons">
+                <paper-button dialog-dismiss>Close</paper-button>
+                <template is="dom-if" if="[[showCheckoutButton]]">
+                    <div class="card-actions horizontal layout end-justified">
+                        <paper-button on-tap="checkoutClicked">Checkout</paper-button>
+                    </div>
+                </template>
+            </div>
+        </paper-dialog>
+    </template>
+</dom-module>

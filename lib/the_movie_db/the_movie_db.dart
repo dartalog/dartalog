@@ -1,22 +1,11 @@
-library the_movie_db;
-
 import 'dart:core';
-import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'src/config.dart';
+import 'src/search/search_results.dart';
+import 'src/items/movie.dart';
 
-part 'src/config.dart';
-
-part 'src/search/search_type.dart';
-
-part 'src/search/a_search_result.dart';
-
-part 'src/search/search_results.dart';
-
-part 'src/items/a_item.dart';
-part 'src/items/movie.dart';
-part 'src/items/tv_series.dart';
 
 class TheMovieDB {
   String apiKey;

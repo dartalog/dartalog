@@ -8,11 +8,12 @@ import 'package:dartalog/server/data_sources/data_sources.dart' as data_source;
 import 'package:dartalog/server/model/model.dart' as model;
 import 'package:dartalog/server/server.dart';
 import 'package:logging/logging.dart';
-import 'package:logging_handlers/server_logging_handlers.dart' as serverLogging;
+import 'package:logging_handlers/server_logging_handlers.dart'
+    as server_logging;
 import 'package:option/option.dart';
 import 'package:path/path.dart' show join;
 import 'package:rpc/rpc.dart';
-import 'package:shelf/shelf.dart' as shelf;
+import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_auth/shelf_auth.dart';
 import 'package:shelf_exception_handler/shelf_exception_handler.dart';
@@ -20,9 +21,7 @@ import 'package:shelf_route/shelf_route.dart';
 import 'package:shelf_rpc/shelf_rpc.dart' as shelf_rpc;
 import 'package:shelf_static/shelf_static.dart';
 
-HttpServer server;
-
-main(List<String> args) {
+void main(List<String> args) {
 //  var parser = new argsLib.ArgParser()
 //    ..addOption('port', abbr: 'p', defaultsTo: '8080');
 //
@@ -35,125 +34,125 @@ main(List<String> args) {
 //
   // Add a simple log handler to log information to a server side file.
   Logger.root.level = Level.ALL;
-  Logger.root.onRecord.listen(new serverLogging.LogPrintHandler());
+  Logger.root.onRecord.listen(new server_logging.LogPrintHandler());
 
-  startServer();
+  _startServer();
 }
 
-dynamic stopServer() async  {
-  if(server==null)
-    throw new Exception("Server has not been started");
-  await server.close();
-  server = null;
+const String _apiPrefix = '/api';
+
+final ApiServer _apiServer =
+    new ApiServer(apiPrefix: _apiPrefix, prettyPrint: true);
+
+final Logger _log = new Logger('main');
+
+HttpServer _server;
+Future<Option<Principal>> _getUser(String userName) async {
+  Option<User> user = await data_source.users.getById(userName);
+  if (user.isEmpty) return new None<Principal>();
+  Principal principal = new Principal(user.get().getId);
+  return new Some<Principal>(principal);
 }
 
-dynamic startServer() async {
+Future<Option<Principal>> _authenticateUser(
+    String userName, String password) async {
+  userName = userName.trim().toLowerCase();
+  Option<User> user = await data_source.users.getById(userName);
+  if (user.isEmpty) return new None<Principal>();
+  Option<String> hashOption = await data_source.users.getPasswordHash(userName);
+  if (hashOption.isEmpty)
+    throw new Exception("User does not have a password set");
+
+  if (model.users.verifyPassword(hashOption.get(), password))
+    return new Some<Principal>(new Principal(user.get().getId));
+  else
+    return new None<Principal>();
+}
+
+dynamic _startServer() async {
   try {
-    if(server!=null)
+    if (_server != null)
       throw new Exception("Server has already been instantiated");
 
-    var pathToBuild = join(ROOT_DIRECTORY, 'build/web/');
+    String pathToBuild = join(ROOT_DIRECTORY, 'build/web/');
 
-    final staticSiteHandler = createStaticHandler(pathToBuild,
+    final Handler staticSiteHandler = createStaticHandler(pathToBuild,
         listDirectories: false,
         defaultDocument: 'index.html',
         serveFilesOutsidePath: true);
 
     pathToBuild = join(ROOT_DIRECTORY, 'images');
 
-    final staticImagesHandler = createStaticHandler(pathToBuild,
-        listDirectories: false, serveFilesOutsidePath: false,
+    final Handler staticImagesHandler = createStaticHandler(pathToBuild,
+        listDirectories: false,
+        serveFilesOutsidePath: false,
         useHeaderBytesForContentType: true);
 
     _apiServer.addApi(new DartalogApi());
     _apiServer.enableDiscoveryApi();
 
-    final sessionHandler = new JwtSessionHandler(
-        'dartalog', 'shhh secret', getUser,
+    final JwtSessionHandler<Principal,SessionClaimSet> sessionHandler = new JwtSessionHandler<Principal,SessionClaimSet>(
+        'dartalog', 'shhh secret', _getUser,
         idleTimeout: new Duration(hours: 1),
         totalSessionTimeout: new Duration(days: 7));
 
-    final loginMiddleware = authenticate(
-        [new UsernamePasswordAuthenticator(authenticateUser)],
+    final Middleware loginMiddleware = authenticate(
+        <Authenticator<Principal>>[new UsernamePasswordAuthenticator<Principal>(_authenticateUser)],
         sessionHandler: sessionHandler, allowHttp: true);
 
-    final defaultAuthMiddleware = authenticate([],
+    final Middleware defaultAuthMiddleware = authenticate(<Authenticator<Principal>>[],
         sessionHandler: sessionHandler,
         allowHttp: true,
         allowAnonymousAccess: true);
 
-    var loginPipeline = const shelf.Pipeline()
+    final Handler loginPipeline = const Pipeline()
         .addMiddleware(loginMiddleware)
-        .addHandler((shelf.Request request) => new shelf.Response.ok(""));
+        .addHandler((Request request) => new Response.ok(""));
 
-    final api_handler = shelf_rpc.createRpcHandler(_apiServer);
-    final apiPipeline = const shelf.Pipeline()
+    final Handler apiHandler = shelf_rpc.createRpcHandler(_apiServer);
+    final Handler apiPipeline = const Pipeline()
         .addMiddleware(defaultAuthMiddleware)
-        .addHandler(api_handler);
+        .addHandler(apiHandler);
 
-    final root = router()
-      ..add('/login/', ['POST', 'GET', 'OPTIONS'], loginPipeline)
-      ..add("/images/", ['GET', 'OPTIONS'], staticImagesHandler,
+    final Router<dynamic> root = router()
+      ..add('/login/', <String>['POST', 'GET', 'OPTIONS'], loginPipeline)
+      ..add("/images/", <String>['GET', 'OPTIONS'], staticImagesHandler,
           exactMatch: false)
-      ..add('/api/', ['GET', 'PUT', 'POST', 'HEAD', 'OPTIONS', 'DELETE'],
+      ..add('/api/', <String>['GET', 'PUT', 'POST', 'HEAD', 'OPTIONS', 'DELETE'],
           apiPipeline,
           exactMatch: false)
-      ..add('/', ['GET', 'OPTIONS'], staticSiteHandler, exactMatch: false);
+      ..add('/', <String>['GET', 'OPTIONS'], staticSiteHandler, exactMatch: false);
 
-    final Map extraHeaders = {
+    final Map<String, String> extraHeaders = <String,String>{
       'Access-Control-Allow-Headers':
-      'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+          'Origin, X-Requested-With, Content-Type, Accept, Authorization',
       'Access-Control-Allow-Methods': 'POST, GET, PUT, HEAD, DELETE, OPTIONS',
       'Access-Control-Allow-Credentials': 'true',
       'Access-Control-Expose-Headers': 'Authorization',
       'Access-Control-Allow-Origin': '*'
     };
-    shelf.Response _cors(shelf.Response response) =>
-        response.change(headers: extraHeaders);
-    final shelf.Middleware _fixCORS =
-    shelf.createMiddleware(responseHandler: _cors);
+    Response _cors(Response response) => response.change(headers: extraHeaders);
+    final Middleware _fixCORS = createMiddleware(responseHandler: _cors);
 
-    var handler = const shelf.Pipeline()
-        .addMiddleware(shelf.logRequests())
+    final Handler handler = const Pipeline()
+        .addMiddleware(logRequests())
         .addMiddleware(_fixCORS)
         .addMiddleware(exceptionHandler())
         .addHandler(root.handler);
 
-    server =
-        await io.serve(handler, model.settings.serverBindToAddress, model.settings.serverPort);
+    _server = await io.serve(
+        handler, model.settings.serverBindToAddress, model.settings.serverPort);
 
-    SERVER_ROOT = "http://${server.address.host}:${server.port}/";
-    SERVER_API_ROOT = "${SERVER_ROOT}${API_PATH}";
-    print('Serving at ${SERVER_ROOT}');
+    SERVER_ROOT = "http://${_server.address.host}:${_server.port}/";
+    SERVER_API_ROOT = "$SERVER_ROOT$API_PATH";
+    print('Serving at $SERVER_ROOT');
   } catch (e, s) {
     _log.severe("Error while starting server", e, s);
   }
 }
 
-const String _API_PREFIX = '/api';
-final ApiServer _apiServer =
-    new ApiServer(apiPrefix: _API_PREFIX, prettyPrint: true);
-
-final Logger _log = new Logger('main');
-
-Future<Option<Principal>> authenticateUser(
-    String userName, String password) async {
-  userName = userName.trim().toLowerCase();
-  Option<User> user = await data_source.users.getById(userName);
-  if (user.isEmpty) return new None();
-  Option<String> hashOption = await data_source.users.getPasswordHash(userName);
-  if(hashOption.isEmpty)
-    throw new Exception("User does not have a password set");
-
-  if (model.users.verifyPassword(hashOption.get(), password))
-    return new Some(new Principal(user.get().getId));
-  else
-    return new None();
-}
-
-Future<Option<Principal>> getUser(String userName) async {
-  Option<User> user = await data_source.users.getById(userName);
-  if (user.isEmpty) return new None();
-  Principal principal = new Principal(user.get().getId);
-  return new Some(principal);
+dynamic _stopServer() async {
+  if (_server == null) throw new Exception("Server has not been started");
+  await _server.close();
+  _server = null;
 }

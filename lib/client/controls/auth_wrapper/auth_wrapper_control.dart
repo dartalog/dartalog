@@ -9,6 +9,7 @@ import 'package:logging/logging.dart';
 
 import 'package:polymer/polymer.dart';
 import 'package:web_components/web_components.dart';
+/// Makes [PaperCard] available
 import 'package:polymer_elements/paper_card.dart';
 import 'package:dartalog/dartalog.dart';
 import 'package:dartalog/client/controls/controls.dart';

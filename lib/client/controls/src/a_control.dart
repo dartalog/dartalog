@@ -100,7 +100,7 @@ class AControl extends PolymerElement {
   Future activateInternal([bool forceRefresh = false]);
 
   void clearValidation() {
-    setGeneralErrorMessage(EMPTY_STRING);
+    setGeneralErrorMessage(emptyString);
     for (Element ele in querySelectorAll('${this.tagName} [data-field-id]')) {
       if (ele is IronInput) {
         IronInput pi = ele;
@@ -108,19 +108,19 @@ class AControl extends PolymerElement {
       } else if(ele is PaperInput) {
         PaperInput pi = ele;
         pi.invalid = false;
-        pi.errorMessage = EMPTY_STRING;
+        pi.errorMessage = emptyString;
       } else if(ele is PaperToggleButton) {
         PaperToggleButton ptb = ele;
         ptb.invalid = false;
         //ele.errorMessage = ""; TODO: Error messages for toggle buttons?
       } else if(ele is ComboListControl) {
         ComboListControl pi = ele;
-        pi.setGeneralErrorMessage(EMPTY_STRING);
+        pi.setGeneralErrorMessage(emptyString);
         pi.setInvalid(false);
       } else if(ele is PaperDropdownMenu) {
         PaperDropdownMenu pi = ele;
         pi.invalid = false;
-        pi.errorMessage = EMPTY_STRING;
+        pi.errorMessage = emptyString;
       } else {
         window.alert("Unknown control: " + ele.runtimeType.toString());
       }

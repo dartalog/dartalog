@@ -19,10 +19,6 @@ class ItemCopy extends AData {
 
   ItemCopy();
 
-  void cleanUp() {
-    this.uniqueId = this.uniqueId.trim();
-  }
-
   ItemCopy.copyItem(ItemCopy o) {
     this.itemId = o.itemId;
     this.copy = o.copy;
@@ -32,4 +28,7 @@ class ItemCopy extends AData {
     this.status = o.status;
   }
 
+  void cleanUp() {
+    this.uniqueId = this.uniqueId.trim();
+  }
 }

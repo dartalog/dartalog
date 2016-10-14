@@ -64,7 +64,7 @@ class ItemEditControl extends AControl {
     if (routeData != null && routeData.containsKey("item")) {
       return routeData["item"];
     }
-    return EMPTY_STRING;
+    return emptyString;
   }
 
   ItemEditControl.created() : super.created();
@@ -249,6 +249,7 @@ class ItemEditControl extends AControl {
       reader.readAsArrayBuffer(file);
       await for (dynamic fileEvent in reader.onLoad) {
         try {
+
           field.mediaMessage = new API_Library.MediaMessage();
           field.mediaMessage.bytes = reader.result;
           //List<String> parms = reader.result.toString().split(";");

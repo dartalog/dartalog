@@ -1,82 +1,85 @@
 library tools;
 
-import 'package:uuid/uuid.dart' as UUID;
+import 'package:uuid/uuid.dart';
 
-const String UUID_REGEX_STRING_SNIPPET = r"[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}";
-const String UUID_REGEX_STRING = r"^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$";
+/// An empty [String] constant, to possibly save the tiniest amount of memory.
+const String emptyString = "";
 
-final RegExp UUID_REGEX = new RegExp(UUID_REGEX_STRING);
+/// A [RegExp]-compatible [String] that matches against [String]s that contain ONLY a formatted [Uuid].
+const String uuidRegexString = "\^$uuidRegexStringSnippet\$";
 
-const String EMPTY_STRING = "";
+/// A [RegExp]-compatible [String] that matches against [String]s that contain a formatted [Uuid].
+const String uuidRegexStringSnippet =
+    r"[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}";
 
-String getEnumValueString(dynamic enumValue) => enumValue.toString().substring(enumValue.toString().indexOf('.')+1);
+/// A pre-prepared [RegExp] that matches against [Uuid] [String]s.
+final RegExp uuidRegex = new RegExp(uuidRegexString);
 
-String validateRegularExpression(String input) {
-  try {
-    RegExp test = new RegExp(input);
-    test.hasMatch("Fishmobabywhirlamagig");
-    return "";
-  } on FormatException catch(e) {
-    return e.message;
+/// Takes a hex character only uuid string and formats it with dashes at the appropriate locations.
+String formatUuid(String input) {
+  StringBuffer output = new StringBuffer();
+  if (input.length < 32) {
+    throw new Exception("UUID too short: $input");
   }
+  output.write(input.substring(0, 8));
+  output.write("-");
+  output.write(input.substring(8, 12));
+  output.write("-");
+  output.write(input.substring(12, 16));
+  output.write("-");
+  output.write(input.substring(16, 20));
+  output.write("-");
+  output.write(input.substring(20, 32));
+  return output.toString();
 }
 
-bool isUuid(String uuid) {
-  return UUID_REGEX.hasMatch(uuid);
-}
-
+/// Generate a brand new uuid.
 String generateUuid() {
-  UUID.Uuid uuid = new UUID.Uuid();
-  var u4 = uuid.v4();
-//  var temp = uuid.unparse(u4);
-  return u4.toString();
+  Uuid id = new Uuid();
+  String u4 = id.v4();
+  return u4;
 }
 
-/**
- * Checks if the [map] has a key matching the provided [key],
- * then checks if the key's value is [null], only whitespace, or blank.
- * Returns a [bool] indicating the status.
- */
-bool keyExistsAndHasValue(Map map, String key) {
-  if(!map.containsKey(key)) {
-    return false;
-  }
-  if(map[key]==null) {
-    return false;
-  }
-  return !isNullOrWhitespace(map[key]);
-}
+/// Converts an enum value to a string of the post-type name.
+String getEnumValueString(dynamic enumValue) =>
+    enumValue.toString().substring(enumValue.toString().indexOf('.') + 1);
 
-/**
- * Checks if the [input] String is [null], only whitespace, or blank,
- * returning a [true] if any of these conditions are met.
- * Returns a [false] otherwise.
- */
+/// Checks if the [input] String is [null], only whitespace, or blank, returning a [true] if any of these conditions are met. Returns a [false] otherwise.
 bool isNullOrWhitespace(String input) {
-  if(input==null) {
+  if (input == null) {
     return true;
   }
 
-  if(input.trim()==EMPTY_STRING) {
+  if (input.trim() == emptyString) {
     return true;
   }
 
   return false;
 }
 
-String formatUuid(String input) {
-  StringBuffer output = new StringBuffer();
-  if(input.length<32) {
-    throw new Exception("UUID too short: ${input}");
+/// Returns a [bool] indicating whether the provided [String] is formatted as a [Uuid]
+bool isUuid(String uuid) {
+  return uuidRegex.hasMatch(uuid);
+}
+
+/// Checks if the [map] has a key matching the provided [key], then checks if the key's value is [null], only whitespace, or blank. Returns a [bool] indicating the status.
+bool keyExistsAndHasValue(Map<dynamic, dynamic> map, String key) {
+  if (!map.containsKey(key)) {
+    return false;
   }
-  output.write(input.substring(0,8));
-  output.write("-");
-  output.write(input.substring(8,12));
-  output.write("-");
-  output.write(input.substring(12,16));
-  output.write("-");
-  output.write(input.substring(16,20));
-  output.write("-");
-  output.write(input.substring(20,32));
-  return output.toString();
+  if (map[key] == null) {
+    return false;
+  }
+  return !isNullOrWhitespace(map[key]);
+}
+
+/// Returns a [String] containing the validation error message for the specified input [String], or an empty [String] if the input is valid for use as a [RegExp]
+String validateRegularExpression(String input) {
+  try {
+    RegExp test = new RegExp(input);
+    test.hasMatch("Fishmobabywhirlamagig");
+    return emptyString;
+  } on FormatException catch (e) {
+    return e.message;
+  }
 }

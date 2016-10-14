@@ -54,13 +54,13 @@ class ItemViewPage extends APage
     if (routeData != null&&routeData.containsKey("item")) {
       return routeData["item"];
     }
-    return EMPTY_STRING;
+    return emptyString;
   }
 
   @override
   String get editLink {
     if(isNullOrWhitespace(_itemId))
-      return EMPTY_STRING;
+      return emptyString;
 
     return "#item/edit/${_itemId}";
   }

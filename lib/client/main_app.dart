@@ -297,7 +297,7 @@ class MainApp extends PolymerElement {
       notifyPath("currentPage.editLink", ep.editLink);
     } else {
       notifyPath("currentPage.showEditButton", false);
-      notifyPath("currentPage.editLink", EMPTY_STRING);
+      notifyPath("currentPage.editLink", emptyString);
     }
 
 
@@ -541,7 +541,7 @@ class MainApp extends PolymerElement {
   @property
   bool get addItemVisible => getMapValue(routeData,"page")=="add";
 
-  String getMapValue(Map data, String key, [String defaultValue = EMPTY_STRING]) {
+  String getMapValue(Map data, String key, [String defaultValue = emptyString]) {
     if(data==null||!data.containsKey(key))
       return defaultValue;
     dynamic output =data[key];
@@ -551,7 +551,7 @@ class MainApp extends PolymerElement {
   @reflectable
   String getPaginationLink(int page) {
     if(this.currentPage==null||!(this.currentPage is ACollectionPage))
-      return EMPTY_STRING;
+      return emptyString;
 
     ACollectionPage cp = this.currentPage as ACollectionPage;
     return "#${cp.getPaginationLink(page)}";

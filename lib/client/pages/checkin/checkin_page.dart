@@ -26,14 +26,12 @@ import 'package:polymer_elements/iron_list.dart';
 import 'package:polymer_elements/iron_flex_layout.dart';
 
 
-import 'package:dartalog/dartalog.dart' as dartalog;
 import 'package:dartalog/client/pages/pages.dart';
 import 'package:dartalog/client/controls/item_add/item_add_control.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/client.dart';
-import 'package:dartalog/tools.dart';
 
-import '../../api/dartalog.dart' as API;
+import 'package:dartalog/client/api/dartalog.dart' as API;
 
 @PolymerRegister('checkin-page')
 class CheckinPage extends APage with ARefreshablePage {

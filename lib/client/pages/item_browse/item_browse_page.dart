@@ -98,7 +98,7 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage, AColl
       try {
         this.startLoading();
         this.currentPage = 1;
-        this.searchQuery = EMPTY_STRING;
+        this.searchQuery = emptyString;
         if(this.routeData!=null) {
           if (this.routeData.containsKey("page") &&
               !isNullOrWhitespace(this.routeData["page"])&&

@@ -11,7 +11,7 @@ class SettingsModel {
     try {
       _optionsFile = new OptionsFile('server.options');
     } on FileSystemException catch (e) {
-      _log.info("server.options not found, using all default settings");
+      _log.info("server.options not found, using all default settings", e);
     }
   }
   String get mongoConnectionString => _getStringFromOptionFile(

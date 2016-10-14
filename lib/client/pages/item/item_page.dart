@@ -45,7 +45,7 @@ class ItemPage extends APage with AEditablePage, ASaveablePage {
   @override
   String get editLink {
     if (editPageActive)
-      return EMPTY_STRING;
+      return emptyString;
 
     return itemViewPage.editLink;
   }

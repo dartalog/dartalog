@@ -9,27 +9,25 @@ import 'dart:html';
 
 import 'package:dartalog/client/api/dartalog.dart' as API;
 import 'package:dartalog/client/client.dart';
-import 'package:dartalog/client/controls/auth_wrapper/auth_wrapper_control.dart';
-import 'package:dartalog/client/controls/item_add/item_add_control.dart';
+import 'package:dartalog/client/controls/controls.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/data_sources/data_sources.dart' as data_sources;
-import 'package:dartalog/client/controls/controls.dart';
 import 'package:dartalog/dartalog.dart' as dartalog;
 import 'package:logging/logging.dart';
 import 'package:option/option.dart';
 import 'package:polymer/polymer.dart';
-import 'package:polymer_elements/iron_flex_layout.dart';
-import 'package:polymer_elements/iron_icon.dart';
+/// Make [IronImage] available
 import 'package:polymer_elements/iron_image.dart';
-import 'package:polymer_elements/iron_list.dart';
+/// Make [PaperButton] available
 import 'package:polymer_elements/paper_button.dart';
-import 'package:polymer_elements/paper_card.dart';
 import 'package:polymer_elements/paper_dialog.dart';
+/// Make [PaperDialogScrollable] available
 import 'package:polymer_elements/paper_dialog_scrollable.dart';
+/// Make [PaperDropdownMenu] available
 import 'package:polymer_elements/paper_dropdown_menu.dart';
-import 'package:polymer_elements/paper_fab.dart';
+/// Make [PaperIconButton] available
 import 'package:polymer_elements/paper_icon_button.dart';
-import 'package:polymer_elements/paper_input.dart';
+/// Make [PaperListbox] available
 import 'package:polymer_elements/paper_listbox.dart';
 import 'package:web_components/web_components.dart';
 
@@ -50,10 +48,10 @@ class CheckoutControl extends AControl {
   @Property(notify: true)
   String checkoutUser = "";
 
-  CheckoutControl.created() : super.created();
-
   @Property(notify: true)
   List<ItemCopy> cart = new List<ItemCopy>();
+
+  CheckoutControl.created() : super.created();
 
   Logger get loggerImpl => _log;
 
@@ -70,13 +68,8 @@ class CheckoutControl extends AControl {
     super.attached();
   }
 
-  Future open() async {
-    PaperDialog pd = this.querySelector("paper-dialog");
-    await this.refresh();
-    this.openDialog(pd);
-  }
-
-  bool checkCartFor(ItemCopy itemCopy) => _getItemCopy(itemCopy.itemId, itemCopy.copy).isNotEmpty;
+  bool checkCartFor(ItemCopy itemCopy) =>
+      _getItemCopy(itemCopy.itemId, itemCopy.copy).isNotEmpty;
 
   @reflectable
   Future checkoutClicked(event, [_]) async {
@@ -85,7 +78,7 @@ class CheckoutControl extends AControl {
       request.actionerUserId = this.checkoutUser;
       request.action = dartalog.ITEM_ACTION_BORROW;
       request.itemCopies = new List<API.ItemCopyId>();
-      for(ItemCopy item in this.cart) {
+      for (ItemCopy item in this.cart) {
         API.ItemCopyId id = new API.ItemCopyId();
         id.copy = item.copy;
         id.itemId = item.itemId;
@@ -102,6 +95,12 @@ class CheckoutControl extends AControl {
     } else {
       super.handleErrorDetail(detail);
     }
+  }
+
+  Future open() async {
+    PaperDialog pd = this.querySelector("paper-dialog");
+    await this.refresh();
+    this.openDialog(pd);
   }
 
   Future refresh() async {
@@ -164,5 +163,4 @@ class CheckoutControl extends AControl {
     }
     return new None();
   }
-
 }

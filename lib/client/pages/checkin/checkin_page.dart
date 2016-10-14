@@ -79,7 +79,7 @@ class CheckinPage extends APage with ARefreshablePage {
       try {
         API.ItemCopy updatedItemCopy = await api.items.copies.get(itemCopy.itemId, itemCopy.copy);
         newCart.add(new ItemCopy.copyFrom(updatedItemCopy));
-      } on API.DetailedApiRequestError catch (e,st) {
+      } on API.DetailedApiRequestError catch (e) {
         if(e.status==404) {
           //TODO: More robust handling of item status changes
           showMessage("Item not found on server");
@@ -107,7 +107,7 @@ class CheckinPage extends APage with ARefreshablePage {
   }
 
   bool checkCartFor(ItemCopy itemCopy) {
-    _getItemCopy(itemCopy.itemId, itemCopy.copy).isNotEmpty;
+    return _getItemCopy(itemCopy.itemId, itemCopy.copy).isNotEmpty;
   }
 
   void addToCart(ItemCopy itemCopy) {

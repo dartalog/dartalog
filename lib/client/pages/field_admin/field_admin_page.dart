@@ -61,22 +61,22 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
 
   attached() {
     super.attached();
-    _loadPage();
+    refresh();
   }
 
-  Future _loadPage() async {
-    bool authed = await authWrapper.evaluatePageAuthentication();
-    this.showRefreshButton = authed;
-    this.showAddButton = authed;
-    if(authed)
-      await this.refresh();
-  }
 
   @reflectable
   Future refresh() async {
     await handleApiExceptions(() async {
       try {
         startLoading();
+
+        bool authed = await authWrapper.evaluatePageAuthentication();
+        this.showRefreshButton = authed;
+        this.showAddButton = authed;
+        if(!authed)
+          return;
+
         this.reset();
         clear("fields");
 

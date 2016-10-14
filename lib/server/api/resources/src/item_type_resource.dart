@@ -34,6 +34,6 @@ class ItemTypeResource extends AIdResource<ItemType> {
   @ApiMethod(method: 'DELETE', path: '${API_ITEM_TYPES_PATH}/{id}/')
   Future<VoidMessage> delete(String id) => deleteWithCatch(id);
 
-  String _generateRedirect(String newId) =>
+  String generateRedirect(String newId) =>
       "${SERVER_API_ROOT}${API_ITEM_TYPES_PATH}/${newId}";
 }

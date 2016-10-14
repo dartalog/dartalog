@@ -109,8 +109,11 @@ abstract class AMongoObjectDataSource<T> extends AMongoDataSource {
       Map data = await collection.findOne(selector);
       if (data == null)
         throw new InvalidInputException("Object to update not found");
+      dynamic originalId = data['_id'];
       updateMap(item, data);
       await collection.save(data);
+      if(data['_id']!=originalId)
+        await collection.remove(selector);
     });
   }
 }

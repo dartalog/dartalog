@@ -18,7 +18,7 @@ abstract class APage<T extends APage> extends AControl {
     this.evaluatePage();
   }
 
-  Future goBack() {
+  Future goBack() async {
 
   }
 

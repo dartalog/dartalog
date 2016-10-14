@@ -10,7 +10,7 @@ class SettingsModel {
   SettingsModel() {
     try {
       _optionsFile = new OptionsFile('server.options');
-    } on FileSystemException catch (e, st) {
+    } on FileSystemException catch (e) {
       _log.info("server.options not found, using all default settings");
     }
   }

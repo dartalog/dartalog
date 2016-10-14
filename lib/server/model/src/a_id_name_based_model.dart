@@ -56,7 +56,7 @@ abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel {
   }
 
   Future<IdNameList<T>> search(String query) async {
-    await _validateSearchPrivileges();
+    await validateSearchPrivileges();
     return await dataSource.search(query);
   }
 
@@ -106,24 +106,24 @@ abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel {
   Future validateFieldsInternal(Map field_errors, T t, bool creating) async =>
       {};
 
-  @override
+  @protected
   Future validateGetAllIdsAndNamesPrivileges() async {
     await validateGetPrivileges();
   }
 
-  @override
+  @protected
   Future validateGetAllPrivileges() async {
     await validateGetPrivileges();
   }
 
-  @override
+  @protected
   Future validateGetByIdPrivileges() async {
     await validateGetPrivileges();
   }
 
 
-  @override
-  Future _validateSearchPrivileges() async {
+  @protected
+  Future validateSearchPrivileges() async {
     await validateGetPrivileges();
   }
 

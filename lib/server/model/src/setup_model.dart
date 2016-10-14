@@ -6,9 +6,11 @@ import 'package:dartalog/server/server.dart';
 import 'package:dartalog/server/data/data.dart';
 import 'package:dartalog/server/data_sources/data_sources.dart' as data_sources;
 import 'package:dartalog/server/model/model.dart';
+import 'a_model.dart';
 
-class SetupModel {
+class SetupModel extends AModel {
   static final Logger _log = new Logger('UserModel');
+
   @override
   Logger get childLogger => _log;
 

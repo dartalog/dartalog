@@ -79,7 +79,7 @@ class ItemResource extends AIdResource<Item> {
     if (item.files != null) {
       files = convertFiles(item.files);
     }
-    String output = await catchExceptionsAwait(
+    await catchExceptionsAwait(
         () => model.items.update(id, item.item, files: files));
     return new IdResponse.fromId(id, _generateRedirect(id));
   }

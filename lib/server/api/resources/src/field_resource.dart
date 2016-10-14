@@ -30,6 +30,7 @@ import 'a_id_resource.dart';class FieldResource extends AIdResource<Field> {
   @ApiMethod(method: 'DELETE', path: '${API_FIELDS_PATH}/{id}/')
   Future<VoidMessage> delete(String id) => deleteWithCatch(id);
 
-  String _generateRedirect(String newId) =>
+  @override
+  String generateRedirect(String newId) =>
       "${SERVER_API_ROOT}${API_FIELDS_PATH}/${newId}";
 }

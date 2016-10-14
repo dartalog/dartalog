@@ -1,14 +1,7 @@
 import 'dart:html';
-import 'dart:async';
-
 import 'package:dartalog/dartalog.dart';
-import 'package:option/option.dart';
-
 import 'api/dartalog.dart';
 import 'src/dartalog_http_client.dart';
-import 'data/data.dart' as data;
-import 'data_sources/data_sources.dart' as data_sources;
-
 export 'api/dartalog.dart' show DartalogApi;
 export 'src/http_headers.dart';
 
@@ -40,6 +33,8 @@ String getImageUrl(String image, ImageType type) {
     case ImageType.THUMBNAIL:
       return "${getServerRoot()}${HOSTED_IMAGES_THUMBNAILS_PATH}${image
           .substring(HOSTED_IMAGE_PREFIX.length)}";
+    default:
+      throw new Exception("Not supported: ${type}");
   }
 }
 

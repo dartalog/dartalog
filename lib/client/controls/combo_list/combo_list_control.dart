@@ -4,7 +4,6 @@
 @HtmlImport('combo_list_control.html')
 library dartalog.client.controls.combo_list;
 
-import 'dart:html';
 import 'dart:async';
 import 'package:logging/logging.dart';
 
@@ -18,8 +17,6 @@ import 'package:option/option.dart';
 import 'package:dartalog/tools.dart';
 import 'package:dartalog/client/controls/controls.dart';
 import 'package:dartalog/client/client.dart';
-import 'package:dartalog/client/data/data.dart';
-import 'package:dartalog/client/api/dartalog.dart' as API;
 
 @PolymerRegister('combo-list-control')
 class ComboListControl extends AControl  {
@@ -83,7 +80,7 @@ class ComboListControl extends AControl  {
         throw new Exception("Please select an item");
 
 
-      dynamic item = _getItem(id).getOrElse(() => throw new Exception("Selected item not found"));
+      _getItem(id).getOrElse(() => throw new Exception("Selected item not found"));
 
       if(selectedValues.contains(id))
         throw new Exception("Item has already been added");

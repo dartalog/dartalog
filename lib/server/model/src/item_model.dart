@@ -295,10 +295,10 @@ class ItemModel extends AIdNameBasedModel<Item> {
         } finally {
           try {
             await imageRaf.close();
-          } catch (e2, st) {}
+          } catch (e2) {}
           try {
             await thumbnailRaf.close();
-          } catch (e2, st) {}
+          } catch (e2) {}
         }
       }
     } catch (e, st) {
@@ -308,14 +308,14 @@ class ItemModel extends AIdNameBasedModel<Item> {
           File file = new File(f);
           bool exists = await file.exists();
           if (exists) await file.delete();
-        } catch (e, st) {}
+        } catch (e) {}
       }
       throw e;
     }
   }
 
   @override
-  Future _validateFieldsInternal(
+  Future validateFieldsInternal(
       Map<String, String> field_errors, Item item, bool creating) async {
     //TODO: add dynamic field validation
     if (isNullOrWhitespace(item.typeId))

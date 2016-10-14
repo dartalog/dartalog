@@ -4,8 +4,6 @@
 @HtmlImport('paper_toast_queue.html')
 library dartalog.client.controls.paper_toast_queue;
 
-import 'dart:html';
-import 'dart:async';
 import 'package:logging/logging.dart';
 import 'dart:collection';
 import 'package:polymer/polymer.dart';

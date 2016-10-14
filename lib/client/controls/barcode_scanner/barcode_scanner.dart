@@ -4,19 +4,13 @@
 @HtmlImport('barcode_scanner.html')
 library dartalog.client.controls.barcode_Scanner;
 
-import 'dart:html';
 import 'dart:async';
 import 'package:logging/logging.dart';
 
 import 'package:polymer/polymer.dart';
 import 'package:web_components/web_components.dart';
 import 'package:polymer_elements/iron_image.dart';
-import 'package:option/option.dart';
-import 'package:dartalog/tools.dart';
 import 'package:dartalog/client/controls/controls.dart';
-import 'package:dartalog/client/client.dart';
-import 'package:dartalog/client/data/data.dart';
-import 'package:dartalog/client/api/dartalog.dart' as API;
 import 'package:quagga_dart/quagga_dart.dart' as quagga;
 import 'package:js/js.dart';
 

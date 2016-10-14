@@ -5,7 +5,6 @@
 library dartalog.client.pages.user_admin_page;
 
 import 'dart:async';
-import 'dart:html';
 
 import 'package:dartalog/client/api/dartalog.dart' as API;
 import 'package:dartalog/client/client.dart';
@@ -70,17 +69,10 @@ class UserAdminPage extends APage with ARefreshablePage, ACollectionPage {
 
   attached() {
     super.attached();
-    _loadPage();
+    refresh();
   }
 
 
-  Future _loadPage() async {
-    bool authed = await authWrapper.evaluatePageAuthentication();
-    this.showRefreshButton = authed;
-    this.showAddButton = authed;
-    if(authed)
-      await this.refresh();
-  }
 
   @reflectable
   cancelClicked(event, [_]) {
@@ -125,6 +117,13 @@ class UserAdminPage extends APage with ARefreshablePage, ACollectionPage {
     await handleApiExceptions(() async {
       try {
         this.startLoading();
+
+        bool authed = await authWrapper.evaluatePageAuthentication();
+        this.showRefreshButton = authed;
+        this.showAddButton = authed;
+        if(!authed)
+          return;
+
         this.reset();
         clear("items");
 

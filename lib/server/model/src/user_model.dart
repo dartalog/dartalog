@@ -18,10 +18,10 @@ class UserModel extends AIdNameBasedModel<User> {
   AUserDataSource get dataSource => data_sources.users;
 
   @override
-  String get _defaultReadPrivilegeRequirement => UserPrivilege.checkout;
+  String get defaultReadPrivilegeRequirement => UserPrivilege.checkout;
 
   @override
-  Future _validateFieldsInternal(
+  Future validateFieldsInternal(
       Map field_errors, User user, bool creating) async {
     if (creating || !isNullOrWhitespace(user.password)) {
       _validatePassword(field_errors, user.password);

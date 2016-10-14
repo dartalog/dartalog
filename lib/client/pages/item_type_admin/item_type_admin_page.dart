@@ -63,21 +63,22 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
 
   attached() {
     super.attached();
-    _loadPage();
-  }
-
-  Future _loadPage() async {
-    bool authed = await authWrapper.evaluatePageAuthentication();
-    this.showRefreshButton = authed;
-    this.showAddButton = authed;
-    if(authed)
-      await this.refresh();
+    refresh();
   }
 
   Future refresh() async {
+
+
     await handleApiExceptions(() async {
       try {
         this.startLoading();
+
+        bool authed = await authWrapper.evaluatePageAuthentication();
+        this.showRefreshButton = authed;
+        this.showAddButton = authed;
+        if(!authed)
+          return;
+
         this.reset();
 
         await _loadAvailableFields();

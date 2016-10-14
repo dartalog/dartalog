@@ -10,7 +10,7 @@ import 'package:dartalog/server/server.dart';
 import 'package:logging/logging.dart';
 import 'package:logging_handlers/server_logging_handlers.dart' as serverLogging;
 import 'package:option/option.dart';
-import 'package:path/path.dart' show join, dirname;
+import 'package:path/path.dart' show join;
 import 'package:rpc/rpc.dart';
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as io;

@@ -23,7 +23,6 @@ class Field extends JsProxy  {
   set value(String value) {
     _value = value;
     if(type=="image") {
-      String url = getImageUrl(value, ImageType.THUMBNAIL);
       this.displayImageUrl = getImageUrl(value, ImageType.THUMBNAIL);
       if(!value.startsWith(HOSTED_IMAGE_PREFIX))
         editImageUrl = value;

@@ -10,7 +10,6 @@ import 'dart:html';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/pages/pages.dart';
-import 'package:dartalog/dartalog.dart' as dartalog;
 import 'package:dartalog/tools.dart';
 import 'package:logging/logging.dart';
 import 'package:polymer/polymer.dart';
@@ -197,7 +196,7 @@ class ItemViewPage extends APage
     });
   }
 
-  _updateCurrentItem(ItemCopy itemCopy) {
+  void updateCurrentItem(ItemCopy itemCopy) {
     set("currentItemCopy", itemCopy);
     //itemCopy.
   }

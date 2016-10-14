@@ -41,7 +41,7 @@ class ItemCopyResource extends AResource {
       catchExceptionsAwait(() async  {
     //await model.items.copies.performAction(itemId, copy, actionRequest.action, actionRequest.actionerUserId);
     throw new Exception("Not Implemented");
-    return new VoidMessage();
+    //return new VoidMessage();
   });
 
   @ApiMethod(
@@ -52,7 +52,7 @@ class ItemCopyResource extends AResource {
     return new VoidMessage();
   });
 
-  String _generateCopyRedirect(String itemId, int copy) =>
+  String generateCopyRedirect(String itemId, int copy) =>
       "${generateRedirect(itemId)}/${API_COPIES_PATH}/${copy}";
 
 }

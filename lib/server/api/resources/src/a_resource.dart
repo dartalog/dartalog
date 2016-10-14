@@ -25,6 +25,7 @@ abstract class AResource {
   }
 
   @protected
+  @virtual
   String generateRedirect(String newId) {
     return "";
   }

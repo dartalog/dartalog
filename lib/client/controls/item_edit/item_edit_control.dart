@@ -6,7 +6,6 @@ library dartalog.client.controls.item_edit;
 
 import 'dart:async';
 import 'dart:html';
-import 'dart:convert';
 
 import 'package:mime/mime.dart' as mime;
 import 'package:dartalog/client/api/dartalog.dart' as API_Library;
@@ -221,9 +220,9 @@ class ItemEditControl extends AControl {
 
   @reflectable
   imageInputChanged(event, [_]) {
-    Element parent = getParentElement(event.target, "div");
-    int index = int.parse(parent.dataset["index"]);
-    Field field = this.currentItem.fields[index];
+//    Element parent = getParentElement(event.target, "div");
+//    int index = int.parse(parent.dataset["index"]);
+//    Field field = this.currentItem.fields[index];
   }
 
   @reflectable

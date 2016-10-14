@@ -4,7 +4,6 @@
 @HtmlImport('auth_wrapper_control.html')
 library dartalog.client.controls.auth_wrapper;
 
-import 'dart:html';
 import 'dart:async';
 import 'package:logging/logging.dart';
 

@@ -34,6 +34,7 @@ class CollectionResource extends AIdResource<Collection> {
   Future<IdResponse> update(String id, Collection collection) =>
       updateWithCatch(id, collection);
 
-  String _generateRedirect(String newId) =>
+  @override
+  String generateRedirect(String newId) =>
       "${SERVER_API_ROOT}${API_COLLECTIONS_PATH}/${newId}";
 }

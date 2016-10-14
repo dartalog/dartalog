@@ -15,7 +15,6 @@ import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/data_sources/data_sources.dart' as data_sources;
 import 'package:dartalog/client/controls/controls.dart';
 import 'package:dartalog/dartalog.dart' as dartalog;
-import 'package:dartalog/tools.dart';
 import 'package:logging/logging.dart';
 import 'package:option/option.dart';
 import 'package:polymer/polymer.dart';
@@ -77,9 +76,7 @@ class CheckoutControl extends AControl {
     this.openDialog(pd);
   }
 
-  bool checkCartFor(ItemCopy itemCopy) {
-    _getItemCopy(itemCopy.itemId, itemCopy.copy).isNotEmpty;
-  }
+  bool checkCartFor(ItemCopy itemCopy) => _getItemCopy(itemCopy.itemId, itemCopy.copy).isNotEmpty;
 
   @reflectable
   Future checkoutClicked(event, [_]) async {
@@ -123,7 +120,7 @@ class CheckoutControl extends AControl {
               itemCopy.itemId, itemCopy.copy,
               includeCollection: true, includeItemSummary: true);
           newCart.add(new ItemCopy.copyFrom(updatedItemCopy));
-        } on API.DetailedApiRequestError catch (e, st) {
+        } on API.DetailedApiRequestError catch (e) {
           if (e.status == 404) {
             //TODO: More robust handling of item status changes
             showMessage("Item not found on server");

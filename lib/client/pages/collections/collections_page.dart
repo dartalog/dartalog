@@ -60,16 +60,7 @@ class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
 
   attached() {
     super.attached();
-    _loadPage();
-  }
-
-
-  Future _loadPage() async {
-    bool authed = await authWrapper.evaluatePageAuthentication();
-    this.showRefreshButton = authed;
-    this.showAddButton = authed;
-    if(authed)
-      await this.refresh();
+    refresh();
   }
 
   @reflectable
@@ -77,6 +68,12 @@ class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
     await handleApiExceptions(() async {
       startLoading();
       try {
+        bool authed = await authWrapper.evaluatePageAuthentication();
+        this.showRefreshButton = authed;
+        this.showAddButton = authed;
+        if(!authed)
+          return;
+
         this.reset();
         clear("collections");
         clear("users");

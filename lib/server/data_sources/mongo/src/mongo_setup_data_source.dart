@@ -17,6 +17,8 @@ class MongoSetupDataSource extends AMongoDataSource with ASetupDataSource {
     dynamic output = await this.genericFind(selector);
     if(output==null)
       return false;
+
+    return true;
   }
 
   Future markAsSetup() async {
@@ -26,5 +28,6 @@ class MongoSetupDataSource extends AMongoDataSource with ASetupDataSource {
 
 
   Future<String> getVersion() async => "1.0";
-  Future setVersion(String version) {}
+
+  Future setVersion(String version) async {}
 }

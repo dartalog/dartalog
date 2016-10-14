@@ -4,7 +4,6 @@ import 'dart:html';
 import 'package:polymer/polymer.dart';
 import 'package:logging/logging.dart';
 import 'package:option/option.dart';
-import 'package:http/http.dart';
 import 'package:_discoveryapis_commons/_discoveryapis_commons.dart' as commons;
 import 'package:polymer_elements/paper_input_behavior.dart';
 import 'package:polymer_elements/paper_dropdown_menu.dart';
@@ -81,7 +80,7 @@ class AControl extends PolymerElement {
 
   Future wait({int milliseconds: 100}) {
     Completer completer = new Completer();
-    Timer timer = new Timer(new Duration(milliseconds: 100), () {
+    new Timer(new Duration(milliseconds: 100), () {
       completer.complete();
     });
     return completer.future;
@@ -91,7 +90,7 @@ class AControl extends PolymerElement {
   // This delays opening the dialog until the system has had a second to process the DOM change.
   Future openDialog(PaperDialog dialog) async {
     Completer completer = new Completer();
-    Timer timer = new Timer(new Duration(milliseconds: 100), () {
+    new Timer(new Duration(milliseconds: 100), () {
       dialog.open();
       completer.complete();
     });
@@ -104,22 +103,22 @@ class AControl extends PolymerElement {
     setGeneralErrorMessage(EMPTY_STRING);
     for (Element ele in querySelectorAll('${this.tagName} [data-field-id]')) {
       if (ele is IronInput) {
-        IronInput pi = ele as IronInput;
+        IronInput pi = ele;
         pi.invalid = false;
       } else if(ele is PaperInput) {
-        PaperInput pi = ele as PaperInput;
-        ele.invalid = false;
-        ele.errorMessage = EMPTY_STRING;
+        PaperInput pi = ele;
+        pi.invalid = false;
+        pi.errorMessage = EMPTY_STRING;
       } else if(ele is PaperToggleButton) {
-        PaperToggleButton pi = ele as PaperToggleButton;
-        ele.invalid = false;
+        PaperToggleButton ptb = ele;
+        ptb.invalid = false;
         //ele.errorMessage = ""; TODO: Error messages for toggle buttons?
       } else if(ele is ComboListControl) {
-        ComboListControl pi = ele as ComboListControl;
+        ComboListControl pi = ele;
         pi.setGeneralErrorMessage(EMPTY_STRING);
         pi.setInvalid(false);
       } else if(ele is PaperDropdownMenu) {
-        PaperDropdownMenu pi = ele as PaperDropdownMenu;
+        PaperDropdownMenu pi = ele;
         pi.invalid = false;
         pi.errorMessage = EMPTY_STRING;
       } else {
@@ -128,7 +127,7 @@ class AControl extends PolymerElement {
     }
   }
 
-  Future _handleApiError(commons.DetailedApiRequestError error) async {
+  Future _handleApiError(commons.DetailedApiRequestError error, dynamic st) async {
     try {
       clearValidation();
       if(error.status==400){
@@ -161,7 +160,7 @@ class AControl extends PolymerElement {
     try {
       return await toAwait();
     } on commons.DetailedApiRequestError catch (e, st) {
-      await _handleApiError(e);
+      await _handleApiError(e, st);
     } catch (e, st) {
       handleException(e, st);
     }
@@ -198,15 +197,15 @@ class AControl extends PolymerElement {
         pi.errorMessage = message;
         pi.invalid = true;
       } else if (input is PaperDropdownMenu) {
-        PaperDropdownMenu pi = input as PaperDropdownMenu;
+        PaperDropdownMenu pi = input;
         pi.errorMessage = message;
         pi.invalid = true;
       } else if(input is PaperToggleButton) {
-        PaperToggleButton pi = input as PaperToggleButton;
-        input.invalid = false;
+        PaperToggleButton ptb = input;
+        ptb.invalid = false;
         //ele.errorMessage = ""; TODO: Error messages for toggle buttons?
       } else if (input is ComboListControl) {
-        ComboListControl pi = input as ComboListControl;
+        ComboListControl pi = input;
         pi.setGeneralErrorMessage(message);
         pi.setInvalid(true);
       } else {
@@ -248,7 +247,7 @@ class AControl extends PolymerElement {
 
   Future focusPaperInput(Element input) {
     Completer completer = new Completer();
-    Timer timer = new Timer(new Duration(milliseconds: 100), () {
+    new Timer(new Duration(milliseconds: 100), () {
       PaperInput pi = input as PaperInput;
       pi.focus();
       pi.inputElement.focus();

@@ -4,7 +4,6 @@
 @HtmlImport('item_add_control.html')
 library dartalog.client.controls.item_add;
 
-import 'dart:html';
 import 'dart:async';
 import 'package:logging/logging.dart';
 
@@ -14,12 +13,9 @@ import 'package:polymer_elements/paper_dialog.dart';
 import 'package:polymer_elements/paper_item.dart';
 import 'package:polymer_elements/paper_fab.dart';
 import 'package:polymer_elements/paper_tooltip.dart';
-import 'package:dartalog/tools.dart';
 import 'package:dartalog/client/controls/controls.dart';
-import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/api/dartalog.dart' as API;
-import 'package:dartalog/client/pages/pages.dart';
 
 
 @PolymerRegister('item-add-control')
@@ -44,7 +40,7 @@ class ItemAddControl extends AControl  {
     this.clearValidation();
   }
 
-  Future start() {
+  void start() {
     addItemMethodDialog.open();
   }
 

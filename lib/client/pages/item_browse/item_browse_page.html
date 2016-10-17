@@ -27,15 +27,17 @@
         </template>
         <div style="padding-right:48pt;position:relative;">
             <template is="dom-repeat" items="[[itemsList]]" as="item">
-                <paper-material class="item_card" data-id$="[[item.id]]" title="[[item.name]]">
-                    <a href="[[generateItemLink(item.id)]]">
-                        <iron-image class="content fit" sizing="cover"
-                                    src="[[getThumbnailForImage(item.thumbnail)]]"></iron-image>
+                <a href="[[generateItemLink(item.id)]]">
+                <paper-material class="item_card"
+                                data-id$="[[item.id]]" title="[[item.name]]" class="container">
+                        <iron-image class="fit" sizing="cover" style="height:100%;width:100%;"
+                                    src="[[getThumbnailForImage(item.thumbnail)]]"
+                                    ></iron-image>
                         <div class="item_title">
                             <div>[[item.name]]</div>
                         </div>
-                    </a>
                 </paper-material>
+                </a>
 
             </template>
         </div>

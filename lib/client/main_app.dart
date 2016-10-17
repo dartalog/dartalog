@@ -47,6 +47,9 @@ import 'package:polymer_elements/paper_toast.dart';
 import 'package:polymer_elements/paper_toolbar.dart';
 import 'package:route_hierarchical/client.dart';
 import 'package:web_components/web_components.dart';
+import 'package:polymer_elements/iron_flex_layout.dart';
+import 'package:polymer_elements/iron_flex_layout_classes.dart';
+
 
 /// Uses [PaperInput]
 @PolymerRegister('main-app')

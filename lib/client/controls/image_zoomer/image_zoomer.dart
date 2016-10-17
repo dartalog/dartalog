@@ -10,6 +10,8 @@ import 'package:polymer/polymer.dart';
 import 'package:web_components/web_components.dart';
 import 'package:polymer_elements/iron_image.dart';
 import 'package:dartalog/client/controls/controls.dart';
+import 'package:polymer_elements/iron_flex_layout.dart';
+import 'package:polymer_elements/iron_flex_layout_classes.dart';
 
 @PolymerRegister('image-zoomer')
 class ImageZoomerControl extends AControl  {
@@ -25,6 +27,9 @@ class ImageZoomerControl extends AControl  {
 
   @Property(notify: true)
   String title;
+
+  @Property(notify: true)
+  int height;
 
   ImageZoomerControl.created() : super.created();
 

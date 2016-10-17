@@ -12,6 +12,7 @@ import 'package:polymer/polymer.dart';
 import 'package:web_components/web_components.dart';
 import 'package:polymer_elements/paper_icon_button.dart';
 import 'package:polymer_elements/iron_icon.dart';
+import 'package:polymer_elements/iron_image.dart';
 import 'package:polymer_elements/paper_input.dart';
 import 'package:polymer_elements/paper_button.dart';
 import 'package:polymer_elements/paper_dropdown_menu.dart';
@@ -21,11 +22,8 @@ import 'package:polymer_elements/paper_menu.dart';
 import 'package:polymer_elements/paper_dialog.dart';
 import 'package:polymer_elements/paper_dialog_scrollable.dart';
 import 'package:polymer_elements/paper_fab.dart';
-import 'package:polymer_elements/iron_image.dart';
 import 'package:polymer_elements/iron_list.dart';
 import 'package:polymer_elements/iron_ajax.dart';
-import 'package:polymer_elements/iron_flex_layout.dart';
-
 
 import 'package:dartalog/dartalog.dart' as dartalog;
 import 'package:dartalog/client/pages/pages.dart';
@@ -33,8 +31,9 @@ import 'package:dartalog/client/controls/item_add/item_add_control.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/tools.dart';
-
-import '../../api/dartalog.dart' as API;
+import 'package:dartalog/client/api/dartalog.dart' as API;
+import 'package:polymer_elements/iron_flex_layout.dart';
+import 'package:polymer_elements/iron_flex_layout_classes.dart';
 
 @PolymerRegister('item-browse-page')
 class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage, ACollectionPage {

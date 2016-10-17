@@ -9,19 +9,19 @@ class MongoCollectionDataSource extends AMongoIdDataSource<Collection>
     with ACollectionDataSource {
   static final Logger _log = new Logger('MongoItemCollectionDataSource');
 
-  static const String PUBLICLY_BROWSABLE_FIELD = "publiclyBrowsable";
-  static const String CURATORS_FIELD = "curators";
-  static const String BROWSERS_FIELD = "browsers";
+  static const String publiclyBrowsableField = "publiclyBrowsable";
+  static const String curatorsField = "curators";
+  static const String browsersField = "browsers";
 
   Future<IdNameList<Collection>> getAllForCurator(String userId)  async {
-    SelectorBuilder selector = where.eq(CURATORS_FIELD, userId);
+    SelectorBuilder selector = where.eq(curatorsField, userId);
     return  await getIdNameListFromDb(selector);
   }
 
   Future<IdNameList<Collection>> getVisibleCollections(String userId) async {
-    SelectorBuilder selector = where.eq(PUBLICLY_BROWSABLE_FIELD, true)
-        .or(where.eq(CURATORS_FIELD, userId))
-        .or(where.eq(BROWSERS_FIELD, userId));
+    SelectorBuilder selector = where.eq(publiclyBrowsableField, true)
+        .or(where.eq(curatorsField, userId))
+        .or(where.eq(browsersField, userId));
     return await getIdNameListFromDb(selector);
   }
 
@@ -31,12 +31,12 @@ class MongoCollectionDataSource extends AMongoIdDataSource<Collection>
     Collection output = new Collection();
     output.id = data[ID_FIELD];
     output.name= data[NAME_FIELD];
-    if(data.containsKey(PUBLICLY_BROWSABLE_FIELD))
-      output.publiclyBrowsable = data[PUBLICLY_BROWSABLE_FIELD];
-    if(data.containsKey(CURATORS_FIELD))
-      output.curators = data[CURATORS_FIELD];
-    if(data.containsKey(BROWSERS_FIELD))
-      output.browsers = data[BROWSERS_FIELD];
+    if(data.containsKey(publiclyBrowsableField))
+      output.publiclyBrowsable = data[publiclyBrowsableField];
+    if(data.containsKey(curatorsField))
+      output.curators = data[curatorsField];
+    if(data.containsKey(browsersField))
+      output.browsers = data[browsersField];
     return output;
   }
 
@@ -48,8 +48,8 @@ class MongoCollectionDataSource extends AMongoIdDataSource<Collection>
   void updateMap(Collection collection, Map data) {
     data[ID_FIELD] = collection.id;
     data[NAME_FIELD] = collection.name;
-    data[PUBLICLY_BROWSABLE_FIELD] = collection.publiclyBrowsable;
-    data[CURATORS_FIELD] = collection.curators;
-    data[BROWSERS_FIELD] = collection.browsers;
+    data[publiclyBrowsableField] = collection.publiclyBrowsable;
+    data[curatorsField] = collection.curators;
+    data[browsersField] = collection.browsers;
   }
 }

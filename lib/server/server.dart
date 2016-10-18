@@ -9,15 +9,15 @@ export 'src/exceptions/setup_disabled_exception.dart';
 export 'src/exceptions/setup_required_exception.dart';
 export 'src/exceptions/not_authorized_exception.dart';
 
-final String ROOT_DIRECTORY = join(dirname(Platform.script.toFilePath()), '..');
-String SERVER_ROOT, SERVER_API_ROOT;
+final String rootDirectory = join(dirname(Platform.script.toFilePath()), '..');
+String serverRoot, serverApiRoot;
 
-final String SETUP_LOCK_FILE_PATH = "${ROOT_DIRECTORY}/setup.lock";
+final String setupLockFilePath = "$rootDirectory/setup.lock";
 
-Future<Map> loadJSONFile(String path) async {
-  File dir = new File(path);
-  String contents = await dir.readAsString();
-  Map output = JSON.decode(contents);
+Future<Map<String, dynamic>> loadJSONFile(String path) async {
+  final File dir = new File(path);
+  final String contents = await dir.readAsString();
+  final Map<String, dynamic> output = JSON.decode(contents);
   return output;
 }
 
@@ -25,4 +25,4 @@ Future<Map> loadJSONFile(String path) async {
 //  return rpc.context.baseUrl + "/images/";
 //}
 
-enum SettingNames { ITEM_NAME_FORMAT }
+enum SettingNames { itemNameFormat }

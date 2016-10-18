@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:logging/logging.dart';
-import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/global.dart';
 import 'package:dartalog/server/data/data.dart';
 import 'package:dartalog/server/data_sources/data_sources.dart' as data_sources;
 import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
@@ -12,53 +12,67 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
     with AItemDataSource {
   static final Logger _log = new Logger('MongoItemDataSource');
 
-  Future<Option<SelectorBuilder>> _generateVisibleCriteria(String userId) async {
+  Future<Option<SelectorBuilder>> _generateVisibleCriteria(
+      String userId) async {
     IdNameList collections =
-    await data_sources.itemCollections.getVisibleCollections(userId);
+        await data_sources.itemCollections.getVisibleCollections(userId);
     if (collections.isEmpty) return new None();
 
-    return new Some(
-    where.oneFrom("copies.collectionId", collections.idList));
+    return new Some(where.oneFrom("copies.collectionId", collections.idList));
   }
 
   Future<IdNameList<Item>> getVisible(String userId) async {
     return (await _generateVisibleCriteria(userId)).cata(
         () => new IdNameList<Item>(),
         (SelectorBuilder selector) async =>
-    await getIdNameListFromDb(selector));
+            await getIdNameListFromDb(selector));
   }
 
-  Future<PaginatedIdNameData<Item>> getVisiblePaginated(String userId, {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
+  Future<PaginatedIdNameData<Item>> getVisiblePaginated(String userId,
+      {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
     return (await _generateVisibleCriteria(userId)).cata(
         () => new PaginatedIdNameData<Item>(),
-        (SelectorBuilder selector) async =>
-    await getPaginatedIdNameListFromDb(selector,
-        limit: perPage, offset: getOffset(page, perPage)));
+        (SelectorBuilder selector) async => await getPaginatedIdNameListFromDb(
+            selector,
+            limit: perPage,
+            offset: getOffset(page, perPage)));
   }
 
-  Future<PaginatedIdNameData<Item>> searchVisiblePaginated(String userId, String query, {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
+  Future<PaginatedIdNameData<Item>> searchVisiblePaginated(
+      String userId, String query,
+      {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
     return (await _generateVisibleCriteria(userId)).cata(
         () => new PaginatedIdNameData<Item>(),
-        (SelectorBuilder selector) async => await searchPaginated(query,selector: selector, limit: perPage, offset: getOffset(page, perPage)));
+        (SelectorBuilder selector) async => await searchPaginated(query,
+            selector: selector,
+            limit: perPage,
+            offset: getOffset(page, perPage)));
   }
-
 
   Future<IdNameList<Item>> searchVisible(String userId, String query) async {
     return (await _generateVisibleCriteria(userId)).cata(
         () => new IdNameList<Item>(),
-        (SelectorBuilder selector) async => await search(query,selector: selector));
+        (SelectorBuilder selector) async =>
+            await search(query, selector: selector));
   }
 
   Future<IdNameList<IdNamePair>> getVisibleIdsAndNames(String userId) async {
     return (await _generateVisibleCriteria(userId)).cata(
         () => new IdNameList<IdNamePair>(),
-        (SelectorBuilder selector) async => await getIdsAndNames(selector: selector));
+        (SelectorBuilder selector) async =>
+            await getIdsAndNames(selector: selector));
   }
 
-  Future<PaginatedIdNameData<IdNamePair>> getVisibleIdsAndNamesPaginated(String userId, {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
+  Future<PaginatedIdNameData<IdNamePair>> getVisibleIdsAndNamesPaginated(
+      String userId,
+      {int page: 0,
+      int perPage: DEFAULT_PER_PAGE}) async {
     return (await _generateVisibleCriteria(userId)).cata(
         () => new IdNameList<IdNamePair>(),
-        (SelectorBuilder selector) async => await getPaginatedIdsAndNames(selector: selector, limit: perPage, offset: getOffset(page, perPage)));
+        (SelectorBuilder selector) async => await getPaginatedIdsAndNames(
+            selector: selector,
+            limit: perPage,
+            offset: getOffset(page, perPage)));
   }
 
   @override

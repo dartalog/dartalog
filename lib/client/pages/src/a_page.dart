@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:polymer/polymer.dart';
 import 'package:dartalog/client/controls/controls.dart';
 
-abstract class APage<T extends APage> extends AControl {
+abstract class APage<T extends APage<T>> extends AControl {
   APage.created(this.title) : super.created();
 
   @Property(notify: true)
@@ -18,13 +18,10 @@ abstract class APage<T extends APage> extends AControl {
     this.evaluatePage();
   }
 
-  Future goBack() async {
+  Future<Null> goBack() async {}
 
-  }
-
-
-  bool evaluate(APage page, bool evaluate(T page)) {
-    if(page is T) {
+  bool evaluate(APage<T> page, bool evaluate(T page)) {
+    if (page is T) {
       return evaluate(page);
     }
     return false;

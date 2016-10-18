@@ -6,11 +6,8 @@ enum ImportObjectType {
   SVCD,
   DVD,
   BluRay,
-
   CDDA,
-
   Book,
   Comic,
-
   VideoGame
 }

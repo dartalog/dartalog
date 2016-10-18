@@ -7,7 +7,7 @@ import 'a_data_source.dart';
 abstract class AItemCopyDataSource extends ADataSource {
   static final Logger _log = new Logger('AItemCopyModel');
 
-  Future delete(String itemId, int copy);
+  Future<Null> delete(String itemId, int copy);
   Future<Option<ItemCopy>> getByItemIdAndCopy(String itemId, int copy);
   Future<bool> existsByItemIdAndCopy(String itemId, int copy);
   Future<Option<ItemCopy>> getByUniqueId(String uniqueId);
@@ -17,5 +17,5 @@ abstract class AItemCopyDataSource extends ADataSource {
   Future<ItemCopyId> write(ItemCopy itemCopy, bool update);
   Future<int> getNextCopyNumber(String itemId);
   Future<List<ItemCopy>> getAll(List<ItemCopyId> itemCopies);
-  Future updateStatus(List<ItemCopyId> itemCopies, String status);
+  Future<Null> updateStatus(List<ItemCopyId> itemCopies, String status);
 }

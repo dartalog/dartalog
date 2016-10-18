@@ -33,35 +33,34 @@ abstract class AScrapingImportProvider extends AImportProvider {
     List itemTypes = (await data_sources.itemTypes.getAllIdsAndNames()).idList;
 
     _log.fine("Attempting to determine item type");
-    for(ScrapingImportCriteria criteria in itemTypeCriteria) {
+    for (ScrapingImportCriteria criteria in itemTypeCriteria) {
       criteria.acceptedValues = itemTypes;
       List<String> values = criteria.getFieldValues(doc);
-      for(String value in values) {
-        if(!isNullOrWhitespace(value)) {
-
-          Option<ItemType> itemTypeOpt = await data_sources.itemTypes.getById(value);
+      for (String value in values) {
+        if (!StringTools.isNullOrWhitespace(value)) {
+          Option<ItemType> itemTypeOpt =
+              await data_sources.itemTypes.getById(value);
           itemTypeOpt.map((ItemType itemType) {
             _log.fine(("Item type determined to be ${itemType.id}"));
             output.itemTypeId = itemType.id;
             output.itemTypeName = itemType.name;
           });
 
-          if(!isNullOrWhitespace(output.itemTypeId)) {
+          if (!StringTools.isNullOrWhitespace(output.itemTypeId)) {
             break;
           }
         }
       }
 
-      if(!isNullOrWhitespace(output.itemTypeId))
-        break;
+      if (!StringTools.isNullOrWhitespace(output.itemTypeId)) break;
     }
 
-    if(isNullOrWhitespace(output.itemTypeId))
+    if (StringTools.isNullOrWhitespace(output.itemTypeId))
       _log.fine(("Item type could not be determined"));
 
-    for(ScrapingImportCriteria field in fieldCriteria) {
+    for (ScrapingImportCriteria field in fieldCriteria) {
       List<String> values = field.getFieldValues(doc);
-      if(values.length>0)
+      if (values.length > 0)
         output.values[field.field] = field.getFieldValues(doc);
     }
 

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:option/option.dart';
 import 'package:dartalog/tools.dart';
-import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/global.dart';
 import 'package:dartalog/server/data/data.dart';
 import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
 import 'a_typed_model.dart';
@@ -70,8 +70,6 @@ abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel {
   @protected
   void performAdjustments(T t) {}
 
-
-
   @override
   Future<Map<String, String>> validateFields(T t, bool creating) async {
     Map<String, String> field_errors = new Map<String, String>();
@@ -79,21 +77,21 @@ abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel {
     t.getId = normalizeId(t.getId);
     t.getName = t.getName.trim();
 
-    if (isNullOrWhitespace(t.getId))
+    if (StringTools.isNullOrWhitespace(t.getId))
       field_errors["id"] = "Required";
     else {
       if (creating) {
         if (await dataSource.existsByID(t.getId))
           field_errors["id"] = "Already in use";
       }
-      if (RESERVED_WORDS.contains(t.getId.trim().toLowerCase())) {
+      if (isReservedWord(t.getId)) {
         field_errors["id"] = "Cannot use '${t.getId}' as ID";
       }
     }
 
-    if (isNullOrWhitespace(t.getName)) {
+    if (StringTools.isNullOrWhitespace(t.getName)) {
       field_errors["name"] = "Required";
-    } else if (RESERVED_WORDS.contains(t.getId.trim().toLowerCase())) {
+    } else if (isReservedWord(t.getId)) {
       field_errors["name"] = "Cannot use '${t.getName}' as name";
     }
 
@@ -121,11 +119,8 @@ abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel {
     await validateGetPrivileges();
   }
 
-
   @protected
   Future validateSearchPrivileges() async {
     await validateGetPrivileges();
   }
-
-
 }

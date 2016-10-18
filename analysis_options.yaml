@@ -3,10 +3,10 @@ analyzer:
     - implicit-downcasts: false
     - implicit-dynamic: false
   exclude:
-    - lib/client/api/dartalog.dart
+    - lib/client/api/src/item.dart
   errors:
     todo: ignore
-    unused_import: ignore
+    unused_import: info
     missing_return: error
     invalid_assignment: error
     unused_local_variable: warning
@@ -50,7 +50,7 @@ linter:
     - prefer_final_fields
     - prefer_final_locals
     - prefer_is_not_empty
-    - public_member_api_docs
+    #- public_member_api_docs
     - slash_for_doc_comments
     - sort_constructors_first
     - sort_unnamed_constructors_first

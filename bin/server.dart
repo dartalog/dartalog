@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dartalog/dartalog.dart';
-import 'package:dartalog/server/api/api.dart';
+import 'package:dartalog/global.dart';
+import 'package:dartalog/server/api/item/item_api.dart';
 import 'package:dartalog/server/data/data.dart';
 import 'package:dartalog/server/data_sources/data_sources.dart' as data_source;
 import 'package:dartalog/server/model/model.dart' as model;
@@ -47,19 +47,17 @@ final ApiServer _apiServer =
 final Logger _log = new Logger('main');
 
 HttpServer _server;
-Future<Option<Principal>> _getUser(String userName) async {
-  Option<User> user = await data_source.users.getById(userName);
-  if (user.isEmpty) return new None<Principal>();
-  Principal principal = new Principal(user.get().getId);
-  return new Some<Principal>(principal);
-}
 
 Future<Option<Principal>> _authenticateUser(
     String userName, String password) async {
-  userName = userName.trim().toLowerCase();
-  Option<User> user = await data_source.users.getById(userName);
+  final Option<User> user =
+      await data_source.users.getById(userName.trim().toLowerCase());
+
   if (user.isEmpty) return new None<Principal>();
-  Option<String> hashOption = await data_source.users.getPasswordHash(userName);
+
+  final Option<String> hashOption =
+      await data_source.users.getPasswordHash(user.get().getId);
+
   if (hashOption.isEmpty)
     throw new Exception("User does not have a password set");
 
@@ -69,38 +67,46 @@ Future<Option<Principal>> _authenticateUser(
     return new None<Principal>();
 }
 
+Future<Option<Principal>> _getUser(String userName) async {
+  final Option<User> user = await data_source.users.getById(userName);
+  if (user.isEmpty) return new None<Principal>();
+  return new Some<Principal>(new Principal(user.get().getId));
+}
+
 dynamic _startServer() async {
   try {
     if (_server != null)
       throw new Exception("Server has already been instantiated");
 
-    String pathToBuild = join(ROOT_DIRECTORY, 'build/web/');
+    String pathToBuild = join(rootDirectory, 'build/web/');
 
     final Handler staticSiteHandler = createStaticHandler(pathToBuild,
         listDirectories: false,
         defaultDocument: 'index.html',
         serveFilesOutsidePath: true);
 
-    pathToBuild = join(ROOT_DIRECTORY, 'images');
+    pathToBuild = join(rootDirectory, 'images');
 
     final Handler staticImagesHandler = createStaticHandler(pathToBuild,
         listDirectories: false,
         serveFilesOutsidePath: false,
         useHeaderBytesForContentType: true);
 
-    _apiServer.addApi(new DartalogApi());
+    _apiServer.addApi(new ItemApi());
     _apiServer.enableDiscoveryApi();
 
-    final JwtSessionHandler<Principal,SessionClaimSet> sessionHandler = new JwtSessionHandler<Principal,SessionClaimSet>(
-        'dartalog', 'shhh secret', _getUser,
-        idleTimeout: new Duration(hours: 1),
-        totalSessionTimeout: new Duration(days: 7));
+    final JwtSessionHandler<Principal, SessionClaimSet> sessionHandler =
+        new JwtSessionHandler<Principal, SessionClaimSet>(
+            'dartalog', 'shhh secret', _getUser,
+            idleTimeout: new Duration(hours: 1),
+            totalSessionTimeout: new Duration(days: 7));
 
-    final Middleware loginMiddleware = authenticate(
-        <Authenticator<Principal>>[new UsernamePasswordAuthenticator<Principal>(_authenticateUser)],
-        sessionHandler: sessionHandler, allowHttp: true);
+    final Middleware loginMiddleware = authenticate(<Authenticator<Principal>>[
+      new UsernamePasswordAuthenticator<Principal>(_authenticateUser)
+    ], sessionHandler: sessionHandler, allowHttp: true);
 
-    final Middleware defaultAuthMiddleware = authenticate(<Authenticator<Principal>>[],
+    final Middleware defaultAuthMiddleware = authenticate(
+        <Authenticator<Principal>>[],
         sessionHandler: sessionHandler,
         allowHttp: true,
         allowAnonymousAccess: true);
@@ -118,12 +124,15 @@ dynamic _startServer() async {
       ..add('/login/', <String>['POST', 'GET', 'OPTIONS'], loginPipeline)
       ..add("/images/", <String>['GET', 'OPTIONS'], staticImagesHandler,
           exactMatch: false)
-      ..add('/api/', <String>['GET', 'PUT', 'POST', 'HEAD', 'OPTIONS', 'DELETE'],
+      ..add(
+          '/api/',
+          <String>['GET', 'PUT', 'POST', 'HEAD', 'OPTIONS', 'DELETE'],
           apiPipeline,
           exactMatch: false)
-      ..add('/', <String>['GET', 'OPTIONS'], staticSiteHandler, exactMatch: false);
+      ..add('/', <String>['GET', 'OPTIONS'], staticSiteHandler,
+          exactMatch: false);
 
-    final Map<String, String> extraHeaders = <String,String>{
+    final Map<String, String> extraHeaders = <String, String>{
       'Access-Control-Allow-Headers':
           'Origin, X-Requested-With, Content-Type, Accept, Authorization',
       'Access-Control-Allow-Methods': 'POST, GET, PUT, HEAD, DELETE, OPTIONS',
@@ -143,9 +152,9 @@ dynamic _startServer() async {
     _server = await io.serve(
         handler, model.settings.serverBindToAddress, model.settings.serverPort);
 
-    SERVER_ROOT = "http://${_server.address.host}:${_server.port}/";
-    SERVER_API_ROOT = "$SERVER_ROOT$API_PATH";
-    print('Serving at $SERVER_ROOT');
+    serverRoot = "http://${_server.address.host}:${_server.port}/";
+    serverApiRoot = "$serverRoot$itemApiPath";
+    print('Serving at $serverRoot');
   } catch (e, s) {
     _log.severe("Error while starting server", e, s);
   }

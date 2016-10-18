@@ -15,5 +15,4 @@ class ItemType extends AIdData {
   List<Field> fields = null;
 
   ItemType();
-
 }

@@ -8,5 +8,4 @@ abstract class AItemCopyHistoryModel extends ADataSource {
 
   Future<List<ItemCopyHistoryEntry>> getForItemCopy(String itemId, int copy);
   Future write(ItemCopyHistoryEntry itemCopy);
-
 }

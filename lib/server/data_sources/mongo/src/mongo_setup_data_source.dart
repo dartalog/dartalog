@@ -15,8 +15,7 @@ class MongoSetupDataSource extends AMongoDataSource with ASetupDataSource {
   Future<bool> isSetup() async {
     dynamic selector = where.eq(ID_FIELD, "setup");
     dynamic output = await this.genericFind(selector);
-    if(output==null)
-      return false;
+    if (output == null) return false;
 
     return true;
   }
@@ -25,7 +24,6 @@ class MongoSetupDataSource extends AMongoDataSource with ASetupDataSource {
     dynamic selector = where.eq(ID_FIELD, "setup");
     await this.deleteFromDb(selector);
   }
-
 
   Future<String> getVersion() async => "1.0";
 

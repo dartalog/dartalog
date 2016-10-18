@@ -1,0 +1,1278 @@
+{
+ "kind": "discovery#restDescription",
+ "etag": "ef9cda5fdae9480ebe09ad8e8dac827cf5249db5",
+ "discoveryVersion": "v1",
+ "id": "item:0.1",
+ "name": "item",
+ "version": "0.1",
+ "revision": "0",
+ "description": "Item REST API",
+ "protocol": "rest",
+ "baseUrl": "http://localhost:8080/item/0.1/",
+ "basePath": "/item/0.1/",
+ "rootUrl": "http://localhost:8080/",
+ "servicePath": "item/0.1/",
+ "parameters": {},
+ "schemas": {
+  "Field": {
+   "id": "Field",
+   "type": "object",
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "unique": {
+     "type": "boolean"
+    },
+    "type": {
+     "type": "string"
+    },
+    "format": {
+     "type": "string"
+    }
+   }
+  },
+  "IdResponse": {
+   "id": "IdResponse",
+   "type": "object",
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "location": {
+     "type": "string"
+    }
+   }
+  },
+  "ListOfIdNamePair": {
+   "id": "ListOfIdNamePair",
+   "type": "array",
+   "items": {
+    "$ref": "IdNamePair"
+   }
+  },
+  "IdNamePair": {
+   "id": "IdNamePair",
+   "type": "object",
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    }
+   }
+  },
+  "ItemType": {
+   "id": "ItemType",
+   "type": "object",
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "fieldIds": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "fields": {
+     "type": "array",
+     "items": {
+      "$ref": "Field"
+     }
+    }
+   }
+  },
+  "ItemCopy": {
+   "id": "ItemCopy",
+   "type": "object",
+   "properties": {
+    "itemId": {
+     "type": "string"
+    },
+    "copy": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "collectionId": {
+     "type": "string"
+    },
+    "uniqueId": {
+     "type": "string"
+    },
+    "status": {
+     "type": "string"
+    },
+    "statusName": {
+     "type": "string"
+    },
+    "userCanCheckout": {
+     "type": "boolean"
+    },
+    "userCanEdit": {
+     "type": "boolean"
+    },
+    "eligibleActions": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "collection": {
+     "$ref": "Collection"
+    },
+    "itemSummary": {
+     "$ref": "ItemSummary"
+    }
+   }
+  },
+  "Collection": {
+   "id": "Collection",
+   "type": "object",
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "publiclyBrowsable": {
+     "type": "boolean"
+    },
+    "curators": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "browsers": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "ItemSummary": {
+   "id": "ItemSummary",
+   "type": "object",
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "typeId": {
+     "type": "string"
+    },
+    "thumbnail": {
+     "type": "string"
+    }
+   }
+  },
+  "ItemCopyId": {
+   "id": "ItemCopyId",
+   "type": "object",
+   "properties": {
+    "itemId": {
+     "type": "string"
+    },
+    "copy": {
+     "type": "integer",
+     "format": "int32"
+    }
+   }
+  },
+  "ListOfItemCopy": {
+   "id": "ListOfItemCopy",
+   "type": "array",
+   "items": {
+    "$ref": "ItemCopy"
+   }
+  },
+  "ItemActionRequest": {
+   "id": "ItemActionRequest",
+   "type": "object",
+   "properties": {
+    "action": {
+     "type": "string"
+    },
+    "actionerUserId": {
+     "type": "string"
+    }
+   }
+  },
+  "BulkItemActionRequest": {
+   "id": "BulkItemActionRequest",
+   "type": "object",
+   "properties": {
+    "action": {
+     "type": "string"
+    },
+    "actionerUserId": {
+     "type": "string"
+    },
+    "itemCopies": {
+     "type": "array",
+     "items": {
+      "$ref": "ItemCopyId"
+     }
+    }
+   }
+  },
+  "CreateItemRequest": {
+   "id": "CreateItemRequest",
+   "type": "object",
+   "properties": {
+    "item": {
+     "$ref": "Item"
+    },
+    "files": {
+     "type": "array",
+     "items": {
+      "$ref": "MediaMessage"
+     }
+    },
+    "collectionId": {
+     "type": "string"
+    },
+    "uniqueId": {
+     "type": "string"
+    }
+   }
+  },
+  "Item": {
+   "id": "Item",
+   "type": "object",
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "typeId": {
+     "type": "string"
+    },
+    "dateAdded": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "dateUpdated": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "values": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "string"
+     }
+    },
+    "copies": {
+     "type": "array",
+     "items": {
+      "$ref": "ItemCopy"
+     }
+    },
+    "type": {
+     "$ref": "ItemType"
+    },
+    "canEdit": {
+     "type": "boolean"
+    },
+    "canDelete": {
+     "type": "boolean"
+    }
+   }
+  },
+  "MediaMessage": {
+   "id": "MediaMessage",
+   "type": "object",
+   "properties": {
+    "bytes": {
+     "type": "array",
+     "items": {
+      "type": "integer",
+      "format": "int32"
+     }
+    },
+    "updated": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "contentType": {
+     "type": "string"
+    },
+    "cacheControl": {
+     "type": "string"
+    },
+    "contentEncoding": {
+     "type": "string"
+    },
+    "contentLanguage": {
+     "type": "string"
+    },
+    "md5Hash": {
+     "type": "string"
+    },
+    "metadata": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "PaginatedResponse": {
+   "id": "PaginatedResponse",
+   "type": "object",
+   "properties": {
+    "startIndex": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "pageCount": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "totalCount": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "page": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "totalPages": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "items": {
+     "type": "array",
+     "items": {
+      "$ref": "ItemSummary"
+     }
+    }
+   }
+  },
+  "UpdateItemRequest": {
+   "id": "UpdateItemRequest",
+   "type": "object",
+   "properties": {
+    "item": {
+     "$ref": "Item"
+    },
+    "files": {
+     "type": "array",
+     "items": {
+      "$ref": "MediaMessage"
+     }
+    }
+   }
+  },
+  "ImportResult": {
+   "id": "ImportResult",
+   "type": "object",
+   "properties": {
+    "itemUrl": {
+     "type": "string"
+    },
+    "itemId": {
+     "type": "string"
+    },
+    "itemSource": {
+     "type": "string"
+    },
+    "itemTypeId": {
+     "type": "string"
+    },
+    "itemTypeName": {
+     "type": "string"
+    },
+    "values": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     }
+    },
+    "debug": {
+     "type": "string"
+    }
+   }
+  },
+  "MapOfListOfString": {
+   "id": "MapOfListOfString",
+   "type": "object",
+   "additionalProperties": {
+    "type": "array",
+    "items": {
+     "type": "string"
+    }
+   }
+  },
+  "SearchResults": {
+   "id": "SearchResults",
+   "type": "object",
+   "properties": {
+    "currentPage": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "totalPages": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "totalResults": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "searchUrl": {
+     "type": "string"
+    },
+    "data": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "string"
+     }
+    },
+    "results": {
+     "type": "array",
+     "items": {
+      "$ref": "SearchResult"
+     }
+    }
+   }
+  },
+  "SearchResult": {
+   "id": "SearchResult",
+   "type": "object",
+   "properties": {
+    "url": {
+     "type": "string"
+    },
+    "id": {
+     "type": "string"
+    },
+    "thumbnail": {
+     "type": "string"
+    },
+    "title": {
+     "type": "string"
+    },
+    "debug": {
+     "type": "string"
+    }
+   }
+  },
+  "User": {
+   "id": "User",
+   "type": "object",
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "password": {
+     "type": "string"
+    },
+    "idNumber": {
+     "type": "string"
+    },
+    "type": {
+     "type": "string"
+    }
+   }
+  },
+  "PasswordChangeRequest": {
+   "id": "PasswordChangeRequest",
+   "type": "object",
+   "properties": {
+    "currentPassword": {
+     "type": "string",
+     "required": true
+    },
+    "newPassword": {
+     "type": "string",
+     "required": true
+    }
+   }
+  }
+ },
+ "methods": {},
+ "resources": {
+  "fields": {
+   "methods": {
+    "create": {
+     "id": "ItemApi.fields.create",
+     "path": "fields/",
+     "httpMethod": "POST",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "Field"
+     },
+     "response": {
+      "$ref": "IdResponse"
+     }
+    },
+    "getAllIdsAndNames": {
+     "id": "ItemApi.fields.getAllIdsAndNames",
+     "path": "fields/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "ListOfIdNamePair"
+     }
+    },
+    "getById": {
+     "id": "ItemApi.fields.getById",
+     "path": "fields/{id}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "response": {
+      "$ref": "Field"
+     }
+    },
+    "update": {
+     "id": "ItemApi.fields.update",
+     "path": "fields/{id}/",
+     "httpMethod": "PUT",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "request": {
+      "$ref": "Field"
+     },
+     "response": {
+      "$ref": "IdResponse"
+     }
+    },
+    "delete": {
+     "id": "ItemApi.fields.delete",
+     "path": "fields/{id}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ]
+    }
+   },
+   "resources": {}
+  },
+  "itemTypes": {
+   "methods": {
+    "create": {
+     "id": "ItemApi.itemTypes.create",
+     "path": "types/",
+     "httpMethod": "POST",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "ItemType"
+     },
+     "response": {
+      "$ref": "IdResponse"
+     }
+    },
+    "getById": {
+     "id": "ItemApi.itemTypes.getById",
+     "path": "types/{id}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      },
+      "includeFields": {
+       "type": "boolean",
+       "description": "Query parameter: 'includeFields'.",
+       "required": false,
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "response": {
+      "$ref": "ItemType"
+     }
+    },
+    "getAllIdsAndNames": {
+     "id": "ItemApi.itemTypes.getAllIdsAndNames",
+     "path": "types/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "ListOfIdNamePair"
+     }
+    },
+    "update": {
+     "id": "ItemApi.itemTypes.update",
+     "path": "types/{id}/",
+     "httpMethod": "PUT",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "request": {
+      "$ref": "ItemType"
+     },
+     "response": {
+      "$ref": "IdResponse"
+     }
+    },
+    "delete": {
+     "id": "ItemApi.itemTypes.delete",
+     "path": "types/{id}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ]
+    }
+   },
+   "resources": {}
+  },
+  "items": {
+   "methods": {
+    "createItemWithCopy": {
+     "id": "ItemApi.items.createItemWithCopy",
+     "path": "items/",
+     "httpMethod": "POST",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "CreateItemRequest"
+     },
+     "response": {
+      "$ref": "ItemCopyId"
+     }
+    },
+    "delete": {
+     "id": "ItemApi.items.delete",
+     "path": "items/{id}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ]
+    },
+    "getVisibleSummaries": {
+     "id": "ItemApi.items.getVisibleSummaries",
+     "path": "items/",
+     "httpMethod": "GET",
+     "parameters": {
+      "page": {
+       "type": "integer",
+       "description": "Query parameter: 'page'.",
+       "required": false,
+       "location": "query"
+      },
+      "perPage": {
+       "type": "integer",
+       "description": "Query parameter: 'perPage'.",
+       "required": false,
+       "location": "query"
+      }
+     },
+     "parameterOrder": [],
+     "response": {
+      "$ref": "PaginatedResponse"
+     }
+    },
+    "getById": {
+     "id": "ItemApi.items.getById",
+     "path": "items/{id}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      },
+      "includeType": {
+       "type": "boolean",
+       "description": "Query parameter: 'includeType'.",
+       "required": false,
+       "location": "query"
+      },
+      "includeFields": {
+       "type": "boolean",
+       "description": "Query parameter: 'includeFields'.",
+       "required": false,
+       "location": "query"
+      },
+      "includeCopies": {
+       "type": "boolean",
+       "description": "Query parameter: 'includeCopies'.",
+       "required": false,
+       "location": "query"
+      },
+      "includeCopyCollection": {
+       "type": "boolean",
+       "description": "Query parameter: 'includeCopyCollection'.",
+       "required": false,
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "response": {
+      "$ref": "Item"
+     }
+    },
+    "searchVisible": {
+     "id": "ItemApi.items.searchVisible",
+     "path": "search/{query}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "query": {
+       "type": "string",
+       "description": "Path parameter: 'query'.",
+       "required": true,
+       "location": "path"
+      },
+      "page": {
+       "type": "integer",
+       "description": "Query parameter: 'page'.",
+       "required": false,
+       "location": "query"
+      },
+      "perPage": {
+       "type": "integer",
+       "description": "Query parameter: 'perPage'.",
+       "required": false,
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "query"
+     ],
+     "response": {
+      "$ref": "PaginatedResponse"
+     }
+    },
+    "updateItem": {
+     "id": "ItemApi.items.updateItem",
+     "path": "items/{id}/",
+     "httpMethod": "PUT",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "request": {
+      "$ref": "UpdateItemRequest"
+     },
+     "response": {
+      "$ref": "IdResponse"
+     }
+    }
+   },
+   "resources": {
+    "copies": {
+     "methods": {
+      "create": {
+       "id": "ItemApi.items.copies.create",
+       "path": "items/{itemId}/copies/",
+       "httpMethod": "POST",
+       "parameters": {
+        "itemId": {
+         "type": "string",
+         "description": "Path parameter: 'itemId'.",
+         "required": true,
+         "location": "path"
+        }
+       },
+       "parameterOrder": [
+        "itemId"
+       ],
+       "request": {
+        "$ref": "ItemCopy"
+       },
+       "response": {
+        "$ref": "ItemCopyId"
+       }
+      },
+      "getVisibleForItem": {
+       "id": "ItemApi.items.copies.getVisibleForItem",
+       "path": "items/{itemId}/copies/",
+       "httpMethod": "GET",
+       "parameters": {
+        "itemId": {
+         "type": "string",
+         "description": "Path parameter: 'itemId'.",
+         "required": true,
+         "location": "path"
+        },
+        "includeCollection": {
+         "type": "boolean",
+         "description": "Query parameter: 'includeCollection'.",
+         "required": false,
+         "location": "query"
+        }
+       },
+       "parameterOrder": [
+        "itemId"
+       ],
+       "response": {
+        "$ref": "ListOfItemCopy"
+       }
+      },
+      "update": {
+       "id": "ItemApi.items.copies.update",
+       "path": "items/{itemId}/copies/{copy}/",
+       "httpMethod": "PUT",
+       "parameters": {
+        "itemId": {
+         "type": "string",
+         "description": "Path parameter: 'itemId'.",
+         "required": true,
+         "location": "path"
+        },
+        "copy": {
+         "type": "integer",
+         "description": "Path parameter: 'copy'.",
+         "required": true,
+         "location": "path"
+        }
+       },
+       "parameterOrder": [
+        "itemId",
+        "copy"
+       ],
+       "request": {
+        "$ref": "ItemCopy"
+       },
+       "response": {
+        "$ref": "ItemCopyId"
+       }
+      },
+      "get": {
+       "id": "ItemApi.items.copies.get",
+       "path": "items/{itemId}/copies/{copy}/",
+       "httpMethod": "GET",
+       "parameters": {
+        "itemId": {
+         "type": "string",
+         "description": "Path parameter: 'itemId'.",
+         "required": true,
+         "location": "path"
+        },
+        "copy": {
+         "type": "integer",
+         "description": "Path parameter: 'copy'.",
+         "required": true,
+         "location": "path"
+        },
+        "includeCollection": {
+         "type": "boolean",
+         "description": "Query parameter: 'includeCollection'.",
+         "required": false,
+         "location": "query"
+        },
+        "includeItemSummary": {
+         "type": "boolean",
+         "description": "Query parameter: 'includeItemSummary'.",
+         "required": false,
+         "location": "query"
+        }
+       },
+       "parameterOrder": [
+        "itemId",
+        "copy"
+       ],
+       "response": {
+        "$ref": "ItemCopy"
+       }
+      },
+      "performAction": {
+       "id": "ItemApi.items.copies.performAction",
+       "path": "items/{itemId}/copies/{copy}/action/",
+       "httpMethod": "PUT",
+       "parameters": {
+        "itemId": {
+         "type": "string",
+         "description": "Path parameter: 'itemId'.",
+         "required": true,
+         "location": "path"
+        },
+        "copy": {
+         "type": "integer",
+         "description": "Path parameter: 'copy'.",
+         "required": true,
+         "location": "path"
+        }
+       },
+       "parameterOrder": [
+        "itemId",
+        "copy"
+       ],
+       "request": {
+        "$ref": "ItemActionRequest"
+       }
+      },
+      "performBulkAction": {
+       "id": "ItemApi.items.copies.performBulkAction",
+       "path": "items/copies/bulk_action/",
+       "httpMethod": "PUT",
+       "parameters": {},
+       "parameterOrder": [],
+       "request": {
+        "$ref": "BulkItemActionRequest"
+       }
+      }
+     },
+     "resources": {}
+    }
+   }
+  },
+  "import": {
+   "methods": {
+    "import": {
+     "id": "ItemApi.import.import",
+     "path": "import/{provider}/{id}",
+     "httpMethod": "GET",
+     "parameters": {
+      "provider": {
+       "type": "string",
+       "description": "Path parameter: 'provider'.",
+       "required": true,
+       "location": "path"
+      },
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "provider",
+      "id"
+     ],
+     "response": {
+      "$ref": "ImportResult"
+     }
+    },
+    "listProviders": {
+     "id": "ItemApi.import.listProviders",
+     "path": "import/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "MapOfListOfString"
+     }
+    },
+    "search": {
+     "id": "ItemApi.import.search",
+     "path": "import/{provider}/search/{query}",
+     "httpMethod": "GET",
+     "parameters": {
+      "provider": {
+       "type": "string",
+       "description": "Path parameter: 'provider'.",
+       "required": true,
+       "location": "path"
+      },
+      "query": {
+       "type": "string",
+       "description": "Path parameter: 'query'.",
+       "required": true,
+       "location": "path"
+      },
+      "page": {
+       "type": "integer",
+       "description": "Query parameter: 'page'.",
+       "required": false,
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "provider",
+      "query"
+     ],
+     "response": {
+      "$ref": "SearchResults"
+     }
+    }
+   },
+   "resources": {}
+  },
+  "presets": {
+   "methods": {},
+   "resources": {}
+  },
+  "collections": {
+   "methods": {
+    "create": {
+     "id": "ItemApi.collections.create",
+     "path": "collections/",
+     "httpMethod": "POST",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "Collection"
+     },
+     "response": {
+      "$ref": "IdResponse"
+     }
+    },
+    "delete": {
+     "id": "ItemApi.collections.delete",
+     "path": "collections/{id}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ]
+    },
+    "getAllIdsAndNames": {
+     "id": "ItemApi.collections.getAllIdsAndNames",
+     "path": "collections/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "ListOfIdNamePair"
+     }
+    },
+    "getById": {
+     "id": "ItemApi.collections.getById",
+     "path": "collections/{id}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "response": {
+      "$ref": "Collection"
+     }
+    },
+    "update": {
+     "id": "ItemApi.collections.update",
+     "path": "collections/{id}/",
+     "httpMethod": "PUT",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "request": {
+      "$ref": "Collection"
+     },
+     "response": {
+      "$ref": "IdResponse"
+     }
+    }
+   },
+   "resources": {}
+  },
+  "users": {
+   "methods": {
+    "create": {
+     "id": "ItemApi.users.create",
+     "path": "users/",
+     "httpMethod": "POST",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "User"
+     },
+     "response": {
+      "$ref": "IdResponse"
+     }
+    },
+    "getAllIdsAndNames": {
+     "id": "ItemApi.users.getAllIdsAndNames",
+     "path": "users/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "ListOfIdNamePair"
+     }
+    },
+    "getById": {
+     "id": "ItemApi.users.getById",
+     "path": "users/{id}/",
+     "httpMethod": "GET",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "response": {
+      "$ref": "User"
+     }
+    },
+    "getMe": {
+     "id": "ItemApi.users.getMe",
+     "path": "current_user/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "User"
+     }
+    },
+    "update": {
+     "id": "ItemApi.users.update",
+     "path": "users/{id}/",
+     "httpMethod": "PUT",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "request": {
+      "$ref": "User"
+     },
+     "response": {
+      "$ref": "IdResponse"
+     }
+    },
+    "changePassword": {
+     "id": "ItemApi.users.changePassword",
+     "path": "users/{id}/password/",
+     "httpMethod": "PUT",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "request": {
+      "$ref": "PasswordChangeRequest"
+     }
+    },
+    "delete": {
+     "id": "ItemApi.users.delete",
+     "path": "users/{id}/",
+     "httpMethod": "DELETE",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ]
+    }
+   },
+   "resources": {}
+  }
+ }
+}

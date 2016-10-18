@@ -7,21 +7,21 @@ class Collection extends JsProxy {
   String name;
 
   @reflectable
-  bool publiclyBrowsable= false;
+  bool publiclyBrowsable = false;
 
   @reflectable
-  List<String> curators = [];
+  List<String> curators = <String>[];
   @reflectable
-  List<String> browsers = [];
+  List<String> browsers = <String>[];
 
   Collection();
 
   Collection.copy(dynamic input) {
-    _copy(input,this);
+    _copy(input, this);
   }
 
   void copyTo(dynamic output) {
-    _copy(this,output);
+    _copy(this, output);
   }
 
   void _copy(dynamic from, dynamic to) {
@@ -31,6 +31,4 @@ class Collection extends JsProxy {
     to.curators = from.curators;
     to.browsers = from.browsers;
   }
-
-
 }

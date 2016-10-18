@@ -13,32 +13,30 @@ abstract class ACollectionPage {
   @Property(notify: true)
   int totalPages = 1;
 
-
-  Future newItem();
+  Future<dynamic> newItem();
 
   @reflectable
   bool isCurrentPage(int page) => page == currentPage;
 
   @reflectable
   String getPaginationLink(int page) {
-    if(this is ASearchablePage) {
-      ASearchablePage sp = this as ASearchablePage;
-      if(!isNullOrWhitespace(sp.searchQuery)) {
-        return "items/search/${Uri.encodeQueryComponent(sp.searchQuery)}/page/${page}";
+    if (this is ASearchablePage) {
+      final ASearchablePage sp = this as ASearchablePage;
+      if (!StringTools.isNullOrWhitespace(sp.searchQuery)) {
+        return "items/search/${Uri.encodeQueryComponent(sp.searchQuery)}/page/$page";
       }
     }
-    return "items/page/${page}";
+    return "items/page/$page";
   }
 
   @reflectable
   String getNextPageLink(int page) {
-    if(this is ASearchablePage) {
-      ASearchablePage sp = this as ASearchablePage;
-      if(!isNullOrWhitespace(sp.searchQuery)) {
-        return "items/search/${Uri.encodeQueryComponent(sp.searchQuery)}/page/${page}";
+    if (this is ASearchablePage) {
+      final ASearchablePage sp = this as ASearchablePage;
+      if (!StringTools.isNullOrWhitespace(sp.searchQuery)) {
+        return "items/search/${Uri.encodeQueryComponent(sp.searchQuery)}/page/$page";
       }
     }
-    return "items/page/${page}";
+    return "items/page/$page";
   }
-
 }

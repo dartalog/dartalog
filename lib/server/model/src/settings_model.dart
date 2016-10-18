@@ -14,13 +14,13 @@ class SettingsModel {
       _log.info("server.options not found, using all default settings", e);
     }
   }
-  String get mongoConnectionString => _getStringFromOptionFile(
-      "mongo", "mongodb://localhost:27017/dartalog");
+  String get mongoConnectionString =>
+      _getStringFromOptionFile("mongo", "mongodb://localhost:27017/dartalog");
 
   String get movieDbApiKey => "";
 
-  String get serverBindToAddress => _getStringFromOptionFile(
-      "bind", InternetAddress.LOOPBACK_IP_V6.address);
+  String get serverBindToAddress =>
+      _getStringFromOptionFile("bind", InternetAddress.LOOPBACK_IP_V6.address);
 
   int get serverPort => _getIntFromOptionFile("port", 3278);
 

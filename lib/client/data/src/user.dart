@@ -1,10 +1,11 @@
 import 'package:polymer/polymer.dart';
-import 'package:dartalog/dartalog.dart';
-
+import 'package:dartalog/global.dart';
 
 class User extends JsProxy {
-  @property String id;
-  @property String name;
+  @property
+  String id;
+  @property
+  String name;
 
   @reflectable
   String type;
@@ -16,30 +17,29 @@ class User extends JsProxy {
   @reflectable
   String currentPassword = "";
 
-
   User();
 
   User.copy(dynamic field) {
-    _copy(field,this);
+    _copy(field, this);
   }
 
   void copyTo(dynamic to) {
-    _copy(this,to);
+    _copy(this, to);
   }
 
   void _copy(dynamic from, dynamic to) {
     to.id = from.id;
     to.name = from.name;
     to.type = from.type;
-    if(from.password==null)
+    if (from.password == null)
       to.password = "";
     else
       to.password = from.password;
   }
 
-  static List<User> copyList(Iterable e) {
-    List output = [];
-    for(dynamic obj in e) {
+  static List<User> copyList(Iterable<dynamic> e) {
+    final List<User> output = <User>[];
+    for (dynamic obj in e) {
       output.add(new User.copy(obj));
     }
     return output;

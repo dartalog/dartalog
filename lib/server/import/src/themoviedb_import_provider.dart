@@ -3,7 +3,6 @@ import 'dart:async';
 import 'search_results.dart';
 
 class TheMovieDbImportProvider extends AAPIImportProvider {
-
   static final List VALID_TYPES = ["movie", "tv"];
 
   Future<SearchResults> search(String query, {int page: 0}) async {
@@ -31,6 +30,7 @@ class TheMovieDbImportProvider extends AAPIImportProvider {
 //      results.results.add(result);
 //    }
 //    return results;
+    return new SearchResults();
   }
 
   Future import(String identifier) async {}

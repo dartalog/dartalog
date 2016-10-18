@@ -2,11 +2,10 @@ import 'package:logging/logging.dart';
 import 'package:dartalog/tools.dart';
 import 'package:html/dom.dart';
 
-class ScrapingImportCriteria  {
+class ScrapingImportCriteria {
   static final Logger _log = new Logger('ScrapingImportCriteria');
 
-
-  static const INNER_HTML = "innerHtml";
+  static const String innerHtml = "innerHtml";
 
   final String field;
   final String elementSelector;
@@ -41,7 +40,7 @@ class ScrapingImportCriteria  {
       this.contentsRegexMultiline: true,
       this.replaceRegex,
       this.acceptedValues: null}) {
-    if (!isNullOrWhitespace(contentsRegex)) {
+    if (!StringTools.isNullOrWhitespace(contentsRegex)) {
       _contentsRegex = new RegExp(contentsRegex,
           multiLine: this.contentsRegexMultiline,
           caseSensitive: this.contentsRegexCaseSensitive);
@@ -55,15 +54,15 @@ class ScrapingImportCriteria  {
 
   List<String> _getFieldValueInternal(Element ele) {
     String data;
-    if (!isNullOrWhitespace(elementAttribute)) {
+    if (!StringTools.isNullOrWhitespace(elementAttribute)) {
       switch (elementAttribute) {
-        case INNER_HTML:
+        case innerHtml:
           data = ele.innerHtml;
           break;
         default:
           if (!ele.attributes.containsKey(elementAttribute) ||
-              isNullOrWhitespace(ele.attributes[elementAttribute]))
-            return [];
+              StringTools.isNullOrWhitespace(ele.attributes[elementAttribute]))
+            return <String>[];
           data = ele.attributes[elementAttribute];
           break;
       }
@@ -71,17 +70,17 @@ class ScrapingImportCriteria  {
       data = ele.text;
     }
     return this._getRegexValues(data);
- }
+  }
 
   List<String> getFieldValues(Document doc) {
-    List<String> output = new List<String>();
-    if (!isNullOrWhitespace(elementSelector)) {
-      _log.fine("Using element selector ${elementSelector}");
-      List<Element> elements = doc.querySelectorAll(this.elementSelector);
+    final List<String> output = new List<String>();
+    if (!StringTools.isNullOrWhitespace(elementSelector)) {
+      _log.fine("Using element selector $elementSelector");
+      final List<Element> elements = doc.querySelectorAll(this.elementSelector);
       _log.fine("${elements.length} elements found");
-      if(elementIndex>=0) {
-        _log.fine("Element index ${elementIndex} specified");
-        if(elements.length-1>=elementIndex)
+      if (elementIndex >= 0) {
+        _log.fine("Element index $elementIndex specified");
+        if (elements.length - 1 >= elementIndex)
           output.addAll(_getFieldValueInternal(elements[elementIndex]));
       } else {
         _log.fine("Element index not specified, getting all elements");
@@ -91,7 +90,8 @@ class ScrapingImportCriteria  {
         }
       }
     } else if (this._contentsRegex != null) {
-      _log.fine("Element selector not specified, performing global regex search");
+      _log.fine(
+          "Element selector not specified, performing global regex search");
       // Element selector not specified, global search yay for performance killers
       output.addAll(this._getRegexValues(doc.outerHtml));
     } else {
@@ -110,12 +110,12 @@ class ScrapingImportCriteria  {
   }
 
   List<String> _getRegexValues(String data) {
-    List<String> output = new List<String>();
+    final List<String> output = new List<String>();
 
     if (this._contentsRegex == null) {
       output.add(data);
     } else {
-      Iterable<Match> matches = this._contentsRegex.allMatches(data);
+      final Iterable<Match> matches = this._contentsRegex.allMatches(data);
       if (matches != null) {
         for (Match m in matches) {
           output.add(m.group(this.contentsRegexGroup));
@@ -129,12 +129,11 @@ class ScrapingImportCriteria  {
       }
     }
 
+    if (this.acceptedValues != null)
+      output.removeWhere(
+          (String value) => !this.acceptedValues.contains((value)));
 
-    if(this.acceptedValues!=null)
-      output.removeWhere((String value) => !this.acceptedValues.contains((value)));
-
-    if (!multipleValues&& output.length> 1)
-      return [output[0]];
+    if (!multipleValues && output.length > 1) return <String>[output[0]];
 
     return output;
   }

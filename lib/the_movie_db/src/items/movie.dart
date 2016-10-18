@@ -2,7 +2,7 @@ import '../config.dart';
 import 'a_item.dart';
 
 class Movie extends AItem {
-  Movie(Map data, Config config): super(data, config);
+  Movie(Map data, Config config) : super(data, config);
 
   //  Example data_sources
   //  {

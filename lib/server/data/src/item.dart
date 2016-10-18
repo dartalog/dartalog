@@ -28,9 +28,8 @@ class Item extends AIdData {
   Item();
 
   Option<ItemCopy> getCopy(int copy) {
-    for(ItemCopy itemCopy in this.copies) {
-      if(itemCopy.copy==copy)
-        return new Some(itemCopy);
+    for (ItemCopy itemCopy in this.copies) {
+      if (itemCopy.copy == copy) return new Some(itemCopy);
     }
     return new None();
   }

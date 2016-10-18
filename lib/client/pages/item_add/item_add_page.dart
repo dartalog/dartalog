@@ -7,13 +7,12 @@ library dartalog.client.pages.item_add_page;
 import 'dart:async';
 import 'dart:html';
 
-import 'package:dartalog/client/api/dartalog.dart' as API;
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/controls/auth_wrapper/auth_wrapper_control.dart';
 import 'package:dartalog/client/controls/item_edit/item_edit_control.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/pages/pages.dart';
-import 'package:dartalog/dartalog.dart' as dartalog;
+import 'package:dartalog/global.dart';
 import 'package:dartalog/tools.dart';
 import 'package:logging/logging.dart';
 import 'package:polymer/polymer.dart';
@@ -64,10 +63,9 @@ class ItemAddPage extends APage with ASaveablePage {
   @override
   Future save() async {
     String id = await itemEditControl.save();
-    if(!isNullOrWhitespace(id)) {
+    if (!StringTools.isNullOrWhitespace(id)) {
       showMessage("Item added");
       window.location.hash = "item/${id}";
     }
   }
-
 }

@@ -1,17 +1,19 @@
 import 'dart:async';
 
-class DataValidationException implements  Exception {
+class DataValidationException implements Exception {
   String message;
-  Map<String,String> fieldErrors = new Map<String,String>();
+  Map<String, String> fieldErrors = new Map<String, String>();
   DataValidationException(this.message);
   DataValidationException.WithFieldErrors(this.message, this.fieldErrors);
 
+  @override
   String toString() {
     return message;
   }
 
-  static Future PerformValidation(Future toAwait(Map<String,String> field_errors)) async {
-    Map<String,String> field_errors = new Map<String,String>();
+  static Future<Null> PerformValidation(
+      Future toAwait(Map<String, String> field_errors)) async {
+    Map<String, String> field_errors = new Map<String, String>();
 
     await toAwait(field_errors);
 
@@ -20,6 +22,4 @@ class DataValidationException implements  Exception {
           "Invalid data", field_errors);
     }
   }
-
 }
-

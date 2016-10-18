@@ -13,6 +13,6 @@ class ItemCopyId extends AData {
   }
 
   bool matchesItemCopy(ItemCopy itemCopy) {
-    return (itemCopy.itemId==this.itemId&&itemCopy.copy==this.copy);
+    return (itemCopy.itemId == this.itemId && itemCopy.copy == this.copy);
   }
 }

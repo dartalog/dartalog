@@ -6,5 +6,5 @@ abstract class ARefreshablePage {
   bool showRefreshButton = true;
 
   @reflectable
-  Future refresh();
+  Future<Null> refresh();
 }

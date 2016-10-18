@@ -17,109 +17,119 @@ import 'package:dartalog/tools.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/controls/controls.dart';
 import 'package:dartalog/client/data_sources/data_sources.dart' as data_source;
+import 'package:option/option.dart';
 
 @PolymerRegister('user-auth-control')
 class UserAuthControl extends AControl {
   static final Logger _log = new Logger("UserAuthControl");
 
-  @property String userIdValue = "";
-  @property String passwordValue = "";
-  @property String errorMessage = "";
+  @property
+  String userIdValue = "";
+  @property
+  String passwordValue = "";
+  @property
+  String errorMessage = "";
 
   UserAuthControl.created() : super.created();
 
   Completer<bool> _toComplete;
 
   void reset() {
-    set("userIdValue","");
-    set("passwordValue","");
-    set("errorMessage","");
+    set("userIdValue", "");
+    set("passwordValue", "");
+    set("errorMessage", "");
   }
+
   void activateDialog({Completer<bool> toComplete}) {
     try {
       _toComplete = toComplete;
-      PaperDialog dialog = $['loginDialog'];
-      dialog.open();
+      loginDialog.open();
       focusPaperInput(this.querySelector("#userNameInput"));
-    } catch(e, st) {
+    } catch (e, st) {
       _log.severe("activateDialog", e, st);
-      handleException(e,st);
+      handleException(e, st);
     }
   }
 
   @reflectable
-  Future keypress(event, [_]) async {
-    if (event.original.charCode == 13) {
-      Element ele = getParentElement(event.target, "paper-input");
-      switch(ele.id) {
-        case "userNameInput":
-          focusPaperInput(this.querySelector("#passwordInput"));
-          break;
-        case "passwordInput":
-          logInClicked(null);
-          break;
+  Future<Null> keypress(dynamic event, [_]) async {
+    try {
+      if (event.original.charCode == 13) {
+        final Option<Element> ele =
+            getParentElement(event.target, "paper-input");
+        if (ele.isEmpty) return;
+
+        switch (ele.get().id) {
+          case "userNameInput":
+            await focusPaperInput(this.querySelector("#passwordInput"));
+            break;
+          case "passwordInput":
+            await logInClicked(null);
+            break;
+        }
       }
+    } on Exception catch (e, st) {
+      set("errorMessage", e.toString());
+      _log.severe("logInClicked", e, st);
     }
   }
 
-  void cancelClicked(event, [_]) {
-    PaperDialog dialog = $['loginDialog'];
-    dialog.close();
+  PaperDialog get loginDialog => this.querySelector('#loginDialog');
+
+  void cancelClicked(dynamic event, [_]) {
+    loginDialog.close();
     this.reset();
-    if(this._toComplete!=null)
-      this._toComplete.complete(false);
+    if (this._toComplete != null) this._toComplete.complete(false);
   }
 
   @reflectable
-  logInClicked(event, [_]) async {
+  Future<Null> logInClicked(dynamic event, [_]) async {
     set("errorMessage", "");
     HttpRequest request;
     try {
-      String url = "${getServerRoot()}login/";
-      var values = {"username": userIdValue, "password": passwordValue};
-      request = await HttpRequest.postFormData(
-          url, values
-      );
+      final String url = "${getServerRoot()}login/";
+      final Map<String, String> values = {
+        "username": userIdValue,
+        "password": passwordValue
+      };
+      request = await HttpRequest.postFormData(url, values);
       if (!request.responseHeaders.containsKey(HttpHeaders.AUTHORIZATION))
         throw new Exception("Response did not include Authorization header");
 
-      String auth = request.responseHeaders[HttpHeaders.AUTHORIZATION];
-      if (isNullOrWhitespace(auth))
+      final String auth = request.responseHeaders[HttpHeaders.AUTHORIZATION];
+      if (StringTools.isNullOrWhitespace(auth))
         throw new Exception("Auth request did not return a key");
 
       await data_source.settings.cacheAuthKey(auth);
-      PaperDialog dialog = $['loginDialog'];
+      final PaperDialog dialog = $['loginDialog'];
       dialog.close();
 
       this.reset();
 
-      if(this._toComplete!=null)
-        this._toComplete.complete(true);
-
+      if (this._toComplete != null) this._toComplete.complete(true);
 
       this.evaluateAuthentication();
-    } on Exception catch(e,st) {
+    } on Exception catch (e, st) {
       set("errorMessage", e.toString());
       _log.severe("logInClicked", e, st);
-    } catch(e) {
+    } catch (e) {
       request = e.target;
       window.alert(e.runtimeType.toString());
-      if(request!=null) {
+      if (request != null) {
         String message;
-        switch(request.status) {
-        case 401:
-          message = "Login incorrect";
-          break;
-        default:
-          message = "${request.status} - ${request.statusText} - ${request.responseText}";
-          break;
-      }
-      set("errorMessage", message);
-
+        switch (request.status) {
+          case 401:
+            message = "Login incorrect";
+            break;
+          default:
+            message =
+                "${request.status} - ${request.statusText} - ${request.responseText}";
+            break;
+        }
+        set("errorMessage", message);
       } else {
         set("errorMessage", "Unknown error while authenticating");
       }
     }
   }
-
 }

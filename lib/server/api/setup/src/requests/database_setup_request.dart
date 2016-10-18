@@ -1,0 +1,3 @@
+class DatabaseSetupRequest {
+  DatabaseSetupRequest();
+}

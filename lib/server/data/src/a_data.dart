@@ -1,2 +1,1 @@
-abstract class AData {
-}
+abstract class AData {}

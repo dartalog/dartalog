@@ -9,13 +9,14 @@ import 'package:logging/logging.dart';
 
 import 'package:polymer/polymer.dart';
 import 'package:web_components/web_components.dart';
+
 /// Makes [PaperCard] available
 import 'package:polymer_elements/paper_card.dart';
-import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/global.dart';
 import 'package:dartalog/client/controls/controls.dart';
 
 @PolymerRegister('auth-wrapper-control')
-class AuthWrapperControl extends AControl  {
+class AuthWrapperControl extends AControl {
   static final Logger _log = new Logger("AuthWrapperControl");
 
   Logger get loggerImpl => _log;
@@ -36,5 +37,4 @@ class AuthWrapperControl extends AControl  {
     set("userHasAccess", this.userHasPrivilege(minimumPrivilege));
     return userHasAccess;
   }
-
 }

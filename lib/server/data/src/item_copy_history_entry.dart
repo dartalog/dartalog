@@ -1,4 +1,3 @@
-
 class ItemCopyHistoryEntry {
   String itemId = "";
   int copy = 0;
@@ -8,5 +7,4 @@ class ItemCopyHistoryEntry {
   DateTime timestamp = new DateTime.now();
 
   ItemCopyHistoryEntry();
-
 }

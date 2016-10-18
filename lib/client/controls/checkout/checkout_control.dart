@@ -7,26 +7,32 @@ library dartalog.client.pages.checkout_control;
 import 'dart:async';
 import 'dart:html';
 
-import 'package:dartalog/client/api/dartalog.dart' as API;
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/controls/controls.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/data_sources/data_sources.dart' as data_sources;
-import 'package:dartalog/dartalog.dart' as dartalog;
+import 'package:dartalog/global.dart';
 import 'package:logging/logging.dart';
 import 'package:option/option.dart';
 import 'package:polymer/polymer.dart';
+import 'package:dartalog/client/api/api.dart' as API;
+
 /// Make [IronImage] available
 import 'package:polymer_elements/iron_image.dart';
+
 /// Make [PaperButton] available
 import 'package:polymer_elements/paper_button.dart';
 import 'package:polymer_elements/paper_dialog.dart';
+
 /// Make [PaperDialogScrollable] available
 import 'package:polymer_elements/paper_dialog_scrollable.dart';
+
 /// Make [PaperDropdownMenu] available
 import 'package:polymer_elements/paper_dropdown_menu.dart';
+
 /// Make [PaperIconButton] available
 import 'package:polymer_elements/paper_icon_button.dart';
+
 /// Make [PaperListbox] available
 import 'package:polymer_elements/paper_listbox.dart';
 import 'package:web_components/web_components.dart';
@@ -76,7 +82,7 @@ class CheckoutControl extends AControl {
     await handleApiExceptions(() async {
       API.BulkItemActionRequest request = new API.BulkItemActionRequest();
       request.actionerUserId = this.checkoutUser;
-      request.action = dartalog.ITEM_ACTION_BORROW;
+      request.action = ItemAction.borrow;
       request.itemCopies = new List<API.ItemCopyId>();
       for (ItemCopy item in this.cart) {
         API.ItemCopyId id = new API.ItemCopyId();
@@ -84,7 +90,7 @@ class CheckoutControl extends AControl {
         id.itemId = item.itemId;
         request.itemCopies.add(id);
       }
-      await api.items.copies.performBulkAction(request);
+      await API.item.items.copies.performBulkAction(request);
     });
   }
 
@@ -106,7 +112,7 @@ class CheckoutControl extends AControl {
   Future refresh() async {
     await handleApiExceptions(() async {
       clear("users");
-      API.ListOfIdNamePair users = await this.api.users.getAllIdsAndNames();
+      API.ListOfIdNamePair users = await API.item.users.getAllIdsAndNames();
       addAll("users", IdNamePair.copyList(users));
 
       List<ItemCopy> newCart = [];
@@ -115,7 +121,7 @@ class CheckoutControl extends AControl {
 
       for (ItemCopy itemCopy in freshCart) {
         try {
-          API.ItemCopy updatedItemCopy = await api.items.copies.get(
+          API.ItemCopy updatedItemCopy = await API.item.items.copies.get(
               itemCopy.itemId, itemCopy.copy,
               includeCollection: true, includeItemSummary: true);
           newCart.add(new ItemCopy.copyFrom(updatedItemCopy));

@@ -3,16 +3,13 @@ import 'package:logging/logging.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:connection_pool/connection_pool.dart';
 
-/**
- * A MongoDB connection pool
- *
- */
+/// A MongoDB connection pool
 class MongoDbConnectionPool extends ConnectionPool<Db> {
   static final Logger _log = new Logger('_MongoDbConnectionPool');
 
   String uri;
 
-  MongoDbConnectionPool(String this.uri, int poolSize) : super(poolSize);
+  MongoDbConnectionPool(this.uri, int poolSize) : super(poolSize);
 
   @override
   void closeConnection(Db conn) {
@@ -23,7 +20,7 @@ class MongoDbConnectionPool extends ConnectionPool<Db> {
   @override
   Future<Db> openNewConnection() {
     _log.info("Opening mongo connection");
-    var conn = new Db(uri);
+    final Db conn = new Db(uri);
     return conn.open().then((_) => conn);
   }
 }

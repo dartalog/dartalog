@@ -1,7 +1,6 @@
 import 'package:polymer/polymer.dart';
 import 'package:dartalog/client/client.dart';
 
-
 class ItemSummary extends JsProxy {
   @reflectable
   String id;
@@ -14,16 +13,15 @@ class ItemSummary extends JsProxy {
 
   ItemSummary();
 
-
   @reflectable
-  String get thumbnailUrl => getImageUrl(thumbnail, ImageType.THUMBNAIL);
+  String get thumbnailUrl => getImageUrl(thumbnail, ImageType.thumbnail);
 
   ItemSummary.copy(dynamic field) {
-    _copy(field,this);
+    _copy(field, this);
   }
 
   void copyTo(dynamic output) {
-    _copy(this,output);
+    _copy(this, output);
   }
 
   void _copy(dynamic from, dynamic to) {
@@ -35,10 +33,9 @@ class ItemSummary extends JsProxy {
 
   static List<ItemSummary> convertList(Iterable input) {
     List<ItemSummary> output = new List<ItemSummary>();
-    for(dynamic obj in input) {
+    for (dynamic obj in input) {
       output.add(new ItemSummary.copy(obj));
     }
     return output;
   }
-
 }

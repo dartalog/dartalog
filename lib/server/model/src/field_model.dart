@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:logging/logging.dart';
 import 'package:dartalog/tools.dart';
-import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/global.dart';
 import 'package:dartalog/server/data/data.dart';
 import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
 import 'package:dartalog/server/data_sources/data_sources.dart' as data_sources;
@@ -17,17 +17,17 @@ class FieldModel extends AIdNameBasedModel<Field> {
   String get defaultReadPrivilegeRequirement => UserPrivilege.curator;
 
   @override
-  Future validateFieldsInternal(Map field_errors, Field field, bool creating) async {
-    if (isNullOrWhitespace(field.type))
+  Future validateFieldsInternal(
+      Map field_errors, Field field, bool creating) async {
+    if (StringTools.isNullOrWhitespace(field.type))
       field_errors["type"] = "Required";
-    else if(!FIELD_TYPES.containsKey(field.type)) {
+    else if (!FIELD_TYPES.containsKey(field.type)) {
       field_errors["type"] = "Invalid";
     }
 
-    if (!isNullOrWhitespace(field.format)) {
+    if (!StringTools.isNullOrWhitespace(field.format)) {
       String test = validateRegularExpression(field.format);
-      if (!isNullOrWhitespace(test)) field_errors["format"] = test;
+      if (!StringTools.isNullOrWhitespace(test)) field_errors["format"] = test;
     }
   }
-
 }

@@ -44,14 +44,15 @@
                 changed="routeChanged">
         </app-route>
 
-        <paper-drawer-panel  hidden="[[appLoadingScreenVisible]]"  responsive-width="1920px">
+        <paper-drawer-panel hidden="[[appLoadingScreenVisible]]" responsive-width="1920px">
             <paper-header-panel drawer>
                 <paper-toolbar>
                     <template is="dom-if" if="[[userLoggedIn]]">
-                        <div>[[currentUserProperty.name]] <span on-tap="drawerItemClicked">Log Out</span></div>
+                        <div>[[currentUserProperty.name]] <span on-tap="logOutClicked"
+                                                                >Log Out</span></div>
                     </template>
                     <template is="dom-if" if="[[!userLoggedIn]]">
-                        <div on-tap="drawerItemClicked" >Log In</div>
+                        <div on-tap="logInClicked">Log In</div>
                     </template>
                 </paper-toolbar>
                 <div>
@@ -130,7 +131,8 @@
                         <paper-icon-button icon="refresh" on-tap="refreshClicked"></paper-icon-button>
                     </template>
                     <template is="dom-if" if="[[userCanCheckout]]" restamp="true">
-                        <paper-icon-button id="cartIconButton" icon="shopping-cart" on-tap="cartClicked"></paper-icon-button>
+                        <paper-icon-button id="cartIconButton" icon="shopping-cart"
+                                           on-tap="cartClicked"></paper-icon-button>
                         <template is="dom-if" if="[[!cartEmpty]]">
                             <paper-badge for="cartIconButton" label="[[cartCount]]"></paper-badge>
                         </template>

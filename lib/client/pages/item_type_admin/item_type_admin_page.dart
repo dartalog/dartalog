@@ -21,22 +21,21 @@ import 'package:polymer_elements/paper_dialog.dart';
 import 'package:polymer_elements/paper_dialog_scrollable.dart';
 import 'package:polymer_elements/iron_flex_layout.dart';
 
-
-import 'package:dartalog/dartalog.dart' as dartalog;
+import 'package:dartalog/global.dart';
 import 'package:dartalog/client/pages/pages.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/data/data.dart';
-import 'package:dartalog/client/api/dartalog.dart' as API;
 import 'package:dartalog/tools.dart';
 import 'package:dartalog/client/controls/combo_list/combo_list_control.dart';
 import 'package:dartalog/client/controls/auth_wrapper/auth_wrapper_control.dart';
+import 'package:dartalog/client/api/api.dart' as API;
 
 @PolymerRegister('item-type-admin-page')
 class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
   static final Logger _log = new Logger("ItemTypeAdminPage");
   Logger get loggerImpl => _log;
 
-  ItemTypeAdminPage.created() : super.created( "Item Types");
+  ItemTypeAdminPage.created() : super.created("Item Types");
 
   @Property(notify: true)
   List<IdNamePair> itemTypes = new List<IdNamePair>();
@@ -44,22 +43,25 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
   @Property(notify: true)
   List<IdNamePair> fields = new List<IdNamePair>();
 
-  @property ItemType currentItemType = new ItemType();
+  @property
+  ItemType currentItemType = new ItemType();
   String currentItemId = "";
 
-  @property String selectedField = "";
+  @property
+  String selectedField = "";
 
-  PaperDialog get editDialog =>  this.querySelector('#editDialog');
+  PaperDialog get editDialog => this.querySelector('#editDialog');
 
   @override
   void setGeneralErrorMessage(String message) => set("errorMessage", message);
-  @Property(notify:true)
+  @Property(notify: true)
   String errorMessage = "";
 
   @property
   bool userHasAccess = false;
 
-  AuthWrapperControl get authWrapper => this.querySelector("auth-wrapper-control");
+  AuthWrapperControl get authWrapper =>
+      this.querySelector("auth-wrapper-control");
 
   attached() {
     super.attached();
@@ -67,8 +69,6 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
   }
 
   Future refresh() async {
-
-
     await handleApiExceptions(() async {
       try {
         this.startLoading();
@@ -76,14 +76,13 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
         bool authed = await authWrapper.evaluatePageAuthentication();
         this.showRefreshButton = authed;
         this.showAddButton = authed;
-        if(!authed)
-          return;
+        if (!authed) return;
 
         this.reset();
 
         await _loadAvailableFields();
         await _loadItemTypes();
-      } finally{
+      } finally {
         this.stopLoading();
         this.evaluatePage();
       }
@@ -91,17 +90,17 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
   }
 
   Future _loadAvailableFields() async {
-      clear("fields");
+    clear("fields");
 
-      API.ListOfIdNamePair data = await api.fields.getAllIdsAndNames();
+    API.ListOfIdNamePair data = await API.item.fields.getAllIdsAndNames();
 
-      set("fields", IdNamePair.copyList(data));
+    set("fields", IdNamePair.copyList(data));
   }
 
   Future _loadItemTypes() async {
-      clear("itemTypes");
-      API.ListOfIdNamePair data = await api.itemTypes.getAllIdsAndNames();
-      set("itemTypes", IdNamePair.copyList(data));
+    clear("itemTypes");
+    API.ListOfIdNamePair data = await API.item.itemTypes.getAllIdsAndNames();
+    set("itemTypes", IdNamePair.copyList(data));
   }
 
   void reset() {
@@ -117,7 +116,7 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
       openDialog(editDialog);
     } catch (e, st) {
       _log.severe(e, st);
-      this.handleException(e,st);
+      this.handleException(e, st);
     }
   }
 
@@ -131,10 +130,9 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
   itemTypeClicked(event, [_]) async {
     await handleApiExceptions(() async {
       String id = event.target.dataset["id"];
-      API.ItemType itemType = await api.itemTypes.getById(id);
+      API.ItemType itemType = await API.item.itemTypes.getById(id);
 
-      if(itemType==null)
-        return;
+      if (itemType == null) return;
 
       currentItemId = id;
       set("currentItemType", new ItemType.copy(itemType));
@@ -142,21 +140,19 @@ class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
     });
   }
 
-
   @reflectable
   saveClicked(event, [_]) async {
     await handleApiExceptions(() async {
       API.ItemType itemType = new API.ItemType();
       this.currentItemType.copyTo(itemType);
 
-      if(isNullOrWhitespace(this.currentItemId)) {
-        await this.api.itemTypes.create(itemType);
+      if (StringTools.isNullOrWhitespace(this.currentItemId)) {
+        await API.item.itemTypes.create(itemType);
       } else {
-        await this.api.itemTypes.update(itemType, this.currentItemId);
+        await API.item.itemTypes.update(itemType, this.currentItemId);
       }
       this.refresh();
       this.editDialog.close();
     });
   }
-
 }

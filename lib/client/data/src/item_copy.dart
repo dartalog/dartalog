@@ -1,4 +1,4 @@
-import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/global.dart';
 import 'package:dartalog/tools.dart';
 import 'package:polymer/polymer.dart';
 
@@ -45,13 +45,13 @@ class ItemCopy extends JsProxy {
   ItemCopy.copyFrom(dynamic input) {
     _copy(input, this);
     availableForCheckout =
-        userCanCheckout && eligibleActions.contains(ITEM_ACTION_BORROW);
+        userCanCheckout && eligibleActions.contains(ItemAction.borrow);
   }
 
   ItemCopy.forItem(this.itemId, {this.copy: 0});
 
   @reflectable
-  bool get hasUniqueId => !isNullOrWhitespace(this.uniqueId);
+  bool get hasUniqueId => !StringTools.isNullOrWhitespace(this.uniqueId);
 
   void copyTo(dynamic output) {
     _copy(this, output);

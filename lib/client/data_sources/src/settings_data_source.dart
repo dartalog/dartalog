@@ -4,32 +4,31 @@ import 'dart:indexed_db' as idb;
 import 'a_data_source.dart';
 
 class SettingsDataSource extends ADataSource {
-  static const String AUTH_KEY_NAME = "authKey";
+  static const String authKeyName = "authKey";
 
-  Future cacheAuthKey(String text) async {
+  Future<Null> cacheAuthKey(String text) async {
     await wrapTransaction(
-        ADataSource.DARTALOG_IDB_SETTINGS_STORE, ADataSource.READ_WRITE,
+        ADataSource.idbSettingsStore, ADataSource.readWritePermission,
         (idb.ObjectStore store) async {
-      await store.put({'id': AUTH_KEY_NAME, 'value': text});
+      await store.put(<String, String>{'id': authKeyName, 'value': text});
     });
   }
 
-  Future clearAuthCache() async {
+  Future<Null> clearAuthCache() async {
     await wrapTransaction(
-        ADataSource.DARTALOG_IDB_SETTINGS_STORE, ADataSource.READ_WRITE,
+        ADataSource.idbSettingsStore, ADataSource.readWritePermission,
         (idb.ObjectStore store) async {
-      await store.delete(AUTH_KEY_NAME);
+      await store.delete(authKeyName);
     });
   }
 
   Future<Option<String>> getCachedAuthKey() async {
     return await wrapTransaction(
-        ADataSource.DARTALOG_IDB_SETTINGS_STORE, ADataSource.READ_ONLY,
+        ADataSource.idbSettingsStore, ADataSource.readOnlyPermission,
         (idb.ObjectStore store) async {
-      dynamic obj = await store.getObject(AUTH_KEY_NAME);
-      if (obj == null) return new None();
-      Option output = new Some(obj["value"]);
-      return output;
+      final dynamic obj = await store.getObject(authKeyName);
+      if (obj == null) return new None<String>();
+      return new Some<String>(obj["value"]);
     });
   }
 }

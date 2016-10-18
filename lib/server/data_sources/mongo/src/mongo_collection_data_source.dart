@@ -13,30 +13,30 @@ class MongoCollectionDataSource extends AMongoIdDataSource<Collection>
   static const String curatorsField = "curators";
   static const String browsersField = "browsers";
 
-  Future<IdNameList<Collection>> getAllForCurator(String userId)  async {
-    SelectorBuilder selector = where.eq(curatorsField, userId);
-    return  await getIdNameListFromDb(selector);
+  @override
+  Future<IdNameList<Collection>> getAllForCurator(String userId) async {
+    final SelectorBuilder selector = where.eq(curatorsField, userId);
+    return await getIdNameListFromDb(selector);
   }
 
+  @override
   Future<IdNameList<Collection>> getVisibleCollections(String userId) async {
-    SelectorBuilder selector = where.eq(publiclyBrowsableField, true)
+    final SelectorBuilder selector = where
+        .eq(publiclyBrowsableField, true)
         .or(where.eq(curatorsField, userId))
         .or(where.eq(browsersField, userId));
     return await getIdNameListFromDb(selector);
   }
 
-
   @override
   Collection createObject(Map data) {
-    Collection output = new Collection();
+    final Collection output = new Collection();
     output.id = data[ID_FIELD];
-    output.name= data[NAME_FIELD];
-    if(data.containsKey(publiclyBrowsableField))
+    output.name = data[NAME_FIELD];
+    if (data.containsKey(publiclyBrowsableField))
       output.publiclyBrowsable = data[publiclyBrowsableField];
-    if(data.containsKey(curatorsField))
-      output.curators = data[curatorsField];
-    if(data.containsKey(browsersField))
-      output.browsers = data[browsersField];
+    if (data.containsKey(curatorsField)) output.curators = data[curatorsField];
+    if (data.containsKey(browsersField)) output.browsers = data[browsersField];
     return output;
   }
 

@@ -13,7 +13,7 @@ class ImportSearchResult extends JsProxy {
   String url;
 
   ImportSearchResult.copy(dynamic field) {
-    _copy(field,this);
+    _copy(field, this);
   }
 
   void _copy(dynamic from, dynamic to) {
@@ -23,8 +23,8 @@ class ImportSearchResult extends JsProxy {
     to.url = from.url;
   }
 
-  static List<ImportSearchResult> convertList(Iterable input) {
-    List<ImportSearchResult> output = [];
+  static List<ImportSearchResult> convertList(Iterable<dynamic> input) {
+    final List<ImportSearchResult> output = <ImportSearchResult>[];
     for (dynamic sr in input) {
       output.add(new ImportSearchResult.copy(sr));
     }

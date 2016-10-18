@@ -3,7 +3,6 @@ export 'src/exceptions/item_action_exception.dart';
 export 'src/exceptions/data_moved_exception.dart';
 export 'src/exceptions/already_exists_exception.dart';
 
-
 //export 'src/a_data.dart';
 export 'src/a_id_data.dart';
 export 'src/paginated_data.dart';

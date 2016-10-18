@@ -10,10 +10,9 @@ import 'package:polymer/polymer.dart';
 import 'package:web_components/web_components.dart';
 import 'package:polymer_elements/paper_toast.dart';
 
-
 /// A Polymer `<field-admin-page>` element.
 @PolymerRegister('paper-toast-queue')
-class PaperToastQueue extends PolymerElement  {
+class PaperToastQueue extends PolymerElement {
   static final Logger _log = new Logger("PaperToastQueue");
 
   PaperToastQueue.created() : super.created();
@@ -39,7 +38,7 @@ class PaperToastQueue extends PolymerElement  {
 
   @reflectable
   toasterClicked(event, [_]) {
-    set("duration",-1);
+    set("duration", -1);
   }
 
   @reflectable
@@ -48,31 +47,30 @@ class PaperToastQueue extends PolymerElement  {
   }
 
   void openNextMessage() {
-    if(this.messages.length>0) {
+    if (this.messages.length > 0) {
       ToasterQueueMessage nextMessage = messages.removeFirst();
 
-        if (nextMessage.severity == "error") {
-          toastElement.classes.add("error");
-        } else {
-          toastElement.classes.remove("error");
-        }
+      if (nextMessage.severity == "error") {
+        toastElement.classes.add("error");
+      } else {
+        toastElement.classes.remove("error");
+      }
 
-        set("message", nextMessage);
-        set("duration", defaultDuration);
-        toastElement.open();
+      set("message", nextMessage);
+      set("duration", defaultDuration);
+      toastElement.open();
     }
   }
 
   void enqueueMessage(String message, [String severity, String details]) {
-    if(toastElement==null)
-      return;
+    if (toastElement == null) return;
 
-    ToasterQueueMessage newMessage = new ToasterQueueMessage(message, severity: severity, details: details);
+    ToasterQueueMessage newMessage =
+        new ToasterQueueMessage(message, severity: severity, details: details);
 
     this.messages.add(newMessage);
 
-    if (!toastElement.opened)
-      openNextMessage();
+    if (!toastElement.opened) openNextMessage();
   }
 }
 

@@ -3,7 +3,7 @@ import 'package:crypt/crypt.dart';
 import 'package:logging/logging.dart';
 import 'package:option/option.dart';
 import 'package:dartalog/tools.dart';
-import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/global.dart';
 import 'package:dartalog/server/server.dart';
 import 'package:dartalog/server/data/data.dart';
 import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
@@ -23,10 +23,10 @@ class UserModel extends AIdNameBasedModel<User> {
   @override
   Future validateFieldsInternal(
       Map field_errors, User user, bool creating) async {
-    if (creating || !isNullOrWhitespace(user.password)) {
+    if (creating || !StringTools.isNullOrWhitespace(user.password)) {
       _validatePassword(field_errors, user.password);
     }
-    if (isNullOrWhitespace(user.type)) {
+    if (StringTools.isNullOrWhitespace(user.type)) {
       field_errors["type"] = "Required";
     } else {
       if (!UserPrivilege.values.contains(user.type))
@@ -35,7 +35,7 @@ class UserModel extends AIdNameBasedModel<User> {
   }
 
   _validatePassword(Map field_errors, String password) {
-    if (isNullOrWhitespace(password)) {
+    if (StringTools.isNullOrWhitespace(password)) {
       field_errors["password"] = "Required";
     } else if (password.length < 8) {
       //TODO: Additional restrictions? Keep them sane.
@@ -70,7 +70,7 @@ class UserModel extends AIdNameBasedModel<User> {
 
     String output = await super.update(id, user);
 
-    if (!isNullOrWhitespace(user.password))
+    if (!StringTools.isNullOrWhitespace(user.password))
       await _setPassword(output, user.password);
 
     return output;
@@ -91,7 +91,7 @@ class UserModel extends AIdNameBasedModel<User> {
             throw new Exception("User ${id} does not have a current password"));
 
     await DataValidationException.PerformValidation((Map field_errors) async {
-      if (isNullOrWhitespace(currentPassword)) {
+      if (StringTools.isNullOrWhitespace(currentPassword)) {
         field_errors["currentPassword"] = "Required";
       } else if (!verifyPassword(userPassword, currentPassword)) {
         field_errors["currentPassword"] = "Incorrect";

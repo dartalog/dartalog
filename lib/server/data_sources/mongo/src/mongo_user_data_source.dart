@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:logging/logging.dart';
-import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/global.dart';
 import 'package:dartalog/server/data/data.dart';
 import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
 import 'package:mongo_dart/mongo_dart.dart';
@@ -32,14 +32,12 @@ class MongoUserDataSource extends AMongoIdDataSource<User>
     await genericUpdate(selector, modifier, multiUpdate: false);
   }
 
-
   @override
   User createObject(Map data) {
     User output = new User();
     output.getId = data[ID_FIELD];
     output.getName = data["name"];
-    if (data.containsKey(TYPE_FIELD))
-      output.type = data[TYPE_FIELD];
+    if (data.containsKey(TYPE_FIELD)) output.type = data[TYPE_FIELD];
     return output;
   }
 

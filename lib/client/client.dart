@@ -1,58 +1,61 @@
 import 'dart:html';
-import 'package:dartalog/dartalog.dart';
-import 'api/dartalog.dart';
-import 'src/dartalog_http_client.dart';
-export 'api/dartalog.dart' show DartalogApi;
+import 'package:dartalog/global.dart';
+import 'package:option/option.dart';
 export 'src/http_headers.dart';
 
-final DartalogApi GLOBAL_API = new DartalogApi(new DartalogHttpClient(),
-    rootUrl: getServerRoot(), servicePath: API_PATH);
-
-Element getChildElement(Element start, String tagName) {
-  if (start == null) return null;
-  if (start.tagName == tagName) return start;
-  if (start.parent == null) return null;
+/// Gets the first child [Element] matching the specified name.
+Option<Element> getChildElement(Element start, String tagName) {
+  if (start == null) return new None<Element>();
+  if (start.tagName.toLowerCase() == tagName.toLowerCase())
+    return new Some<Element>(start);
+  if (start.parent == null) return new None<Element>();
 
   for (Element child in start.children) {
-    if (child.tagName.toLowerCase() == tagName.toLowerCase()) return child;
+    if (child.tagName.toLowerCase() == tagName.toLowerCase())
+      return new Some<Element>(child);
   }
   for (Element child in start.children) {
-    Element candidate = getChildElement(child, tagName);
-    if (candidate != null) return candidate;
+    final Option<Element> candidate = getChildElement(child, tagName);
+    if (candidate.isNotEmpty) return candidate;
   }
-  return null;
+  return new None<Element>();
 }
 
+/// Determines the appropriate URL to get an image from the server's image store.
 String getImageUrl(String image, ImageType type) {
   if (!image.startsWith(HOSTED_IMAGE_PREFIX)) return image;
 
   switch (type) {
-    case ImageType.ORIGINAL:
-      return "${getServerRoot()}${HOSTED_IMAGES_ORIGINALS_PATH}${image
+    case ImageType.original:
+      return "${getServerRoot()}$HOSTED_IMAGES_ORIGINALS_PATH${image
           .substring(HOSTED_IMAGE_PREFIX.length)}";
-    case ImageType.THUMBNAIL:
-      return "${getServerRoot()}${HOSTED_IMAGES_THUMBNAILS_PATH}${image
+    case ImageType.thumbnail:
+      return "${getServerRoot()}$HOSTED_IMAGES_THUMBNAILS_PATH${image
           .substring(HOSTED_IMAGE_PREFIX.length)}";
     default:
-      throw new Exception("Not supported: ${type}");
+      throw new Exception("Not supported: $type");
   }
 }
 
-Element getParentElement(Element start, String tagName) {
-  if (start == null) return null;
-  if (start.tagName.toLowerCase() == tagName.toLowerCase()) return start;
-  if (start.parent == null) return null;
+/// Gets the first parent [Element] that matches the specified [tagName].
+Option<Element> getParentElement(Element start, String tagName) {
+  if (start == null) return new None<Element>();
+  if (start.tagName.toLowerCase() == tagName.toLowerCase())
+    return new Some<Element>(start);
+  if (start.parent == null) return new None<Element>();
 
   Element ele = start.parent;
   while (ele != null) {
-    if (ele.tagName.toLowerCase() == tagName.toLowerCase()) return ele;
+    if (ele.tagName.toLowerCase() == tagName.toLowerCase())
+      return new Some<Element>(ele);
     ele = ele.parent;
   }
-  return null;
+  return new None<Element>();
 }
 
+/// Gets the protocol, domain, subdomain (if any), and port (if any) from the web site's request URL. Primarily for use in constructing an address to request the API from.
 String getServerRoot() {
-  StringBuffer output = new StringBuffer();
+  final StringBuffer output = new StringBuffer();
   output.write(window.location.protocol);
   output.write("//");
   output.write(window.location.host);
@@ -67,10 +70,20 @@ String getServerRoot() {
   return output.toString();
 }
 
-enum ImageType { ORIGINAL, THUMBNAIL }
+/// Defines the different image types that can be requested from the server.
+enum ImageType {
+  /// The original, unaltered image file.
+  original,
 
+  /// A scaled-down, slightly more compressed, version of an original image file.
+  thumbnail
+}
+
+/// Indicates that a data validation related error occured.
 class ValidationException implements Exception {
+  /// Validation error message.
   String message;
 
+  /// Creates an instance of [ValidationException] with an error message.
   ValidationException(this.message);
 }

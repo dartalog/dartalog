@@ -10,11 +10,12 @@ class Config {
     this.posterSizes = data["images"]["poster_sizes"];
   }
 
-  String constructPosterUrl(String poster, [String size = null, bool secure = false]) {
-    if(size==null) {
-      size = posterSizes[posterSizes.length-1];
+  String constructPosterUrl(String poster,
+      [String size = null, bool secure = false]) {
+    if (size == null) {
+      size = posterSizes[posterSizes.length - 1];
     }
-    if(secure) {
+    if (secure) {
       return "${secureBaseImageUrl}${size}${poster}";
     } else {
       return "${baseImageUrl}${size}${poster}";

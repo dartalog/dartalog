@@ -14,7 +14,7 @@ import 'package:polymer_elements/iron_flex_layout.dart';
 import 'package:polymer_elements/iron_flex_layout_classes.dart';
 
 @PolymerRegister('image-zoomer')
-class ImageZoomerControl extends AControl  {
+class ImageZoomerControl extends AControl {
   static final Logger _log = new Logger("ImageZoomerControl ");
 
   Logger get loggerImpl => _log;
@@ -37,20 +37,18 @@ class ImageZoomerControl extends AControl  {
   void closeFullsize(event, [_]) {
     IronImage ele = this.querySelector("iron-image");
     ele.style.display = "none";
-
   }
 
   @reflectable
   void showFullsize(event, [_]) {
     try {
       event.preventDefault();
-    IronImage ele = this.querySelector("iron-image");
-    ele.preventLoad = false;
+      IronImage ele = this.querySelector("iron-image");
+      ele.preventLoad = false;
 
-    ele.style.display = "block";
-
-    } catch(e,st) {
-      this.handleException(e,st);
+      ele.style.display = "block";
+    } catch (e, st) {
+      this.handleException(e, st);
     }
   }
 }

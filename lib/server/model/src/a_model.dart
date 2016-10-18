@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:logging/logging.dart';
 import 'package:option/option.dart';
 import 'package:shelf_auth/shelf_auth.dart';
-import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/global.dart';
 import 'package:dartalog/server/server.dart';
 import 'package:dartalog/server/data/data.dart';
 import 'package:dartalog/server/data_sources/data_sources.dart' as data_sources;

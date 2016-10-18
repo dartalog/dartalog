@@ -19,13 +19,13 @@ import 'package:polymer_elements/paper_card.dart';
 import 'package:polymer_elements/paper_dialog.dart';
 import 'package:polymer_elements/iron_flex_layout.dart';
 
-import 'package:dartalog/dartalog.dart' as dartalog;
+import 'package:dartalog/global.dart';
 import 'package:dartalog/client/pages/pages.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/tools.dart';
-import 'package:dartalog/client/api/dartalog.dart' as API;
 import 'package:dartalog/client/controls/auth_wrapper/auth_wrapper_control.dart';
+import 'package:dartalog/client/api/api.dart' as API;
 
 /// A Polymer `<field-admin-page>` element.
 @PolymerRegister('collections-page')
@@ -40,23 +40,24 @@ class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
   List<IdNamePair> users = new List<IdNamePair>();
 
   String currentId = "";
-  @property Collection currentCollection = new Collection();
+  @property
+  Collection currentCollection = new Collection();
 
-  PaperDialog get editDialog =>  this.querySelector('#editDialog');
+  PaperDialog get editDialog => this.querySelector('#editDialog');
 
   @override
   void setGeneralErrorMessage(String message) => set("errorMessage", message);
-  @Property(notify:true)
+  @Property(notify: true)
   String errorMessage = "";
 
   @property
   bool userHasAccess = false;
 
-  AuthWrapperControl get authWrapper => this.querySelector("auth-wrapper-control");
+  AuthWrapperControl get authWrapper =>
+      this.querySelector("auth-wrapper-control");
 
   /// Constructor used to create instance of MainApp.
   CollectionsPage.created() : super.created("Collection Maintenance");
-
 
   attached() {
     super.attached();
@@ -71,29 +72,25 @@ class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
         bool authed = await authWrapper.evaluatePageAuthentication();
         this.showRefreshButton = authed;
         this.showAddButton = authed;
-        if(!authed)
-          return;
+        if (!authed) return;
 
         this.reset();
         clear("collections");
         clear("users");
 
-
-        API.ListOfIdNamePair data = await api.collections.getAllIdsAndNames();
+        API.ListOfIdNamePair data = await API.item.collections.getAllIdsAndNames();
 
         addAll("collections", IdNamePair.copyList(data));
 
-        data = await api.users.getAllIdsAndNames();
+        data = await API.item.users.getAllIdsAndNames();
 
         addAll("users", IdNamePair.copyList(data));
-
       } finally {
         stopLoading();
         this.evaluatePage();
       }
     });
   }
-
 
   @reflectable
   void reset() {
@@ -113,7 +110,7 @@ class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
       openDialog(editDialog);
     } catch (e, st) {
       _log.severe(e, st);
-      this.handleException(e,st);
+      this.handleException(e, st);
     }
   }
 
@@ -121,10 +118,9 @@ class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
   collectionClicked(event, [_]) async {
     await handleApiExceptions(() async {
       String id = event.target.dataset["id"];
-      if (id == null)
-        return;
+      if (id == null) return;
 
-      API.Collection collection = await api.collections.getById(id);
+      API.Collection collection = await API.item.collections.getById(id);
 
       if (collection == null)
         throw new Exception("Selected collection not found");
@@ -151,18 +147,20 @@ class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
   @reflectable
   saveClicked(event, [_]) async {
     await handleApiExceptions(() async {
-      if(currentUser.isEmpty)
+      if (currentUser.isEmpty)
         return; // Not signed in, how can you be doing anything?
 
-      if(!currentCollection.curators.contains(currentUser.get().id)&&!window.confirm("Your user is not in the list of curators, are you sure you want to continue?"))
+      if (!currentCollection.curators.contains(currentUser.get().id) &&
+          !window.confirm(
+              "Your user is not in the list of curators, are you sure you want to continue?"))
         return;
 
       API.Collection collection = new API.Collection();
       currentCollection.copyTo(collection);
-      if (isNullOrWhitespace(this.currentId)) {
-        await this.api.collections.create(collection);
+      if (StringTools.isNullOrWhitespace(this.currentId)) {
+        await API.item.collections.create(collection);
       } else {
-        await this.api.collections.update(collection, this.currentId);
+        await API.item.collections.update(collection, this.currentId);
       }
 
       refresh();
@@ -170,5 +168,4 @@ class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
       showMessage("Collection saved");
     });
   }
-
 }

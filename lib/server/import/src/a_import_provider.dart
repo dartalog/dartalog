@@ -18,18 +18,16 @@ abstract class AImportProvider {
     HttpClientResponse response = await request.close();
 
     HttpClientResponseBody body =
-    await HttpBodyHandler.processResponse(response);
+        await HttpBodyHandler.processResponse(response);
 
-    String output =body.body.toString();
-    if(stripNewlines) {
-      output = output.replaceAll("\r","");
-      output = output.replaceAll("\n","");
+    String output = body.body.toString();
+    if (stripNewlines) {
+      output = output.replaceAll("\r", "");
+      output = output.replaceAll("\n", "");
     }
     return output;
- }
+  }
 
   @protected
-  void attemptAutoMapping(dynamic output, Map data) {
-
-  }
+  void attemptAutoMapping(dynamic output, Map data) {}
 }

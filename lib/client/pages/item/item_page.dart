@@ -44,23 +44,19 @@ class ItemPage extends APage with AEditablePage, ASaveablePage {
 
   @override
   String get editLink {
-    if (editPageActive)
-      return emptyString;
+    if (editPageActive) return StringTools.empty;
 
     return itemViewPage.editLink;
   }
 
-
   @override
   bool get showSaveButton {
-    if (editPageActive)
-      return itemEditPage.showSaveButton;
+    if (editPageActive) return itemEditPage.showSaveButton;
     return false;
   }
 
   @override
   Future save() async {
-    if (editPageActive)
-      await itemEditPage.save();
+    if (editPageActive) await itemEditPage.save();
   }
 }

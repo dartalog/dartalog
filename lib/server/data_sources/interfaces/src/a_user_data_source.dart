@@ -9,6 +9,6 @@ abstract class AUserDataSource extends AIdNameBasedDataSource<User> {
 
   Future<List<User>> getAdmins();
 
-  Future setPassword(String id, String password);
+  Future<Null> setPassword(String id, String password);
   Future<Option<String>> getPasswordHash(String id);
 }

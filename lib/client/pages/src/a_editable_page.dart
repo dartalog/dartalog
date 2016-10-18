@@ -4,10 +4,12 @@ import 'package:dartalog/tools.dart';
 
 abstract class AEditablePage {
   @Property(notify: true)
-  bool get showEditButton { return !isNullOrWhitespace(editLink); }
+  bool get showEditButton {
+    return !StringTools.isNullOrWhitespace(editLink);
+  }
 
-  @Property(notify:true)
-  String get editLink => emptyString;
+  @Property(notify: true)
+  String get editLink => StringTools.empty;
 
   //Future edit();
 }

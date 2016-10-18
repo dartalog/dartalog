@@ -19,13 +19,13 @@ import 'package:polymer_elements/paper_card.dart';
 import 'package:polymer_elements/paper_dialog.dart';
 import 'package:polymer_elements/iron_flex_layout.dart';
 
-import 'package:dartalog/dartalog.dart' as dartalog;
+import 'package:dartalog/global.dart';
 import 'package:dartalog/client/pages/pages.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/tools.dart';
-import 'package:dartalog/client/api/dartalog.dart' as API;
 import 'package:dartalog/client/controls/auth_wrapper/auth_wrapper_control.dart';
+import 'package:dartalog/client/api/api.dart' as API;
 
 /// A Polymer `<field-admin-page>` element.
 @PolymerRegister('field-admin-page')
@@ -47,23 +47,25 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   /// Constructor used to create instance of MainApp.
   FieldAdminPage.created() : super.created("Fields");
 
-  @Property(notify: true) Iterable get FIELD_TYPE_KEYS => dartalog.FIELD_TYPES.keys;
-  @reflectable String getFieldType(String key) => dartalog.FIELD_TYPES[key];
+  @Property(notify: true)
+  Iterable get FIELD_TYPE_KEYS => FIELD_TYPES.keys;
+  @reflectable
+  String getFieldType(String key) => FIELD_TYPES[key];
 
-  AuthWrapperControl get authWrapper => this.querySelector("auth-wrapper-control");
+  AuthWrapperControl get authWrapper =>
+      this.querySelector("auth-wrapper-control");
 
-  PaperDialog get editDialog =>  this.querySelector('#editDialog');
+  PaperDialog get editDialog => this.querySelector('#editDialog');
 
   @override
   void setGeneralErrorMessage(String message) => set("errorMessage", message);
-  @Property(notify:true)
+  @Property(notify: true)
   String errorMessage = "";
 
   attached() {
     super.attached();
     refresh();
   }
-
 
   @reflectable
   Future refresh() async {
@@ -74,24 +76,22 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
         bool authed = await authWrapper.evaluatePageAuthentication();
         this.showRefreshButton = authed;
         this.showAddButton = authed;
-        if(!authed)
-          return;
+        if (!authed) return;
 
         this.reset();
         clear("fields");
 
-        API.ListOfIdNamePair data = await api.fields.getAllIdsAndNames();
+        API.ListOfIdNamePair data = await API.item.fields.getAllIdsAndNames();
 
         for (API.IdNamePair pair in data) {
           add("fields", new IdNamePair.copy(pair));
         }
-      } finally{
+      } finally {
         stopLoading();
         this.evaluatePage();
       }
     });
   }
-
 
   @reflectable
   void reset() {
@@ -111,7 +111,7 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
       editDialog.open();
     } catch (e, st) {
       _log.severe(e, st);
-      this.handleException(e,st);
+      this.handleException(e, st);
     }
   }
 
@@ -119,13 +119,11 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   fieldClicked(event, [_]) async {
     await handleApiExceptions(() async {
       String id = event.target.dataset["id"];
-      if(id==null)
-        return;
+      if (id == null) return;
 
-      API.Field field = await api.fields.getById(id);
+      API.Field field = await API.item.fields.getById(id);
 
-      if(field==null)
-        throw new Exception("Selected field not found");
+      if (field == null) throw new Exception("Selected field not found");
 
       currentId = id;
 
@@ -147,14 +145,14 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
   }
 
   @reflectable
-  saveClicked(event, [_]) async {
+  Future<Null> saveClicked(event, [_]) async {
     await handleApiExceptions(() async {
       API.Field field = new API.Field();
       currentField.copyTo(field);
-      if (isNullOrWhitespace(this.currentId)) {
-        await this.api.fields.create(field);
+      if (StringTools.isNullOrWhitespace(this.currentId)) {
+        await API.item.fields.create(field);
       } else {
-        await this.api.fields.update(field, this.currentId);
+        await API.item.fields.update(field, this.currentId);
       }
 
       refresh();
@@ -162,5 +160,4 @@ class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
       showMessage("Field saved");
     });
   }
-
 }

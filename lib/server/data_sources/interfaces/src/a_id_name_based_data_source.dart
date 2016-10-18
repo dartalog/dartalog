@@ -10,9 +10,7 @@ abstract class AIdNameBasedDataSource<T extends AIdData> extends Object {
   Future<IdNameList<IdNamePair>> getAllIdsAndNames();
   Future<Option<T>> getById(String id);
   Future<String> write(T t, [String id = null]);
-  Future deleteByID(String id);
+  Future<Null> deleteByID(String id);
   Future<bool> existsByID(String id);
   Future<IdNameList<T>> search(String query);
-
-
 }

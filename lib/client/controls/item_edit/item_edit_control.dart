@@ -8,9 +8,8 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:mime/mime.dart' as mime;
-import 'package:dartalog/client/api/dartalog.dart' as API_Library;
 import 'package:dartalog/client/client.dart';
-import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/global.dart';
 import 'package:dartalog/client/controls/controls.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/tools.dart';
@@ -24,6 +23,7 @@ import 'package:polymer_elements/paper_listbox.dart';
 import 'package:polymer_elements/paper_spinner.dart';
 import 'package:polymer_elements/iron_image.dart';
 import 'package:web_components/web_components.dart';
+import 'package:dartalog/client/api/api.dart' as API;
 
 @PolymerRegister('item-edit-control')
 class ItemEditControl extends AControl {
@@ -55,7 +55,7 @@ class ItemEditControl extends AControl {
   @Property(notify: true)
   bool itemTypesAvailable = false;
 
-  API_Library.ImportResult _importResult = null;
+  API.ImportResult _importResult = null;
 
   @Property(notify: true)
   Map routeData;
@@ -64,7 +64,7 @@ class ItemEditControl extends AControl {
     if (routeData != null && routeData.containsKey("item")) {
       return routeData["item"];
     }
-    return emptyString;
+    return StringTools.empty;
   }
 
   ItemEditControl.created() : super.created();
@@ -96,10 +96,10 @@ class ItemEditControl extends AControl {
         set("itemTypesAvailable", itemTypes.isNotEmpty);
         set("isNew", true);
 
-        if (!isNullOrWhitespace(routeItemId)) {
+        if (!StringTools.isNullOrWhitespace(routeItemId)) {
           await _loadItem(routeItemId);
           set("isNew", false);
-        } else if (!isNullOrWhitespace(itemTypeId)) {
+        } else if (!StringTools.isNullOrWhitespace(itemTypeId)) {
           //set("itemTypeId", itemTypeId);
         } else {}
       } finally {
@@ -109,21 +109,21 @@ class ItemEditControl extends AControl {
     });
   }
 
-  Future loadImportResult(API_Library.ImportResult importResults) async {
+  Future loadImportResult(API.ImportResult importResults) async {
     this._importResult = importResults;
     set("itemTypeId", importResults.itemTypeId);
     //await this.switchItemType();
   }
 
   Future loadCollections() async {
-    API_Library.ListOfIdNamePair collections =
-        await this.api.collections.getAllIdsAndNames();
+    API.ListOfIdNamePair collections =
+        await API.item.collections.getAllIdsAndNames();
     set("collections", IdNamePair.copyList(collections));
   }
 
   Future loadItemTypes() async {
-    API_Library.ListOfIdNamePair itemTypes =
-        await this.api.itemTypes.getAllIdsAndNames();
+    API.ListOfIdNamePair itemTypes =
+        await API.item.itemTypes.getAllIdsAndNames();
     set("itemTypes", IdNamePair.copyList(itemTypes));
   }
 
@@ -132,8 +132,8 @@ class ItemEditControl extends AControl {
       try {
         startLoading();
 
-        List<API_Library.MediaMessage> files =
-        new List<API_Library.MediaMessage>();
+        List<API.MediaMessage> files =
+            new List<API.MediaMessage>();
 
         if (this.currentItem == null || this.currentItem.fields == null)
           throw new Exception("Please select an item type");
@@ -147,27 +147,27 @@ class ItemEditControl extends AControl {
           }
         }
 
-        API_Library.Item newItem = new API_Library.Item();
+        API.Item newItem = new API.Item();
         currentItem.copyTo(newItem);
 
-        if (!isNullOrWhitespace(this.originalItemId)) {
-          API_Library.UpdateItemRequest request =
-          new API_Library.UpdateItemRequest();
+        if (!StringTools.isNullOrWhitespace(this.originalItemId)) {
+          API.UpdateItemRequest request =
+              new API.UpdateItemRequest();
           request.item = newItem;
           request.files = files;
-          API_Library.IdResponse idResponse =
-          await api.items.updateItem(request, this.originalItemId);
+          API.IdResponse idResponse =
+              await API.item.items.updateItem(request, this.originalItemId);
           return idResponse.id;
         } else {
-          API_Library.CreateItemRequest request =
-          new API_Library.CreateItemRequest();
+          API.CreateItemRequest request =
+              new API.CreateItemRequest();
           request.item = newItem;
           request.uniqueId = newUniqueId;
           request.collectionId = newCollectionId;
           request.files = files;
 
-          API_Library.ItemCopyId itemCopyId =
-          await api.items.createItemWithCopy(request);
+          API.ItemCopyId itemCopyId =
+              await API.item.items.createItemWithCopy(request);
           return itemCopyId.itemId;
         }
       } finally {
@@ -178,8 +178,8 @@ class ItemEditControl extends AControl {
   }
 
   Future _loadItem(String id) async {
-    API_Library.Item item =
-        await api.items.getById(id, includeType: true, includeFields: true);
+    API.Item item =
+        await API.item.items.getById(id, includeType: true, includeFields: true);
     Item newItem = new Item.copy(item);
 
     originalItemId = id;
@@ -193,15 +193,13 @@ class ItemEditControl extends AControl {
   }
 
   Future switchItemType() async {
-    if (api == null) return;
-
-    API_Library.ItemType type = await api.itemTypes
-        .getById(this.itemTypeId, includeFields: true);
+    API.ItemType type =
+        await API.item.itemTypes.getById(this.itemTypeId, includeFields: true);
 
     if (type == null)
       throw new Exception("Specified Item Type not found on server");
 
-    ItemType itemType  = new ItemType.copy(type);
+    ItemType itemType = new ItemType.copy(type);
 
     Item newItem = new Item.forType(itemType);
 
@@ -249,8 +247,7 @@ class ItemEditControl extends AControl {
       reader.readAsArrayBuffer(file);
       await for (dynamic fileEvent in reader.onLoad) {
         try {
-
-          field.mediaMessage = new API_Library.MediaMessage();
+          field.mediaMessage = new API.MediaMessage();
           field.mediaMessage.bytes = reader.result;
           //List<String> parms = reader.result.toString().split(";");
           //field.mediaMessage.contentType = parms[0].split(":")[1];

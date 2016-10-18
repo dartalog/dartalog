@@ -41,8 +41,7 @@ class MongoFieldDataSource extends AMongoIdDataSource<Field> with AFieldModel {
     output.type = data["type"];
     output.format = data["format"];
 
-    if(data.containsKey("unique"))
-      output.unique = data["unique"];
+    if (data.containsKey("unique")) output.unique = data["unique"];
     return output;
   }
 

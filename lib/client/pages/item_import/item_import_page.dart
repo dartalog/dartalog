@@ -7,7 +7,6 @@ library dartalog.client.pages.item_import_page;
 import 'dart:async';
 import 'dart:html';
 
-import 'package:dartalog/client/api/dartalog.dart' as API;
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/controls/item_edit/item_edit_control.dart';
 import 'package:dartalog/client/data/data.dart';
@@ -31,6 +30,7 @@ import 'package:polymer_elements/paper_listbox.dart';
 import 'package:web_components/web_components.dart';
 import 'package:dartalog/client/controls/auth_wrapper/auth_wrapper_control.dart';
 import 'package:dartalog/client/controls/barcode_scanner/barcode_scanner.dart';
+import 'package:dartalog/client/api/api.dart' as API;
 
 @PolymerRegister('item-import-page')
 class ItemImportPage extends APage with ASaveablePage {
@@ -60,7 +60,6 @@ class ItemImportPage extends APage with ASaveablePage {
   @Property(notify: true)
   bool searchFinished = false;
 
-
   @Property(notify: true)
   List<BulkImportItem> bulkResults = new List<BulkImportItem>();
 
@@ -74,8 +73,8 @@ class ItemImportPage extends APage with ASaveablePage {
   IronPages get singleImportPages => $['single_import_pages'];
   IronPages get bulkImportPages => $['bulk_import_pages'];
 
-  AuthWrapperControl get authWrapper => this.querySelector("auth-wrapper-control");
-
+  AuthWrapperControl get authWrapper =>
+      this.querySelector("auth-wrapper-control");
 
   @Property(notify: true)
   List<ItemType> itemTypes = [];
@@ -90,7 +89,7 @@ class ItemImportPage extends APage with ASaveablePage {
     showBackButton = false;
 
     bool authed = await authWrapper.evaluatePageAuthentication();
-    if(authed) {
+    if (authed) {
       singleImportPages.selected = "item_search";
       //await loadItemTypes();
       await loadCollections();
@@ -99,18 +98,19 @@ class ItemImportPage extends APage with ASaveablePage {
     }
   }
 
-  @reflectable scanSingle(event, [_]) {
+  @reflectable
+  scanSingle(event, [_]) {
     BarcodeScannerControl bsc = this.querySelector("#singleBarcodeScanner");
     bsc.startBarcodeScanner();
   }
 
   @reflectable
-  tabControlClicked(event,[_]) {
+  tabControlClicked(event, [_]) {
     _resetSearchFields();
   }
 
   @reflectable
-  clearClicked(event,[_]) {
+  clearClicked(event, [_]) {
     _resetSearchFields();
   }
 
@@ -121,7 +121,7 @@ class ItemImportPage extends APage with ASaveablePage {
     set("noResults", false);
     clear("results");
     clear("bulkResults");
-    switch(this.currentTab) {
+    switch (this.currentTab) {
       case "single_import_tab":
         $["single_search_input"].focus();
         break;
@@ -133,8 +133,7 @@ class ItemImportPage extends APage with ASaveablePage {
 
   @reflectable
   searchKeypress(event, [_]) async {
-    if(event.original.charCode==13)
-      await performSingleSearch();
+    if (event.original.charCode == 13) await performSingleSearch();
   }
 
   ImportSearchResult getSearchResult(String id) {
@@ -149,7 +148,8 @@ class ItemImportPage extends APage with ASaveablePage {
   Future loadCollections() async {
     await handleApiExceptions(() async {
       clear("collections");
-      API.ListOfIdNamePair data = await api.collections.getAllIdsAndNames();
+      API.ListOfIdNamePair data =
+          await API.item.collections.getAllIdsAndNames();
       addAll("collections", IdNamePair.copyList(data));
     });
   }
@@ -157,16 +157,15 @@ class ItemImportPage extends APage with ASaveablePage {
   Future loadItemTypes() async {
     await handleApiExceptions(() async {
       clear("itemTypes");
-      API.ListOfIdNamePair data = await api.itemTypes.getAllIdsAndNames();
+      API.ListOfIdNamePair data = await API.item.itemTypes.getAllIdsAndNames();
       addAll("itemTypes", IdNamePair.copyList(data));
     });
   }
 
-
   @override
   Future save() async {
     String id = await itemEditControl.save();
-    if(!isNullOrWhitespace(id)) {
+    if (!StringTools.isNullOrWhitespace(id)) {
       showMessage("Item added");
       window.location.hash = "item/${id}";
     }
@@ -185,12 +184,12 @@ class ItemImportPage extends APage with ASaveablePage {
         this.startLoading();
         clear("results");
 
-        API.SearchResults results =
-        await api.import.search(selectedImportSource, this.searchQuery);
+        API.SearchResults results = await API.item.import
+            .search(selectedImportSource, this.searchQuery);
         addAll("results", ImportSearchResult.convertList(results.results));
         set("noResults", this.results.isEmpty);
         set("searchFinished", true);
-      }finally {
+      } finally {
         this.stopLoading();
       }
     });
@@ -199,10 +198,10 @@ class ItemImportPage extends APage with ASaveablePage {
   @reflectable
   searchResultClicked(event, [_]) async {
     await handleApiExceptions(() async {
-
       dynamic ele = getParentElement(event.target, "paper-item");
       String id = ele.dataset["id"];
-      API.ImportResult result = await api.import.import(selectedImportSource, id);
+      API.ImportResult result =
+          await API.item.import.import(selectedImportSource, id);
       importResult = result;
 
       await itemEditControl.loadImportResult(result);
@@ -218,27 +217,24 @@ class ItemImportPage extends APage with ASaveablePage {
   bulkSearchClicked(event, [_]) async {
     await handleApiExceptions(() async {
       try {
-        if (isNullOrWhitespace(selectedImportSource)) {
+        if (StringTools.isNullOrWhitespace(selectedImportSource)) {
           throw new Exception("Please select an import source");
         }
-        if (isNullOrWhitespace(selectedCollectionId)) {
+        if (StringTools.isNullOrWhitespace(selectedCollectionId)) {
           throw new Exception("Please select a collection");
         }
-
 
         this.startLoading();
         clear("bulkResults");
 
-        if (isNullOrWhitespace(bulkSearchQuery))
-          return;
+        if (StringTools.isNullOrWhitespace(bulkSearchQuery)) return;
 
         List<String> lines = bulkSearchQuery.split("\n");
 
         for (String line in lines) {
-          if (isNullOrWhitespace(line))
-            continue;
+          if (StringTools.isNullOrWhitespace(line)) continue;
           API.SearchResults results =
-          await api.import.search(selectedImportSource, line);
+              await API.item.import.search(selectedImportSource, line);
 
           BulkImportItem bii = new BulkImportItem(
               line, ImportSearchResult.convertList(results.results));
@@ -257,30 +253,27 @@ class ItemImportPage extends APage with ASaveablePage {
       try {
         this.startLoading();
 
-
         for (int i = 0; i < this.bulkResults.length; i++) {
           BulkImportItem bii = this.bulkResults[i];
-          if (!bii.selected)
-            continue;
+          if (!bii.selected) continue;
 
           Item newItem;
           if (bii.newItem != null) {
             newItem = bii.newItem;
           } else {
-            API.ImportResult result = await api.import.import(
-                selectedImportSource, bii.selectedResult);
+            API.ImportResult result = await API.item.import
+                .import(selectedImportSource, bii.selectedResult);
 
-            if (isNullOrWhitespace(result.itemTypeId))
+            if (StringTools.isNullOrWhitespace(result.itemTypeId))
               throw new Exception("Was not able to determine item type for ${bii
                   .selectedResult}, please perform a single import of this item");
 
-            API.ItemType itemType = await api.itemTypes.getById(
-                result.itemTypeId, includeFields: true);
+            API.ItemType itemType = await API.item.itemTypes
+                .getById(result.itemTypeId, includeFields: true);
 
             if (itemType == null)
               throw new Exception("Detected item type for ${bii
                   .selectedResult} does not exist on server, please perform a single import of this item");
-
 
             newItem = new Item.forType(new ItemType.copy(itemType));
             newItem.applyImportResult(result);
@@ -292,11 +285,11 @@ class ItemImportPage extends APage with ASaveablePage {
           request.collectionId = this.selectedCollectionId;
           request.uniqueId = bii.uniqueId;
 
-          await api.items.createItemWithCopy(request);
+          await API.item.items.createItemWithCopy(request);
           removeAt("bulkResults", i);
           i--;
         }
-      }finally{
+      } finally {
         this.stopLoading();
       }
     });
@@ -304,13 +297,13 @@ class ItemImportPage extends APage with ASaveablePage {
 
   @reflectable
   bulkUniqueIdKeyPress(event, [_]) async {
-    if(event.original.charCode==13) {
+    if (event.original.charCode == 13) {
       Element ele = getParentElement(event.target, "paper-input");
       String index = ele.dataset["index"];
       int i = int.parse(index);
       i++;
       PaperInput next = querySelector("paper-input[data-index='${i}']");
-      if(next!=null) {
+      if (next != null) {
         next.focus();
         //TODO: Figure out a way to select all the text in the input element for easier re-scannings
       }

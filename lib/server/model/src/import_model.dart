@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:logging/logging.dart';
-import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/global.dart';
 import 'package:dartalog/server/import/import.dart';
 import 'a_model.dart';
 
@@ -12,10 +12,10 @@ class ImportModel extends AModel {
   @override
   String get defaultReadPrivilegeRequirement => UserPrivilege.curator;
 
-  Future<Map<String,String>> getAvailableImportProviders() async {
+  Future<Map<String, String>> getAvailableImportProviders() async {
     await validateReadPrivilegeRequirement();
 
-    Map<String,String> output = new Map<String,String>();
+    Map<String, String> output = new Map<String, String>();
 
     output[ImportProvider.AMAZON] = "Amazon";
     output[ImportProvider.AMAZON] = "Amazon";
@@ -25,7 +25,7 @@ class ImportModel extends AModel {
     return output;
   }
 
-  Future<ImportResult> import(String provider, String id) async  {
+  Future<ImportResult> import(String provider, String id) async {
     await validateReadPrivilegeRequirement();
     AImportProvider importer = ImportProvider.getProvider(provider);
     return await importer.import(id);
@@ -38,7 +38,4 @@ class ImportModel extends AModel {
     query = Uri.decodeFull(query);
     return await importer.search(query, page: page);
   }
-
-
-
 }

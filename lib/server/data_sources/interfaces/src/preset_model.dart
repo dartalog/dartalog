@@ -6,8 +6,6 @@ abstract class PresetModel extends ADataSource {
 
   PresetModel();
 
-
-
 //  Future<Map> _getItemTypePresets() async {
 //    return loadJSONFile("presets/item_types.json");
 //  }

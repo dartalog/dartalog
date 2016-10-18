@@ -14,24 +14,31 @@ import 'package:quagga_dart/quagga_dart.dart' as quagga;
 import 'package:js/js.dart';
 
 @PolymerRegister('barcode-scanner')
-class BarcodeScannerControl extends AControl  {
+class BarcodeScannerControl extends AControl {
   static final Logger _log = new Logger("BarcodeScannerControl ");
 
   Logger get loggerImpl => _log;
-
 
   BarcodeScannerControl.created() : super.created();
 
   Future<String> startBarcodeScanner() {
     Completer<String> completer = new Completer<String>();
 
-    quagga.Constraints constraints = new quagga.Constraints(width: 640, height:480);
-    quagga.InputStream inputStream = new quagga.InputStream(type: "LiveStream", constraints: constraints);
-    quagga.Locator locator = new quagga.Locator(patchSize: "medium", halfSample: false);
+    quagga.Constraints constraints =
+        new quagga.Constraints(width: 640, height: 480);
+    quagga.InputStream inputStream =
+        new quagga.InputStream(type: "LiveStream", constraints: constraints);
+    quagga.Locator locator =
+        new quagga.Locator(patchSize: "medium", halfSample: false);
     quagga.Decoder decoder = new quagga.Decoder(readers: ["code_128_reader"]);
 
     quagga.InitOption option = new quagga.InitOption(
-        inputStream: inputStream, locator: locator, numOfWorkers: 4, locate: true, tracking: true, decoder: decoder);
+        inputStream: inputStream,
+        locator: locator,
+        numOfWorkers: 4,
+        locate: true,
+        tracking: true,
+        decoder: decoder);
 
     quagga.init(option, allowInteropCaptureThis((quagga.Error err) {
       try {
@@ -39,8 +46,8 @@ class BarcodeScannerControl extends AControl  {
           throw new Exception(err.message);
         }
         quagga.start();
-      } catch (e,st) {
-        completer.completeError(e,st);
+      } catch (e, st) {
+        completer.completeError(e, st);
       }
     }));
 

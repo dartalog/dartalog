@@ -6,7 +6,7 @@ import 'package:path/path.dart' as path;
 import 'package:option/option.dart';
 import 'package:image/image.dart';
 import 'package:dartalog/tools.dart';
-import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/global.dart';
 import 'package:dartalog/server/server.dart';
 import 'package:dartalog/server/data/data.dart';
 import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
@@ -20,10 +20,10 @@ class ItemModel extends AIdNameBasedModel<Item> {
   static final RegExp LEGAL_ID_CHARACTERS = new RegExp("[a-zA-Z0-9_]");
 
   static final String ORIGINAL_IMAGE_PATH =
-      path.join(ROOT_DIRECTORY, HOSTED_IMAGES_ORIGINALS_PATH);
+      path.join(rootDirectory, HOSTED_IMAGES_ORIGINALS_PATH);
 
   static final String THUMBNAIL_IMAGE_PATH =
-      path.join(ROOT_DIRECTORY, HOSTED_IMAGES_THUMBNAILS_PATH);
+      path.join(rootDirectory, HOSTED_IMAGES_THUMBNAILS_PATH);
 
   static final Directory ORIGINAL_IMAGE_DIR =
       new Directory(ORIGINAL_IMAGE_PATH);
@@ -54,40 +54,48 @@ class ItemModel extends AIdNameBasedModel<Item> {
 //    }
 //  }
 
-  Future<PaginatedIdNameData<IdNamePair>> getVisibleIdsAndNames({int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
-    if(page<0) {
+  Future<PaginatedIdNameData<IdNamePair>> getVisibleIdsAndNames(
+      {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
+    if (page < 0) {
       throw new InvalidInputException("Page must be a non-negative number");
     }
-    if(perPage<0) {
+    if (perPage < 0) {
       throw new InvalidInputException("Per-page must be a non-negative number");
     }
     await validateGetAllIdsAndNamesPrivileges();
-    return await dataSource.getVisibleIdsAndNamesPaginated(this.currentUserId, page: page, perPage: perPage);
+    return await dataSource.getVisibleIdsAndNamesPaginated(this.currentUserId,
+        page: page, perPage: perPage);
   }
 
-  Future<PaginatedIdNameData<Item>> getVisible({int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
-    if(page<0) {
+  Future<PaginatedIdNameData<Item>> getVisible(
+      {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
+    if (page < 0) {
       throw new InvalidInputException("Page must be a non-negative number");
     }
-    if(perPage<0) {
-      throw new InvalidInputException("Per-page must be a non-negative number");
-    }    await validateGetAllIdsAndNamesPrivileges();
-    return await dataSource.getVisiblePaginated(this.currentUserId, page: page, perPage: perPage);
-  }
-
-  Future<PaginatedIdNameData<Item>> searchVisible(String query, {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
-    if(page<0) {
-      throw new InvalidInputException("Page must be a non-negative number");
-    }
-    if(perPage<0) {
+    if (perPage < 0) {
       throw new InvalidInputException("Per-page must be a non-negative number");
     }
     await validateGetAllIdsAndNamesPrivileges();
-    return await dataSource.searchVisiblePaginated(this.currentUserId, query, page: page, perPage: perPage);
+    return await dataSource.getVisiblePaginated(this.currentUserId,
+        page: page, perPage: perPage);
+  }
+
+  Future<PaginatedIdNameData<Item>> searchVisible(String query,
+      {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
+    if (page < 0) {
+      throw new InvalidInputException("Page must be a non-negative number");
+    }
+    if (perPage < 0) {
+      throw new InvalidInputException("Per-page must be a non-negative number");
+    }
+    await validateGetAllIdsAndNamesPrivileges();
+    return await dataSource.searchVisiblePaginated(this.currentUserId, query,
+        page: page, perPage: perPage);
   }
 
   @override
-  Future<String> create(Item item, {List<List<int>> files}) => throw new Exception("Use createWithCopy");
+  Future<String> create(Item item, {List<List<int>> files}) =>
+      throw new Exception("Use createWithCopy");
 
   Future<ItemCopyId> createWithCopy(Item item, String collectionId,
       {String uniqueId, List<List<int>> files}) async {
@@ -95,18 +103,18 @@ class ItemModel extends AIdNameBasedModel<Item> {
 
     item.dateAdded = new DateTime.now();
     item.dateUpdated = new DateTime.now();
-    if (!isNullOrWhitespace(item.getName))
+    if (!StringTools.isNullOrWhitespace(item.getName))
       item.getId = await _generateUniqueId(item);
-
 
     ItemCopy itemCopy = new ItemCopy();
     itemCopy.collectionId = collectionId;
     itemCopy.uniqueId = uniqueId;
-    itemCopy.status = ITEM_DEFAULT_STATUS;
+    itemCopy.status = ItemStatus.defaultStatus;
 
     await DataValidationException.PerformValidation((Map output) async {
       output.addAll(await validateFields(item, true));
-      output.addAll(await copies.validateFields(itemCopy, true, skipItemIdCheck: true));
+      output.addAll(
+          await copies.validateFields(itemCopy, true, skipItemIdCheck: true));
     });
 
     await _handleFileUploads(item, files);
@@ -152,13 +160,13 @@ class ItemModel extends AIdNameBasedModel<Item> {
     try {
       await validateUpdatePrivileges(id);
       output.canEdit = true;
-    } catch(e) {
+    } catch (e) {
       output.canEdit = false;
     }
     try {
       await validateDeletePrivileges(id);
       output.canDelete = true;
-    } catch(e) {
+    } catch (e) {
       output.canDelete = false;
     }
     return output;
@@ -171,7 +179,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
     item.dateAdded = null;
     item.dateUpdated = new DateTime.now();
 
-    if (!isNullOrWhitespace(item.getName)) {
+    if (!StringTools.isNullOrWhitespace(item.getName)) {
       Item oldItem = (await data_sources.items.getById(id)).getOrElse(
           () => throw new NotFoundException("Item ${item} not found"));
 
@@ -193,7 +201,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
     for (Field f in fields) {
       if (f.type != "image" ||
           !item.values.containsKey(f.getId) ||
-          isNullOrWhitespace(item.values[f.getId])) continue;
+          StringTools.isNullOrWhitespace(item.values[f.getId])) continue;
 
       //TODO: Old image cleanup
 
@@ -318,7 +326,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
   Future validateFieldsInternal(
       Map<String, String> field_errors, Item item, bool creating) async {
     //TODO: add dynamic field validation
-    if (isNullOrWhitespace(item.typeId))
+    if (StringTools.isNullOrWhitespace(item.typeId))
       field_errors["typeId"] = "Required";
     else {
       dynamic test = await data_sources.itemTypes.getById(item.typeId);
@@ -327,7 +335,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
   }
 
   static Future<String> _generateUniqueId(Item item) async {
-    if (isNullOrWhitespace(item.getName))
+    if (StringTools.isNullOrWhitespace(item.getName))
       throw new InvalidInputException("Name required to generate unique ID");
 
     StringBuffer output = new StringBuffer();

@@ -6,7 +6,6 @@ import 'src/config.dart';
 import 'src/search/search_results.dart';
 import 'src/items/movie.dart';
 
-
 class TheMovieDB {
   String apiKey;
 
@@ -30,7 +29,9 @@ class TheMovieDB {
   }
 
   Future<SearchResults> searchMulti(String query,
-      [int page = 1, String language = null, bool include_adult = false]) async {
+      [int page = 1,
+      String language = null,
+      bool include_adult = false]) async {
     if (config == null) {
       await RefreshConfig();
     }

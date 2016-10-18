@@ -12,10 +12,10 @@ abstract class AMongoDataSource {
 
   int getOffset(int page, int perPage) => page * perPage;
 
-  Future<dynamic> _connectionWrapper(Future statement(_MongoDatabase),
-      {retries: 3}) async {
+  Future<dynamic> _connectionWrapper(Future<dynamic> statement(_MongoDatabase),
+      {int retries: 3}) async {
     for (int i = 0; i < retries; i++) {
-      MongoDatabase con = await MongoDatabase.getConnection();
+      final MongoDatabase con = await MongoDatabase.getConnection();
       try {
         return await statement(con);
       } on ConnectionException catch (e, st) {
@@ -30,13 +30,13 @@ abstract class AMongoDataSource {
   }
 
   @protected
-  Future<dynamic> collectionWrapper(Future statement(DbCollection)) =>
+  Future<dynamic> collectionWrapper(Future<dynamic> statement(DbCollection)) =>
       _connectionWrapper(
           (con) async => await statement(await getCollection(con)));
 
   @protected
-  Future deleteFromDb(dynamic selector) async {
-    return await collectionWrapper((DbCollection collection) async {
+  Future<Null> deleteFromDb(dynamic selector) async {
+    await collectionWrapper((DbCollection collection) async {
       await collection.remove(selector);
     });
   }
@@ -63,24 +63,23 @@ abstract class AMongoDataSource {
   @protected
   Future<bool> exists(dynamic selector) async {
     return await collectionWrapper((DbCollection collection) async {
-      int count = await collection.count(selector);
+      final int count = await collection.count(selector);
       return count > 0;
     });
   }
 
   @protected
   Future<Option<dynamic>> genericFindOne(SelectorBuilder selector) async {
-    selector = selector.limit(1);
-    List output = await genericFind(selector);
-    if (output.length == 0) return new None();
-    return new Some(output[0]);
+    final List<dynamic> output = await genericFind(selector.limit(1));
+    if (output.length == 0) return new None<dynamic>();
+    return new Some<dynamic>(output[0]);
   }
 
   @protected
-  Future<List> genericFind(SelectorBuilder selector) async {
+  Future<List<dynamic>> genericFind(SelectorBuilder selector) async {
     return await collectionWrapper((DbCollection collection) async {
-      Stream str = collection.find(selector);
-      List output = await str.toList();
+      final Stream<dynamic> str = collection.find(selector);
+      final List<dynamic> output = await str.toList();
       return output;
     });
   }

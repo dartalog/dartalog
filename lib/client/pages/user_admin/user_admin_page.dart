@@ -6,12 +6,11 @@ library dartalog.client.pages.user_admin_page;
 
 import 'dart:async';
 
-import 'package:dartalog/client/api/dartalog.dart' as API;
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/controls/combo_list/combo_list_control.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/pages/pages.dart';
-import 'package:dartalog/dartalog.dart' as dartalog;
+import 'package:dartalog/global.dart';
 import 'package:dartalog/tools.dart';
 import 'package:logging/logging.dart';
 import 'package:polymer/polymer.dart';
@@ -27,6 +26,9 @@ import 'package:polymer_elements/paper_item_body.dart';
 import 'package:polymer_elements/paper_listbox.dart';
 import 'package:web_components/web_components.dart';
 import 'package:dartalog/client/controls/auth_wrapper/auth_wrapper_control.dart';
+import 'package:option/option.dart';
+import 'dart:html';
+import 'package:dartalog/client/api/api.dart' as API;
 
 @PolymerRegister('user-admin-page')
 class UserAdminPage extends APage with ARefreshablePage, ACollectionPage {
@@ -46,22 +48,22 @@ class UserAdminPage extends APage with ARefreshablePage, ACollectionPage {
   /// Constructor used to create instance of MainApp.
   UserAdminPage.created() : super.created("Users");
 
-  PaperDialog get editDialog =>  this.querySelector('#editDialog');
+  PaperDialog get editDialog => this.querySelector('#editDialog');
 
-  AuthWrapperControl get authWrapper => this.querySelector("auth-wrapper-control");
+  AuthWrapperControl get authWrapper =>
+      this.querySelector("auth-wrapper-control");
 
   @override
   void setGeneralErrorMessage(String message) => set("errorMessage", message);
-  @Property(notify:true)
+  @Property(notify: true)
   String errorMessage = "";
-
 
   Logger get loggerImpl => _log;
 
   @Property(notify: true)
   Iterable get userTypes {
     List output = [];
-    for (String privilege in dartalog.UserPrivilege.values) {
+    for (String privilege in UserPrivilege.values) {
       output.add(new IdNamePair(privilege, privilege));
     }
     return output;
@@ -71,8 +73,6 @@ class UserAdminPage extends APage with ARefreshablePage, ACollectionPage {
     super.attached();
     refresh();
   }
-
-
 
   @reflectable
   cancelClicked(event, [_]) {
@@ -85,10 +85,14 @@ class UserAdminPage extends APage with ARefreshablePage, ACollectionPage {
     await handleApiExceptions(() async {
       clearValidation();
       set("creating", false);
-      String id = getParentElement(event.target,"paper-item").dataset["id"];
+      final Option<Element> parent =
+          getParentElement(event.target, "paper-item");
+      if (parent.isEmpty) return;
+
+      String id = parent.get().dataset["id"];
       if (id == null) return;
 
-      API.User user = await api.users.getById(id);
+      API.User user = await API.item.users.getById(id);
 
       if (user == null) throw new Exception("Selected user not found");
 
@@ -121,13 +125,12 @@ class UserAdminPage extends APage with ARefreshablePage, ACollectionPage {
         bool authed = await authWrapper.evaluatePageAuthentication();
         this.showRefreshButton = authed;
         this.showAddButton = authed;
-        if(!authed)
-          return;
+        if (!authed) return;
 
         this.reset();
         clear("items");
 
-        API.ListOfIdNamePair data = await api.users.getAllIdsAndNames();
+        API.ListOfIdNamePair data = await API.item.users.getAllIdsAndNames();
 
         for (API.IdNamePair pair in data) {
           add("items", new IdNamePair.copy(pair));
@@ -155,10 +158,10 @@ class UserAdminPage extends APage with ARefreshablePage, ACollectionPage {
     await handleApiExceptions(() async {
       API.User user = new API.User();
       currentItem.copyTo(user);
-      if (isNullOrWhitespace(this.currentId)) {
-        await this.api.users.create(user);
+      if (StringTools.isNullOrWhitespace(this.currentId)) {
+        await API.item.users.create(user);
       } else {
-        await this.api.users.update(user, this.currentId);
+        await API.item.users.update(user, this.currentId);
       }
 
       refresh();

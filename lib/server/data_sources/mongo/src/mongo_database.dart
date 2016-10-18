@@ -10,15 +10,15 @@ class MongoDatabase {
   static final Logger _log = new Logger('_MongoDatabase');
   static MongoDbConnectionPool _pool;
 
-  static const String _SETTINGS_MONGO_COLLECTION = "settings";
-  static const String _ITEMS_MONGO_COLLECTION = "items";
-  static const String _FIELDS_MONGO_COLLECTION = "fields";
-  static const String _ITEM_TYPES_MONGO_COLLECTION = "itemTypes";
-  static const String _ITEM_COPY_HISTORY_MONGO_COLLECTION = "itemCopyHistory";
-  static const String _COLLECTIONS_MONGO_COLLECTION = "collections";
-  static const String _USERS_MONGO_COLLECTION = "users";
+  static const String _settingsCollection = "settings";
+  static const String _itemsCollection = "items";
+  static const String _fieldsCollection = "fields";
+  static const String _itemTypesCollection = "itemTypes";
+  static const String _historyCollection = "itemCopyHistory";
+  static const String _collectionsCollection = "collections";
+  static const String _usersCollection = "users";
 
-  static String REDIRECT_ENTRY_NAME = "redirect";
+  static String redirectEntryName = "redirect";
   ManagedConnection<Db> con;
 
   bool released = false;
@@ -26,81 +26,84 @@ class MongoDatabase {
   MongoDatabase(this.con);
 
   void checkForRedirectMap(Map data) {
-    if (data.containsKey(REDIRECT_ENTRY_NAME)) {
+    if (data.containsKey(redirectEntryName)) {
       throw new Exception("Not inplemented"); //TODO: Implement!
       //throw new api.RedirectingException(data["id"], data[REDIRECT_ENTRY_NAME]);
     }
   }
 
-  Map createRedirectMap(String old_id, String new_id) {
-    return {"id": old_id, REDIRECT_ENTRY_NAME: new_id};
+  Map createRedirectMap(String oldId, String newId) {
+    return {"id": oldId, redirectEntryName: newId};
   }
 
   Future<DbCollection> getCollectionsCollection() async {
     _checkConnection();
 
-    dynamic output = await con.conn.collection(_COLLECTIONS_MONGO_COLLECTION);
+    final dynamic output = await con.conn.collection(_collectionsCollection);
     return output;
   }
 
   Future<DbCollection> getFieldsCollection() async {
     _checkConnection();
 
-    dynamic output = await con.conn.collection(_FIELDS_MONGO_COLLECTION);
+    final dynamic output = await con.conn.collection(_fieldsCollection);
     return output;
   }
 
   Future<DbCollection> getItemCopyHistoryCollection() async {
     _checkConnection();
 
-    dynamic output =
-        await con.conn.collection(_ITEM_COPY_HISTORY_MONGO_COLLECTION);
-    await con.conn.createIndex(_ITEM_COPY_HISTORY_MONGO_COLLECTION,
+    dynamic output = await con.conn.collection(_historyCollection);
+    await con.conn.createIndex(_historyCollection,
         keys: {"itemId": 1, "copy": 1}, name: "ItemIdIndex");
     return output;
   }
 
   Future<DbCollection> getItemsCollection() async {
     _checkConnection();
-    dynamic output = await con.conn.collection(_ITEMS_MONGO_COLLECTION);
-    await con.conn.createIndex(_ITEMS_MONGO_COLLECTION,
-        keys: {r"$**": "text" }, name: "TextIndex");
-    await con.conn.createIndex(_ITEMS_MONGO_COLLECTION,
+    dynamic output = await con.conn.collection(_itemsCollection);
+    await con.conn.createIndex(_itemsCollection,
+        keys: {r"$**": "text"}, name: "TextIndex");
+    await con.conn.createIndex(_itemsCollection,
         keys: {ID_FIELD: 1, "copies.copy": 1}, unique: true, name: "CopyIndex");
-    await con.conn.createIndex(_ITEMS_MONGO_COLLECTION,
-        key: "copies.uniqueId", unique: true, sparse: true, name: "UniqueIdIndex");
+    await con.conn.createIndex(_itemsCollection,
+        key: "copies.uniqueId",
+        unique: true,
+        sparse: true,
+        name: "UniqueIdIndex");
     return output;
   }
 
   Future<DbCollection> getItemTypesCollection() async {
     _checkConnection();
 
-    dynamic output = await con.conn.collection(_ITEM_TYPES_MONGO_COLLECTION);
+    dynamic output = con.conn.collection(_itemTypesCollection);
     return output;
   }
 
   Future<DbCollection> getSettingsCollection() async {
     _checkConnection();
 
-    dynamic output = await con.conn.collection(_SETTINGS_MONGO_COLLECTION);
+    dynamic output = con.conn.collection(_settingsCollection);
     return output;
   }
 
   Future<DbCollection> getSetupCollection() async {
-    dynamic output = await con.conn.collection("setup");
+    dynamic output = con.conn.collection("setup");
     return output;
   }
 
   Future<DbCollection> getTransactionsCollection() async {
-    dynamic output = await con.conn.collection("transactions");
+    dynamic output = con.conn.collection("transactions");
     return output;
   }
 
   Future<DbCollection> getUsersCollection() async {
     _checkConnection();
-    DbCollection output = await con.conn.collection(_USERS_MONGO_COLLECTION);
-    await con.conn.createIndex(_USERS_MONGO_COLLECTION,
-        keys: {"id": "text", "name": "text", "idNumber": "text"}, name: "TextIndex");
+    DbCollection output = await con.conn.collection(_usersCollection);
+    await con.conn.createIndex(_usersCollection,
+        keys: {"id": "text", "name": "text", "idNumber": "text"},
+        name: "TextIndex");
     return output;
   }
 
@@ -115,7 +118,7 @@ class MongoDatabase {
     released = true;
   }
 
-  Future<dynamic> startTransaction() async {
+  Future<Null> startTransaction() async {
     DbCollection transactions = await getTransactionsCollection();
     transactions.findOne({"state": "initial"});
   }
@@ -126,7 +129,8 @@ class MongoDatabase {
 
   static Future<MongoDatabase> getConnection() async {
     if (_pool == null) {
-      _pool = new MongoDbConnectionPool(model.settings.mongoConnectionString, 3);
+      _pool =
+          new MongoDbConnectionPool(model.settings.mongoConnectionString, 3);
     }
 
     ManagedConnection con = await _pool.getConnection();

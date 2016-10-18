@@ -1,4 +1,4 @@
-import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/global.dart';
 
 class PaginatedData<T> {
   int startIndex = 0;
@@ -6,8 +6,8 @@ class PaginatedData<T> {
   int totalCount = 0;
   int limit = DEFAULT_PER_PAGE;
 
-  int get totalPages => (totalCount/limit).ceil();
-  int get currentPage => (startIndex/limit).floor();
+  int get totalPages => (totalCount / limit).ceil();
+  int get currentPage => (startIndex / limit).floor();
 
   List<T> data = [];
 }

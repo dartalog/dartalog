@@ -5,7 +5,25 @@
 
 <dom-module name="item-view">
     <link rel="stylesheet" href="item_view.css">
-    <style include="iron-flex iron-flex-alignment">
+
+    <style is="custom-style" include="iron-flex iron-flex-alignment">
+        @media(max-width:600pt) {
+            .columns paper-card {
+                margin: 4pt;
+                @apply(--layout-fill);
+            }
+        }
+
+
+        @media(min-width:601pt) {
+            .columns {
+                @apply(--layout-horizontal);
+            }
+            .columns paper-card {
+                margin: 4pt;
+                width: 49%;
+            }
+        }
     </style>
         <template>
         <app-route
@@ -22,8 +40,8 @@
                               title="[[item.name]]"></image-zoomer>
             </template>
         </div>
-        <div class="horizontal layout">
-            <paper-card style="margin:4pt;width:48%;"
+        <div class="layout columns">
+            <paper-card
                         class="vertical layout" heading="Information">
                 <div class="card-content">
                     <template is="dom-repeat" items="[[currentItem.fields]]">
@@ -38,7 +56,7 @@
                     </template>
                 </div>
             </paper-card>
-            <paper-card style="margin:4pt;width:48%"
+            <paper-card
                         class="vertical layout" heading="Copies">
                 <div class="card-content">
                     <template is="dom-repeat" items="[[currentItem.copies]]">

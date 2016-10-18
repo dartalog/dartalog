@@ -34,7 +34,7 @@ class AmazonImportProvider extends AScrapingImportProvider {
         }),
     new ScrapingImportCriteria(
         elementSelector: 'div#byline',
-        elementAttribute: ScrapingImportCriteria.INNER_HTML,
+        elementAttribute: ScrapingImportCriteria.innerHtml,
         contentsRegex: r'Format:.+?<span>([^<]+)',
         contentsRegexGroup: 1,
         replaceRegex: {r"Blu-ray": "bluray", r"DVD": "dvd", r"VHS": "vhs"})
@@ -42,7 +42,8 @@ class AmazonImportProvider extends AScrapingImportProvider {
 
   static List<ScrapingImportCriteria> _fieldCriteria = [
     new ScrapingImportCriteria(
-        field: "name", elementSelector: 'span#productTitle',
+        field: "name",
+        elementSelector: 'span#productTitle',
         replaceRegex: {r"\[Blu-ray\]": ""}),
     new ScrapingImportCriteria(
         field: "front_cover",
@@ -58,26 +59,26 @@ class AmazonImportProvider extends AScrapingImportProvider {
     new ScrapingImportCriteria(
         field: "director",
         elementSelector: 'div#detail-bullets ul li',
-        elementAttribute: ScrapingImportCriteria.INNER_HTML,
+        elementAttribute: ScrapingImportCriteria.innerHtml,
         contentsRegex: '<b>Directors:</b>([^<]+)',
         contentsRegexGroup: 1,
         multipleValues: true),
     new ScrapingImportCriteria(
         field: "isbn10",
         elementSelector: 'div#detail-bullets ul li',
-        elementAttribute: ScrapingImportCriteria.INNER_HTML,
+        elementAttribute: ScrapingImportCriteria.innerHtml,
         contentsRegex: '<b>ISBN-10:</b>([^<]+)',
         contentsRegexGroup: 1),
     new ScrapingImportCriteria(
         field: "isbn13",
         elementSelector: 'div#detail-bullets ul li',
-        elementAttribute: ScrapingImportCriteria.INNER_HTML,
+        elementAttribute: ScrapingImportCriteria.innerHtml,
         contentsRegex: '<b>ISBN-13:</b>([^<]+)',
         contentsRegexGroup: 1),
     new ScrapingImportCriteria(
         field: "page_count",
         elementSelector: 'div#detail-bullets ul li',
-        elementAttribute: ScrapingImportCriteria.INNER_HTML,
+        elementAttribute: ScrapingImportCriteria.innerHtml,
         contentsRegex: r'<b>[^<]+</b> (\d+) pages',
         contentsRegexGroup: 1),
     new ScrapingImportCriteria(
@@ -87,25 +88,25 @@ class AmazonImportProvider extends AScrapingImportProvider {
     new ScrapingImportCriteria(
         field: "publisher",
         elementSelector: 'div#detail-bullets ul li',
-        elementAttribute: ScrapingImportCriteria.INNER_HTML,
+        elementAttribute: ScrapingImportCriteria.innerHtml,
         contentsRegex: r'<b>Publisher:</b>([^\(]+).+',
         contentsRegexGroup: 1),
     new ScrapingImportCriteria(
         elementSelector: 'div#detail-bullets ul li',
         field: "release_date",
-        elementAttribute: ScrapingImportCriteria.INNER_HTML,
+        elementAttribute: ScrapingImportCriteria.innerHtml,
         contentsRegex: r'<b>Publisher:</b>[^\(]+\(([^\)]+)',
         contentsRegexGroup: 1),
     new ScrapingImportCriteria(
         elementSelector: 'div#detail-bullets ul li',
         field: "series",
-        elementAttribute: ScrapingImportCriteria.INNER_HTML,
+        elementAttribute: ScrapingImportCriteria.innerHtml,
         contentsRegex: r'<b>Series:</b>([^<]+)',
         contentsRegexGroup: 1),
     new ScrapingImportCriteria(
         elementSelector: 'div#detail-bullets ul li',
         field: "language",
-        elementAttribute: ScrapingImportCriteria.INNER_HTML,
+        elementAttribute: ScrapingImportCriteria.innerHtml,
         contentsRegex: r'<b>Language:</b>([^<]+)',
         contentsRegexGroup: 1)
   ];
@@ -132,8 +133,7 @@ class AmazonImportProvider extends AScrapingImportProvider {
     return result;
   }
 
-  Future<SearchResults> search(String query,
-      {int page: 0}) async {
+  Future<SearchResults> search(String query, {int page: 0}) async {
     String item_type = "";
     String url =
         "http://${BASE_URL}/exec/obidos/external-search?ie=UTF8&index=${item_type}&keyword=${Uri.encodeComponent(query)}&page=${page}";
@@ -144,8 +144,9 @@ class AmazonImportProvider extends AScrapingImportProvider {
     SearchResults output = new SearchResults();
     output.searchUrl = url;
 
-    if(doc.querySelectorAll("#captchacharacters").isNotEmpty)
-      throw new Exception("Amazon is refusing our request due to bot detection, please try again later");
+    if (doc.querySelectorAll("#captchacharacters").isNotEmpty)
+      throw new Exception(
+          "Amazon is refusing our request due to bot detection, please try again later");
 
     List<Element> top_elements = doc.querySelectorAll(".s-result-item");
 
@@ -157,7 +158,8 @@ class AmazonImportProvider extends AScrapingImportProvider {
 
       String title = title_element.text;
       String top_url = title_parent_element.attributes["href"];
-      if (isNullOrWhitespace(top_url) || !_item_link_reg.hasMatch(top_url)) {
+      if (StringTools.isNullOrWhitespace(top_url) ||
+          !_item_link_reg.hasMatch(top_url)) {
         continue;
       }
       String top_id = _item_link_reg.firstMatch(top_url).group(1);
@@ -183,7 +185,7 @@ class AmazonImportProvider extends AScrapingImportProvider {
             continue;
           }
           String sub_url = a_element.attributes["href"];
-          if (isNullOrWhitespace(sub_url) ||
+          if (StringTools.isNullOrWhitespace(sub_url) ||
               !_item_link_reg.hasMatch(sub_url)) {
             continue;
           }
@@ -203,7 +205,7 @@ class AmazonImportProvider extends AScrapingImportProvider {
           result.thumbnail = image_url;
           output.results.add(result);
         }
-      } else if(sub_elements.length==0) {
+      } else if (sub_elements.length == 0) {
         output.results.add(top_result);
       } else {
         //throw new Exception("Too many matches");

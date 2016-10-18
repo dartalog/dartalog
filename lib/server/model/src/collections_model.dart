@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:logging/logging.dart';
-import 'package:dartalog/dartalog.dart';
+import 'package:dartalog/global.dart';
 import 'package:dartalog/server/data/data.dart';
 import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
 import 'package:dartalog/server/data_sources/data_sources.dart' as data_sources;
@@ -19,8 +19,9 @@ class CollectionsModel extends AIdNameBasedModel<Collection> {
   Future _verifyUserIsCurator(String collectionId) async {
     validateDefaultPrivilegeRequirement();
     Collection col = await this.getById(collectionId);
-    if(!col.curators.contains(this.currentUserId))
-      throw new ForbiddenException.withMessage("You are not a curator for collection \"${col.name}\"");
+    if (!col.curators.contains(this.currentUserId))
+      throw new ForbiddenException.withMessage(
+          "You are not a curator for collection \"${col.name}\"");
   }
 
   @override
@@ -35,14 +36,12 @@ class CollectionsModel extends AIdNameBasedModel<Collection> {
 
     List output;
 
-    if(await userHasPrivilege(UserPrivilege.admin))
+    if (await userHasPrivilege(UserPrivilege.admin))
       output = await dataSource.getAll();
     else
       output = await dataSource.getAllForCurator(userPrincipal.get().name);
 
     for (dynamic t in output) performAdjustments(t);
     return output;
-
   }
-
 }

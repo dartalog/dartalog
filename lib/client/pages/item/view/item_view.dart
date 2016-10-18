@@ -28,8 +28,8 @@ import 'package:polymer_elements/paper_item.dart';
 import 'package:polymer_elements/paper_item_body.dart';
 import 'package:polymer_elements/paper_listbox.dart';
 import 'package:web_components/web_components.dart';
-import 'package:dartalog/client/api/dartalog.dart' as API;
 import 'package:dartalog/client/controls/image_zoomer/image_zoomer.dart';
+import 'package:dartalog/client/api/api.dart' as API;
 
 @PolymerRegister('item-view')
 class ItemViewPage extends APage
@@ -53,20 +53,18 @@ class ItemViewPage extends APage
   Map routeData;
 
   String get _itemId {
-    if (routeData != null&&routeData.containsKey("item")) {
+    if (routeData != null && routeData.containsKey("item")) {
       return routeData["item"];
     }
-    return emptyString;
+    return StringTools.empty;
   }
 
   @override
   String get editLink {
-    if(isNullOrWhitespace(_itemId))
-      return emptyString;
+    if (StringTools.isNullOrWhitespace(_itemId)) return StringTools.empty;
 
     return "#item/edit/${_itemId}";
   }
-
 
   ItemViewPage.created() : super.created("Item View") {
     this.showBackButton = true;
@@ -83,7 +81,7 @@ class ItemViewPage extends APage
       dynamic ele = getParentElement(event.target, "paper-item");
       String copy = ele.dataset["copy"];
       API.ItemCopy itemCopy =
-          await api.items.copies.get(this.currentItem.id, int.parse(copy));
+          await API.item.items.copies.get(this.currentItem.id, int.parse(copy));
       await this.addToCart(new ItemCopy.copyFrom(itemCopy));
     });
   }
@@ -101,7 +99,7 @@ class ItemViewPage extends APage
   Future delete() async {
     await handleApiExceptions(() async {
       if (!window.confirm("Are you sure you want to delete this item?")) return;
-      await api.items.delete(currentItem.id);
+      await API.item.items.delete(currentItem.id);
       showMessage("Item deleted");
       window.location.hash = "items";
     });
@@ -115,7 +113,7 @@ class ItemViewPage extends APage
       dynamic ele = getParentElement(event.target, "paper-item");
       String copy = ele.dataset["copy"];
       API.ItemCopy newCopy =
-          await api.items.copies.get(this.currentItem.id, int.parse(copy));
+          await API.item.items.copies.get(this.currentItem.id, int.parse(copy));
       set("currentItemCopy", new ItemCopy.copyFrom(newCopy));
       set("createCopy", false);
       $['copyEditDialog'].open();
@@ -124,12 +122,12 @@ class ItemViewPage extends APage
 
   @reflectable
   String getOriginalImageUrl(String value) {
-    return getImageUrl(value, ImageType.ORIGINAL);
+    return getImageUrl(value, ImageType.original);
   }
 
   @reflectable
   String getThumbnailUrl(String value) {
-    String output = getImageUrl(value, ImageType.THUMBNAIL);
+    String output = getImageUrl(value, ImageType.thumbnail);
     return output;
   }
 
@@ -137,7 +135,7 @@ class ItemViewPage extends APage
     bool output = await handleApiExceptions(() async {
       clear("collections");
 
-      API.ListOfIdNamePair data = await api.collections.getAllIdsAndNames();
+      API.ListOfIdNamePair data = await API.item.collections.getAllIdsAndNames();
 
       if (data.length == 0) throw new Exception("No collections defined");
 
@@ -152,10 +150,10 @@ class ItemViewPage extends APage
     await handleApiExceptions(() async {
       try {
         startLoading();
-        if(isNullOrWhitespace(this._itemId))
+        if (StringTools.isNullOrWhitespace(this._itemId))
           throw new Exception("Item is required");
 
-        API.Item item = await api.items.getById(this._itemId,
+        API.Item item = await API.item.items.getById(this._itemId,
             includeType: true,
             includeFields: true,
             includeCopies: true,
@@ -188,9 +186,9 @@ class ItemViewPage extends APage
       API.ItemCopy newCopy = new API.ItemCopy();
       this.currentItemCopy.copyTo(newCopy);
       if (createCopy)
-        await api.items.copies.create(newCopy, this.currentItem.id);
+        await API.item.items.copies.create(newCopy, this.currentItem.id);
       else
-        await api.items.copies
+        await API.item.items.copies
             .update(newCopy, this.currentItem.id, this.currentItemCopy.copy);
       showMessage("Copy saved");
       $['copyEditDialog'].close();

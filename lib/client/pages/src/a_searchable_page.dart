@@ -9,5 +9,5 @@ abstract class ASearchablePage {
   String searchQuery = "";
 
   @reflectable
-  Future search();
+  Future<Null> search();
 }

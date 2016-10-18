@@ -20,5 +20,4 @@ class ImportProvider {
         throw new Exception("Unknown import provider");
     }
   }
-
 }

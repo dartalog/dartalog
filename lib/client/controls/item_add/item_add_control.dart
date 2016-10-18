@@ -15,23 +15,22 @@ import 'package:polymer_elements/paper_fab.dart';
 import 'package:polymer_elements/paper_tooltip.dart';
 import 'package:dartalog/client/controls/controls.dart';
 import 'package:dartalog/client/data/data.dart';
-import 'package:dartalog/client/api/dartalog.dart' as API;
-
+import 'package:dartalog/global.dart';
+import 'package:dartalog/client/api/api.dart' as API;
 
 @PolymerRegister('item-add-control')
-class ItemAddControl extends AControl  {
+class ItemAddControl extends AControl {
   static final Logger _log = new Logger("ItemEdit");
 
   @Property(notify: true)
   String selectedImportSource = "amazon";
 
   @Property(notify: true)
-  List<IdNamePair> itemTypes= new List<IdNamePair>();
+  List<IdNamePair> itemTypes = new List<IdNamePair>();
 
-  PaperDialog get addItemMethodDialog =>  $['addItemMethodDialog'];
-  PaperDialog get importSourceDialog =>  $['importSourceDialog'];
-  PaperDialog get selectItemTypeDialog =>  $['selectItemTypeDialog'];
-
+  PaperDialog get addItemMethodDialog => $['addItemMethodDialog'];
+  PaperDialog get importSourceDialog => $['importSourceDialog'];
+  PaperDialog get selectItemTypeDialog => $['selectItemTypeDialog'];
 
   ItemAddControl.created() : super.created();
 
@@ -47,7 +46,7 @@ class ItemAddControl extends AControl  {
   Future loadItemTypes() async {
     await handleApiExceptions(() async {
       clear("itemTypes");
-      API.ListOfIdNamePair data = await api.itemTypes.getAllIdsAndNames();
+      API.ListOfIdNamePair data = await API.item.itemTypes.getAllIdsAndNames();
       addAll("itemTypes", IdNamePair.copyList(data));
     });
   }
@@ -59,20 +58,16 @@ class ItemAddControl extends AControl  {
     openDialog(selectItemTypeDialog);
   }
 
-
   @reflectable
-  chooseImportSourceClicked(event, [_]) {
-
-  }
+  chooseImportSourceClicked(event, [_]) {}
 
   @reflectable
   addClicked(event, [_]) async {
     try {
       this.start();
-    } catch(e,st) {
+    } catch (e, st) {
       _log.severe(e, st);
-      this.handleException(e,st);
+      this.handleException(e, st);
     }
   }
-
 }

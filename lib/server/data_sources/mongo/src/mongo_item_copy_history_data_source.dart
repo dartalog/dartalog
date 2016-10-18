@@ -5,12 +5,12 @@ import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'a_mongo_object_data_source.dart';
 
-class MongoItemCopyHistoryDataSource extends AMongoObjectDataSource<ItemCopyHistoryEntry>
+class MongoItemCopyHistoryDataSource
+    extends AMongoObjectDataSource<ItemCopyHistoryEntry>
     with AItemCopyHistoryModel {
   static final Logger _log = new Logger('MongoItemCopyHistoryDataSource');
 
-  Future<List<ItemCopyHistoryEntry>> getForItemCopy(
-          String itemId, int copy) =>
+  Future<List<ItemCopyHistoryEntry>> getForItemCopy(String itemId, int copy) =>
       getFromDb(where.eq("itemId", itemId).eq("copy", copy));
 
   Future write(ItemCopyHistoryEntry itemCopyHistory) =>

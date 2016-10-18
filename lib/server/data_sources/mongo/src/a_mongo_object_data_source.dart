@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:dartalog/dartalog.dart';
-import 'package:dartalog/tools.dart' as tools;
+import 'package:dartalog/global.dart';
+import 'package:dartalog/tools.dart';
 import 'package:dartalog/server/data/data.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:option/option.dart';
@@ -14,45 +14,47 @@ abstract class AMongoObjectDataSource<T> extends AMongoDataSource {
   @protected
   Future<List<T>> searchAndSort(String query,
       {SelectorBuilder selector, String sortBy}) async {
-    SelectorBuilder searchSelector =_prepareTextSearch(query, selector: selector);
+    final SelectorBuilder searchSelector =
+        _prepareTextSearch(query, selector: selector);
     return await getFromDb(searchSelector);
   }
 
-
   Future<PaginatedData<T>> searchPaginated(String query,
-      {SelectorBuilder selector, int offset: 0, int limit: PAGINATED_DATA_LIMIT}) async {
-
-    SelectorBuilder searchSelector =_prepareTextSearch(query, selector: selector);
+      {SelectorBuilder selector,
+      int offset: 0,
+      int limit: PAGINATED_DATA_LIMIT}) async {
+    final SelectorBuilder searchSelector =
+        _prepareTextSearch(query, selector: selector);
     return await getPaginatedFromDb(searchSelector);
   }
 
-  Map _createMap(T object) {
-    Map data = new Map();
+  Map<String, dynamic> _createMap(T object) {
+    final Map<String, dynamic> data = <String, dynamic>{};
     updateMap(object, data);
     return data;
   }
 
   @protected
-  T createObject(Map data);
+  T createObject(Map<String, dynamic> data);
 
   @protected
+  @override
   Future<DbCollection> getCollection(MongoDatabase con);
 
   @protected
   Future<Option<T>> getForOneFromDb(SelectorBuilder selector) async {
-    selector = selector.limit(1);
-    List results = await getFromDb(selector);
+    final List<T> results = await getFromDb(selector.limit(1));
     if (results.length == 0) {
-      return new None();
+      return new None<T>();
     }
-    return new Some(results.first);
+    return new Some<T>(results.first);
   }
 
   @protected
   Future<List<T>> getFromDb(dynamic selector) async {
-    List results = await genericFind(selector);
-    List<T> output = new List<T>();
-    for (var result in results) {
+    final List<dynamic> results = await genericFind(selector);
+    final List<T> output = new List<T>();
+    for (dynamic result in results) {
       output.add(createObject(result));
     }
     return output;
@@ -60,60 +62,58 @@ abstract class AMongoObjectDataSource<T> extends AMongoDataSource {
 
   @protected
   Future<PaginatedData<T>> getPaginatedFromDb(SelectorBuilder selector,
-      {int offset: 0, int limit: PAGINATED_DATA_LIMIT, String sortField}) async {
-    PaginatedData<T> output = new PaginatedData<T>();
+      {int offset: 0,
+      int limit: PAGINATED_DATA_LIMIT,
+      String sortField}) async {
+    final PaginatedData<T> output = new PaginatedData<T>();
     output.totalCount = await genericCount(selector);
     output.limit = limit;
     output.startIndex = offset;
 
     if (selector == null) selector == where;
-    if(!tools.isNullOrWhitespace(sortField))
-      selector.sortBy(sortField);
+    if (!StringTools.isNullOrWhitespace(sortField)) selector.sortBy(sortField);
 
     selector.limit(limit).skip(offset);
-
-
 
     output.data.addAll(await getFromDb(selector));
     return output;
   }
 
   @protected
-  Future insertIntoDb(T item) async {
+  Future<Null> insertIntoDb(T item) async {
     return await collectionWrapper((DbCollection collection) async {
-      Map data = _createMap(item);
+      final Map<String, dynamic> data = _createMap(item);
       await collection.insert(data);
     });
   }
 
-  SelectorBuilder _prepareTextSearch(String query, {SelectorBuilder selector, String sortBy}) {
+  SelectorBuilder _prepareTextSearch(String query,
+      {SelectorBuilder selector, String sortBy}) {
     SelectorBuilder searchSelector =
-      where.eq(TEXT_COMMAND, {SEARCH_COMMAND: query});
+        where.eq(TEXT_COMMAND, {SEARCH_COMMAND: query});
     if (selector != null) searchSelector = searchSelector.and(selector);
-    if (!tools.isNullOrWhitespace(sortBy)) {
+    if (!StringTools.isNullOrWhitespace(sortBy)) {
       searchSelector = searchSelector.sortBy(sortBy);
     } else {
-      searchSelector = searchSelector.metaTextScore("score").sortByMetaTextScore("score");
+      searchSelector =
+          searchSelector.metaTextScore("score").sortByMetaTextScore("score");
     }
     return searchSelector;
-
   }
 
+  @protected
+  void updateMap(T object, Map<String, dynamic> data);
 
   @protected
-  updateMap(T object, Map data);
-
-  @protected
-  Future updateToDb(dynamic selector, T item) async {
+  Future<Null> updateToDb(dynamic selector, T item) async {
     return await collectionWrapper((DbCollection collection) async {
-      Map data = await collection.findOne(selector);
+      final Map<String, dynamic> data = await collection.findOne(selector);
       if (data == null)
         throw new InvalidInputException("Object to update not found");
-      dynamic originalId = data['_id'];
+      final dynamic originalId = data['_id'];
       updateMap(item, data);
       await collection.save(data);
-      if(data['_id']!=originalId)
-        await collection.remove(selector);
+      if (data['_id'] != originalId) await collection.remove(selector);
     });
   }
 }

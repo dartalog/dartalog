@@ -25,18 +25,19 @@ import 'package:polymer_elements/paper_fab.dart';
 import 'package:polymer_elements/iron_list.dart';
 import 'package:polymer_elements/iron_ajax.dart';
 
-import 'package:dartalog/dartalog.dart' as dartalog;
+import 'package:dartalog/global.dart';
 import 'package:dartalog/client/pages/pages.dart';
 import 'package:dartalog/client/controls/item_add/item_add_control.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/tools.dart';
-import 'package:dartalog/client/api/dartalog.dart' as API;
 import 'package:polymer_elements/iron_flex_layout.dart';
 import 'package:polymer_elements/iron_flex_layout_classes.dart';
+import 'package:dartalog/client/api/api.dart' as API;
 
 @PolymerRegister('item-browse-page')
-class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage, ACollectionPage {
+class ItemBrowsePage extends APage
+    with ARefreshablePage, ASearchablePage, ACollectionPage {
   static final Logger _log = new Logger("ItemBrowsePage");
   Logger get loggerImpl => _log;
 
@@ -58,7 +59,7 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage, AColl
   @property
   bool pageRouteActive = false;
 
-  ItemAddControl get browseItemAddControl =>  $['browse_item_add_control'];
+  ItemAddControl get browseItemAddControl => $['browse_item_add_control'];
 
   ItemBrowsePage.created() : super.created("Item Browse");
 
@@ -72,7 +73,7 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage, AColl
 
   _loadPage() async {
     await evaluateAuthentication();
-    set("showAddControl",userHasPrivilege(dartalog.UserPrivilege.curator));
+    set("showAddControl", userHasPrivilege(UserPrivilege.curator));
     await this.loadItems();
   }
 
@@ -80,7 +81,6 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage, AColl
   routeChanged() {
     this.loadItems();
   }
-
 
   @override
   Future refresh() async {
@@ -97,30 +97,29 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage, AColl
       try {
         this.startLoading();
         this.currentPage = 1;
-        this.searchQuery = emptyString;
-        if(this.routeData!=null) {
+        this.searchQuery = StringTools.empty;
+        if (this.routeData != null) {
           if (this.routeData.containsKey("page") &&
-              !isNullOrWhitespace(this.routeData["page"])&&
-              (searchActive||pageRouteActive)) {
+              !StringTools.isNullOrWhitespace(this.routeData["page"]) &&
+              (searchActive || pageRouteActive)) {
             this.currentPage = int.parse(this.routeData["page"]);
           }
 
-
           if (this.routeData.containsKey("search") &&
-              !isNullOrWhitespace(this.routeData["search"])&&
+              !StringTools.isNullOrWhitespace(this.routeData["search"]) &&
               searchActive) {
             this.searchQuery = this.routeData["search"];
           }
         }
-        this.currentPage  = this.currentPage - 1;
+        this.currentPage = this.currentPage - 1;
 
         clear("itemsList");
         set("noItemsFound", false);
         API.PaginatedResponse data;
-        if (isNullOrWhitespace(searchQuery)) {
-          data = await api.items.getVisibleSummaries(page: currentPage);
+        if (StringTools.isNullOrWhitespace(searchQuery)) {
+          data = await API.item.items.getVisibleSummaries(page: currentPage);
         } else {
-          data = await api.items.searchVisible(searchQuery, page: currentPage);
+          data = await API.item.items.searchVisible(searchQuery, page: currentPage);
         }
 
         currentPage = data.page;
@@ -137,7 +136,7 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage, AColl
 
   @override
   Future search() async {
-    if(isNullOrWhitespace(searchQuery)) {
+    if (StringTools.isNullOrWhitespace(searchQuery)) {
       window.location.hash = "items/page/1";
       //set("routeData.search","");
     } else {
@@ -152,16 +151,11 @@ class ItemBrowsePage extends APage with ARefreshablePage, ASearchablePage, AColl
   }
 
   String _generateItemLink(String id) {
-    return "${Pages.ITEM}/${id}";
+    return "${Pages.item}/${id}";
   }
 
   @reflectable
   String getThumbnailForImage(String value) {
-    return getImageUrl(value, ImageType.THUMBNAIL);
+    return getImageUrl(value, ImageType.thumbnail);
   }
-
-
-
-
-
 }

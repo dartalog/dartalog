@@ -6,8 +6,8 @@ abstract class ASetupDataSource extends ADataSource {
   static final Logger _log = new Logger('ASetupDataSource');
 
   Future<bool> isSetup();
-  Future markAsSetup();
+  Future<Null> markAsSetup();
 
   Future<String> getVersion();
-  Future setVersion(String version);
+  Future<Null> setVersion(String version);
 }

@@ -7,7 +7,7 @@ library dartalog.client.pages.checkin_page;
 import 'dart:html';
 import 'dart:async';
 import 'package:logging/logging.dart';
-
+import 'package:dartalog/global.dart';
 import 'package:polymer/polymer.dart';
 import 'package:option/option.dart';
 import 'package:web_components/web_components.dart';
@@ -25,13 +25,11 @@ import 'package:polymer_elements/iron_image.dart';
 import 'package:polymer_elements/iron_list.dart';
 import 'package:polymer_elements/iron_flex_layout.dart';
 
-
 import 'package:dartalog/client/pages/pages.dart';
 import 'package:dartalog/client/controls/item_add/item_add_control.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/client.dart';
-
-import 'package:dartalog/client/api/dartalog.dart' as API;
+import 'package:dartalog/client/api/api.dart' as API;
 
 @PolymerRegister('checkin-page')
 class CheckinPage extends APage with ARefreshablePage {
@@ -59,8 +57,8 @@ class CheckinPage extends APage with ARefreshablePage {
       _getItemCopy(itemId, int.parse(itemCopy)).map((ItemCopy itemCopy) {
         removeItem("cart", itemCopy);
       });
-    } catch(e,st) {
-      handleException(e,st);
+    } catch (e, st) {
+      handleException(e, st);
     }
     _evaluateCart();
   }
@@ -73,12 +71,13 @@ class CheckinPage extends APage with ARefreshablePage {
   @override
   Future refresh() async {
     List<ItemCopy> newCart = [];
-    for(ItemCopy itemCopy in cart) {
+    for (ItemCopy itemCopy in cart) {
       try {
-        API.ItemCopy updatedItemCopy = await api.items.copies.get(itemCopy.itemId, itemCopy.copy);
+        ItemCopy updatedItemCopy =
+            await API.item.items.copies.get(itemCopy.itemId, itemCopy.copy);
         newCart.add(new ItemCopy.copyFrom(updatedItemCopy));
       } on API.DetailedApiRequestError catch (e) {
-        if(e.status==404) {
+        if (e.status == 404) {
           //TODO: More robust handling of item status changes
           showMessage("Item not found on server");
         } else {
@@ -96,10 +95,9 @@ class CheckinPage extends APage with ARefreshablePage {
     set(CART_IS_EMPTY, cart.isEmpty);
   }
 
-  Option<ItemCopy> _getItemCopy(String itemID , int copy) {
+  Option<ItemCopy> _getItemCopy(String itemID, int copy) {
     for (ItemCopy test in this.cart) {
-      if (test.matches(itemID, copy))
-        return new Some(test);
+      if (test.matches(itemID, copy)) return new Some(test);
     }
     return new None();
   }
@@ -109,12 +107,10 @@ class CheckinPage extends APage with ARefreshablePage {
   }
 
   void addToCart(ItemCopy itemCopy) {
-    for(ItemCopy test in this.cart) {
-      if(itemCopy.matchesItemCopy(test))
-        return;
+    for (ItemCopy test in this.cart) {
+      if (itemCopy.matchesItemCopy(test)) return;
     }
-    add("cart",itemCopy);
+    add("cart", itemCopy);
     _evaluateCart();
   }
-
 }

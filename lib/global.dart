@@ -6,6 +6,8 @@ export 'src/item_action.dart';
 export 'src/item_status.dart';
 export 'src/user_privilege.dart';
 
+
+const String appTitle = "dartalog";
 const String itemApiVersion = "0.1";
 const String itemApiName = "item";
 const String itemApiPath = "api/$itemApiName/$itemApiVersion/";

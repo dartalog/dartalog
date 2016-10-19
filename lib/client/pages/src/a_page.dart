@@ -3,18 +3,18 @@ import 'package:polymer/polymer.dart';
 import 'package:dartalog/client/controls/controls.dart';
 
 abstract class APage<T extends APage<T>> extends AControl {
-  APage.created(this.title) : super.created();
+  APage.created(this.pageTitle) : super.created();
 
   @Property(notify: true)
-  String title;
+  String pageTitle;
 
   bool showBackButton = false;
 
   int lastScrollPosition = 0;
 
   void setTitle(String newTitle) {
-    this.title = newTitle;
-    set("title", newTitle);
+    this.pageTitle = newTitle;
+    set("pageTitle", newTitle);
     this.evaluatePage();
   }
 

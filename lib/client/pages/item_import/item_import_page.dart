@@ -7,6 +7,7 @@ library dartalog.client.pages.item_import_page;
 import 'dart:async';
 import 'dart:html';
 
+import 'package:dartalog/global.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/controls/item_edit/item_edit_control.dart';
 import 'package:dartalog/client/data/data.dart';
@@ -180,6 +181,9 @@ class ItemImportPage extends APage with ASaveablePage {
     set("searchFinished", false);
     set("noResults", false);
     await handleApiExceptions(() async {
+      if(StringTools.isNullOrWhitespace(this.searchQuery))
+        throw new InvalidInputException("Please enter a search term");
+
       try {
         this.startLoading();
         clear("results");
@@ -218,10 +222,10 @@ class ItemImportPage extends APage with ASaveablePage {
     await handleApiExceptions(() async {
       try {
         if (StringTools.isNullOrWhitespace(selectedImportSource)) {
-          throw new Exception("Please select an import source");
+          throw new InvalidInputException("Please select an import source");
         }
         if (StringTools.isNullOrWhitespace(selectedCollectionId)) {
-          throw new Exception("Please select a collection");
+          throw new InvalidInputException("Please select a collection");
         }
 
         this.startLoading();

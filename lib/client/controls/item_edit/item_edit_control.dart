@@ -132,8 +132,7 @@ class ItemEditControl extends AControl {
       try {
         startLoading();
 
-        List<API.MediaMessage> files =
-            new List<API.MediaMessage>();
+        List<API.MediaMessage> files = new List<API.MediaMessage>();
 
         if (this.currentItem == null || this.currentItem.fields == null)
           throw new Exception("Please select an item type");
@@ -151,16 +150,14 @@ class ItemEditControl extends AControl {
         currentItem.copyTo(newItem);
 
         if (!StringTools.isNullOrWhitespace(this.originalItemId)) {
-          API.UpdateItemRequest request =
-              new API.UpdateItemRequest();
+          API.UpdateItemRequest request = new API.UpdateItemRequest();
           request.item = newItem;
           request.files = files;
           API.IdResponse idResponse =
               await API.item.items.updateItem(request, this.originalItemId);
           return idResponse.id;
         } else {
-          API.CreateItemRequest request =
-              new API.CreateItemRequest();
+          API.CreateItemRequest request = new API.CreateItemRequest();
           request.item = newItem;
           request.uniqueId = newUniqueId;
           request.collectionId = newCollectionId;
@@ -178,8 +175,8 @@ class ItemEditControl extends AControl {
   }
 
   Future _loadItem(String id) async {
-    API.Item item =
-        await API.item.items.getById(id, includeType: true, includeFields: true);
+    API.Item item = await API.item.items
+        .getById(id, includeType: true, includeFields: true);
     Item newItem = new Item.copy(item);
 
     originalItemId = id;
@@ -193,6 +190,8 @@ class ItemEditControl extends AControl {
   }
 
   Future switchItemType() async {
+    if (StringTools.isNullOrWhitespace(this.itemTypeId)) return;
+
     API.ItemType type =
         await API.item.itemTypes.getById(this.itemTypeId, includeFields: true);
 

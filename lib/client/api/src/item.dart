@@ -680,7 +680,8 @@ class ItemTypesResourceApi {
         uploadOptions: _uploadOptions,
         uploadMedia: _uploadMedia,
         downloadOptions: _downloadOptions);
-    return _response.then((data) => new ItemType.fromJson(data));
+    return _response.then((data) =>
+    new ItemType.fromJson(data));
   }
 
   /**

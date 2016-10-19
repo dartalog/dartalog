@@ -102,10 +102,10 @@
                     <template is="dom-if" if="[[showBack]]">
                         <paper-icon-button icon="chevron-left" on-tap="backClicked"></paper-icon-button>
                     </template>
-                    <span class="title" style="margin-left:0pt;">[[currentPage.title]]</span>
-                    <template is="dom-if" if="[[currentPage.showSearch]]">
+                    <span class="title" style="margin-left:0pt;">[[pageTitle]]</span>
+                    <template is="dom-if" if="[[showSearch]]">
                         <paper-input on-keypress="searchKeypress" placeholder="Search" style="color:white"
-                                     class="search_input" value="{{currentPage.searchQuery}}">
+                                     class="search_input" value="{{searchQuery}}">
                             <iron-icon icon="search" prefix></iron-icon>
                             <paper-icon-button suffix on-tap="scanSearch" icon="camera-enhance" alt="Scan" title="Scan">
                             </paper-icon-button>
@@ -113,21 +113,21 @@
                             </paper-icon-button>
                         </paper-input>
                     </template>
-                    <template is="dom-if" if="[[currentPage.showDeleteButton]]">
+                    <template is="dom-if" if="[[showDeleteButton]]">
                         <paper-icon-button icon="delete" on-tap="deleteClicked"></paper-icon-button>
                     </template>
-                    <a href$="{{currentPage.editLink}}" target="_self">
-                        <template is="dom-if" if="[[currentPage.showEditButton]]" restamp="true">
+                    <a href$="{{editLink}}" target="_self">
+                        <template is="dom-if" if="[[showEditButton]]" restamp="true">
                             <paper-icon-button icon="create"></paper-icon-button>
                         </template>
                     </a>
-                    <template is="dom-if" if="[[currentPage.showAddButton]]">
+                    <template is="dom-if" if="[[showAddButton]]">
                         <paper-icon-button icon="add" on-tap="addClicked"></paper-icon-button>
                     </template>
-                    <template is="dom-if" if="[[currentPage.showSaveButton]]">
+                    <template is="dom-if" if="[[showSaveButton]]">
                         <paper-icon-button icon="save" on-tap="saveClicked"></paper-icon-button>
                     </template>
-                    <template is="dom-if" if="[[currentPage.showRefreshButton]]">
+                    <template is="dom-if" if="[[showRefreshButton]]">
                         <paper-icon-button icon="refresh" on-tap="refreshClicked"></paper-icon-button>
                     </template>
                     <template is="dom-if" if="[[userCanCheckout]]" restamp="true">
@@ -189,7 +189,7 @@
                     style="position:fixed; right:16pt;top:52pt; background-color: white;padding: 4pt; max-height: calc(100% - 118pt); overflow: hidden; width: 32pt;"
                     class="layout vertical">
 
-                <paper-menu selected="[[currentPage.currentPage]]"
+                <paper-menu selected="[[currentPageNumber]]"
                             attr-for-selected="data-page"
                             style="overflow-y: auto;overflow-x:hidden; width: 100px;"
                             class="flexchild">

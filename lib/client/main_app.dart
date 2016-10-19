@@ -141,8 +141,7 @@ class MainApp extends PolymerElement {
   bool get collectionsVisible =>
       getMapValue(routeData, "page") == "collections";
 
-  @property
-  APage get currentPage {
+  APage get _activePage {
     if (routeData != null) {
       dynamic output =
           this.querySelector("[data-page='" + routeData["page"] + "']");
@@ -186,8 +185,8 @@ class MainApp extends PolymerElement {
 
   @reflectable
   addClicked(event, [_]) async {
-    if (currentPage is ACollectionPage) {
-      ACollectionPage page = currentPage as ACollectionPage;
+    if (_activePage is ACollectionPage) {
+      ACollectionPage page = _activePage as ACollectionPage;
       page.newItem();
     }
   }
@@ -201,12 +200,15 @@ class MainApp extends PolymerElement {
   attached() {
     super.attached();
     //routeChanged(null);
-    window.onError.listen((ErrorEvent e) => showMessage(e.message));
+    window.onError.listen((ErrorEvent e) {
+      showMessage(e.message);
+    }
+     );
   }
 
   @reflectable
   backClicked(event, [_]) async {
-    currentPage.goBack();
+    _activePage.goBack();
   }
 
   @reflectable
@@ -225,8 +227,8 @@ class MainApp extends PolymerElement {
 
   @reflectable
   void clearSearch(event, [_]) {
-    if (currentPage is ASearchablePage) {
-      ASearchablePage page = currentPage as ASearchablePage;
+    if (_activePage is ASearchablePage) {
+      ASearchablePage page = _activePage as ASearchablePage;
       set("currentPage.searchQuery", "");
       page.search();
     }
@@ -234,8 +236,8 @@ class MainApp extends PolymerElement {
 
   @reflectable
   deleteClicked(event, [_]) async {
-    if (currentPage is ADeletablePage) {
-      dynamic page = currentPage;
+    if (_activePage is ADeletablePage) {
+      dynamic page = _activePage;
       page.delete();
     }
   }
@@ -288,76 +290,153 @@ class MainApp extends PolymerElement {
     set("userCanBorrow", userHasPrivilege(UserPrivilege.patron));
 
     if (userLoggedIn != authed &&
-        this.currentPage != null &&
-        this.currentPage is ARefreshablePage) {
-      ARefreshablePage rp = this.currentPage as ARefreshablePage;
+        this._activePage != null &&
+        this._activePage is ARefreshablePage) {
+      ARefreshablePage rp = this._activePage as ARefreshablePage;
       await rp.refresh();
     }
 
     set("userLoggedIn", authed);
   }
 
+  @Property(notify: true)
+  String get pageTitle {
+    if(_activePage!=null)
+      return _activePage.pageTitle;
+    return StringTools.empty;
+  }
+
+  @Property(notify: true)
+  bool get showSearch {
+    if(_activePage!=null&& _activePage is ASearchablePage) {
+      ASearchablePage sp = _activePage as ASearchablePage;
+      return sp.showSearch;
+    }
+    return false;
+  }
+
+  @Property(notify: true)
+  String get searchQuery {
+    if(_activePage!=null&& _activePage is ASearchablePage) {
+      ASearchablePage sp = _activePage as ASearchablePage;
+      return sp.showSearch;
+    }
+    return StringTools.empty;
+  }
+  @Property(notify: true)
+  set searchQuery(String query) {
+    if(_activePage!=null&& _activePage is ASearchablePage) {
+      ASearchablePage sp = _activePage as ASearchablePage;
+      sp.showSearch = query;
+    }
+  }
+
+  @Property(notify: true)
+  bool get showAddButton {
+    if(_activePage!=null&& _activePage is ACollectionPage) {
+      ACollectionPage cp = _activePage as ACollectionPage;
+      return cp.showAddButton;
+    }
+    return false;
+  }
+
+  @Property(notify: true)
+  int get currentPageNumber {
+    if(_activePage!=null&& _activePage is ACollectionPage) {
+      ACollectionPage cp = _activePage as ACollectionPage;
+      return cp.currentPage;
+    }
+    return 0;
+  }
+
+  @Property(notify: true)
+  int get totalPages {
+    if(_activePage!=null&& _activePage is ACollectionPage) {
+      ACollectionPage cp = _activePage as ACollectionPage;
+      return cp.totalPages;
+    }
+    return 0;
+  }
+
+  void _refreshPaginator() {
+    notifyPath("currentPage", currentPageNumber);
+    notifyPath("totalPages", totalPages);
+
+    set("showPaginator", totalPages > 1);
+
+    if (!showPaginator) return;
+
+    clear("availablePages");
+    for (int i = 1; i <= totalPages; i++) {
+      add("availablePages", i);
+    }
+
+    set("enablePreviousPage", currentPageNumber > 1);
+    set("enableNextPage", currentPageNumber < totalPages);
+  }
+
+  @Property(notify: true)
+  bool get showEditButton {
+    if(_activePage!=null&& _activePage is AEditablePage) {
+      AEditablePage ep = _activePage as AEditablePage;
+      return ep.showEditButton;
+    }
+    return false;
+  }
+
+
+  @Property(notify: true)
+  String get editLink {
+    if(_activePage!=null&& _activePage is AEditablePage) {
+      AEditablePage ep = _activePage as AEditablePage;
+      return ep.editLink;
+    }
+    return StringTools.empty;
+  }
+
+  @Property(notify: true)
+  bool get showSaveButton {
+    if(_activePage!=null&& _activePage is ASaveablePage) {
+      ASaveablePage sp = _activePage as ASaveablePage;
+      return sp.showSaveButton;
+    }
+    return false;
+  }
+  @Property(notify: true)
+  bool get showDeleteButton {
+    if(_activePage!=null&& _activePage is ADeletablePage) {
+      ADeletablePage dp = _activePage as ADeletablePage;
+      return dp.showDeleteButton;
+    }
+    return false;
+  }
+  @Property(notify: true)
+  bool get showRefreshButton {
+    if(_activePage!=null&& _activePage is ARefreshablePage) {
+      ARefreshablePage rp = _activePage as ARefreshablePage;
+      return rp.showRefreshButton;
+    }
+    return false;
+  }
   void evaluateCurrentPage() {
-    if (currentPage == null) return;
+    if (_activePage == null) return;
+    notifyPath("pageTitle", pageTitle);
+    document.title = "$appTitle -  ${pageTitle}";
 
-    notifyPath("currentPage", currentPage);
+    notifyPath("showSearch", showSearch);
+    notifyPath("searchQuery", searchQuery);
 
-    notifyPath("currentPage.title", currentPage.title);
-    document.title = "dartalog -  ${currentPage.title}";
+    notifyPath("showAddButton", showAddButton);
 
-    if (currentPage != null && currentPage is ASearchablePage) {
-      ASearchablePage sp = currentPage as ASearchablePage;
-      notifyPath("currentPage.showSearch", sp.showSearch);
-      notifyPath("currentPage.searchQuery", sp.searchQuery);
-    } else {
-      notifyPath("currentPage.showSearch", false);
-      notifyPath("currentPage.searchQuery", "");
-    }
+    _refreshPaginator();
 
-    if (currentPage is ACollectionPage) {
-      ACollectionPage cp = currentPage as ACollectionPage;
-      _refreshPaginator(cp);
-      notifyPath("currentPage.showAddButton", cp.showAddButton);
-    } else {
-      set("showPaginator", false);
-      clear("availablePages");
-      set("enableNextPage", false);
-      set("enablePreviousPage", false);
+    notifyPath("showEditButton", showEditButton);
+    notifyPath("editLink", editLink);
 
-      notifyPath("currentPage.showAddButton", false);
-      notifyPath("currentPage.currentPage", 0);
-      notifyPath("currentPage.totalPages", 0);
-    }
+    notifyPath("showSaveButton", showSaveButton);
+    notifyPath("showDeleteButton", showDeleteButton);
 
-    if (currentPage is AEditablePage) {
-      AEditablePage ep = currentPage as AEditablePage;
-      notifyPath("currentPage.showEditButton", ep.showEditButton);
-      notifyPath("currentPage.editLink", ep.editLink);
-    } else {
-      notifyPath("currentPage.showEditButton", false);
-      notifyPath("currentPage.editLink", StringTools.empty);
-    }
-
-    if (currentPage is ASaveablePage) {
-      ASaveablePage sp = currentPage as ASaveablePage;
-      notifyPath("currentPage.showSaveButton", sp.showSaveButton);
-    } else {
-      notifyPath("currentPage.showSaveButton", false);
-    }
-
-    if (currentPage is ADeletablePage) {
-      ADeletablePage dp = currentPage as ADeletablePage;
-      notifyPath("currentPage.showDeleteButton", dp.showDeleteButton);
-    } else {
-      notifyPath("currentPage.showDeleteButton", false);
-    }
-
-    if (currentPage is ARefreshablePage) {
-      ARefreshablePage rp = currentPage as ARefreshablePage;
-      notifyPath("currentPage.showRefreshButton", rp.showRefreshButton);
-    } else {
-      notifyPath("currentPage.showRefreshButton", false);
-    }
+    notifyPath("showRefreshButton", showRefreshButton);
   }
 
   String getMapValue(Map data, String key,
@@ -369,10 +448,10 @@ class MainApp extends PolymerElement {
 
   @reflectable
   String getPaginationLink(int page) {
-    if (this.currentPage == null || !(this.currentPage is ACollectionPage))
+    if (this._activePage == null || !(this._activePage is ACollectionPage))
       return StringTools.empty;
 
-    ACollectionPage cp = this.currentPage as ACollectionPage;
+    ACollectionPage cp = this._activePage as ACollectionPage;
     return "#${cp.getPaginationLink(page)}";
   }
 
@@ -387,6 +466,7 @@ class MainApp extends PolymerElement {
         message.writeln(det.message);
       }
       showMessage(message.toString(), "error", st.toString());
+      return;
     }
     if (e is http.ClientException) {
       if (e.message.contains("XMLHttpRequest")) {
@@ -395,9 +475,9 @@ class MainApp extends PolymerElement {
           await startApp();
         });
       }
-    } else {
-      showMessage(e.toString(), "error", st.toString());
+      return;
     }
+    showMessage(e.toString(), "error", st.toString());
   }
 
   void hideAppLoadingScreen() {
@@ -405,8 +485,8 @@ class MainApp extends PolymerElement {
   }
 
   void nextPage(event, [_]) {
-    if (this.currentPage is ACollectionPage) {
-      ACollectionPage cp = this.currentPage as ACollectionPage;
+    if (this._activePage is ACollectionPage) {
+      ACollectionPage cp = this._activePage as ACollectionPage;
       if (cp.totalPages > cp.currentPage)
         this.setCurrentPage(cp.currentPage + 1);
     }
@@ -427,8 +507,8 @@ class MainApp extends PolymerElement {
   refreshClicked(event, [_]) async {
     startLoading();
     try {
-      if (currentPage is ARefreshablePage) {
-        dynamic page = currentPage;
+      if (_activePage is ARefreshablePage) {
+        dynamic page = _activePage;
         await page.refresh();
       }
     } finally {
@@ -447,17 +527,19 @@ class MainApp extends PolymerElement {
     notifyPath("itemTypesVisible", itemTypesVisible);
     notifyPath("usersVisible", usersVisible);
     notifyPath("addItemVisible", addItemVisible);
-    if (this.currentPage != null && this.currentPage is ARefreshablePage) {
-      ARefreshablePage rp = this.currentPage as ARefreshablePage;
-      rp.refresh();
+    if (this._activePage != null) {
+      if(this._activePage is ARefreshablePage) {
+        ARefreshablePage rp = this._activePage as ARefreshablePage;
+        rp.refresh();
+      }
+      evaluateCurrentPage();
     }
-    evaluateCurrentPage();
   }
 
   @reflectable
   saveClicked(event, [_]) async {
-    if (currentPage is ASaveablePage) {
-      ASaveablePage page = currentPage as ASaveablePage;
+    if (_activePage is ASaveablePage) {
+      ASaveablePage page = _activePage as ASaveablePage;
       page.save();
     }
   }
@@ -465,8 +547,8 @@ class MainApp extends PolymerElement {
   @reflectable
   Future searchKeypress(event, [_]) async {
     if (event.original.charCode == 13) {
-      if (currentPage is ASearchablePage) {
-        ASearchablePage page = currentPage as ASearchablePage;
+      if (_activePage is ASearchablePage) {
+        ASearchablePage page = _activePage as ASearchablePage;
         page.search();
       }
     }
@@ -544,22 +626,6 @@ class MainApp extends PolymerElement {
 
   // Optional lifecycle methods - uncomment if needed.
 
-  void _refreshPaginator(ACollectionPage cp) {
-    notifyPath("currentPage.currentPage", cp.currentPage);
-    notifyPath("currentPage.totalPages", cp.totalPages);
-
-    set("showPaginator", cp.totalPages > 1);
-
-    if (!showPaginator) return;
-
-    clear("availablePages");
-    for (int i = 1; i <= cp.totalPages; i++) {
-      add("availablePages", i);
-    }
-
-    set("enablePreviousPage", cp.currentPage > 1);
-    set("enableNextPage", cp.currentPage < cp.totalPages);
-  }
 
 //  /// Called when an instance of main-app is removed from the DOM.
 //  detached() {

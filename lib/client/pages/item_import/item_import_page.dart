@@ -181,7 +181,7 @@ class ItemImportPage extends APage with ASaveablePage {
     set("searchFinished", false);
     set("noResults", false);
     await handleApiExceptions(() async {
-      if(StringTools.isNullOrWhitespace(this.searchQuery))
+      if (StringTools.isNullOrWhitespace(this.searchQuery))
         throw new InvalidInputException("Please enter a search term");
 
       try {
@@ -202,7 +202,7 @@ class ItemImportPage extends APage with ASaveablePage {
   @reflectable
   searchResultClicked(event, [_]) async {
     await handleApiExceptions(() async {
-      dynamic ele = getParentElement(event.target, "paper-item");
+      Element ele = getParentElementRequired(event.target, "paper-item");
       String id = ele.dataset["id"];
       API.ImportResult result =
           await API.item.import.import(selectedImportSource, id);
@@ -302,7 +302,7 @@ class ItemImportPage extends APage with ASaveablePage {
   @reflectable
   bulkUniqueIdKeyPress(event, [_]) async {
     if (event.original.charCode == 13) {
-      Element ele = getParentElement(event.target, "paper-input");
+      Element ele = getParentElementRequired(event.target, "paper-input");
       String index = ele.dataset["index"];
       int i = int.parse(index);
       i++;

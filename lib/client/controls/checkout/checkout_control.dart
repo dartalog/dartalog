@@ -4,6 +4,7 @@
 @HtmlImport("checkout_control.html")
 library dartalog.client.pages.checkout_control;
 
+import 'dart:convert';
 import 'dart:async';
 import 'dart:html';
 
@@ -16,6 +17,7 @@ import 'package:logging/logging.dart';
 import 'package:option/option.dart';
 import 'package:polymer/polymer.dart';
 import 'package:dartalog/client/api/api.dart' as API;
+import 'package:dartalog/tools.dart';
 
 /// Make [IronImage] available
 import 'package:polymer_elements/iron_image.dart';
@@ -55,7 +57,7 @@ class CheckoutControl extends AControl {
   String checkoutUser = "";
 
   @Property(notify: true)
-  List<ItemCopy> cart = new List<ItemCopy>();
+  List<CartItem> cart = new List<CartItem>();
 
   CheckoutControl.created() : super.created();
 
@@ -65,7 +67,7 @@ class CheckoutControl extends AControl {
     for (ItemCopy test in this.cart) {
       if (itemCopy.matchesItemCopy(test)) return;
     }
-    add("cart", itemCopy);
+    add("cart", new CartItem.copyFrom(itemCopy));
     data_sources.cart.setCart(this.cart);
     _evaluateCart();
   }
@@ -84,23 +86,36 @@ class CheckoutControl extends AControl {
       request.actionerUserId = this.checkoutUser;
       request.action = ItemAction.borrow;
       request.itemCopies = new List<API.ItemCopyId>();
-      for (ItemCopy item in this.cart) {
+      for (CartItem item in this.cart) {
         API.ItemCopyId id = new API.ItemCopyId();
         id.copy = item.copy;
         id.itemId = item.itemId;
         request.itemCopies.add(id);
       }
       await API.item.items.copies.performBulkAction(request);
+
+      this.close();
+      clear("cart");
+      await data_sources.cart.setCart(this.cart);
+      await this.refreshCartInfo();
+      await this.refreshActivePage();
+      set("checkoutUser", StringTools.empty);
+      showMessage("Checkout complete");
     });
   }
 
   @override
-  void handleErrorDetail(ApiRequestErrorDetail detail) {
+  bool handleErrorDetail(ApiRequestErrorDetail detail) {
     if (detail.locationType == "itemCopy") {
-      showMessage(detail.message, "error");
-    } else {
-      super.handleErrorDetail(detail);
+      Map<String, dynamic> data = JSON.decode(detail.location);
+      for (CartItem item in this.cart) {
+        if (item.matches(data["itemId"], data["copy"])) {
+          set("cart.${this.cart.indexOf(item)}.errorMessage", detail.message);
+          return true;
+        }
+      }
     }
+    return super.handleErrorDetail(detail);
   }
 
   Future open() async {
@@ -109,13 +124,18 @@ class CheckoutControl extends AControl {
     this.openDialog(pd);
   }
 
+  Future close() async {
+    PaperDialog pd = this.querySelector("paper-dialog");
+    pd.close();
+  }
+
   Future refresh() async {
     await handleApiExceptions(() async {
       clear("users");
       API.ListOfIdNamePair users = await API.item.users.getAllIdsAndNames();
       addAll("users", IdNamePair.copyList(users));
 
-      List<ItemCopy> newCart = [];
+      List<CartItem> newCart = <CartItem>[];
 
       List<ItemCopy> freshCart = await data_sources.cart.getCart();
 
@@ -124,7 +144,7 @@ class CheckoutControl extends AControl {
           API.ItemCopy updatedItemCopy = await API.item.items.copies.get(
               itemCopy.itemId, itemCopy.copy,
               includeCollection: true, includeItemSummary: true);
-          newCart.add(new ItemCopy.copyFrom(updatedItemCopy));
+          newCart.add(new CartItem.copyFrom(updatedItemCopy));
         } on API.DetailedApiRequestError catch (e) {
           if (e.status == 404) {
             //TODO: More robust handling of item status changes
@@ -144,7 +164,9 @@ class CheckoutControl extends AControl {
   @reflectable
   removeClicked(event, [_]) async {
     try {
-      Element ele = getParentElement(event.target, "div");
+      Option<Element> oEle = getParentElement(event.target, "div");
+      if (oEle.isEmpty) throw new Exception("Parent div not found");
+      Element ele = oEle.get();
       String itemId = ele.dataset["item-id"];
       String itemCopy = ele.dataset["item-copy"];
       _getItemCopy(itemId, int.parse(itemCopy)).map((ItemCopy itemCopy) {
@@ -164,9 +186,9 @@ class CheckoutControl extends AControl {
   }
 
   Option<ItemCopy> _getItemCopy(String itemID, int copy) {
-    for (ItemCopy test in this.cart) {
-      if (test.matches(itemID, copy)) return new Some(test);
+    for (CartItem test in this.cart) {
+      if (test.matches(itemID, copy)) return new Some<ItemCopy>(test);
     }
-    return new None();
+    return new None<ItemCopy>();
   }
 }

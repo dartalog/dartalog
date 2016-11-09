@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="checkin_page.css">
     <style include="iron-flex"></style>
     <template>
+        <paper-card>
+            <user-picker-control value="{{selectedUser}}"></user-picker-control>
+        </paper-card>
         <paper-card heading="Check-in" style="margin:8pt;" class="vertical layout">
             <div class="card-content">
                 <template is="dom-if" if="[[cartIsEmpty]]">

@@ -14,13 +14,15 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
 
   Future<Option<SelectorBuilder>> _generateVisibleCriteria(
       String userId) async {
-    IdNameList collections =
+    final IdNameList<Collection> collections =
         await data_sources.itemCollections.getVisibleCollections(userId);
-    if (collections.isEmpty) return new None();
+    if (collections.isEmpty) return new None<SelectorBuilder>();
 
-    return new Some(where.oneFrom("copies.collectionId", collections.idList));
+    return new Some<SelectorBuilder>(
+        where.oneFrom("copies.collectionId", collections.idList));
   }
 
+  @override
   Future<IdNameList<Item>> getVisible(String userId) async {
     return (await _generateVisibleCriteria(userId)).cata(
         () => new IdNameList<Item>(),
@@ -28,6 +30,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
             await getIdNameListFromDb(selector));
   }
 
+  @override
   Future<PaginatedIdNameData<Item>> getVisiblePaginated(String userId,
       {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
     return (await _generateVisibleCriteria(userId)).cata(
@@ -38,6 +41,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
             offset: getOffset(page, perPage)));
   }
 
+  @override
   Future<PaginatedIdNameData<Item>> searchVisiblePaginated(
       String userId, String query,
       {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
@@ -49,6 +53,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
             offset: getOffset(page, perPage)));
   }
 
+  @override
   Future<IdNameList<Item>> searchVisible(String userId, String query) async {
     return (await _generateVisibleCriteria(userId)).cata(
         () => new IdNameList<Item>(),
@@ -56,6 +61,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
             await search(query, selector: selector));
   }
 
+  @override
   Future<IdNameList<IdNamePair>> getVisibleIdsAndNames(String userId) async {
     return (await _generateVisibleCriteria(userId)).cata(
         () => new IdNameList<IdNamePair>(),
@@ -63,6 +69,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
             await getIdsAndNames(selector: selector));
   }
 
+  @override
   Future<PaginatedIdNameData<IdNamePair>> getVisibleIdsAndNamesPaginated(
       String userId,
       {int page: 0,
@@ -76,8 +83,8 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   }
 
   @override
-  Item createObject(Map data) {
-    Item output = new Item();
+  Item createObject(Map<String, dynamic> data) {
+    final Item output = new Item();
 
     output.id = data[ID_FIELD];
     output.getName = data['name'];
@@ -94,7 +101,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
       con.getItemsCollection();
 
   @override
-  void updateMap(Item item, Map data) {
+  void updateMap(Item item, Map<String, dynamic> data) {
     data[ID_FIELD] = item.id;
     data["name"] = item.getName;
     data["typeId"] = item.typeId;

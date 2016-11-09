@@ -33,7 +33,7 @@ import 'package:dartalog/client/api/api.dart' as API;
 
 @PolymerRegister('item-view')
 class ItemViewPage extends APage
-    with ARefreshablePage, ADeletablePage, AEditablePage {
+    with ADeletablePage, AEditablePage {
   static final Logger _log = new Logger("ItemViewPage");
   Logger get loggerImpl => _log;
 
@@ -41,7 +41,7 @@ class ItemViewPage extends APage
   Item currentItem = new Item();
 
   @Property(notify: true)
-  List<Collection> collections = new List<Collection>();
+  List<IdNamePair> collections = new List<IdNamePair>();
 
   @Property(notify: true)
   ItemCopy currentItemCopy = new ItemCopy();
@@ -78,7 +78,7 @@ class ItemViewPage extends APage
   @Observe('cart.*')
   addCartCopyClicked(event, [_]) async {
     await handleApiExceptions(() async {
-      dynamic ele = getParentElement(event.target, "paper-item");
+      Element ele = getParentElementRequired(event.target, "paper-item");
       String copy = ele.dataset["copy"];
       API.ItemCopy itemCopy =
           await API.item.items.copies.get(this.currentItem.id, int.parse(copy));
@@ -110,7 +110,7 @@ class ItemViewPage extends APage
     if (!await loadAvailableCollections()) return;
     await handleApiExceptions(() async {
       clearValidation();
-      dynamic ele = getParentElement(event.target, "paper-item");
+      Element ele = getParentElementRequired(event.target, "paper-item");
       String copy = ele.dataset["copy"];
       API.ItemCopy newCopy =
           await API.item.items.copies.get(this.currentItem.id, int.parse(copy));
@@ -135,7 +135,8 @@ class ItemViewPage extends APage
     bool output = await handleApiExceptions(() async {
       clear("collections");
 
-      API.ListOfIdNamePair data = await API.item.collections.getAllIdsAndNames();
+      API.ListOfIdNamePair data =
+          await API.item.collections.getAllIdsAndNames();
 
       if (data.length == 0) throw new Exception("No collections defined");
 

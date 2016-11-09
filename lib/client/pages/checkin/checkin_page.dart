@@ -26,15 +26,19 @@ import 'package:polymer_elements/iron_list.dart';
 import 'package:polymer_elements/iron_flex_layout.dart';
 
 import 'package:dartalog/client/pages/pages.dart';
+import 'package:dartalog/client/controls/user_picker/user_picker_control.dart';
 import 'package:dartalog/client/controls/item_add/item_add_control.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/api/api.dart' as API;
 
 @PolymerRegister('checkin-page')
-class CheckinPage extends APage with ARefreshablePage {
+class CheckinPage extends APage {
   static final Logger _log = new Logger("CheckinPage");
   Logger get loggerImpl => _log;
+
+  @Property(notify: true)
+  String selectedUser;
 
   @Property(notify: true)
   List<ItemCopy> cart = new List<ItemCopy>();
@@ -51,7 +55,8 @@ class CheckinPage extends APage with ARefreshablePage {
   @reflectable
   removeClicked(event, [_]) {
     try {
-      Element ele = getParentElement(event.target, "paper-item");
+      Element ele = getParentElementRequired(event.target, "paper-item");
+
       String itemId = ele.dataset["item-id"];
       String itemCopy = ele.dataset["item-copy"];
       _getItemCopy(itemId, int.parse(itemCopy)).map((ItemCopy itemCopy) {
@@ -64,12 +69,18 @@ class CheckinPage extends APage with ARefreshablePage {
   }
 
   @override
-  Future activateInternal([bool forceRefresh = false]) async {
-    await this.refresh();
+  attached() {
+    this.loadCart();
   }
 
   @override
   Future refresh() async {
+    await loadCart();
+    UserPickerControl upc = this.querySelector("user-picker-control");
+    await upc.refresh();
+  }
+
+  Future loadCart() async {
     List<ItemCopy> newCart = [];
     for (ItemCopy itemCopy in cart) {
       try {

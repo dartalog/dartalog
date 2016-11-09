@@ -1,6 +1,7 @@
 import 'a_data.dart';
 import 'collection.dart';
 import 'item_summary.dart';
+import 'dart:convert';
 
 class ItemCopy extends AData {
   String itemId = "";
@@ -30,5 +31,11 @@ class ItemCopy extends AData {
 
   void cleanUp() {
     this.uniqueId = this.uniqueId.trim();
+  }
+
+  @override
+  String toString() {
+    return JSON
+        .encode(<String, dynamic>{"itemId": this.itemId, "copy": this.copy});
   }
 }

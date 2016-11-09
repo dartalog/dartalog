@@ -31,7 +31,7 @@ import 'dart:html';
 import 'package:dartalog/client/api/api.dart' as API;
 
 @PolymerRegister('user-admin-page')
-class UserAdminPage extends APage with ARefreshablePage, ACollectionPage {
+class UserAdminPage extends APage with ACollectionPage {
   static final Logger _log = new Logger("UserAdminPage");
   @property
   bool creating = false;

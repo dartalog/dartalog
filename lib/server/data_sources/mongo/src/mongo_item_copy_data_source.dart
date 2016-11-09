@@ -31,7 +31,8 @@ class MongoItemCopyDataSource extends AMongoObjectDataSource<ItemCopy>
 
   @override
   Future<bool> existsByItemIdAndCopy(String itemId, int copy) async {
-    List<ItemCopy> copies = await getAllForItemId(itemId, includeRemoved: true);
+    final List<ItemCopy> copies =
+        await getAllForItemId(itemId, includeRemoved: true);
     for (ItemCopy itemCopy in copies) {
       if (itemCopy.copy == copy) return true;
     }
@@ -46,9 +47,18 @@ class MongoItemCopyDataSource extends AMongoObjectDataSource<ItemCopy>
   Future<List<ItemCopy>> getAll(List<ItemCopyId> itemCopies) async {
     final List<ItemCopy> output = <ItemCopy>[];
     for (ItemCopyId id in itemCopies) {
-      final Option<Item> item = await data_sources.items.getById(id.itemId);
-      item.map((Item i) =>
-          i.getCopy(id.copy).map((ItemCopy itemCopy) => output.add(itemCopy)));
+      final List<ItemCopy> copies = await getAllForItemId(id.itemId);
+
+      ItemCopy candidate;
+      for (ItemCopy ic in copies) {
+        if (ic.copy == id.copy) candidate = ic;
+        break;
+      }
+
+      if (candidate == null) throw new NotFoundException("Item copy not found");
+
+      candidate.itemId = id.itemId;
+      output.add(candidate);
     }
     return output;
   }
@@ -68,7 +78,7 @@ class MongoItemCopyDataSource extends AMongoObjectDataSource<ItemCopy>
     // TODO: Make sure removed items don't get returned when not requested
     final List<ItemCopy> output =
         _convertList((await _getItemData(itemId))[_ITEM_COPIES_FIELD]);
-    if (output.length == 0) return [];
+    if (output.length == 0) return <ItemCopy>[];
     final IdNameList<Collection> visibleCollections =
         await data_sources.itemCollections.getVisibleCollections(userName);
     output.retainWhere((ItemCopy ic) {
@@ -83,7 +93,7 @@ class MongoItemCopyDataSource extends AMongoObjectDataSource<ItemCopy>
         await getAllForItemId(itemId, includeRemoved: true);
     for (ItemCopy itemCopy in copies) {
       itemCopy.itemId = itemId;
-      if (itemCopy.copy == copy) return new Some(itemCopy);
+      if (itemCopy.copy == copy) return new Some<ItemCopy>(itemCopy);
     }
     return new None<ItemCopy>();
   }
@@ -170,9 +180,10 @@ class MongoItemCopyDataSource extends AMongoObjectDataSource<ItemCopy>
   @override
   Future<DbCollection> getCollection(MongoDatabase con) =>
       con.getItemsCollection();
-  Future<Map> _getItemData(String itemId) async {
-    dynamic criteria = where.eq(ID_FIELD, itemId);
-    List results = await genericFind(criteria);
+
+  Future<Map<String, dynamic>> _getItemData(String itemId) async {
+    final dynamic criteria = where.eq(ID_FIELD, itemId);
+    final List<dynamic> results = await genericFind(criteria);
     if (results.length == 0)
       throw new NotFoundException("Requested item not found");
     return results[0];
@@ -198,7 +209,7 @@ class MongoItemCopyDataSource extends AMongoObjectDataSource<ItemCopy>
   }
 
   static ItemCopy _staticCreateObject(Map data) {
-    ItemCopy output = new ItemCopy();
+    final ItemCopy output = new ItemCopy();
     output.collectionId = data[_COLLECTION_ID_FIELD];
     output.copy = data[_COPY_FIELD];
     output.status = data[_STATUS_FIELD];

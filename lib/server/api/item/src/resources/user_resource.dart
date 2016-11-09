@@ -44,6 +44,9 @@ class UserResource extends AIdResource<User> {
   @ApiMethod(method: 'DELETE', path: '${ItemApi.usersPath}/{id}/')
   Future<VoidMessage> delete(String id) => deleteWithCatch(id);
 
+  @ApiMethod(method: 'GET', path: '${ItemApi.usersPath}/{id}/borrowed/')
+  Future<List<IdNamePair>> getBorrowedItems();
+
   @override
   String generateRedirect(String newId) =>
       "${serverApiRoot}${ItemApi.usersPath}/${newId}";

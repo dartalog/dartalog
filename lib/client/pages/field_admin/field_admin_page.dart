@@ -29,7 +29,7 @@ import 'package:dartalog/client/api/api.dart' as API;
 
 /// A Polymer `<field-admin-page>` element.
 @PolymerRegister('field-admin-page')
-class FieldAdminPage extends APage with ARefreshablePage, ACollectionPage {
+class FieldAdminPage extends APage with  ACollectionPage {
   static final Logger _log = new Logger("FieldAdminPage");
   Logger get loggerImpl => _log;
 

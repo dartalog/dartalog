@@ -31,7 +31,7 @@ import 'package:dartalog/client/controls/auth_wrapper/auth_wrapper_control.dart'
 import 'package:dartalog/client/api/api.dart' as API;
 
 @PolymerRegister('item-type-admin-page')
-class ItemTypeAdminPage extends APage with ARefreshablePage, ACollectionPage {
+class ItemTypeAdminPage extends APage with ACollectionPage {
   static final Logger _log = new Logger("ItemTypeAdminPage");
   Logger get loggerImpl => _log;
 

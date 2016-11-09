@@ -19,8 +19,15 @@ export 'src/item.dart'
         SearchResult,
         ItemType,
         CreateItemRequest,
-        Item, IdNamePair, Field, PaginatedResponse,
-Collection, User, MediaMessage, UpdateItemRequest, IdResponse;
+        Item,
+        IdNamePair,
+        Field,
+        PaginatedResponse,
+        Collection,
+        User,
+        MediaMessage,
+        UpdateItemRequest,
+        IdResponse;
 
 ItemApi _item;
 ItemApi get item {

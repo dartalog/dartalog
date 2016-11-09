@@ -26,6 +26,9 @@ class AControl extends PolymerElement {
   Logger get loggerImpl;
   MainApp _mainAppCache = null;
 
+  @reflectable
+  Future<Null> refresh();
+
   static Option<User> currentUserStatic = new None();
   Option<User> get currentUser => currentUserStatic;
 
@@ -59,6 +62,10 @@ class AControl extends PolymerElement {
     await this._mainApp.refreshCartInfo();
   }
 
+  Future refreshActivePage() {
+    this._mainApp.refreshActivePage();
+  }
+
   void evaluatePage() {
     this._mainApp.evaluateCurrentPage();
   }
@@ -74,14 +81,6 @@ class AControl extends PolymerElement {
     });
   }
 
-  Future wait({int milliseconds: 100}) {
-    Completer completer = new Completer();
-    new Timer(new Duration(milliseconds: 100), () {
-      completer.complete();
-    });
-    return completer.future;
-  }
-
   // If you open a dialog too soon after changing its contents, it won't center properly.
   // This delays opening the dialog until the system has had a second to process the DOM change.
   Future openDialog(PaperDialog dialog) async {
@@ -92,8 +91,6 @@ class AControl extends PolymerElement {
     });
     return completer.future;
   }
-
-  Future activateInternal([bool forceRefresh = false]);
 
   void clearValidation() {
     setGeneralErrorMessage(StringTools.empty);
@@ -123,21 +120,23 @@ class AControl extends PolymerElement {
     }
   }
 
-  Future _handleApiError(API.DetailedApiRequestError error, dynamic st) async {
+  Future<Null> _handleApiError(
+      API.DetailedApiRequestError error, dynamic st) async {
     try {
       clearValidation();
       if (error.status == 400) {
-        setGeneralErrorMessage(error.message);
-        handleErrorDetails(error.errors);
+        if (!handleErrorDetails(error.errors))
+          setGeneralErrorMessage(error.message);
       } else if (error.status == 401) {
         await this._mainApp.clearAuthentication();
         await this._mainApp.promptForAuthentication();
         await this._mainApp.evaluateAuthentication();
       } else if (error.status == 413) {
-        this.showMessage(
+        this.setGeneralErrorMessage(
             "The submitted data was too large, please submit smaller images");
       } else {
-        this.showMessage("API Error: ${error.message} (${error.status})");
+        this.setGeneralErrorMessage(
+            "API Error: ${error.message} (${error.status})");
       }
     } catch (e, st) {
       loggerImpl.severe(e, st);
@@ -168,22 +167,27 @@ class AControl extends PolymerElement {
     _mainApp.handleException(e, st);
   }
 
-  void handleErrorDetails(List<API.ApiRequestErrorDetail> fieldErrors) {
+  bool handleErrorDetails(List<API.ApiRequestErrorDetail> fieldErrors) {
+    bool output = true;
     for (API.ApiRequestErrorDetail detail in fieldErrors) {
       if (detail.message == null || detail.message.length == 0) continue;
-      handleErrorDetail(detail);
+      bool result = handleErrorDetail(detail);
+      if (!result && output) output = false;
     }
+    return output;
   }
 
-  void handleErrorDetail(API.ApiRequestErrorDetail detail) {
+  bool handleErrorDetail(API.ApiRequestErrorDetail detail) {
     if (detail.locationType == "field") {
       setFieldMessage(detail.location, detail.message);
+      return true;
     } else {
       showMessage(detail.message, "error");
+      return false;
     }
   }
 
-  void setFieldMessage(String field, String message) {
+  bool setFieldMessage(String field, String message) {
     String selector = '${this.tagName} [data-field-id="${field}"]';
     Element input = querySelector(selector);
 
@@ -192,10 +196,12 @@ class AControl extends PolymerElement {
         PaperInputBehavior pi = input as PaperInputBehavior;
         pi.errorMessage = message;
         pi.invalid = true;
+        return true;
       } else if (input is PaperDropdownMenu) {
         PaperDropdownMenu pi = input;
         pi.errorMessage = message;
         pi.invalid = true;
+        return true;
       } else if (input is PaperToggleButton) {
         PaperToggleButton ptb = input;
         ptb.invalid = false;
@@ -204,12 +210,14 @@ class AControl extends PolymerElement {
         ComboListControl pi = input;
         pi.setGeneralErrorMessage(message);
         pi.setInvalid(true);
+        return true;
       } else {
         window.alert("Unknown control: " + input.runtimeType.toString());
       }
     } else {
       showMessage(message, "error");
     }
+    return false;
   }
 
   void showMessage(String message, [String severity]) {

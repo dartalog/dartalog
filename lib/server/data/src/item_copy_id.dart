@@ -1,5 +1,6 @@
 import 'a_data.dart';
 import 'item_copy.dart';
+import 'dart:convert';
 
 class ItemCopyId extends AData {
   String itemId = "";
@@ -14,5 +15,11 @@ class ItemCopyId extends AData {
 
   bool matchesItemCopy(ItemCopy itemCopy) {
     return (itemCopy.itemId == this.itemId && itemCopy.copy == this.copy);
+  }
+
+  @override
+  String toString() {
+    return JSON
+        .encode(<String, dynamic>{"itemId": this.itemId, "copy": this.copy});
   }
 }

@@ -29,7 +29,7 @@ import 'package:dartalog/client/api/api.dart' as API;
 
 /// A Polymer `<field-admin-page>` element.
 @PolymerRegister('collections-page')
-class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
+class CollectionsPage extends APage with ACollectionPage {
   static final Logger _log = new Logger("CollectionsPage");
   Logger get loggerImpl => _log;
 
@@ -78,7 +78,8 @@ class CollectionsPage extends APage with ARefreshablePage, ACollectionPage {
         clear("collections");
         clear("users");
 
-        API.ListOfIdNamePair data = await API.item.collections.getAllIdsAndNames();
+        API.ListOfIdNamePair data =
+            await API.item.collections.getAllIdsAndNames();
 
         addAll("collections", IdNamePair.copyList(data));
 

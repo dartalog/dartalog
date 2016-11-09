@@ -19,6 +19,7 @@ import 'package:dartalog/client/pages/field_admin/field_admin_page.dart';
 import 'package:dartalog/client/pages/item/item_page.dart';
 import 'package:dartalog/client/pages/item_add/item_add_page.dart';
 import 'package:dartalog/client/pages/item_browse/item_browse_page.dart';
+import 'package:dartalog/client/pages/checkin/checkin_page.dart';
 import 'package:dartalog/client/pages/item_import/item_import_page.dart';
 import 'package:dartalog/client/pages/item_type_admin/item_type_admin_page.dart';
 import 'package:dartalog/client/pages/pages.dart';
@@ -130,6 +131,9 @@ class MainApp extends PolymerElement {
   bool get addItemVisible => getMapValue(routeData, "page") == "add";
 
   @property
+  bool get checkinVisible => getMapValue(routeData, "page") == "checkin";
+
+  @property
   bool get browseVisible => getMapValue(routeData, "page") == "items";
 
   CheckoutControl get checkoutControl => this.querySelector("#checkoutControl");
@@ -141,13 +145,13 @@ class MainApp extends PolymerElement {
   bool get collectionsVisible =>
       getMapValue(routeData, "page") == "collections";
 
-  APage get _activePage {
-    if (routeData != null) {
-      dynamic output =
-          this.querySelector("[data-page='" + routeData["page"] + "']");
-      if (output != null) return output;
+  @Property(notify: true)
+  int get currentPageNumber {
+    if (_activePage != null && _activePage is ACollectionPage) {
+      ACollectionPage cp = _activePage as ACollectionPage;
+      return cp.currentPage;
     }
-    return null;
+    return 0;
   }
 
   @property
@@ -161,6 +165,15 @@ class MainApp extends PolymerElement {
   }
 
   PaperDrawerPanel get drawerPanel => $["drawerPanel"];
+
+  @Property(notify: true)
+  String get editLink {
+    if (_activePage != null && _activePage is AEditablePage) {
+      AEditablePage ep = _activePage as AEditablePage;
+      return ep.editLink;
+    }
+    return StringTools.empty;
+  }
 
   FieldAdminPage get fieldAdmin => $['field_admin'];
 
@@ -180,8 +193,102 @@ class MainApp extends PolymerElement {
   @property
   bool get itemVisible => getMapValue(routeData, "page") == "item";
 
+  @Property(notify: true)
+  String get pageTitle {
+    if (_activePage != null) return _activePage.pageTitle;
+    return StringTools.empty;
+  }
+
+  @Property(notify: true)
+  String get searchQuery {
+    if (_activePage != null && _activePage is ASearchablePage) {
+      ASearchablePage sp = _activePage as ASearchablePage;
+      return sp.searchQuery;
+    }
+    return StringTools.empty;
+  }
+
+  @Property(notify: true)
+  set searchQuery(String query) {
+    if (_activePage != null && _activePage is ASearchablePage) {
+      ASearchablePage sp = _activePage as ASearchablePage;
+      sp.searchQuery = query;
+    }
+  }
+
+  @Property(notify: true)
+  bool get showAddButton {
+    if (_activePage != null && _activePage is ACollectionPage) {
+      ACollectionPage cp = _activePage as ACollectionPage;
+      return cp.showAddButton;
+    }
+    return false;
+  }
+
+  @Property(notify: true)
+  bool get showDeleteButton {
+    if (_activePage != null && _activePage is ADeletablePage) {
+      ADeletablePage dp = _activePage as ADeletablePage;
+      return dp.showDeleteButton;
+    }
+    return false;
+  }
+
+  @Property(notify: true)
+  bool get showEditButton {
+    if (_activePage != null && _activePage is AEditablePage) {
+      AEditablePage ep = _activePage as AEditablePage;
+      return ep.showEditButton;
+    }
+    return false;
+  }
+
+  @Property(notify: true)
+  bool get showRefreshButton {
+    if (_activePage != null) {
+      return _activePage.showRefreshButton;
+    }
+    return false;
+  }
+
+  @Property(notify: true)
+  bool get showSaveButton {
+    if (_activePage != null && _activePage is ASaveablePage) {
+      ASaveablePage sp = _activePage as ASaveablePage;
+      return sp.showSaveButton;
+    }
+    return false;
+  }
+
+  @Property(notify: true)
+  bool get showSearch {
+    if (_activePage != null && _activePage is ASearchablePage) {
+      ASearchablePage sp = _activePage as ASearchablePage;
+      return sp.showSearch;
+    }
+    return false;
+  }
+
+  @Property(notify: true)
+  int get totalPages {
+    if (_activePage != null && _activePage is ACollectionPage) {
+      ACollectionPage cp = _activePage as ACollectionPage;
+      return cp.totalPages;
+    }
+    return 0;
+  }
+
   @property
   bool get usersVisible => getMapValue(routeData, "page") == "users";
+
+  APage get _activePage {
+    if (routeData != null) {
+      dynamic output =
+          this.querySelector("[data-page='" + routeData["page"] + "']");
+      if (output != null) return output;
+    }
+    return null;
+  }
 
   @reflectable
   addClicked(event, [_]) async {
@@ -202,8 +309,7 @@ class MainApp extends PolymerElement {
     //routeChanged(null);
     window.onError.listen((ErrorEvent e) {
       showMessage(e.message);
-    }
-     );
+    });
   }
 
   @reflectable
@@ -223,13 +329,16 @@ class MainApp extends PolymerElement {
   Future clearAuthentication() async {
     setUserObject(null);
     await data_sources.settings.clearAuthCache();
+    changeRoute("");
+    await wait();
+    changeRoute(Pages.items);
   }
 
   @reflectable
   void clearSearch(event, [_]) {
     if (_activePage is ASearchablePage) {
       ASearchablePage page = _activePage as ASearchablePage;
-      set("currentPage.searchQuery", "");
+      set("searchQuery", "");
       page.search();
     }
   }
@@ -240,17 +349,6 @@ class MainApp extends PolymerElement {
       dynamic page = _activePage;
       page.delete();
     }
-  }
-
-
-  @reflectable
-  logInClicked(event, [_]) async {
-    promptForAuthentication();
-  }
-  @reflectable
-  logOutClicked(event, [_]) async {
-    await clearAuthentication();
-    await evaluateAuthentication();
   }
 
   @reflectable
@@ -289,135 +387,13 @@ class MainApp extends PolymerElement {
     set("userCanAdd", userHasPrivilege(UserPrivilege.curator));
     set("userCanBorrow", userHasPrivilege(UserPrivilege.patron));
 
-    if (userLoggedIn != authed &&
-        this._activePage != null &&
-        this._activePage is ARefreshablePage) {
-      ARefreshablePage rp = this._activePage as ARefreshablePage;
-      await rp.refresh();
+    if (userLoggedIn != authed && this._activePage != null) {
+      await _activePage.refresh();
     }
 
     set("userLoggedIn", authed);
   }
 
-  @Property(notify: true)
-  String get pageTitle {
-    if(_activePage!=null)
-      return _activePage.pageTitle;
-    return StringTools.empty;
-  }
-
-  @Property(notify: true)
-  bool get showSearch {
-    if(_activePage!=null&& _activePage is ASearchablePage) {
-      ASearchablePage sp = _activePage as ASearchablePage;
-      return sp.showSearch;
-    }
-    return false;
-  }
-
-  @Property(notify: true)
-  String get searchQuery {
-    if(_activePage!=null&& _activePage is ASearchablePage) {
-      ASearchablePage sp = _activePage as ASearchablePage;
-      return sp.showSearch;
-    }
-    return StringTools.empty;
-  }
-  @Property(notify: true)
-  set searchQuery(String query) {
-    if(_activePage!=null&& _activePage is ASearchablePage) {
-      ASearchablePage sp = _activePage as ASearchablePage;
-      sp.showSearch = query;
-    }
-  }
-
-  @Property(notify: true)
-  bool get showAddButton {
-    if(_activePage!=null&& _activePage is ACollectionPage) {
-      ACollectionPage cp = _activePage as ACollectionPage;
-      return cp.showAddButton;
-    }
-    return false;
-  }
-
-  @Property(notify: true)
-  int get currentPageNumber {
-    if(_activePage!=null&& _activePage is ACollectionPage) {
-      ACollectionPage cp = _activePage as ACollectionPage;
-      return cp.currentPage;
-    }
-    return 0;
-  }
-
-  @Property(notify: true)
-  int get totalPages {
-    if(_activePage!=null&& _activePage is ACollectionPage) {
-      ACollectionPage cp = _activePage as ACollectionPage;
-      return cp.totalPages;
-    }
-    return 0;
-  }
-
-  void _refreshPaginator() {
-    notifyPath("currentPage", currentPageNumber);
-    notifyPath("totalPages", totalPages);
-
-    set("showPaginator", totalPages > 1);
-
-    if (!showPaginator) return;
-
-    clear("availablePages");
-    for (int i = 1; i <= totalPages; i++) {
-      add("availablePages", i);
-    }
-
-    set("enablePreviousPage", currentPageNumber > 1);
-    set("enableNextPage", currentPageNumber < totalPages);
-  }
-
-  @Property(notify: true)
-  bool get showEditButton {
-    if(_activePage!=null&& _activePage is AEditablePage) {
-      AEditablePage ep = _activePage as AEditablePage;
-      return ep.showEditButton;
-    }
-    return false;
-  }
-
-
-  @Property(notify: true)
-  String get editLink {
-    if(_activePage!=null&& _activePage is AEditablePage) {
-      AEditablePage ep = _activePage as AEditablePage;
-      return ep.editLink;
-    }
-    return StringTools.empty;
-  }
-
-  @Property(notify: true)
-  bool get showSaveButton {
-    if(_activePage!=null&& _activePage is ASaveablePage) {
-      ASaveablePage sp = _activePage as ASaveablePage;
-      return sp.showSaveButton;
-    }
-    return false;
-  }
-  @Property(notify: true)
-  bool get showDeleteButton {
-    if(_activePage!=null&& _activePage is ADeletablePage) {
-      ADeletablePage dp = _activePage as ADeletablePage;
-      return dp.showDeleteButton;
-    }
-    return false;
-  }
-  @Property(notify: true)
-  bool get showRefreshButton {
-    if(_activePage!=null&& _activePage is ARefreshablePage) {
-      ARefreshablePage rp = _activePage as ARefreshablePage;
-      return rp.showRefreshButton;
-    }
-    return false;
-  }
   void evaluateCurrentPage() {
     if (_activePage == null) return;
     notifyPath("pageTitle", pageTitle);
@@ -484,6 +460,17 @@ class MainApp extends PolymerElement {
     set("appLoadingScreenVisible", false);
   }
 
+  @reflectable
+  logInClicked(event, [_]) async {
+    promptForAuthentication();
+  }
+
+  @reflectable
+  logOutClicked(event, [_]) async {
+    await clearAuthentication();
+    await evaluateAuthentication();
+  }
+
   void nextPage(event, [_]) {
     if (this._activePage is ACollectionPage) {
       ACollectionPage cp = this._activePage as ACollectionPage;
@@ -497,6 +484,12 @@ class MainApp extends PolymerElement {
     await ele.activateDialog();
   }
 
+  Future refreshActivePage() async {
+    if (_activePage != null) {
+      await _activePage.refresh();
+    }
+  }
+
   Future refreshCartInfo() async {
     int length = (await data_sources.cart.getCart()).length;
     set("cartCount", length);
@@ -507,10 +500,7 @@ class MainApp extends PolymerElement {
   refreshClicked(event, [_]) async {
     startLoading();
     try {
-      if (_activePage is ARefreshablePage) {
-        dynamic page = _activePage;
-        await page.refresh();
-      }
+      await _activePage.refresh();
     } finally {
       stopLoading();
     }
@@ -528,10 +518,7 @@ class MainApp extends PolymerElement {
     notifyPath("usersVisible", usersVisible);
     notifyPath("addItemVisible", addItemVisible);
     if (this._activePage != null) {
-      if(this._activePage is ARefreshablePage) {
-        ARefreshablePage rp = this._activePage as ARefreshablePage;
-        rp.refresh();
-      }
+      _activePage.refresh();
       evaluateCurrentPage();
     }
   }
@@ -573,11 +560,13 @@ class MainApp extends PolymerElement {
       AControl.currentUserStatic = this.currentUser;
     }
   }
+
   void showAppLoadingScreen([String message = "Loading application"]) {
     set("appLoadingMessage", message);
     set("appLoadingScreenVisible", true);
     set("appLoadingSpinnerActive", true);
   }
+
   void showMessage(String message, [String severity, String details]) {
     PaperToastQueue toastElement = $['global_toast'];
 
@@ -585,6 +574,7 @@ class MainApp extends PolymerElement {
 
     toastElement.enqueueMessage(message, severity, details);
   }
+
   Future startApp() async {
     try {
       await evaluateAuthentication();
@@ -598,16 +588,20 @@ class MainApp extends PolymerElement {
       handleException(e, st);
     }
   }
+
   void startLoading() {
     set("loading", true);
   }
+
   Future stopApp() async {}
+
   void stopAppLoadingSpinner() {
     set("appLoadingSpinnerActive", false);
   }
   void stopLoading() {
     set("loading", false);
   }
+
   @reflectable
   toggleDrawerClicked(event, [_]) {
     PaperDrawerPanel pdp = $['drawerPanel'];
@@ -624,8 +618,24 @@ class MainApp extends PolymerElement {
     });
   }
 
-  // Optional lifecycle methods - uncomment if needed.
+  void _refreshPaginator() {
+    notifyPath("currentPage", currentPageNumber);
+    notifyPath("totalPages", totalPages);
 
+    set("showPaginator", totalPages > 1);
+
+    if (!showPaginator) return;
+
+    clear("availablePages");
+    for (int i = 1; i <= totalPages; i++) {
+      add("availablePages", i);
+    }
+
+    set("enablePreviousPage", currentPageNumber > 1);
+    set("enableNextPage", currentPageNumber < totalPages);
+  }
+
+  // Optional lifecycle methods - uncomment if needed.
 
 //  /// Called when an instance of main-app is removed from the DOM.
 //  detached() {

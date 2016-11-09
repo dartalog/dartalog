@@ -1,5 +1,6 @@
 library tools;
 
+import 'dart:async';
 import 'package:uuid/uuid.dart';
 
 /// A [RegExp]-compatible [String] that matches against [String]s that contain ONLY a formatted [Uuid].
@@ -81,4 +82,12 @@ class StringTools {
 
     return false;
   }
+}
+
+Future<Null> wait({int milliseconds: 100}) {
+  final Completer<Null> completer = new Completer<Null>();
+  new Timer(new Duration(milliseconds: 100), () {
+    completer.complete();
+  });
+  return completer.future;
 }

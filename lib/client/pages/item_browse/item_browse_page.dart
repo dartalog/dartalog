@@ -37,7 +37,7 @@ import 'package:dartalog/client/api/api.dart' as API;
 
 @PolymerRegister('item-browse-page')
 class ItemBrowsePage extends APage
-    with ARefreshablePage, ASearchablePage, ACollectionPage {
+    with ASearchablePage, ACollectionPage {
   static final Logger _log = new Logger("ItemBrowsePage");
   Logger get loggerImpl => _log;
 
@@ -73,7 +73,6 @@ class ItemBrowsePage extends APage
 
   _loadPage() async {
     await evaluateAuthentication();
-    set("showAddControl", userHasPrivilege(UserPrivilege.curator));
     await this.loadItems();
   }
 
@@ -94,6 +93,7 @@ class ItemBrowsePage extends APage
 
   Future loadItems() async {
     await handleApiExceptions(() async {
+      set("showAddControl", userHasPrivilege(UserPrivilege.curator));
       try {
         this.startLoading();
         this.currentPage = 1;
@@ -119,7 +119,8 @@ class ItemBrowsePage extends APage
         if (StringTools.isNullOrWhitespace(searchQuery)) {
           data = await API.item.items.getVisibleSummaries(page: currentPage);
         } else {
-          data = await API.item.items.searchVisible(searchQuery, page: currentPage);
+          data = await API.item.items
+              .searchVisible(searchQuery, page: currentPage);
         }
 
         currentPage = data.page;

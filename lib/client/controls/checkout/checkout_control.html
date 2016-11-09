@@ -15,7 +15,7 @@
                     <paper-item class="flex">Cart is empty</paper-item>
                 </template>
                 <template is="dom-if" if="[[!cartIsEmpty]]">
-                    <paper-dropdown-menu floatinglabel label="User to checkout items to" data-field-id="user" >
+                    <paper-dropdown-menu floatinglabel label="User to checkout items to" data-field-id="user" style="margin-bottom:16pt;" >
                         <paper-listbox class="dropdown-content" attr-for-selected="value"
                                        selected="{{checkoutUser}}">
                             <template is="dom-repeat" items="[[users]]">
@@ -25,12 +25,13 @@
                     </paper-dropdown-menu>
                 </template>
                 <template is="dom-repeat" items="[[cart]]">
-                    <div data-item-id$="[[item.itemId]]" data-item-copy$="[[item.copy]]" class="layout horizontal">
+                    <div id="[[item.cartId]]" data-item-id$="[[item.itemId]]" data-item-copy$="[[item.copy]]" class="layout horizontal">
                         <iron-image src="[[item.itemSummary.thumbnailUrl]]" style="width:66pt;height:66pt"  sizing="contain"></iron-image>
                         <paper-item-body three-line>
                             <div>[[item.itemSummary.name]]</div>
                             <div secondary>Collection: <span>[[item.collection.name]]</span></div>
                             <div secondary>Unique ID: <span>[[item.uniqueId]]</span></div>
+                            <div secondary style="color:red">[[item.errorMessage]]</div>
                         </paper-item-body>
                         <paper-icon-button icon="remove-circle" on-tap="removeClicked"></paper-icon-button>
                     </div>

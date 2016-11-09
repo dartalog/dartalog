@@ -13,14 +13,21 @@ class ItemActionException implements Exception {
   }
 
   static Future<Null> PerformValidation(
-      Future toAwait(Map<ItemCopyId, String> field_errors)) async {
-    Map<ItemCopyId, String> item_action_errors = new Map<ItemCopyId, String>();
+      Future<Null> toAwait(Map<ItemCopyId, String> fieldErrors)) async {
+    final Map<ItemCopyId, String> itemActionErrors =
+        new Map<ItemCopyId, String>();
 
-    await toAwait(item_action_errors);
+    await toAwait(itemActionErrors);
 
-    if (item_action_errors.length > 0) {
+    final Map<String, String> output = <String, String>{};
+
+    for (ItemCopyId id in itemActionErrors.keys) {
+      output[id.toString()] = itemActionErrors[id];
+    }
+
+    if (itemActionErrors.length > 0) {
       throw new ItemActionException.WithItemActionErrors(
-          "Item action error", item_action_errors);
+          "Item action error", itemActionErrors);
     }
   }
 }

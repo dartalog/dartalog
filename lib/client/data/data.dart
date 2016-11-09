@@ -8,3 +8,4 @@ export 'src/collection.dart';
 export 'src/user.dart';
 export 'src/item_summary.dart';
 export 'src/bulk_import_item.dart';
+export 'src/cart_item.dart';

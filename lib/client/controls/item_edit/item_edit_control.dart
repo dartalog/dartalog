@@ -24,6 +24,7 @@ import 'package:polymer_elements/paper_spinner.dart';
 import 'package:polymer_elements/iron_image.dart';
 import 'package:web_components/web_components.dart';
 import 'package:dartalog/client/api/api.dart' as API;
+import 'package:option/option.dart';
 
 @PolymerRegister('item-edit-control')
 class ItemEditControl extends AControl {
@@ -224,15 +225,19 @@ class ItemEditControl extends AControl {
 
   @reflectable
   uploadClicked(event, [_]) {
-    Element parent = getParentElement(event.target, "div");
-    InputElement input = parent.querySelector("input[type='file']");
+    Option<Element> parent = getParentElement(event.target, "div");
+    if (parent.isEmpty) throw new Exception("Parent div not found");
+
+    InputElement input = parent.get().querySelector("input[type='file']");
     input.click();
   }
 
   @reflectable
   fileUploadChanged(event, [_]) async {
-    Element parent = getParentElement(event.target, "div");
-    int index = int.parse(parent.dataset["index"]);
+    Option<Element> parent = getParentElement(event.target, "div");
+    if (parent.isEmpty) throw new Exception("Parent div not found");
+
+    int index = int.parse(parent.get().dataset["index"]);
     this.set("currentItem.fields.${index}.imageLoading", true);
     try {
       InputElement input = event.target;

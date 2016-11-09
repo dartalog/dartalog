@@ -111,6 +111,7 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
       }
     });
 
+    // TODO: Validate that both the person checking out AND the person being checked out to have permission to take the item.
     List<ItemCopy> copies = await data_sources.itemCopies.getAll(itemCopyIds);
 
     await ItemActionException
@@ -125,8 +126,7 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
           item_action_errors[itemCopyId] = "Item copy not found";
         } else {
           if (!ItemAction.isActionValidForStatus(action, itemCopy.status)) {
-            item_action_errors[itemCopyId] =
-                "Cannot perform action ${action} when item is in status ${itemCopy.status}";
+            item_action_errors[itemCopyId] = "Item is ${itemCopy.status}";
           }
         }
         return item_action_errors;

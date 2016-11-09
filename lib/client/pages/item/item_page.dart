@@ -35,28 +35,41 @@ class ItemPage extends APage with AEditablePage, ASaveablePage {
   Logger get loggerImpl => _log;
 
   @override
-  String get title {
-    if (editPageActive)
-      return itemEditPage.title;
-    else
-      return itemViewPage.title;
+  String get pageTitle {
+    if (editPageActive && itemEditPage != null)
+      return itemEditPage.pageTitle;
+    else if (itemViewPage != null) return itemViewPage.pageTitle;
   }
 
   @override
   String get editLink {
-    if (editPageActive) return StringTools.empty;
+    if (editPageActive || itemViewPage == null) return StringTools.empty;
 
     return itemViewPage.editLink;
   }
 
   @override
   bool get showSaveButton {
-    if (editPageActive) return itemEditPage.showSaveButton;
+    if (editPageActive && itemEditPage != null)
+      return itemEditPage.showSaveButton;
+    return false;
+  }
+
+  @override
+  Future refresh() async {
+    if (!editPageActive && itemViewPage != null)
+      await itemViewPage.refresh();
+  }
+
+  @override
+  bool get showRefreshButton {
+    if (!editPageActive && itemViewPage != null)
+      itemViewPage.showRefreshButton;
     return false;
   }
 
   @override
   Future save() async {
-    if (editPageActive) await itemEditPage.save();
+    if (editPageActive && itemEditPage != null) await itemEditPage.save();
   }
 }

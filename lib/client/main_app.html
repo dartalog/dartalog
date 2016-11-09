@@ -62,15 +62,21 @@
                             <paper-item-body>Browse Items</paper-item-body>
                         </paper-item>
                     </a>
-                    <a href="#collections">
                         <template is="dom-if" if="[[userCanAdd]]">
                             Curating
+                            <a href="#collections">
                             <paper-item on-tap="drawerItemClicked" data-route="collections">
                                 <iron-icon icon="label-outline"></iron-icon>
                                 <paper-item-body>Collections</paper-item-body>
                             </paper-item>
+                            </a>
+                            <a href="#checkin">
+                                <paper-item on-tap="drawerItemClicked" data-route="checkin">
+                                    <iron-icon icon="label-outline"></iron-icon>
+                                    <paper-item-body>Checkin</paper-item-body>
+                                </paper-item>
+                            </a>
                         </template>
-                    </a>
                     <template is="dom-if" if="[[userIsAdmin]]">
                         Admin
                         <a href="#fields">
@@ -164,6 +170,10 @@
                     <template is="dom-if" if="[[importVisible]]" restamp="true">
                         <item-import-page id="itemImportPage" route="{{pageRoute}}" data-page="import"
                                           class="fit"></item-import-page>
+                    </template>
+                    <template is="dom-if" if="[[checkinVisible]]" restamp="true">
+                        <checkin-page id="checkinPage" route="{{pageRoute}}" data-page="checkin"
+                                          class="fit"></checkin-page>
                     </template>
 
                     <!-- Administration pages -->

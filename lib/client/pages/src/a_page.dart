@@ -6,6 +6,9 @@ abstract class APage<T extends APage<T>> extends AControl {
   APage.created(this.pageTitle) : super.created();
 
   @Property(notify: true)
+  bool showRefreshButton = true;
+
+  @Property(notify: true)
   String pageTitle;
 
   bool showBackButton = false;

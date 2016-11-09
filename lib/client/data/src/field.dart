@@ -3,6 +3,7 @@ import 'package:dartalog/global.dart';
 import 'package:dartalog/tools.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/api/api.dart' as API;
+
 class Field extends JsProxy {
   @reflectable
   String format = "";

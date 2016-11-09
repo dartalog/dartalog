@@ -37,6 +37,12 @@ String getImageUrl(String image, ImageType type) {
   }
 }
 
+Element getParentElementRequired(Element start, String tagName) {
+  Option<Element> output = getParentElement(start, tagName);
+  if (output.isEmpty) throw new Exception("Parent ${tagName} not found");
+  return output.get();
+}
+
 /// Gets the first parent [Element] that matches the specified [tagName].
 Option<Element> getParentElement(Element start, String tagName) {
   if (start == null) return new None<Element>();

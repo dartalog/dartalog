@@ -78,12 +78,7 @@ dynamic _startServer() async {
     if (_server != null)
       throw new Exception("Server has already been instantiated");
 
-    String pathToBuild = join(rootDirectory, 'build/web/');
-
-    final Handler staticSiteHandler = createStaticHandler(pathToBuild,
-        listDirectories: false,
-        defaultDocument: 'index.html',
-        serveFilesOutsidePath: true);
+    String pathToBuild;
 
     pathToBuild = join(rootDirectory, 'images');
 
@@ -128,9 +123,19 @@ dynamic _startServer() async {
           '/api/',
           <String>['GET', 'PUT', 'POST', 'HEAD', 'OPTIONS', 'DELETE'],
           apiPipeline,
-          exactMatch: false)
-      ..add('/', <String>['GET', 'OPTIONS'], staticSiteHandler,
           exactMatch: false);
+
+
+
+    pathToBuild = join(rootDirectory, 'build/web/');
+    Directory siteDir = new Directory(pathToBuild);
+    if(siteDir.existsSync()) {
+      final staticSiteHandler = createStaticHandler(pathToBuild,
+          listDirectories: false,
+          defaultDocument: 'index.html',
+          serveFilesOutsidePath: true);
+      root.add('/', ['GET', 'OPTIONS'], staticSiteHandler, exactMatch: false);
+    }
 
     final Map<String, String> extraHeaders = <String, String>{
       'Access-Control-Allow-Headers':

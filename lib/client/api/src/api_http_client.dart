@@ -17,6 +17,9 @@ class ApiHttpClient extends BrowserClient {
     if (!StringTools.isNullOrWhitespace(authKey))
       request.headers.putIfAbsent(HttpHeaders.AUTHORIZATION, () => authKey);
 
+    request.headers.remove(HttpHeaders.USER_AGENT);
+    request.headers.remove(HttpHeaders.CONTENT_LENGTH);
+
     final StreamedResponse response = await super.send(request);
 
     // Check for changed auth header

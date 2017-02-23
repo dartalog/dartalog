@@ -1,6 +1,6 @@
 import 'a_import_provider.dart';
 import 'package:logging/logging.dart';
-import 'scraping_import_criteria.dart';
+import 'package:dartalog/server/import/src/scraping/scraping_import_criteria.dart';
 import 'dart:async';
 import 'import_result.dart';
 import 'package:html/dom.dart';

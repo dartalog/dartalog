@@ -6,6 +6,7 @@ class ScrapingImportCriteria {
   static final Logger _log = new Logger('ScrapingImportCriteria');
 
   static const String innerHtml = "innerHtml";
+  static const String innerText = "innerText";
 
   final String field;
   final String elementSelector;
@@ -58,6 +59,9 @@ class ScrapingImportCriteria {
       switch (elementAttribute) {
         case innerHtml:
           data = ele.innerHtml;
+          break;
+        case innerText:
+          data = ele.text;
           break;
         default:
           if (!ele.attributes.containsKey(elementAttribute) ||

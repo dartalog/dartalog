@@ -1,5 +1,5 @@
 import 'a_scraping_import_provider.dart';
-import 'scraping_import_criteria.dart';
+import 'package:dartalog/server/import/src/scraping/scraping_import_criteria.dart';
 import 'package:logging/logging.dart';
 import 'dart:async';
 import 'search_result.dart';
@@ -33,11 +33,12 @@ class AmazonImportProvider extends AScrapingImportProvider {
           r"Comic": "comic"
         }),
     new ScrapingImportCriteria(
-        elementSelector: 'div#byline',
-        elementAttribute: ScrapingImportCriteria.innerHtml,
-        contentsRegex: r'Format:.+?<span>([^<]+)',
-        contentsRegexGroup: 1,
-        replaceRegex: {r"Blu-ray": "bluray", r"DVD": "dvd", r"VHS": "vhs"})
+        elementSelector: 'div#bylineInfo span + span',
+        replaceRegex: {r"Blu\-ray": "bluray", r"DVD": "dvd", r"VHS": "vhs"}),
+    new ScrapingImportCriteria(
+        elementSelector: '#nav-subnav',
+        elementAttribute: "data-category",
+        replaceRegex: {r"videogames": "video_game"}),
   ];
 
   static List<ScrapingImportCriteria> _fieldCriteria = [

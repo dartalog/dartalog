@@ -17,3 +17,8 @@ div.card_list_item {
     padding-left: 16px;
     padding-right: 16px;
 }
+
+span.error {
+    color:red;
+    font-weight: bold;
+}

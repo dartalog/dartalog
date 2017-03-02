@@ -23,7 +23,7 @@ class PaperToastQueue extends PolymerElement {
   @property
   int duration = 0;
 
-  Queue messages = new Queue();
+  Queue<ToasterQueueMessage> messages = new Queue<ToasterQueueMessage>();
 
   PaperToast get toastElement => this.querySelector('paper-toast');
 
@@ -31,24 +31,24 @@ class PaperToastQueue extends PolymerElement {
   ToasterQueueMessage message;
 
   @reflectable
-  closeToast(event, [_]) {
+  void closeToast(event, [_]) {
     toastElement.close();
     openNextMessage();
   }
 
   @reflectable
-  toasterClicked(event, [_]) {
+  void toasterClicked(event, [_]) {
     set("duration", -1);
   }
 
   @reflectable
-  toasterClosed(event, [_]) {
+  void toasterClosed(event, [_]) {
     openNextMessage();
   }
 
   void openNextMessage() {
     if (this.messages.length > 0) {
-      ToasterQueueMessage nextMessage = messages.removeFirst();
+      final ToasterQueueMessage nextMessage = messages.removeFirst();
 
       if (nextMessage.severity == "error") {
         toastElement.classes.add("error");
@@ -65,7 +65,7 @@ class PaperToastQueue extends PolymerElement {
   void enqueueMessage(String message, [String severity, String details]) {
     if (toastElement == null) return;
 
-    ToasterQueueMessage newMessage =
+    final ToasterQueueMessage newMessage =
         new ToasterQueueMessage(message, severity: severity, details: details);
 
     this.messages.add(newMessage);

@@ -79,6 +79,16 @@ abstract class AResource {
             locationType: "itemCopy",
             message: e.itemActionErrors[id]));
       }
+    } on TransferException catch (e, st) {
+      exception = e;
+      stackTrace = st;
+      output = new BadRequestError(e.message);
+      for (ItemCopyId id in e.transferErrors.keys) {
+        output.errors.add(new RpcErrorDetail(
+            location: id.toString(),
+            locationType: "itemCopy",
+            message: e.transferErrors[id]));
+      }
     } on AlreadyExistsException catch (e, st) {
       exception = e;
       stackTrace = st;

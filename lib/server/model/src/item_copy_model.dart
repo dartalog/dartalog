@@ -35,19 +35,30 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
       {bool includeItemSummary: false, bool includeCollection: false}) async {
     await validateGetPrivileges();
 
-    Option<ItemCopy> optItemCopy =
+    final Option<ItemCopy> optItemCopy =
         await data_sources.itemCopies.getByItemIdAndCopy(itemId, copy);
 
-    ItemCopy itemCopy = optItemCopy.getOrElse(() =>
-        throw new NotFoundException("Copy #${copy} of ${itemId} not found"));
+    final ItemCopy itemCopy = optItemCopy.getOrElse(() =>
+        throw new NotFoundException("Copy #$copy of $itemId not found"));
 
-    if (includeItemSummary) {
-      itemCopy.itemSummary =
-          new ItemSummary.copy(await items.getById(itemCopy.itemId));
-    }
+    await _setAdditionalFieldsOnList(<ItemCopy>[itemCopy], itemId,
+        includeCollection: includeCollection, includeItemSummary: includeItemSummary);
 
-    await _setAdditionalFieldsOnList([itemCopy], itemId,
-        includeCollection: includeCollection);
+    return itemCopy;
+  }
+
+  Future<ItemCopy> getByUniqueId(String uniqueId,
+      {bool includeItemSummary: false, bool includeCollection: false}) async {
+    await validateGetPrivileges();
+
+    final Option<ItemCopy> optItemCopy =
+    await data_sources.itemCopies.getByUniqueId(uniqueId);
+
+    final ItemCopy itemCopy = optItemCopy.getOrElse(() =>
+    throw new NotFoundException("Item copy with unique ID $uniqueId not found"));
+
+    await _setAdditionalFieldsOnList(<ItemCopy>[itemCopy], itemCopy.itemId,
+        includeCollection: includeCollection, includeItemSummary: includeItemSummary);
 
     return itemCopy;
   }
@@ -56,7 +67,7 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
       {bool includeRemoved: false, bool includeCollection: false}) async {
     await validateGetPrivileges();
 
-    List<ItemCopy> output =
+    final List<ItemCopy> output =
         await data_sources.itemCopies.getAllForItemId(itemId);
     await _setAdditionalFieldsOnList(output, itemId,
         includeCollection: includeCollection);
@@ -67,11 +78,11 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
       {bool includeItemSummary: false, bool includeCollection: false}) async {
     await validateGetPrivileges();
 
-    ItemCopy itemCopy = await get(itemId, copy,
+    final ItemCopy itemCopy = await get(itemId, copy,
         includeItemSummary: includeItemSummary,
         includeCollection: includeCollection);
 
-    IdNameList<Collection> visibleCollection =
+    final IdNameList<Collection> visibleCollection =
         await data_sources.itemCollections.getVisibleCollections(currentUserId);
     if (!visibleCollection.containsId(itemCopy.collectionId)) {
       throw new ForbiddenException();
@@ -79,43 +90,60 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
     return itemCopy;
   }
 
+  Future<ItemCopy> getVisibleByUniqueId(String uniqueId,
+      {bool includeItemSummary: false, bool includeCollection: false}) async {
+    await validateGetPrivileges();
+
+    final ItemCopy itemCopy = await getByUniqueId(uniqueId,
+        includeItemSummary: includeItemSummary,
+        includeCollection: includeCollection);
+
+    final IdNameList<Collection> visibleCollection =
+    await data_sources.itemCollections.getVisibleCollections(currentUserId);
+    if (!visibleCollection.containsId(itemCopy.collectionId)) {
+      throw new ForbiddenException();
+    }
+    return itemCopy;
+  }
+
+
   Future<List<ItemCopy>> getVisibleForItem(String itemId,
       {bool includeRemoved: false, bool includeCollection: false}) async {
     await validateGetPrivileges();
 
-    List<ItemCopy> output = await data_sources.itemCopies
+    final List<ItemCopy> output = await data_sources.itemCopies
         .getVisibleForItemId(itemId, currentUserId);
     await _setAdditionalFieldsOnList(output, itemId,
         includeCollection: includeCollection);
     return output;
   }
 
-  Future performBulkAction(List<ItemCopyId> itemCopyIds, String action,
+  Future<Null> performBulkAction(List<ItemCopyId> itemCopyIds, String action,
       String actionerUserId) async {
     // TODO: Pre-validate privileges for all requested items as one command?
     await validateUpdatePrivileges(null);
 
     await DataValidationException
-        .PerformValidation((Map<String, String> field_errors) async {
+        .PerformValidation((Map<String, String> fieldErrors) async {
       if (StringTools.isNullOrWhitespace(action)) {
-        field_errors["action"] = "Required";
+        fieldErrors["action"] = "Required";
       } else if (!ItemAction.isValidAction(action)) {
-        field_errors["action"] = "Invalid";
+        fieldErrors["action"] = "Invalid";
       }
 
       if (StringTools.isNullOrWhitespace(actionerUserId)) {
-        field_errors["user"] = "Required";
+        fieldErrors["user"] = "Required";
       } else {
         if (!await data_sources.users.existsByID(actionerUserId))
-          field_errors["user"] = "Not found";
+          fieldErrors["user"] = "Not found";
       }
     });
 
     // TODO: Validate that both the person checking out AND the person being checked out to have permission to take the item.
-    List<ItemCopy> copies = await data_sources.itemCopies.getAll(itemCopyIds);
+    final List<ItemCopy> copies = await data_sources.itemCopies.getAll(itemCopyIds);
 
     await ItemActionException
-        .PerformValidation((Map<ItemCopyId, String> item_action_errors) async {
+        .PerformValidation((Map<ItemCopyId, String> itemActionErrors) async {
       for (ItemCopyId itemCopyId in itemCopyIds) {
         ItemCopy itemCopy;
         for (ItemCopy ic in copies) {
@@ -123,21 +151,21 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
           break;
         }
         if (itemCopy == null) {
-          item_action_errors[itemCopyId] = "Item copy not found";
+          itemActionErrors[itemCopyId] = "Item copy not found";
         } else {
           if (!ItemAction.isActionValidForStatus(action, itemCopy.status)) {
-            item_action_errors[itemCopyId] = "Item is ${itemCopy.status}";
+            itemActionErrors[itemCopyId] = "Item is ${itemCopy.status}";
           }
         }
-        return item_action_errors;
+        return itemActionErrors;
       }
     });
 
-    String newStatus = ItemAction.getResultingStatus(action);
-    data_sources.itemCopies.updateStatus(itemCopyIds, newStatus);
+    final String newStatus = ItemAction.getResultingStatus(action);
+    await data_sources.itemCopies.updateStatus(itemCopyIds, newStatus);
 
     for (ItemCopy itemCopy in copies) {
-      ItemCopyHistoryEntry historyEntry = new ItemCopyHistoryEntry();
+      final ActionHistoryEntry historyEntry = new ActionHistoryEntry();
       historyEntry.action = action;
       historyEntry.actionerUserId = actionerUserId;
       historyEntry.copy = itemCopy.copy;
@@ -145,6 +173,59 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
       historyEntry.operatorUserId = currentUserId;
 
       itemCopy.status = newStatus;
+
+      await data_sources.itemHistories.write(historyEntry);
+    }
+  }
+
+  Future<Null> transfer(List<ItemCopyId> itemCopyIds, String targetCollection) async {
+    // TODO: Pre-validate privileges for all requested items as one command?
+    await validateUpdatePrivileges(null);
+
+    await DataValidationException
+        .PerformValidation((Map<String, String> fieldErrors) async {
+      if(StringTools.isNullOrWhitespace(targetCollection)) {
+        fieldErrors["targetCollection"] ="Required";
+      } else {
+        if(!await data_sources.itemCollections.existsByID(targetCollection)) {
+          fieldErrors["targetCollection"] ="Invalid";
+        }
+      }
+    });
+
+    // TODO: Validate that the user has permission to transfer to the target collection
+    final List<ItemCopy> copies = await data_sources.itemCopies.getAll(itemCopyIds);
+
+    await TransferException
+        .PerformValidation((Map<ItemCopyId, String> transferErrors) async {
+      for (ItemCopyId itemCopyId in itemCopyIds) {
+        ItemCopy itemCopy;
+        for (ItemCopy ic in copies) {
+          if (itemCopyId.matchesItemCopy(ic)) itemCopy = ic;
+          break;
+        }
+        if (itemCopy == null) {
+          transferErrors[itemCopyId] = "Item copy not found";
+        } else if(itemCopy.collectionId==targetCollection) {
+          transferErrors[itemCopyId] = "Item is already in collection";
+        } else if(itemCopy.status!= ItemStatus.available) {
+          transferErrors[itemCopyId] = "Item is ${itemCopy.status}";
+        }
+        return transferErrors;
+      }
+    });
+
+    await data_sources.itemCopies.updateCollection(itemCopyIds, targetCollection);
+
+    for (ItemCopy itemCopy in copies) {
+      final TransferHistoryEntry historyEntry = new TransferHistoryEntry();
+      historyEntry.fromCollection = itemCopy.collectionId;
+      historyEntry.toCollection = targetCollection;
+      historyEntry.copy = itemCopy.copy;
+      historyEntry.itemId = itemCopy.itemId;
+      historyEntry.operatorUserId = currentUserId;
+
+      itemCopy.collectionId = targetCollection;
 
       await data_sources.itemHistories.write(historyEntry);
     }
@@ -158,7 +239,7 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
     return await data_sources.itemCopies.write(itemCopy, true);
   }
 
-  Future _setAdditionalFields(ItemCopy itemCopy) async {
+  Future<Null> _setAdditionalFields(ItemCopy itemCopy) async {
     itemCopy.eligibleActions = ItemAction.getEligibleActions(itemCopy.status);
     itemCopy.statusName = ItemStatus.getDisplayName(itemCopy.status);
 
@@ -180,41 +261,53 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
     }
   }
 
-  Future _setAdditionalFieldsOnList(List<ItemCopy> data, String itemId,
-      {bool includeCollection: false}) async {
-    IdNameList<Collection> foundCollections = new IdNameList<Collection>();
+  Future<Null> _setAdditionalFieldsOnList(List<ItemCopy> data, String itemId,
+      {bool includeCollection: false, bool includeItemSummary: false}) async {
+
+    final IdNameList<Collection> foundCollections = new IdNameList<Collection>();
+
+    ItemSummary itemSummary;
+    if (includeItemSummary) {
+      itemSummary = new ItemSummary.copy(await items.getById(itemId));
+    }
+
     for (ItemCopy itemCopy in data) {
       itemCopy.itemId = itemId;
       if (includeCollection) {
         if (!foundCollections.containsId(itemCopy.collectionId)) {
-          Option<Collection> collectionOpt =
+          final Option<Collection> collectionOpt =
               await data_sources.itemCollections.getById(itemCopy.collectionId);
           foundCollections.add(collectionOpt.getOrElse(() => throw new Exception(
-              "Collection ID ${itemCopy.collectionId} specified on item ${itemId} copy ${itemCopy.copy} not found ")));
+              "Collection ID ${itemCopy.collectionId} specified on item $itemId copy ${itemCopy.copy} not found ")));
         }
         itemCopy.collection =
             foundCollections.getByID(itemCopy.collectionId).get();
       }
+      if (includeItemSummary) {
+        itemCopy.itemSummary = itemSummary;
+      }
+
+
       await _setAdditionalFields(itemCopy);
     }
   }
 
   @override
-  Future validateFields(ItemCopy itemCopy, bool creating,
+  Future<Null> validateFields(ItemCopy itemCopy, bool creating,
       {bool skipItemIdCheck: false}) async {
-    Map<String, String> field_errors = new Map<String, String>();
+    final Map<String, String> fieldErrors = new Map<String, String>();
 
     if (!skipItemIdCheck) {
       if (StringTools.isNullOrWhitespace(itemCopy.itemId))
-        field_errors["itemId"] = "Required";
+        fieldErrors["itemId"] = "Required";
       else {
-        dynamic test = await data_sources.items.getById(itemCopy.itemId);
-        if (test == null) field_errors["itemId"] = "Not found";
+        if(!await data_sources.items.existsByID(itemCopy.itemId))
+          fieldErrors["itemId"] = "Not found";
       }
       if (itemCopy.copy == 0)
         throw new Exception("Copy must be greater than 0");
       else {
-        bool test = await data_sources.itemCopies
+        final bool test = await data_sources.itemCopies
             .existsByItemIdAndCopy(itemCopy.itemId, itemCopy.copy);
         if (creating) {
           if (test) throw new InvalidInputException("Copy already exists");
@@ -225,43 +318,43 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
     }
 
     if (StringTools.isNullOrWhitespace(itemCopy.collectionId)) {
-      field_errors["collectionId"] = "Required";
+      fieldErrors["collectionId"] = "Required";
     } else {
-      Option<Collection> col =
+      final Option<Collection> col =
           await data_sources.itemCollections.getById(itemCopy.collectionId);
       col.map((Collection col) {
         if (!col.curators.contains(this.currentUserId))
-          field_errors["collectionId"] = "Not a curator";
+          fieldErrors["collectionId"] = "Not a curator";
       }).orElse(() {
-        field_errors["collectionId"] = "Not found";
+        fieldErrors["collectionId"] = "Not found";
       });
     }
 
     if (!StringTools.isNullOrWhitespace(itemCopy.uniqueId)) {
       if (skipItemIdCheck) {
         if (await data_sources.itemCopies.existsByUniqueId(itemCopy.uniqueId)) {
-          field_errors["uniqueId"] = "Already used";
+          fieldErrors["uniqueId"] = "Already used";
         }
       } else {
-        Option<ItemCopy> test =
+        final Option<ItemCopy> test =
             await data_sources.itemCopies.getByUniqueId(itemCopy.uniqueId);
         test.map((ItemCopy testItemCopy) {
           if (testItemCopy.itemId != itemCopy.itemId ||
               testItemCopy.copy != itemCopy.copy)
-            field_errors["uniqueId"] = "Already used";
+            fieldErrors["uniqueId"] = "Already used";
         });
       }
     }
 
     if (creating) {
       if (StringTools.isNullOrWhitespace(itemCopy.status)) {
-        field_errors["status"] = "Required";
+        fieldErrors["status"] = "Required";
       } else {
         if (!ItemStatus.isValidStatus(itemCopy.status))
-          field_errors["status"] = "Invalid";
+          fieldErrors["status"] = "Invalid";
       }
     }
 
-    return field_errors;
+    return fieldErrors;
   }
 }

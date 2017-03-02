@@ -17,5 +17,7 @@ abstract class AItemCopyDataSource extends ADataSource {
   Future<ItemCopyId> write(ItemCopy itemCopy, bool update);
   Future<int> getNextCopyNumber(String itemId);
   Future<List<ItemCopy>> getAll(List<ItemCopyId> itemCopies);
+
   Future<Null> updateStatus(List<ItemCopyId> itemCopies, String status);
+  Future<Null> updateCollection(List<ItemCopyId> itemCopies, String status);
 }

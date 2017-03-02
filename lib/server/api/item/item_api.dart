@@ -12,6 +12,7 @@ export 'src/requests/bulk_item_action_request.dart';
 export 'src/requests/item_action_request.dart';
 export 'src/requests/create_item_request.dart';
 export 'src/requests/update_item_request.dart';
+export 'src/requests/transfer_request.dart';
 
 @ApiClass(
     version: itemApiVersion, name: itemApiName, description: 'Item REST API')

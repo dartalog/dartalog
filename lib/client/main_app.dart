@@ -20,6 +20,7 @@ import 'package:dartalog/client/pages/item/item_page.dart';
 import 'package:dartalog/client/pages/item_add/item_add_page.dart';
 import 'package:dartalog/client/pages/item_browse/item_browse_page.dart';
 import 'package:dartalog/client/pages/checkin/checkin_page.dart';
+import 'package:dartalog/client/pages/curator_tools/curator_tools_page.dart';
 import 'package:dartalog/client/pages/item_import/item_import_page.dart';
 import 'package:dartalog/client/pages/item_type_admin/item_type_admin_page.dart';
 import 'package:dartalog/client/pages/pages.dart';
@@ -142,16 +143,26 @@ class MainApp extends PolymerElement {
   bool get checkoutVisible => getMapValue(routeData, "page") == "checkout";
 
   @property
+  bool get curatorToolsVisible => getMapValue(routeData, "page") == "curator_tools";
+
+
+
+  @property
   bool get collectionsVisible =>
       getMapValue(routeData, "page") == "collections";
 
   @Property(notify: true)
   int get currentPageNumber {
     if (_activePage != null && _activePage is ACollectionPage) {
-      ACollectionPage cp = _activePage as ACollectionPage;
+      final ACollectionPage cp = _activePage as ACollectionPage;
       return cp.currentPage;
     }
-    return 0;
+    return 1;
+  }
+
+  @reflectable
+  bool isCurrentPage(int page) {
+    return page==currentPageNumber;
   }
 
   @property
@@ -159,9 +170,9 @@ class MainApp extends PolymerElement {
 
   set currentUserProperty(User user) {
     if (user == null || StringTools.isNullOrWhitespace(user.name))
-      this.currentUser = new None();
+      this.currentUser = new None<User>();
     else
-      this.currentUser = new Some(user);
+      this.currentUser = new Some<User>(user);
   }
 
   PaperDrawerPanel get drawerPanel => $["drawerPanel"];
@@ -169,7 +180,7 @@ class MainApp extends PolymerElement {
   @Property(notify: true)
   String get editLink {
     if (_activePage != null && _activePage is AEditablePage) {
-      AEditablePage ep = _activePage as AEditablePage;
+      final AEditablePage ep = _activePage as AEditablePage;
       return ep.editLink;
     }
     return StringTools.empty;
@@ -202,7 +213,7 @@ class MainApp extends PolymerElement {
   @Property(notify: true)
   String get searchQuery {
     if (_activePage != null && _activePage is ASearchablePage) {
-      ASearchablePage sp = _activePage as ASearchablePage;
+      final ASearchablePage sp = _activePage as ASearchablePage;
       return sp.searchQuery;
     }
     return StringTools.empty;
@@ -211,7 +222,7 @@ class MainApp extends PolymerElement {
   @Property(notify: true)
   set searchQuery(String query) {
     if (_activePage != null && _activePage is ASearchablePage) {
-      ASearchablePage sp = _activePage as ASearchablePage;
+      final ASearchablePage sp = _activePage as ASearchablePage;
       sp.searchQuery = query;
     }
   }
@@ -219,7 +230,7 @@ class MainApp extends PolymerElement {
   @Property(notify: true)
   bool get showAddButton {
     if (_activePage != null && _activePage is ACollectionPage) {
-      ACollectionPage cp = _activePage as ACollectionPage;
+      final ACollectionPage cp = _activePage as ACollectionPage;
       return cp.showAddButton;
     }
     return false;
@@ -228,7 +239,7 @@ class MainApp extends PolymerElement {
   @Property(notify: true)
   bool get showDeleteButton {
     if (_activePage != null && _activePage is ADeletablePage) {
-      ADeletablePage dp = _activePage as ADeletablePage;
+      final ADeletablePage dp = _activePage as ADeletablePage;
       return dp.showDeleteButton;
     }
     return false;
@@ -237,7 +248,7 @@ class MainApp extends PolymerElement {
   @Property(notify: true)
   bool get showEditButton {
     if (_activePage != null && _activePage is AEditablePage) {
-      AEditablePage ep = _activePage as AEditablePage;
+      final AEditablePage ep = _activePage as AEditablePage;
       return ep.showEditButton;
     }
     return false;
@@ -254,7 +265,7 @@ class MainApp extends PolymerElement {
   @Property(notify: true)
   bool get showSaveButton {
     if (_activePage != null && _activePage is ASaveablePage) {
-      ASaveablePage sp = _activePage as ASaveablePage;
+      final ASaveablePage sp = _activePage as ASaveablePage;
       return sp.showSaveButton;
     }
     return false;
@@ -263,7 +274,7 @@ class MainApp extends PolymerElement {
   @Property(notify: true)
   bool get showSearch {
     if (_activePage != null && _activePage is ASearchablePage) {
-      ASearchablePage sp = _activePage as ASearchablePage;
+      final ASearchablePage sp = _activePage as ASearchablePage;
       return sp.showSearch;
     }
     return false;
@@ -272,7 +283,7 @@ class MainApp extends PolymerElement {
   @Property(notify: true)
   int get totalPages {
     if (_activePage != null && _activePage is ACollectionPage) {
-      ACollectionPage cp = _activePage as ACollectionPage;
+      final ACollectionPage cp = _activePage as ACollectionPage;
       return cp.totalPages;
     }
     return 0;
@@ -283,7 +294,7 @@ class MainApp extends PolymerElement {
 
   APage get _activePage {
     if (routeData != null) {
-      dynamic output =
+      final dynamic output =
           this.querySelector("[data-page='" + routeData["page"] + "']");
       if (output != null) return output;
     }
@@ -298,13 +309,14 @@ class MainApp extends PolymerElement {
     }
   }
 
-  Future addToCart(ItemCopy itemCopy) async {
+  Future<Null> addToCart(ItemCopy itemCopy) async {
     await checkoutControl.addToCart(itemCopy);
     await refreshCartInfo();
   }
 
   /// Called when an instance of main-app is inserted into the DOM.
-  attached() {
+  @override
+  void attached() {
     super.attached();
     //routeChanged(null);
     window.onError.listen((ErrorEvent e) {
@@ -313,8 +325,8 @@ class MainApp extends PolymerElement {
   }
 
   @reflectable
-  backClicked(event, [_]) async {
-    _activePage.goBack();
+  Future<Null> backClicked(event, [_]) async {
+    await _activePage.goBack();
   }
 
   @reflectable
@@ -326,7 +338,7 @@ class MainApp extends PolymerElement {
     set("routeData.page", page);
   }
 
-  Future clearAuthentication() async {
+  Future<Null> clearAuthentication() async {
     setUserObject(null);
     await data_sources.settings.clearAuthCache();
     changeRoute("");
@@ -354,9 +366,9 @@ class MainApp extends PolymerElement {
   @reflectable
   drawerItemClicked(event, [_]) async {
     try {
-      Option<Element> ele = getParentElement(event.target, "paper-item");
+      final Option<Element> ele = getParentElement(event.target, "paper-item");
       if (ele.isNotEmpty) {
-        String route = ele.get().dataset["route"];
+        final String route = ele.get().dataset["route"];
       }
     } catch (e, st) {
       _log.severe("drawerItemClicked", e, st);
@@ -364,10 +376,10 @@ class MainApp extends PolymerElement {
     }
   }
 
-  Future evaluateAuthentication() async {
+  Future<Null> evaluateAuthentication() async {
     bool authed = false;
     try {
-      API.User apiUser = await API.item.users.getMe();
+      final API.User apiUser = await API.item.users.getMe();
 
       setUserObject(new User.copy(apiUser));
 
@@ -397,7 +409,7 @@ class MainApp extends PolymerElement {
   void evaluateCurrentPage() {
     if (_activePage == null) return;
     notifyPath("pageTitle", pageTitle);
-    document.title = "$appTitle -  ${pageTitle}";
+    document.title = "$appTitle -  $pageTitle";
 
     notifyPath("showSearch", showSearch);
     notifyPath("searchQuery", searchQuery);
@@ -427,14 +439,14 @@ class MainApp extends PolymerElement {
     if (this._activePage == null || !(this._activePage is ACollectionPage))
       return StringTools.empty;
 
-    ACollectionPage cp = this._activePage as ACollectionPage;
+    final ACollectionPage cp = this._activePage as ACollectionPage;
     return "#${cp.getPaginationLink(page)}";
   }
 
   void handleException(e, st) {
     if (e is API.DetailedApiRequestError) {
-      API.DetailedApiRequestError dare = e as API.DetailedApiRequestError;
-      StringBuffer message = new StringBuffer();
+      final API.DetailedApiRequestError dare = e as API.DetailedApiRequestError;
+      final StringBuffer message = new StringBuffer();
       message.writeln(dare.message);
       for (API.ApiRequestErrorDetail det in e.errors) {
         message.write(det.location);
@@ -462,7 +474,7 @@ class MainApp extends PolymerElement {
 
   @reflectable
   logInClicked(event, [_]) async {
-    promptForAuthentication();
+    await promptForAuthentication();
   }
 
   @reflectable
@@ -471,17 +483,27 @@ class MainApp extends PolymerElement {
     await evaluateAuthentication();
   }
 
+  @reflectable
   void nextPage(event, [_]) {
     if (this._activePage is ACollectionPage) {
-      ACollectionPage cp = this._activePage as ACollectionPage;
+      final ACollectionPage cp = this._activePage as ACollectionPage;
       if (cp.totalPages > cp.currentPage)
         this.setCurrentPage(cp.currentPage + 1);
     }
   }
 
+  @reflectable
+  void previousPage(event, [_]) {
+    if (this._activePage is ACollectionPage) {
+      final ACollectionPage cp = this._activePage as ACollectionPage;
+      if (cp.currentPage>1)
+        this.setCurrentPage(cp.currentPage - 1);
+    }
+  }
+
   Future promptForAuthentication() async {
-    UserAuthControl ele = $['userAuthElement'];
-    await ele.activateDialog();
+    final UserAuthControl ele = $['userAuthElement'];
+    ele.activateDialog();
   }
 
   Future refreshActivePage() async {
@@ -491,7 +513,7 @@ class MainApp extends PolymerElement {
   }
 
   Future refreshCartInfo() async {
-    int length = (await data_sources.cart.getCart()).length;
+    final int length = (await data_sources.cart.getCart()).length;
     set("cartCount", length);
     set("cartEmpty", length == 0);
   }
@@ -517,6 +539,8 @@ class MainApp extends PolymerElement {
     notifyPath("itemTypesVisible", itemTypesVisible);
     notifyPath("usersVisible", usersVisible);
     notifyPath("addItemVisible", addItemVisible);
+    notifyPath("checkinVisible", checkinVisible);
+    notifyPath("curatorToolsVisible", curatorToolsVisible);
     if (this._activePage != null) {
       _activePage.refresh();
       evaluateCurrentPage();
@@ -526,8 +550,8 @@ class MainApp extends PolymerElement {
   @reflectable
   saveClicked(event, [_]) async {
     if (_activePage is ASaveablePage) {
-      ASaveablePage page = _activePage as ASaveablePage;
-      page.save();
+      final ASaveablePage page = _activePage as ASaveablePage;
+      await page.save();
     }
   }
 
@@ -535,14 +559,15 @@ class MainApp extends PolymerElement {
   Future searchKeypress(event, [_]) async {
     if (event.original.charCode == 13) {
       if (_activePage is ASearchablePage) {
-        ASearchablePage page = _activePage as ASearchablePage;
-        page.search();
+        final ASearchablePage page = _activePage as ASearchablePage;
+        await page.search();
       }
     }
   }
 
   void setCurrentPage(int page) {
-    set("routeParameters.page", page);
+    window.location.hash = getPaginationLink(page);
+    //set("routeParameters.page", page);
   }
 
   void setSearchText(String value) {
@@ -568,14 +593,14 @@ class MainApp extends PolymerElement {
   }
 
   void showMessage(String message, [String severity, String details]) {
-    PaperToastQueue toastElement = $['global_toast'];
+    final PaperToastQueue toastElement = $['global_toast'];
 
     if (toastElement == null) window.alert(message);
 
     toastElement.enqueueMessage(message, severity, details);
   }
 
-  Future startApp() async {
+  Future<Null> startApp() async {
     try {
       await evaluateAuthentication();
 
@@ -602,9 +627,10 @@ class MainApp extends PolymerElement {
     set("loading", false);
   }
 
+
   @reflectable
   toggleDrawerClicked(event, [_]) {
-    PaperDrawerPanel pdp = $['drawerPanel'];
+    final PaperDrawerPanel pdp = $['drawerPanel'];
     pdp.togglePanel();
   }
 
@@ -619,20 +645,39 @@ class MainApp extends PolymerElement {
   }
 
   void _refreshPaginator() {
-    notifyPath("currentPage", currentPageNumber);
-    notifyPath("totalPages", totalPages);
-
     set("showPaginator", totalPages > 1);
 
     if (!showPaginator) return;
 
     clear("availablePages");
-    for (int i = 1; i <= totalPages; i++) {
-      add("availablePages", i);
-    }
+    if(totalPages<=7) {
+      for (int i = 1; i <= totalPages; i++) {
+        add("availablePages", i);
+      }
+    } else {
+      add("availablePages", 1);
+      //add("availablePages", 2);
 
+      var centerPage = currentPageNumber;
+      if(centerPage<=3) {
+        centerPage = 4;
+      } else if(centerPage>=totalPages-3) {
+        centerPage = totalPages-3;
+      }
+
+      for (int i = centerPage-2; i <= centerPage+2; i++) {
+        add("availablePages", i);
+      }
+
+      //add("availablePages", totalPages-1);
+      add("availablePages", totalPages);
+    }
     set("enablePreviousPage", currentPageNumber > 1);
     set("enableNextPage", currentPageNumber < totalPages);
+
+    notifyPath("currentPageNumber", currentPageNumber);
+    notifyPath("totalPages", totalPages);
+
   }
 
   // Optional lifecycle methods - uncomment if needed.

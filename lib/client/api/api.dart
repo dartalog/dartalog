@@ -27,6 +27,7 @@ export 'src/item.dart'
         User,
         MediaMessage,
         UpdateItemRequest,
+        TransferRequest,
         IdResponse;
 
 ItemApi _item;

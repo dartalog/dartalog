@@ -111,19 +111,20 @@ class ItemBrowsePage extends APage
             this.searchQuery = this.routeData["search"];
           }
         }
-        this.currentPage = this.currentPage - 1;
+
+        var serverPage = this.currentPage -1 ;
 
         clear("itemsList");
         set("noItemsFound", false);
         API.PaginatedResponse data;
         if (StringTools.isNullOrWhitespace(searchQuery)) {
-          data = await API.item.items.getVisibleSummaries(page: currentPage);
+          data = await API.item.items.getVisibleSummaries(page: serverPage);
         } else {
           data = await API.item.items
-              .searchVisible(searchQuery, page: currentPage);
+              .searchVisible(searchQuery, page: serverPage);
         }
 
-        currentPage = data.page;
+        currentPage = data.page + 1;
         totalPages = data.totalPages;
         set("itemsList", ItemSummary.convertList(data.items));
         set("noItemsFound", itemsList.length == 0);

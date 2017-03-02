@@ -5,31 +5,29 @@
 library dartalog.client.controls.combo_list;
 
 import 'dart:async';
-import 'package:logging/logging.dart';
-
-import 'package:polymer/polymer.dart';
-import 'package:web_components/web_components.dart';
-import 'package:polymer_elements/paper_dialog.dart';
-import 'package:polymer_elements/paper_item.dart';
-import 'package:polymer_elements/paper_fab.dart';
-import 'package:polymer_elements/paper_tooltip.dart';
-import 'package:option/option.dart';
-import 'package:dartalog/tools.dart';
-import 'package:dartalog/client/controls/controls.dart';
-import 'package:dartalog/client/client.dart';
 import 'dart:html';
+
+import 'package:dartalog/client/client.dart';
+import 'package:dartalog/client/controls/controls.dart';
+import 'package:dartalog/tools.dart';
+import 'package:logging/logging.dart';
+import 'package:option/option.dart';
+import 'package:polymer/polymer.dart';
+import 'package:polymer_elements/paper_dialog.dart';
+import 'package:polymer_elements/paper_fab.dart';
+import 'package:polymer_elements/paper_item.dart';
+import 'package:polymer_elements/paper_tooltip.dart';
+import 'package:web_components/web_components.dart';
 
 @PolymerRegister('combo-list-control')
 class ComboListControl extends AControl {
   static final Logger _log = new Logger("ComboListControl");
 
-  Logger get loggerImpl => _log;
-
   @property
   String errorMessage = "";
+
   @property
   bool invalid = false;
-
   @property
   String label = "";
 
@@ -50,39 +48,13 @@ class ComboListControl extends AControl {
 
   ComboListControl.created() : super.created();
 
-  @reflectable
-  bool isFirst(int index) => index == 0;
-  @reflectable
-  bool isLast(int index) => index == (selectedItems.length - 1);
-
-  Element getParentPaperItem(Element target) {
-    Option<Element> ele = getParentElement(target, "paper-item");
-    if (ele.isEmpty) throw new Exception("Parent paper-item not found");
-    return ele.get();
-  }
-
-  @Observe('selectedValues.*')
-  void usersChanged(Map changeRecord) {
-    clear("selectedItems");
-    for (String id in changeRecord['base']) {
-      _getItem(id).map((item) {
-        if (!selectedItems.contains(item)) add("selectedItems", item);
-      }).orElse(() =>
-          throw new Exception("ID ${id} not found in available item list"));
-    }
-  }
-
-  Option _getItem(String id) {
-    for (dynamic i in items) {
-      if (i.id == id) return new Some(i);
-    }
-    return new None();
-  }
+  @override
+  Logger get loggerImpl => _log;
 
   @reflectable
-  Future addClicked(dynamic event, [_]) async {
+  Future<Null> addClicked(dynamic event, [_]) async {
     try {
-      String id = this.selectedItem;
+      final String id = this.selectedItem;
 
       if (StringTools.isNullOrWhitespace(id))
         throw new Exception("Please select an item");
@@ -99,11 +71,42 @@ class ComboListControl extends AControl {
       this.handleException(e, st);
     }
   }
+  @reflectable
+  Future<Null> downClicked(dynamic event, [_]) async {
+    try {
+      final int index =
+          int.parse(getParentPaperItem(event.target).dataset["index"]);
+
+      if (index == null) {
+        throw new Exception("null index");
+      }
+
+      if (index == selectedValues.length - 1) return;
+
+      final dynamic item = removeAt("selectedValues", index);
+      insert("selectedValues", index + 1, item);
+    } catch (e, st) {
+      _log.severe(e, st);
+      this.handleException(e, st);
+    }
+  }
+
+  Element getParentPaperItem(Element target) {
+    final Option<Element> ele = getParentElement(target, "paper-item");
+    if (ele.isEmpty) throw new Exception("Parent paper-item not found");
+    return ele.get();
+  }
 
   @reflectable
-  Future removeClicked(dynamic event, [_]) async {
+  bool isFirst(int index) => index == 0;
+
+  @reflectable
+  bool isLast(int index) => index == (selectedItems.length - 1);
+
+  @reflectable
+  Future<Null> removeClicked(dynamic event, [_]) async {
     try {
-      String id = getParentPaperItem(event.target).dataset["id"];
+      final String id = getParentPaperItem(event.target).dataset["id"];
 
       if (id == null) {
         throw new Exception("null id");
@@ -116,10 +119,20 @@ class ComboListControl extends AControl {
     }
   }
 
+  @override
+  void setGeneralErrorMessage(String value) {
+    set("errorMessage", value);
+  }
+
+  void setInvalid(bool value) {
+    set("invalid", value);
+  }
+
   @reflectable
-  Future upClicked(dynamic event, [_]) async {
+  Future<Null> upClicked(dynamic event, [_]) async {
     try {
-      int index = getParentPaperItem(event.target).dataset["index"];
+      final int index =
+          int.parse(getParentPaperItem(event.target).dataset["index"]);
 
       if (index == null) {
         throw new Exception("null index");
@@ -127,7 +140,7 @@ class ComboListControl extends AControl {
 
       if (index == 0) return;
 
-      dynamic item = removeAt("selectedValues", index);
+      final dynamic item = removeAt("selectedValues", index);
       insert("selectedValues", index - 1, item);
     } catch (e, st) {
       _log.severe(e, st);
@@ -135,30 +148,21 @@ class ComboListControl extends AControl {
     }
   }
 
-  setInvalid(bool value) {
-    set("invalid", value);
-  }
-
-  setGeneralErrorMessage(String value) {
-    set("errorMessage", value);
-  }
-
-  @reflectable
-  Future downClicked(dynamic event, [_]) async {
-    try {
-      int index = getParentPaperItem(event.target).dataset["index"];
-
-      if (index == null) {
-        throw new Exception("null index");
-      }
-
-      if (index == selectedValues.length - 1) return;
-
-      dynamic item = removeAt("selectedValues", index);
-      insert("selectedValues", index + 1, item);
-    } catch (e, st) {
-      _log.severe(e, st);
-      this.handleException(e, st);
+  @Observe('selectedValues.*')
+  void selectedValueChanged(Map changeRecord) {
+    clear("selectedItems");
+    for (String id in changeRecord['base']) {
+      _getItem(id).map((item) {
+        if (!selectedItems.contains(item)) add("selectedItems", item);
+      }).orElse(() =>
+          throw new Exception("ID ${id} not found in available item list"));
     }
+  }
+
+  Option<dynamic> _getItem(String id) {
+    for (dynamic i in items) {
+      if (i.id == id) return new Some<dynamic>(i);
+    }
+    return new None<dynamic>();
   }
 }

@@ -132,6 +132,17 @@ class MongoItemCopyDataSource extends AMongoObjectDataSource<ItemCopy>
 
   @override
   Future<Null> updateStatus(List<ItemCopyId> itemCopies, String status) async {
+    await _updateItemCopies(itemCopies, _STATUS_FIELD, status);
+  }
+
+  @override
+  Future<Null> updateCollection(
+      List<ItemCopyId> itemCopies, String collection) async {
+    await _updateItemCopies(itemCopies, _COLLECTION_ID_FIELD, collection);
+  }
+
+  Future<Null> _updateItemCopies(
+      List<ItemCopyId> itemCopies, String field, dynamic value) async {
     SelectorBuilder selector;
     for (ItemCopyId id in itemCopies) {
       if (selector == null) {
@@ -145,7 +156,7 @@ class MongoItemCopyDataSource extends AMongoObjectDataSource<ItemCopy>
       }
     }
     final ModifierBuilder modifier =
-        modify.set("$_ITEM_COPIES_FIELD.\$.$_STATUS_FIELD", status);
+        modify.set("$_ITEM_COPIES_FIELD.\$.$field", value);
     await genericUpdate(selector, modifier, multiUpdate: true);
   }
 

@@ -1,0 +1,32 @@
+<!--
+  Copyright (c) 2015, Matthew Barbour. All rights reserved. Use of this source code
+  is governed by a BSD-style license that can be found in the LICENSE file.
+-->
+
+<!-- import polymer-element's definition -->
+<dom-module name="curator-tools-page">
+    <link rel="stylesheet" href="curator_tools_page.css">
+    <style></style>
+
+    <template>
+        <auth-wrapper-control minimum-privilege="curator">
+            <paper-card heading="Transfer Items" style="margin:8px;" class="vertical layout">
+                <div class="card-content">
+                    <paper-dropdown-menu data-field-id="collectionId" floatinglabel label="Collection">
+                        <paper-listbox class="dropdown-content" attr-for-selected="value"
+                                       selected="{{targetCollectionId}}">
+                            <template is="dom-repeat" items="[[collections]]">
+                                <paper-item value="[[item.id]]">[[item.name]]</paper-item>
+                            </template>
+                        </paper-listbox>
+                    </paper-dropdown-menu>
+
+                    <item-picker-control on-item-found="itemFound" button-text="Transfer"></item-picker-control>
+                    <span class="error">[[errorMessage]]</span>
+                </div>
+            </paper-card>
+
+
+        </auth-wrapper-control>
+    </template>
+</dom-module>

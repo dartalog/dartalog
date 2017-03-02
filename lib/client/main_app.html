@@ -48,11 +48,11 @@
             <paper-header-panel drawer>
                 <paper-toolbar>
                     <template is="dom-if" if="[[userLoggedIn]]">
-                        <div>[[currentUserProperty.name]] <span on-tap="logOutClicked"
-                                                                >Log Out</span></div>
+                        <div>[[currentUserProperty.name]] <paper-button on-tap="logOutClicked"
+                                                                >Log Out</paper-button></div>
                     </template>
                     <template is="dom-if" if="[[!userLoggedIn]]">
-                        <div on-tap="logInClicked">Log In</div>
+                        <paper-button on-tap="logInClicked">Log In</paper-button>
                     </template>
                 </paper-toolbar>
                 <div>
@@ -74,6 +74,12 @@
                                 <paper-item on-tap="drawerItemClicked" data-route="checkin">
                                     <iron-icon icon="label-outline"></iron-icon>
                                     <paper-item-body>Checkin</paper-item-body>
+                                </paper-item>
+                            </a>
+                            <a href="#curator_tools">
+                                <paper-item on-tap="drawerItemClicked" data-route="curator_tools">
+                                    <iron-icon icon="label-outline"></iron-icon>
+                                    <paper-item-body>Tools</paper-item-body>
                                 </paper-item>
                             </a>
                         </template>
@@ -175,6 +181,11 @@
                         <checkin-page id="checkinPage" route="{{pageRoute}}" data-page="checkin"
                                           class="fit"></checkin-page>
                     </template>
+                    <template is="dom-if" if="[[curatorToolsVisible]]" restamp="true">
+                        <curator-tools-page id="curatorToolsPage" route="{{pageRoute}}" data-page="curator_tools"
+                                      class="fit"></curator-tools-page>
+                    </template>
+
 
                     <!-- Administration pages -->
                     <template is="dom-if" if="[[fieldsVisible]]" restamp="true">
@@ -196,17 +207,19 @@
 
         <template is="dom-if" if="[[showPaginator]]">
             <paper-material
-                    style="position:fixed; right:16pt;top:52pt; background-color: white;padding: 4pt; max-height: calc(100% - 118pt); overflow: hidden; width: 32pt;"
+                    style="position:fixed; right:16pt;top:52pt; background-color: white;padding: 0pt;
+                    max-height: calc(100% - 118pt); overflow: hidden; width: 36pt;text-align: center;"
                     class="layout vertical">
 
                 <paper-menu selected="[[currentPageNumber]]"
                             attr-for-selected="data-page"
-                            style="overflow-y: auto;overflow-x:hidden; width: 100px;"
+                            style="overflow-y: scroll;overflow-x:hidden; width: 56pt;text-align: center;"
                             class="flexchild">
                     <template is="dom-repeat" items="[[availablePages]]" as="item">
-                        <a href="[[getPaginationLink(item)]]">
-                            <paper-item title="Page [[item]]" data-page="[[item]]" style="cursor: pointer">
-                                [[item]]
+                        <a href="[[getPaginationLink(item)]]" class="paper-item-link"  data-page="[[item]]"
+                           style="text-decoration:none;color:inherit;">
+                            <paper-item title="Page [[item]]" data-page="[[item]]" style="cursor: pointer;text-align:center;margin:0;padding:0;width:36pt;">
+                                    [[item]]
                             </paper-item>
                         </a>
                     </template>

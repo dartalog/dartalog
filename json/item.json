@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "ef9cda5fdae9480ebe09ad8e8dac827cf5249db5",
+ "etag": "334cc15e5c2428397ddfda4b6b7b169303f82a83",
  "discoveryVersion": "v1",
  "id": "item:0.1",
  "name": "item",
@@ -218,6 +218,21 @@
      "type": "string"
     },
     "actionerUserId": {
+     "type": "string"
+    },
+    "itemCopies": {
+     "type": "array",
+     "items": {
+      "$ref": "ItemCopyId"
+     }
+    }
+   }
+  },
+  "TransferRequest": {
+   "id": "TransferRequest",
+   "type": "object",
+   "properties": {
+    "targetCollection": {
      "type": "string"
     },
     "itemCopies": {
@@ -865,60 +880,6 @@
         "$ref": "ItemCopyId"
        }
       },
-      "getVisibleForItem": {
-       "id": "ItemApi.items.copies.getVisibleForItem",
-       "path": "items/{itemId}/copies/",
-       "httpMethod": "GET",
-       "parameters": {
-        "itemId": {
-         "type": "string",
-         "description": "Path parameter: 'itemId'.",
-         "required": true,
-         "location": "path"
-        },
-        "includeCollection": {
-         "type": "boolean",
-         "description": "Query parameter: 'includeCollection'.",
-         "required": false,
-         "location": "query"
-        }
-       },
-       "parameterOrder": [
-        "itemId"
-       ],
-       "response": {
-        "$ref": "ListOfItemCopy"
-       }
-      },
-      "update": {
-       "id": "ItemApi.items.copies.update",
-       "path": "items/{itemId}/copies/{copy}/",
-       "httpMethod": "PUT",
-       "parameters": {
-        "itemId": {
-         "type": "string",
-         "description": "Path parameter: 'itemId'.",
-         "required": true,
-         "location": "path"
-        },
-        "copy": {
-         "type": "integer",
-         "description": "Path parameter: 'copy'.",
-         "required": true,
-         "location": "path"
-        }
-       },
-       "parameterOrder": [
-        "itemId",
-        "copy"
-       ],
-       "request": {
-        "$ref": "ItemCopy"
-       },
-       "response": {
-        "$ref": "ItemCopyId"
-       }
-      },
       "get": {
        "id": "ItemApi.items.copies.get",
        "path": "items/{itemId}/copies/{copy}/",
@@ -957,6 +918,62 @@
         "$ref": "ItemCopy"
        }
       },
+      "getByUniqueID": {
+       "id": "ItemApi.items.copies.getByUniqueID",
+       "path": "items/copies/by_unique_id/{uniqueId}/",
+       "httpMethod": "GET",
+       "parameters": {
+        "uniqueId": {
+         "type": "string",
+         "description": "Path parameter: 'uniqueId'.",
+         "required": true,
+         "location": "path"
+        },
+        "includeCollection": {
+         "type": "boolean",
+         "description": "Query parameter: 'includeCollection'.",
+         "required": false,
+         "location": "query"
+        },
+        "includeItemSummary": {
+         "type": "boolean",
+         "description": "Query parameter: 'includeItemSummary'.",
+         "required": false,
+         "location": "query"
+        }
+       },
+       "parameterOrder": [
+        "uniqueId"
+       ],
+       "response": {
+        "$ref": "ItemCopy"
+       }
+      },
+      "getVisibleForItem": {
+       "id": "ItemApi.items.copies.getVisibleForItem",
+       "path": "items/{itemId}/copies/",
+       "httpMethod": "GET",
+       "parameters": {
+        "itemId": {
+         "type": "string",
+         "description": "Path parameter: 'itemId'.",
+         "required": true,
+         "location": "path"
+        },
+        "includeCollection": {
+         "type": "boolean",
+         "description": "Query parameter: 'includeCollection'.",
+         "required": false,
+         "location": "query"
+        }
+       },
+       "parameterOrder": [
+        "itemId"
+       ],
+       "response": {
+        "$ref": "ListOfItemCopy"
+       }
+      },
       "performAction": {
        "id": "ItemApi.items.copies.performAction",
        "path": "items/{itemId}/copies/{copy}/action/",
@@ -985,12 +1002,51 @@
       },
       "performBulkAction": {
        "id": "ItemApi.items.copies.performBulkAction",
-       "path": "items/copies/bulk_action/",
+       "path": "items/copies/action/",
        "httpMethod": "PUT",
        "parameters": {},
        "parameterOrder": [],
        "request": {
         "$ref": "BulkItemActionRequest"
+       }
+      },
+      "transfer": {
+       "id": "ItemApi.items.copies.transfer",
+       "path": "items/copies/transfer/",
+       "httpMethod": "PUT",
+       "parameters": {},
+       "parameterOrder": [],
+       "request": {
+        "$ref": "TransferRequest"
+       }
+      },
+      "update": {
+       "id": "ItemApi.items.copies.update",
+       "path": "items/{itemId}/copies/{copy}/",
+       "httpMethod": "PUT",
+       "parameters": {
+        "itemId": {
+         "type": "string",
+         "description": "Path parameter: 'itemId'.",
+         "required": true,
+         "location": "path"
+        },
+        "copy": {
+         "type": "integer",
+         "description": "Path parameter: 'copy'.",
+         "required": true,
+         "location": "path"
+        }
+       },
+       "parameterOrder": [
+        "itemId",
+        "copy"
+       ],
+       "request": {
+        "$ref": "ItemCopy"
+       },
+       "response": {
+        "$ref": "ItemCopyId"
        }
       }
      },
@@ -1270,6 +1326,25 @@
      "parameterOrder": [
       "id"
      ]
+    },
+    "getBorrowedItems": {
+     "id": "ItemApi.users.getBorrowedItems",
+     "path": "users/{id}/borrowed/",
+     "httpMethod": "GET",
+     "parameters": {
+      "id": {
+       "type": "string",
+       "description": "Path parameter: 'id'.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "id"
+     ],
+     "response": {
+      "$ref": "ListOfIdNamePair"
+     }
     }
    },
    "resources": {}

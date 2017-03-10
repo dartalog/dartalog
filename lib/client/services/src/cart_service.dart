@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:indexed_db' as idb;
 
-import 'package:dartalog/client/data/data.dart';
+import 'package:dartalog/data/data.dart';
 
 import 'a_data_source.dart';
+import 'package:angular2/core.dart';
 
-class CartDataSource extends ADataSource {
+@Injectable()
+class CartService extends ADataSource {
   Future<List<ItemCopy>> getCart() async {
     return await wrapTransaction(
         ADataSource.idbCartStore, ADataSource.readOnlyPermission,
@@ -15,7 +17,10 @@ class CartDataSource extends ADataSource {
       final List<ItemCopy> output = <ItemCopy>[];
       await stream.forEach((idb.CursorWithValue cursor) {
         final Map<String, dynamic> value = cursor.value;
-        output.add(new ItemCopy.forItem(value["itemId"], copy: value["copy"]));
+        final ItemCopy ic = new ItemCopy();
+        ic.itemId = value["itemId"];
+        ic.copy = value["copy"];
+        output.add(ic);
       });
 
       return output;

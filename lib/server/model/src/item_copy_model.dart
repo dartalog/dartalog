@@ -268,7 +268,7 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
 
     ItemSummary itemSummary;
     if (includeItemSummary) {
-      itemSummary = new ItemSummary.copy(await items.getById(itemId));
+      itemSummary = new ItemSummary.copyObject(await items.getById(itemId));
     }
 
     for (ItemCopy itemCopy in data) {

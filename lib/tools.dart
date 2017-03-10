@@ -82,7 +82,13 @@ class StringTools {
 
     return false;
   }
+
+  static bool isNotNullOrWhitespace(String input) {
+    return !isNullOrWhitespace(input);
+  }
 }
+
+
 
 Future<Null> wait({int milliseconds: 100}) {
   final Completer<Null> completer = new Completer<Null>();

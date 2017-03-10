@@ -10,6 +10,8 @@ environment:
 dependencies:
   # analyzer 0.27.3 has a bug with paths on Windows
   analyzer: ^0.29.0
+  angular2: ^3.0.0-alpha
+  angular2_components: any
   args: ^0.13.6
   browser: ^0.10.0
   connection_pool: ^0.1.2
@@ -41,6 +43,9 @@ dependencies:
   shelf_static: ^0.2.4
   #test: any
   web_components: ^0.12.3
+dependency_overrides:
+  uri:
+    git: https://github.com/google/uri.dart.git
 executables:
   dartalog-server: server
 transformers:
@@ -48,6 +53,12 @@ transformers:
     entry_points:
       - web/index.html
       - web/setup/index.html
+- angular2:
+    platform_directives:
+    - 'package:angular2/common.dart#COMMON_DIRECTIVES'
+    platform_pipes:
+    - 'package:angular2/common.dart#COMMON_PIPES'
+    entry_points: web/main.dart
 - $dart2js:
     minify: true
     commandLineOptions:

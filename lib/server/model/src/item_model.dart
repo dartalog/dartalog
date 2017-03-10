@@ -257,7 +257,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
       item.values[f.getId] = "${HOSTED_IMAGE_PREFIX}${hashString}";
     }
 
-    // Now that the above sections have completed gathering all the file data_sources for saving, we save it all
+    // Now that the above sections have completed gathering all the file services for saving, we save it all
     List<String> filesWritten = new List<String>();
     try {
       if (!ORIGINAL_IMAGE_DIR.existsSync())

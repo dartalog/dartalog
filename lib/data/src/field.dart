@@ -1,6 +1,6 @@
-import 'a_id_data.dart';
+import 'package:dartalog/data/src/a_id_data.dart';
 
-class User extends AIdData {
+class Field extends AIdData {
   String id = "";
   String get getId => id;
   set getId(String value) => id = value;
@@ -9,11 +9,11 @@ class User extends AIdData {
   String get getName => name;
   set getName(String value) => name = value;
 
-  String password;
-
-  String idNumber = ""; // For library cards and such
+  bool unique = false;
 
   String type;
 
-  User();
+  String format = "";
+
+  Field();
 }

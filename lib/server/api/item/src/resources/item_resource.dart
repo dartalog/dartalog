@@ -47,7 +47,7 @@ class ItemResource extends AIdResource<Item> {
       catchExceptionsAwait(() async =>
           new PaginatedResponse.convertPaginatedData(
               await model.items.getVisible(page: page, perPage: perPage),
-              (Item item) => new ItemSummary.copy(item)));
+              (Item item) => new ItemSummary.copyItem(item)));
 
   @ApiMethod(path: '${_API_PATH}/{id}/')
   Future<Item> getById(String id,
@@ -68,7 +68,7 @@ class ItemResource extends AIdResource<Item> {
           new PaginatedResponse.convertPaginatedData(
               await model.items
                   .searchVisible(query, page: page, perPage: perPage),
-              (Item item) => new ItemSummary.copy(item)));
+              (Item item) => new ItemSummary.copyItem(item)));
 
   Future<IdResponse> update(String id, Item item) => updateWithCatch(id, item);
 

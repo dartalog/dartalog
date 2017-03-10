@@ -1,4 +1,4 @@
-import 'a_id_data.dart';
+import 'package:dartalog/data/src/a_id_data.dart';
 import 'field.dart';
 
 class ItemType extends AIdData {

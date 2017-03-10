@@ -16,7 +16,7 @@ import 'package:polymer_elements/paper_input.dart';
 import 'package:dartalog/tools.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/controls/controls.dart';
-import 'package:dartalog/client/data_sources/data_sources.dart' as data_source;
+import 'package:dartalog/client/services/services.dart' as data_source;
 import 'package:option/option.dart';
 
 @PolymerRegister('user-auth-control')

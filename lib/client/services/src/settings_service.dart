@@ -2,8 +2,10 @@ import 'package:option/option.dart';
 import 'dart:async';
 import 'dart:indexed_db' as idb;
 import 'a_data_source.dart';
+import 'package:angular2/core.dart';
 
-class SettingsDataSource extends ADataSource {
+@Injectable()
+class SettingsService extends ADataSource {
   static const String authKeyName = "authKey";
 
   Future<Null> cacheAuthKey(String text) async {

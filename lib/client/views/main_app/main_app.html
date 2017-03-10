@@ -1,0 +1,39 @@
+<link rel="stylesheet" href="main_app.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+<auth-status [(authed)]="userLoggedIn"></auth-status>
+
+<paper-drawer-panel responsive-width="1920px">
+    <paper-header-panel drawer>
+        <paper-toolbar>
+            <div *ngIf="userLoggedIn">{{currentUser.name}}
+                <material-button raised
+                                 (trigger)="clearAuthentication()"
+                                 class="blue" >
+                    Log Out
+                </material-button>
+            </div>
+            <material-button raised
+                             (trigger)="promptForAuthentication()"
+                             class="blue" *ngIf="!userLoggedIn" >
+                Log In
+            </material-button>
+        </paper-toolbar>
+        <div>
+            <a [routerLink]="['Home']">Browse</a>
+        </div>
+    </paper-header-panel>
+    <paper-header-panel main>
+        <paper-toolbar class="container">
+            <span class="title" style="margin-left:0pt;">{{pageTitle}}</span>
+            <page-control-toolbar></page-control-toolbar>
+        </paper-toolbar>
+        <div>
+            <router-outlet></router-outlet>
+            <paginator></paginator>
+        </div>
+    </paper-header-panel>
+</paper-drawer-panel>
+
+
+<login-form [(visible)]="isLoginOpen" id="userAuthElement"></login-form>

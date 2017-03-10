@@ -13,7 +13,7 @@ import 'package:dartalog/client/controls/controls.dart';
 import 'package:dartalog/client/controls/paper_toast_queue/paper_toast_queue.dart';
 import 'package:dartalog/client/controls/user_auth/user_auth_control.dart';
 import 'package:dartalog/client/data/data.dart';
-import 'package:dartalog/client/data_sources/data_sources.dart' as data_sources;
+import 'package:dartalog/client/services/services.dart' as data_sources;
 import 'package:dartalog/client/pages/collections/collections_page.dart';
 import 'package:dartalog/client/pages/field_admin/field_admin_page.dart';
 import 'package:dartalog/client/pages/item/item_page.dart';
@@ -51,7 +51,6 @@ import 'package:polymer_elements/paper_toolbar.dart';
 import 'package:route_hierarchical/client.dart';
 import 'package:web_components/web_components.dart';
 
-/// Uses [PaperInput]
 @PolymerRegister('main-app')
 class MainApp extends PolymerElement {
   static final Logger _log = new Logger("MainApp");
@@ -70,7 +69,7 @@ class MainApp extends PolymerElement {
   bool cartEmpty = true;
   @property
   bool userLoggedIn = false;
-  Option<User> currentUser = new None();
+  Option<User> currentUser = new None<User>();
 
   @property
   bool userIsAdmin = false;

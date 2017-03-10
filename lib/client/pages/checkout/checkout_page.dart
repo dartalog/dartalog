@@ -32,7 +32,7 @@ import 'package:polymer_elements/paper_input.dart';
 import 'package:polymer_elements/paper_listbox.dart';
 import 'package:web_components/web_components.dart';
 import 'package:dartalog/client/api/dartalog.dart' as API;
-import 'package:dartalog/client/data_sources/data_sources.dart' as data_sources;
+import 'package:dartalog/client/services/services.dart' as data_sources;
 
 @PolymerRegister('checkout-page')
 class CheckoutPage extends APage {

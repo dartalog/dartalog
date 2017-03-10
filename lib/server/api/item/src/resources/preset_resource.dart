@@ -26,11 +26,11 @@ class PresetResource extends AResource {
 //  Future<ItemTypeResponse> get(String uuid) async {
 //    try {
 //      ItemTypeResponse output = new ItemTypeResponse();
-//      output.itemType = await data_sources.presets.getPreset(uuid);
+//      output.itemType = await services.presets.getPreset(uuid);
 //      if(output.itemType==null) {
-//        throw new data_sources.NotFoundException("Could not find specified preset");
+//        throw new services.NotFoundException("Could not find specified preset");
 //      }
-//      output.fields = await data_sources.presets.getFields(output.itemType.fields);
+//      output.fields = await services.presets.getFields(output.itemType.fields);
 //      return output;
 //    } catch (e, st) {
 //      _HandleException(e, st);
@@ -40,7 +40,7 @@ class PresetResource extends AResource {
 //  @ApiMethod(method: 'POST', path: 'presets/{uuid}/')
 //  Future<VoidMessage> install(String uuid, VoidMessage blank) async {
 //    try {
-//      await data_sources.presets.install(uuid);
+//      await services.presets.install(uuid);
 //      return null;
 //    } catch(e,st) {
 //      _HandleException(e, st);

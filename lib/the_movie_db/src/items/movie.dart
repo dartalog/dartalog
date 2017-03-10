@@ -4,7 +4,7 @@ import 'a_item.dart';
 class Movie extends AItem {
   Movie(Map data, Config config) : super(data, config);
 
-  //  Example data_sources
+  //  Example services
   //  {
   //  adult: false,
   //  backdrop_path: "/jJKKvHnVYQxpp1xj4cZHdoFCIu6.jpg",

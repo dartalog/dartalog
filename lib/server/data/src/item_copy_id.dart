@@ -1,5 +1,5 @@
-import 'a_data.dart';
-import 'item_copy.dart';
+import 'package:dartalog/data/src/a_data.dart';
+import 'package:dartalog/data/src/item_copy.dart';
 import 'dart:convert';
 
 class ItemCopyId extends AData {

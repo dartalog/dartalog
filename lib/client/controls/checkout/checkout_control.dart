@@ -11,7 +11,7 @@ import 'dart:html';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/controls/controls.dart';
 import 'package:dartalog/client/data/data.dart';
-import 'package:dartalog/client/data_sources/data_sources.dart' as data_sources;
+import 'package:dartalog/client/services//services.dart' as data_sources;
 import 'package:dartalog/global.dart';
 import 'package:logging/logging.dart';
 import 'package:option/option.dart';

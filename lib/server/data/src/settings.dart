@@ -1,4 +1,4 @@
-import 'a_data.dart';
+import 'package:dartalog/data/src/a_data.dart';
 import 'dart:async';
 
 class ImportSettings extends AData {

@@ -1,8 +1,4 @@
-<link rel="stylesheet" href="main_app.css">
-<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-
 <auth-status [(authed)]="userLoggedIn"></auth-status>
-
 <paper-drawer-panel responsive-width="1920px">
     <paper-header-panel drawer>
         <paper-toolbar>
@@ -19,14 +15,19 @@
                 Log In
             </material-button>
         </paper-toolbar>
-        <div>
-            <a [routerLink]="['Home']">Browse</a>
+        <div class="sideMenu">
+            <a [routerLink]="['Home']">
+                <paper-item>
+                    <iron-icon icon="label-outline"></iron-icon>
+                    <paper-item-body>Browse Items</paper-item-body>
+                </paper-item>
+            </a>
         </div>
     </paper-header-panel>
     <paper-header-panel main>
         <paper-toolbar class="container">
             <span class="title" style="margin-left:0pt;">{{pageTitle}}</span>
-            <page-control-toolbar></page-control-toolbar>
+            <page-control-toolbar style="margin-top:16pt;"></page-control-toolbar>
         </paper-toolbar>
         <div>
             <router-outlet></router-outlet>
@@ -34,6 +35,4 @@
         </div>
     </paper-header-panel>
 </paper-drawer-panel>
-
-
 <login-form [(visible)]="isLoginOpen" id="userAuthElement"></login-form>

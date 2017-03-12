@@ -13,12 +13,16 @@ import 'package:angular2/router.dart';
     directives: const [ROUTER_DIRECTIVES,materialDirectives],
     template: '''
       <material-input [(ngModel)]="query"  label="Search" trailingGlyph="search" (keyup)="searchKeyup(\$event)" ></material-input>
-      <material-button icon><glyph icon="refresh"></glyph></material-button>
+      <material-button icon (trigger)="refreshClicked()"><glyph icon="refresh"></glyph></material-button>
     ''')
 class PageControlToolbarComponent implements OnDestroy {
   static final Logger _log = new Logger("PageControlToolbarComponent");
 
   String query = "";
+
+  void refreshClicked() {
+    _pageControl.requestPageAction(PageActions.Refresh);
+  }
 
   final PageControlService _pageControl;
 

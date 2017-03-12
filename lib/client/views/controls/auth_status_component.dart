@@ -5,7 +5,7 @@ import 'package:logging/logging.dart';
 
 @Component(
     selector: 'auth-status',
-    template: '{{authed}}')
+    template: '')
 class AuthStatusComponent implements OnDestroy {
   static final Logger _log = new Logger("AuthStatusComponent");
 

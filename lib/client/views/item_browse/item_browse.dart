@@ -1,22 +1,23 @@
 import 'dart:async';
-import 'package:dartalog/tools.dart';
-import 'package:angular2/router.dart';
-import 'package:angular2/platform/common.dart';
-import 'package:dartalog/client/client.dart';
+
 import 'package:angular2/angular2.dart';
+import 'package:angular2/platform/common.dart';
+import 'package:angular2/router.dart';
+import 'package:dartalog/client/client.dart';
+import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/services/services.dart';
 import 'package:dartalog/client/views/controls/auth_status_component.dart';
 import 'package:dartalog/data/data.dart';
+import 'package:dartalog/tools.dart';
 import 'package:logging/logging.dart';
 import 'package:polymer_elements/iron_flex_layout/classes/iron_flex_layout.dart';
-import 'package:dartalog/client/data/data.dart';
+
 @Component(
     selector: 'item-browse',
-    providers: const [
-    ],
-    directives: const [ROUTER_DIRECTIVES,
-    AuthStatusComponent],
-    styles: const ['''
+    providers: const [],
+    directives: const [ROUTER_DIRECTIVES, AuthStatusComponent],
+    styles: const [
+      '''
                 a.item_card paper-material {
                     cursor: pointer;
                     width: 200pt;
@@ -100,9 +101,10 @@ import 'package:dartalog/client/data/data.dart';
                         width: calc(100% / 10 - 4pt)!important;
                     }
                 }
-    '''],
+    '''
+    ],
     template: '''
-      <div *ngIf="noItemsFound" style="width:100%;text-align: center;margin:16pt;">No Items Found</div>
+      <div *ngIf="noItemsFound&&!loading" style="width:100%;text-align: center;margin:16pt;">No Items Found</div>
       <span *ngFor="let i of items" >
       <a [routerLink]="['Item', {id: i.id}]" class="item_card">
           <paper-material class="item_card" data-id="{{i.id}}" title="{{i.name}}" class="container">
@@ -120,6 +122,7 @@ class ItemBrowseComponent implements OnInit, OnDestroy {
   static final Logger _log = new Logger("ItemBrowseComponent");
 
   bool userLoggedIn;
+  bool loading = false;
   final ApiService _api;
   final RouteParams _routeParams;
   final PageControlService _pageControl;
@@ -128,24 +131,36 @@ class ItemBrowseComponent implements OnInit, OnDestroy {
 
   String _currentQuery = "";
 
-  ItemBrowseComponent(this._api, this._routeParams, this._pageControl, this._router) {
-    _searchSubscription = _pageControl.searchChanged.listen(onSearchChanged);
-  }
+  StreamSubscription<String> _searchSubscription;
+  StreamSubscription<PageActions> _pageActionSubscription;
 
-  void onSearchChanged(String query) {
-    if(_currentQuery!=query) {
-      this._currentQuery = query;
-      _router.navigate(["ItemsSearch", {"query": query}]);
-    }
+  ItemBrowseComponent(
+      this._api, this._routeParams, this._pageControl, this._router) {
+    _searchSubscription = _pageControl.searchChanged.listen(onSearchChanged);
+    _pageActionSubscription = _pageControl.pageActionRequested.listen(onPageActionRequested);
   }
 
   bool get noItemsFound => items.isEmpty;
 
-  StreamSubscription<String> _searchSubscription;
-
+  void onPageActionRequested(PageActions action) {
+    switch(action) {
+      case PageActions.Refresh:
+        this.refresh();
+        break;
+      default:
+        throw new Exception(action.toString() + " not implemented for this page");
+    }
+  }
 
   String getThumbnailForImage(String value) {
     return getImageUrl(value, ImageType.thumbnail);
+  }
+
+  @override
+  void ngOnDestroy() {
+    _searchSubscription.cancel();
+    _pageActionSubscription.cancel();
+    _pageControl.reset();
   }
 
   @override
@@ -153,26 +168,32 @@ class ItemBrowseComponent implements OnInit, OnDestroy {
     refresh();
   }
 
-  @override
-  void ngOnDestroy() {
-    _searchSubscription.cancel();
-    _pageControl.reset();
+  void onSearchChanged(String query) {
+    if (_currentQuery != query) {
+      this._currentQuery = query;
+      _router.navigate([
+        "ItemsSearch",
+        {"query": query}
+      ]);
+    }
   }
 
   Future<Null> refresh() async {
     try {
+      loading = true;
       int page = 0;
       String query = "";
       String routeName = itemsPageRoute;
-      if(_routeParams.params.containsKey("page")) {
-        page = int.parse(_routeParams.get("page") ?? '1', onError: (_) => 1) - 1;
+      if (_routeParams.params.containsKey("page")) {
+        page =
+            int.parse(_routeParams.get("page") ?? '1', onError: (_) => 1) - 1;
       }
-      if(_routeParams.params.containsKey("query")) {
+      if (_routeParams.params.containsKey("query")) {
         query = _routeParams.get("query");
       }
 
       PaginatedResponse response;
-      if(StringTools.isNullOrWhitespace(query)) {
+      if (StringTools.isNullOrWhitespace(query)) {
         response = await _api.items.getVisibleSummaries(page: page);
       } else {
         response = await _api.items.searchVisible(query, page: page);
@@ -184,9 +205,9 @@ class ItemBrowseComponent implements OnInit, OnDestroy {
         items.addAll(ItemSummary.convertObjectList(response.items));
 
       final PaginationInfo info = new PaginationInfo();
-      for(int i = 0; i < response.totalPages; i++) {
-        final Map<String,String> params = <String,String>{};
-        if(StringTools.isNotNullOrWhitespace(query)) {
+      for (int i = 0; i < response.totalPages; i++) {
+        final Map<String, String> params = <String, String>{};
+        if (StringTools.isNotNullOrWhitespace(query)) {
           params["query"] = query;
         }
         params["page"] = (i + 1).toString();
@@ -196,6 +217,8 @@ class ItemBrowseComponent implements OnInit, OnDestroy {
       _pageControl.setPaginationInfo(info);
     } catch (e, st) {
       _log.severe("refresh", e, st);
+    } finally {
+      loading = false;
     }
   }
 }

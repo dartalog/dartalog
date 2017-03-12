@@ -17,12 +17,15 @@ import 'package:polymer_elements/paper_header_panel.dart';
 import 'package:polymer_elements/paper_toolbar.dart';
 import 'package:polymer_elements/paper_material.dart';
 import 'package:polymer_elements/iron_image.dart';
-
+import 'package:polymer_elements/paper_item.dart';
+import 'package:polymer_elements/iron_icon.dart';
+import 'package:polymer_elements/paper_item_body.dart';
 
 @Component(
     selector: 'main-app',
     encapsulation: ViewEncapsulation.Native,
     templateUrl: 'main_app.html',
+    styleUrls: const ['main_app.css'],
     directives: const [
       ROUTER_DIRECTIVES,
       materialDirectives,

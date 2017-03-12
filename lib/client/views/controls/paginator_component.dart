@@ -10,14 +10,14 @@ import 'package:logging/logging.dart';
 @Component(
     selector: 'paginator',
     styles: const [
-      'div.paginator { position:fixed; background-color:white; bottom: 15pt; right:16pt; left:16pt;}'
+      'div.paginator { position:fixed; background-color:white; bottom: 8pt; right:8pt; margin-left:8pt;}'
     ],
     directives: const [ROUTER_DIRECTIVES, materialDirectives],
     providers: const [materialProviders],
     template: '''
     <div class="paginator" *ngIf="pages.isNotEmpty" >
     <material-button *ngIf="isNotFirstPage">Back</material-button>
-    <material-button *ngFor="let p of pages; let i = index" [routerLink]="p">{{i+1}}</material-button>
+    <material-button *ngFor="let p of pages; let i = index" [routerLink]="p" style="width:24pt;">{{i+1}}</material-button>
     <material-button *ngIf="isNotLastPage" >Next</material-button>
     </div>
     ''')

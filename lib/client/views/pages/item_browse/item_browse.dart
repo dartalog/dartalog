@@ -137,20 +137,11 @@ class ItemBrowseComponent implements OnInit, OnDestroy {
   ItemBrowseComponent(
       this._api, this._routeParams, this._pageControl, this._router) {
     _searchSubscription = _pageControl.searchChanged.listen(onSearchChanged);
-    _pageActionSubscription = _pageControl.pageActionRequested.listen(onPageActionRequested);
+    _pageActionSubscription =
+        _pageControl.pageActionRequested.listen(onPageActionRequested);
   }
 
   bool get noItemsFound => items.isEmpty;
-
-  void onPageActionRequested(PageActions action) {
-    switch(action) {
-      case PageActions.Refresh:
-        this.refresh();
-        break;
-      default:
-        throw new Exception(action.toString() + " not implemented for this page");
-    }
-  }
 
   String getThumbnailForImage(String value) {
     return getImageUrl(value, ImageType.thumbnail);
@@ -166,6 +157,17 @@ class ItemBrowseComponent implements OnInit, OnDestroy {
   @override
   void ngOnInit() {
     refresh();
+  }
+
+  void onPageActionRequested(PageActions action) {
+    switch (action) {
+      case PageActions.Refresh:
+        this.refresh();
+        break;
+      default:
+        throw new Exception(
+            action.toString() + " not implemented for this page");
+    }
   }
 
   void onSearchChanged(String query) {

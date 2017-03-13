@@ -7,28 +7,33 @@ import 'package:angular2_components/angular2_components.dart';
 import 'package:dartalog/client/services/services.dart';
 import 'package:dartalog/client/views/controls/auth_status_component.dart';
 import 'package:dartalog/client/views/controls/login_form_component.dart';
-import 'package:dartalog/client/views/item_browse/item_browse.dart';
-import 'package:dartalog/client/views/controls/paginator_component.dart';
 import 'package:dartalog/client/views/controls/page_control_toolbar_component.dart';
+import 'package:dartalog/client/views/controls/paginator_component.dart';
+import 'package:dartalog/client/views/pages/pages.dart';
 import 'package:dartalog/data/data.dart';
+import 'package:dartalog/global.dart';
+import 'package:dartalog/tools.dart';
 import 'package:polymer_elements/iron_flex_layout/classes/iron_flex_layout.dart';
+import 'package:polymer_elements/iron_icon.dart';
+import 'package:polymer_elements/iron_image.dart';
 import 'package:polymer_elements/paper_drawer_panel.dart';
 import 'package:polymer_elements/paper_header_panel.dart';
-import 'package:polymer_elements/paper_toolbar.dart';
-import 'package:polymer_elements/paper_material.dart';
-import 'package:polymer_elements/iron_image.dart';
 import 'package:polymer_elements/paper_item.dart';
-import 'package:polymer_elements/iron_icon.dart';
 import 'package:polymer_elements/paper_item_body.dart';
+import 'package:polymer_elements/paper_material.dart';
+import 'package:polymer_elements/paper_toolbar.dart';
 
 @Component(
     selector: 'main-app',
     encapsulation: ViewEncapsulation.Native,
     templateUrl: 'main_app.html',
-    styleUrls: const ['main_app.css'],
+    styleUrls: const [
+      'main_app.css'
+    ],
     directives: const [
       ROUTER_DIRECTIVES,
       materialDirectives,
+      pageDirectives,
       LoginFormComponent,
       PageControlToolbarComponent,
       AuthStatusComponent,
@@ -45,16 +50,14 @@ import 'package:polymer_elements/paper_item_body.dart';
       const Provider(APP_BASE_HREF, useValue: "/"),
       const Provider(LocationStrategy, useClass: HashLocationStrategy),
     ])
-@RouteConfig( const [
+@RouteConfig(const [
   const Route(
       path: '/',
       name: 'Home',
       component: ItemBrowseComponent,
       useAsDefault: true),
   const Route(
-      path: '/items/:page',
-      name: 'ItemsPage',
-      component: ItemBrowseComponent),
+      path: '/items/:page', name: 'ItemsPage', component: ItemBrowseComponent),
   const Route(
       path: '/items/search/:query',
       name: 'ItemsSearch',
@@ -64,25 +67,41 @@ import 'package:polymer_elements/paper_item_body.dart';
       name: 'ItemsSearchPage',
       component: ItemBrowseComponent),
   const Route(
-      path: '/item/:id',
-      name: 'Item',
-      component: ItemBrowseComponent,),
+    path: '/item/:id',
+    name: 'Item',
+    component: ItemBrowseComponent,
+  ),
+  const Route(
+    path: '/collections',
+    name: 'Collections',
+    component: CollectionsPage,
+  ),
 ])
-class MainApp implements OnInit  {
-  String appName = "Dartalog";
-
+class MainApp implements OnInit, OnDestroy {
   final AuthenticationService _auth;
+
   final Location _location;
   final Router _router;
-
+  final PageControlService _pageControl;
   bool isLoginOpen = false;
 
-  MainApp(this._auth, this._location, this._router);
+  StreamSubscription<String> _pageTitleSubscription;
+
+  String _pageTitleOverride = "";
+
+  MainApp(this._auth, this._location, this._router, this._pageControl) {
+    _pageTitleSubscription =
+        _pageControl.pageTitleChanged.listen(onPageTitleChanged);
+  }
 
   User get currentUser => _auth.user.first;
 
   String get pageTitle {
-    return appName;
+    if (StringTools.isNotNullOrWhitespace(_pageTitleOverride)) {
+      return _pageTitleOverride;
+    } else {
+      return appName;
+    }
   }
 
   bool get userLoggedIn {
@@ -91,12 +110,21 @@ class MainApp implements OnInit  {
 
   Future<Null> clearAuthentication() async {
     await _auth.clear();
-    await _router.navigate(["Home"]);
+    await _router.navigate(<dynamic>["Home"]);
+  }
+
+  @override
+  void ngOnDestroy() {
+    _pageTitleSubscription.cancel();
   }
 
   @override
   void ngOnInit() {
     _auth.evaluateAuthentication();
+  }
+
+  void onPageTitleChanged(String title) {
+    this._pageTitleOverride = title;
   }
 
   void promptForAuthentication() {

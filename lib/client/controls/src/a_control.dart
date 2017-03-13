@@ -136,13 +136,6 @@ class AControl extends PolymerElement {
     return output;
   }
 
-  // If you open a dialog too soon after changing its contents, it won't center properly.
-  // This delays opening the dialog until the system has had a second to process the DOM change.
-  void handleException(e, st) {
-    loggerImpl.severe(this.tagName, e, st);
-    _mainApp.handleException(e, st);
-  }
-
   void navigate(String root) {
     final String target = generateLink(root);
     window.location.hash = target;

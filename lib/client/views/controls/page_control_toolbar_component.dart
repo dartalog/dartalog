@@ -6,7 +6,7 @@ import 'package:angular2_components/angular2_components.dart';
 import 'package:logging/logging.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:angular2/router.dart';
-
+import 'package:dartalog/global.dart';
 @Component(
     selector: 'page-control-toolbar',
     styles: const [],
@@ -17,6 +17,10 @@ import 'package:angular2/router.dart';
     ''')
 class PageControlToolbarComponent implements OnDestroy {
   static final Logger _log = new Logger("PageControlToolbarComponent");
+
+  String get pageTitle {
+    return appName;
+  }
 
   String query = "";
 

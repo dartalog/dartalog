@@ -11,6 +11,9 @@ class PageControlService {
   final StreamController<PaginationInfo> _paginationController =
   new StreamController<PaginationInfo>.broadcast();
 
+  final StreamController<String> _pageTitleController =
+  new StreamController<String>.broadcast();
+
   final StreamController<PageActions> _pageActionController =
   new StreamController<PageActions>.broadcast();
 
@@ -18,6 +21,8 @@ class PageControlService {
   new StreamController<List<PageActions>>.broadcast();
 
   Stream<PageActions> get pageActionRequested => _pageActionController.stream;
+
+  Stream<String> get pageTitleChanged => _pageTitleController.stream;
 
   Stream<List<PageActions>> get availablePageActionsSet => _availablePageActionController.stream;
 
@@ -50,6 +55,7 @@ class PageControlService {
   void reset() {
     clearPaginationInfo();
     clearSearch();
+    clearPageTitle();
     clearAvailablePageActions();
   }
 
@@ -71,5 +77,13 @@ class PageControlService {
   void setPaginationInfo(PaginationInfo info) {
     this.currentPaginationInfo = info;
     _paginationController.add(info);
+  }
+
+  void setPageTitle(String title) {
+    _pageTitleController.add(title);
+  }
+
+  void clearPageTitle() {
+    setPageTitle("");
   }
 }

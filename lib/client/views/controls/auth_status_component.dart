@@ -9,6 +9,7 @@ import 'package:logging/logging.dart';
 class AuthStatusComponent implements OnDestroy {
   static final Logger _log = new Logger("AuthStatusComponent");
 
+
   @Output()
   EventEmitter<bool> authedChanged = new EventEmitter<bool>();
 

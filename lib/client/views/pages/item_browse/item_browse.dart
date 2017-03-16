@@ -16,95 +16,9 @@ import 'package:polymer_elements/iron_flex_layout/classes/iron_flex_layout.dart'
     selector: 'item-browse',
     providers: const [],
     directives: const [ROUTER_DIRECTIVES, AuthStatusComponent],
-    styles: const [
-      '''
-                a.item_card paper-material {
-                    cursor: pointer;
-                    width: 200pt;
-                    height: 200pt;
-                    margin-left: 4pt;
-                    margin-top: 4pt;
-                    position: relative;
-                    float:left;
-                }
-                img.item_thumbnail {
-                    height: 100px;
-                }
-                .item_title {
-                    position:absolute;
-                    bottom:0;
-                    left:0;
-                    right: 0;
-
-                    height: 16pt;
-
-                    background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 100%);
-                    padding: 8pt;
-                }
-                .item_title div {
-                    color: white;
-                    font-weight: 100;
-                    height: 16pt;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis !important;
-
-                }
-                @media(max-width:400pt) {
-                    .item_card paper-material {
-                        width: calc(100% - 4pt)!important;
-                    }
-                }
-
-                @media(max-width:600pt) and (min-width:401pt) {
-                    .item_card paper-material {
-                        width: calc(100% / 2 - 4pt)!important;
-                    }
-                }
-                @media(max-width:800pt) and (min-width:601pt) {
-                    .item_card paper-material {
-                        width: calc(100% / 3 - 4pt)!important;
-                    }
-                }
-                @media(max-width:1000pt) and (min-width:801pt) {
-                    .item_card paper-material {
-                        width: calc(100% / 4 - 4pt)!important;
-                    }
-                }
-                @media(max-width:1200pt) and (min-width:1001pt) {
-                    .item_card paper-material {
-                        width: calc(100% / 5 - 4pt)!important;
-                    }
-                }
-                @media(max-width:1400pt) and (min-width:1201pt) {
-                    .item_card paper-material {
-                        width: calc(100% / 6 - 4pt)!important;
-                    }
-                }
-                @media(max-width:1600pt) and (min-width:1401pt) {
-                    .item_card paper-material {
-                        width: calc(100% / 7 - 4pt)!important;
-                    }
-                }
-                @media(max-width:1800pt) and (min-width:1601pt) {
-                    .item_card paper-material {
-                        width: calc(100% / 8 - 4pt)!important;
-                    }
-                }
-                @media(max-width:2000pt) and (min-width:1801pt) {
-                    .item_card paper-material {
-                        width: calc(100% / 9 - 4pt)!important;
-                    }
-                }
-                @media(max-width:2200pt) and (min-width:2001pt) {
-                    .item_card paper-material {
-                        width: calc(100% / 10 - 4pt)!important;
-                    }
-                }
-    '''
-    ],
+    styleUrls: const ["../../shared.css","item_browse.css"],
     template: '''
-      <div *ngIf="noItemsFound&&!loading" style="width:100%;text-align: center;margin:16pt;">No Items Found</div>
+      <div *ngIf="noItemsFound&&!loading" class="no-items">No Items Found</div>
       <span *ngFor="let i of items" >
       <a [routerLink]="['Item', {id: i.id}]" class="item_card">
           <paper-material class="item_card" data-id="{{i.id}}" title="{{i.name}}" class="container">

@@ -1,4 +1,4 @@
-<auth-status [(authed)]="userLoggedIn"></auth-status>
+<auth-status [(authorized)]="userLoggedIn"></auth-status>
 <paper-drawer-panel responsive-width="1920px">
     <paper-header-panel drawer>
         <paper-toolbar>
@@ -25,7 +25,7 @@
             <a [routerLink]="['Collections']">
                 <paper-item>
                     <iron-icon icon="label-outline"></iron-icon>
-                    <paper-item-body>Browse Items</paper-item-body>
+                    <paper-item-body>Collections</paper-item-body>
                 </paper-item>
             </a>
         </div>

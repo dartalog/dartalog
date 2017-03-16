@@ -5,9 +5,10 @@ import 'package:angular2/angular2.dart';
 import 'package:angular2_components/angular2_components.dart';
 import 'package:dartalog/client/services/services.dart';
 import 'package:logging/logging.dart';
-
+import 'package:dartalog/tools.dart';
 @Component(
     selector: 'login-form',
+    styleUrls: const ["../shared.css"],
     directives: const [materialDirectives],
     providers: const [materialProviders],
     template: '''<modal [visible]="visible">
@@ -18,7 +19,10 @@ import 'package:logging/logging.dart';
               <material-input [(ngModel)]="userName" ngControl="userName" floatingLabel required  autoFocus label="User">material-input></material-input><br/>
               <material-input [(ngModel)]="password" ngControl="password" floatingLabel required  label="Password" type="password"></material-input><br/>
               <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/>
-          <b style="color:red">{{errorMessage}}</b>
+                <span *ngIf="hasErrorMessage" class="error_output">
+                    <glyph icon="error_outline"></glyph>
+                    {{errorMessage}}
+                </span>
           </p>
             </form>
           <div footer style="text-align: right">
@@ -35,6 +39,8 @@ class LoginFormComponent {
   static final Logger _log = new Logger("UserAuthComponent");
   String userName = "";
   String password = "";
+
+  bool get hasErrorMessage => StringTools.isNotNullOrWhitespace(errorMessage);
   String errorMessage = "";
 
   bool _visible = false;

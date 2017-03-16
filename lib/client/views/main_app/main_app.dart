@@ -25,7 +25,7 @@ import 'package:polymer_elements/paper_toolbar.dart';
 
 @Component(
     selector: 'main-app',
-    encapsulation: ViewEncapsulation.Native,
+    //encapsulation: ViewEncapsulation.Native,
     templateUrl: 'main_app.html',
     styleUrls: const [
       'main_app.css'
@@ -87,11 +87,14 @@ class MainApp implements OnInit, OnDestroy {
 
   StreamSubscription<String> _pageTitleSubscription;
 
+  StreamSubscription<Null> _loginRequestSubscription;
+
   String _pageTitleOverride = "";
 
   MainApp(this._auth, this._location, this._router, this._pageControl) {
     _pageTitleSubscription =
         _pageControl.pageTitleChanged.listen(onPageTitleChanged);
+    _loginRequestSubscription = _auth.loginPrompted.listen(promptForAuthentication);
   }
 
   User get currentUser => _auth.user.first;
@@ -116,6 +119,7 @@ class MainApp implements OnInit, OnDestroy {
   @override
   void ngOnDestroy() {
     _pageTitleSubscription.cancel();
+    _loginRequestSubscription.cancel();
   }
 
   @override
@@ -127,7 +131,7 @@ class MainApp implements OnInit, OnDestroy {
     this._pageTitleOverride = title;
   }
 
-  void promptForAuthentication() {
+  void promptForAuthentication([Null nullValue = null]) {
     isLoginOpen = true;
   }
 }

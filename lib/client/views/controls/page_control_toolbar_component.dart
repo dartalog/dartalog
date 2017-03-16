@@ -12,7 +12,7 @@ import 'package:dartalog/global.dart';
     styles: const [],
     directives: const [ROUTER_DIRECTIVES,materialDirectives],
     template: '''
-      <material-input [(ngModel)]="query"  label="Search" trailingGlyph="search" (keyup)="searchKeyup(\$event)" ></material-input>
+      <material-input [(ngModel)]="query" style="color:white;" label="Search" trailingGlyph="search" (keyup)="searchKeyup(\$event)" ></material-input>
       <material-button icon (trigger)="refreshClicked()"><glyph icon="refresh"></glyph></material-button>
     ''')
 class PageControlToolbarComponent implements OnDestroy {

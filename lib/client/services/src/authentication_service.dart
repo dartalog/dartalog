@@ -24,9 +24,15 @@ class AuthenticationService {
   final StreamController<bool> _authStatusController =
       new StreamController<bool>.broadcast();
 
+  final StreamController<Null> _promptController =
+  new StreamController<Null>.broadcast();
+
   AuthenticationService(this._settings, this._api);
 
   Stream<bool> get authStatusChanged => _authStatusController.stream;
+  Stream<Null> get loginPrompted => _promptController.stream;
+
+
   bool get canCheckout => hasPrivilege(UserPrivilege.checkout);
   bool get isAdmin => hasPrivilege(UserPrivilege.admin);
   bool get isAuthenticated => user.isNotEmpty;
@@ -57,6 +63,10 @@ class AuthenticationService {
       _authStatusController.add(false);
     }
     await _settings.clearAuthCache();
+  }
+
+  Future<Null> promptForAuthentication() async {
+    _promptController.add(null);
   }
 
   Future<Null> evaluateAuthentication() async {

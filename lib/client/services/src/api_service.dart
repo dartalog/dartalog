@@ -7,7 +7,7 @@ import 'package:dartalog/client/api/api.dart';
 import 'package:angular2/core.dart';
 import 'settings_service.dart';
 
-export 'package:dartalog/client/api/api.dart' show PaginatedResponse, ListOfIdNamePair;
+export 'package:dartalog/client/api/api.dart' show PaginatedResponse, ListOfIdNamePair, IdNamePair;
 
 @Injectable()
 class ApiService extends ItemApi {

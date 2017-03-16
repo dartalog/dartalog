@@ -23,3 +23,4 @@ doc/api/
 pubspec.lock
 images/
 server.options
+server.snapshot

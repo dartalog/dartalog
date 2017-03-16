@@ -48,7 +48,7 @@ abstract class APage {
         errorMessage =
             "The submitted data was too large, please submit smaller images";
       } else {
-        errorMessage = "API Error: ${error.message} (${error.status})";
+        errorMessage = "${error.message} (${error.status})";
       }
     } catch (e, st) {
       loggerImpl.severe(e, st);

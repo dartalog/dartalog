@@ -41,18 +41,25 @@ class ItemBrowseComponent implements OnInit, OnDestroy {
   final RouteParams _routeParams;
   final PageControlService _pageControl;
   final Router _router;
+  final AuthenticationService _auth;
   final List<ItemSummary> items = <ItemSummary>[];
 
   String _currentQuery = "";
 
   StreamSubscription<String> _searchSubscription;
   StreamSubscription<PageActions> _pageActionSubscription;
+  StreamSubscription<bool> _authChangedSubscription;
 
   ItemBrowseComponent(
-      this._api, this._routeParams, this._pageControl, this._router) {
+      this._api, this._routeParams, this._pageControl, this._router, this._auth) {
     _searchSubscription = _pageControl.searchChanged.listen(onSearchChanged);
     _pageActionSubscription =
         _pageControl.pageActionRequested.listen(onPageActionRequested);
+    _authChangedSubscription =    _auth.authStatusChanged.listen(onAuthStatusChange);
+  }
+
+  Future<Null >onAuthStatusChange(bool value) async {
+    await this.refresh();
   }
 
   bool get noItemsFound => items.isEmpty;
@@ -65,6 +72,7 @@ class ItemBrowseComponent implements OnInit, OnDestroy {
   void ngOnDestroy() {
     _searchSubscription.cancel();
     _pageActionSubscription.cancel();
+    _authChangedSubscription.cancel();
     _pageControl.reset();
   }
 

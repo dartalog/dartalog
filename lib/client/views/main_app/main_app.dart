@@ -113,7 +113,7 @@ class MainApp implements OnInit, OnDestroy {
 
   Future<Null> clearAuthentication() async {
     await _auth.clear();
-    await _router.navigate(<dynamic>["Home"]);
+    //await _router.navigate(<dynamic>["Home"]);
   }
 
   @override

@@ -5,22 +5,23 @@ import 'package:angular2/angular2.dart';
 import 'package:angular2_components/angular2_components.dart';
 import 'package:dartalog/client/services/services.dart';
 import 'package:dartalog/client/api/api.dart' as api;
-import 'package:dartalog/data/data.dart';
 import 'package:logging/logging.dart';
 import '../src/a_page.dart';
-import '../../views.dart';
+import 'package:dartalog/client/views/controls/common_controls.dart';
+
 @Component(
     selector: 'collections-page',
-    directives: const [materialDirectives],
+    directives: const [materialDirectives,commonControls],
     providers: const [materialProviders],
     styleUrls: const ["../../shared.css"],
     templateUrl: 'collections_page.html')
 class CollectionsPage extends APage implements OnInit, OnDestroy {
   static final Logger _log = new Logger("CollectionsPage");
+
   @ViewChild("editForm")
   NgForm form;
 
-  bool userAuthorized;
+  bool userAuthorized = false;
 
   List<IdNamePair> items = <IdNamePair>[];
 
@@ -49,6 +50,8 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
   @override
   Logger get loggerImpl => _log;
 
+  bool get isNewItem => selectedItem==null;
+
   bool get noItemsFound => items.isEmpty;
 
   @override
@@ -57,9 +60,18 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
     _pageControl.reset();
   }
 
+  void authorizationChanged(bool value) {
+    this.userAuthorized = value;
+    if(value) {
+      refresh();
+    } else {
+      clear();
+    }
+  }
+
   @override
   void ngOnInit() {
-    refresh();
+    //refresh();
   }
 
   Future<Null> selectItem(IdNamePair item) async {
@@ -77,6 +89,10 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
         case PageActions.Refresh:
           this.refresh();
           break;
+        case PageActions.Add:
+          reset();
+          editVisible = true;
+          break;
         default:
           throw new Exception(
               action.toString() + " not implemented for this page");
@@ -88,12 +104,13 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
 
   Future<Null> onSubmit() async {
     await performApiCall(() async {
-      if(selectedItem==null) {
+      if(isNewItem) {
         await _api.collections.create(model);
       } else {
         await _api.collections.update(model,selectedItem.id);
       }
       editVisible = false;
+      await this.refresh();
     }, form: form);
   }
 
@@ -104,6 +121,11 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
       final ListOfIdNamePair data =await _api.collections.getAllIdsAndNames();
       items.addAll(data);
     });
+  }
+
+  void clear() {
+    reset();
+    items.clear();
   }
 
   void reset() {

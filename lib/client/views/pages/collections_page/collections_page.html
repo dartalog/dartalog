@@ -1,6 +1,5 @@
-<auth-status [(authorized)]="userAuthorized" require="admin" showMessage="true"></auth-status>
+<auth-status (authorizedChanged)="authorizationChanged($event)" require="admin" [showMessage]="true"></auth-status>
 
-<div *ngIf="userAuthorized">
 <div *ngIf="noItemsFound&&!processing" class="no-items">No Collections Found</div>
 <material-list>
     <material-list-item *ngFor="let i of items" (trigger)="selectItem(i)">
@@ -10,11 +9,14 @@
 
 <modal [visible]="editVisible">
     <material-dialog class="basic-dialog">
-        <h3 header>Edit</h3>
+        <h3 *ngIf="isNewItem" header>Create</h3>
+        <h3 *ngIf="!isNewItem" header>Edit</h3>
         <form (ngSubmit)="onSubmit()" #editForm="ngForm">
             <p>
                 <material-input [(ngModel)]="model.id" ngControl="id" floatingLabel required autoFocus label="ID"></material-input><br/>
                 <material-input [(ngModel)]="model.name" ngControl="name" floatingLabel required label="Name" ></material-input><br/>
+                <material-checkbox [(ngModel)]="model.publiclyBrowsable" label="Publicly Browsable"></material-checkbox>
+                
                 <span *ngIf="hasErrorMessage" class="error_output">
                     <glyph icon="error_outline"></glyph>
                     {{errorMessage}}
@@ -31,4 +33,3 @@
         </div>
     </material-dialog>
 </modal>
-</div>

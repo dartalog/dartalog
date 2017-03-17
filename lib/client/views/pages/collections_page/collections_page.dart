@@ -13,13 +13,15 @@ import 'package:dartalog/client/views/controls/common_controls.dart';
     selector: 'collections-page',
     directives: const [materialDirectives,commonControls],
     providers: const [materialProviders],
-    styleUrls: const ["../../shared.css"],
+    styleUrls: const ["../../shared.css","collections_page.css"],
     templateUrl: 'collections_page.html')
 class CollectionsPage extends APage implements OnInit, OnDestroy {
   static final Logger _log = new Logger("CollectionsPage");
 
   @ViewChild("editForm")
   NgForm form;
+
+  api.IdNamePair selectedUser;
 
   bool userAuthorized = false;
 
@@ -54,6 +56,8 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
 
   bool get noItemsFound => items.isEmpty;
 
+  List<api.IdNamePair> users = <api.IdNamePair>[];
+
   @override
   void ngOnDestroy() {
     _pageActionSubscription.cancel();
@@ -78,6 +82,7 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
     await performApiCall(() async {
       reset();
       model = await _api.collections.getById(item.id);
+      users = await _api.users.getAllIdsAndNames();
       selectedItem = item;
       editVisible = true;
     });
@@ -131,8 +136,31 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
   void reset() {
     model = new api.Collection();
     selectedItem = null;
+    selectedUser = null;
     errorMessage = "";
   }
 
+  void removeCurator(String user ) {
+    if(model!=null&&model.curators.contains(user)) {
+      model.curators.remove(user);
+    }
+  }
+  void removeBrowser(String user ) {
+    if(model!=null&&model.browsers.contains(user)) {
+      model.browsers.remove(user);
+    }
+  }
+
+  void addCurator() {
+    if(selectedUser!=null&&this.model!=null&&!this.model.curators.contains(selectedUser.id)) {
+      this.model.curators.add(selectedUser.id);
+    }
+  }
+
+  void addBrowser() {
+    if(selectedUser!=null&&this.model!=null&&!this.model.browsers.contains(selectedUser.id)) {
+      this.model.browsers.add(selectedUser.id);
+    }
+  }
 
 }

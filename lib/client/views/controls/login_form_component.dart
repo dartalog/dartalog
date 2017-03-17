@@ -16,7 +16,7 @@ import 'package:dartalog/tools.dart';
           <h3 header>Login</h3>
             <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
             <p>
-              <material-input [(ngModel)]="userName" ngControl="userName" floatingLabel required  autoFocus label="User">material-input></material-input><br/>
+              <material-input [(ngModel)]="userName" ngControl="userName" floatingLabel required  autoFocus label="User"></material-input><br/>
               <material-input [(ngModel)]="password" ngControl="password" floatingLabel required  label="Password" type="password"></material-input><br/>
               <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/>
                 <span *ngIf="hasErrorMessage" class="error_output">

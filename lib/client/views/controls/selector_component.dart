@@ -13,9 +13,9 @@ import 'package:logging/logging.dart';
     directives: const [materialDirectives],
     providers: const [materialProviders],
     template: '''
-    Selector will go here
+    <material-input [(ngModel)]="userName" [ngControl]="ngControl" floatingLabel [label]="label"></material-input>
     ''')
-class SelectorComponent  {
+class SelectorComponent extends BaseMaterialInput  {
   static final Logger _log = new Logger("SelectorComponent");
 
   @Output()
@@ -27,8 +27,10 @@ class SelectorComponent  {
   @Input()
   List<IdNamePair> items = <IdNamePair>[];
 
-  @Input()
-  String label = "";
-
+  SelectorComponent(
+      @Self() @Optional() NgControl cd,
+      ChangeDetectorRef changeDetector,
+      DeferredValidator validator)
+      : super(cd, changeDetector, validator);
 
 }

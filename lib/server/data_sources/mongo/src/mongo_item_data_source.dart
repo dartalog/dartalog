@@ -87,7 +87,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
     final Item output = new Item();
 
     output.id = data[ID_FIELD];
-    output.getName = data['name'];
+    output.name = data['name'];
     output.typeId = data['typeId'];
     output.values = data["values"];
     output.dateAdded = data["dateAdded"];

@@ -60,6 +60,11 @@ abstract class AMongoObjectDataSource<T> extends AMongoDataSource {
     return output;
   }
 
+  Future<Stream<T>> streamFromDb(dynamic selector) async {
+    final Stream<dynamic> outputStream = await genericFindStream(selector);
+    return outputStream.map((dynamic data) => createObject(data));
+  }
+
   @protected
   Future<PaginatedData<T>> getPaginatedFromDb(SelectorBuilder selector,
       {int offset: 0,

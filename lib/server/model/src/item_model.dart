@@ -104,7 +104,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
     item.dateAdded = new DateTime.now();
     item.dateUpdated = new DateTime.now();
     if (!StringTools.isNullOrWhitespace(item.getName))
-      item.getId = await _generateUniqueId(item);
+      item.setId = await _generateUniqueId(item);
 
     ItemCopy itemCopy = new ItemCopy();
     itemCopy.collectionId = collectionId;
@@ -180,12 +180,12 @@ class ItemModel extends AIdNameBasedModel<Item> {
     item.dateUpdated = new DateTime.now();
 
     if (!StringTools.isNullOrWhitespace(item.getName)) {
-      Item oldItem = (await data_sources.items.getById(id)).getOrElse(
+      final Item oldItem = (await data_sources.items.getById(id)).getOrElse(
           () => throw new NotFoundException("Item ${item} not found"));
 
       if (oldItem.getName.trim().toLowerCase() !=
           item.getName.trim().toLowerCase())
-        item.getId = await _generateUniqueId(item);
+        item.setId = await _generateUniqueId(item);
     }
 
     await _handleFileUploads(item, files);
@@ -194,9 +194,9 @@ class ItemModel extends AIdNameBasedModel<Item> {
   }
 
   Future _handleFileUploads(Item item, List<List<int>> files) async {
-    ItemType type = await itemTypes.getById(item.typeId);
-    List<Field> fields = await data_sources.fields.getByIds(type.fieldIds);
-    Map<String, List<int>> filesToWrite = new Map<String, List<int>>();
+    final ItemType type = await itemTypes.getById(item.typeId);
+    final List<Field> fields = await data_sources.fields.getByIds(type.fieldIds);
+    final Map<String, List<int>> filesToWrite = new Map<String, List<int>>();
 
     for (Field f in fields) {
       if (f.type != "image" ||

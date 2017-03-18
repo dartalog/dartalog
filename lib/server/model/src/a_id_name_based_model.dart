@@ -7,7 +7,7 @@ import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
 import 'a_typed_model.dart';
 import 'package:meta/meta.dart';
 
-abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel {
+abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel<T> {
   AIdNameBasedDataSource<T> get dataSource;
 
   @protected
@@ -23,16 +23,17 @@ abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel {
     return await dataSource.write(t);
   }
 
-  Future delete(String id) async {
-    id = normalizeId(id);
-    await validateDeletePrivileges(id);
-    await dataSource.deleteByID(id);
+  Future<String> delete(String id) async {
+    final String normId = normalizeId(id);
+    await validateDeletePrivileges(normId);
+    await dataSource.deleteByID(normId);
+    return normId;
   }
 
   Future<IdNameList<T>> getAll() async {
     await validateGetAllPrivileges();
 
-    List<T> output = await dataSource.getAll();
+    final List<T> output = await dataSource.getAll();
     for (T t in output) performAdjustments(t);
     return output;
   }
@@ -43,12 +44,12 @@ abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel {
   }
 
   Future<T> getById(String id, {bool bypassAuth: false}) async {
-    id = normalizeId(id);
+    final String normId = normalizeId(id);
     if (!bypassAuth) await validateGetByIdPrivileges();
 
-    Option<T> output = await dataSource.getById(id);
+    final Option<T> output = await dataSource.getById(normId);
 
-    if (output.isEmpty) throw new NotFoundException("ID '${id}' not found");
+    if (output.isEmpty) throw new NotFoundException("ID '$normId' not found");
 
     performAdjustments(output.get());
 
@@ -61,10 +62,10 @@ abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel {
   }
 
   Future<String> update(String id, T t) async {
-    id = normalizeId(id);
-    await validateUpdatePrivileges(id);
-    await validate(t, id != t.getId);
-    return await dataSource.write(t, id);
+    final String normId = normalizeId(id);
+    await validateUpdatePrivileges(normId);
+    await validate(t, normId!= t.getId);
+    return await dataSource.write(t, normId);
   }
 
   @protected
@@ -72,55 +73,55 @@ abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel {
 
   @override
   Future<Map<String, String>> validateFields(T t, bool creating) async {
-    Map<String, String> field_errors = new Map<String, String>();
+    final Map<String, String> fieldErrors = new Map<String, String>();
 
-    t.getId = normalizeId(t.getId);
-    t.getName = t.getName.trim();
+    t.setId = normalizeId(t.getId);
+    t.setName = t.getName.trim();
 
     if (StringTools.isNullOrWhitespace(t.getId))
-      field_errors["id"] = "Required";
+      fieldErrors["id"] = "Required";
     else {
       if (creating) {
         if (await dataSource.existsByID(t.getId))
-          field_errors["id"] = "Already in use";
+          fieldErrors["id"] = "Already in use";
       }
       if (isReservedWord(t.getId)) {
-        field_errors["id"] = "Cannot use '${t.getId}' as ID";
+        fieldErrors["id"] = "Cannot use '${t.getId}' as ID";
       }
     }
 
     if (StringTools.isNullOrWhitespace(t.getName)) {
-      field_errors["name"] = "Required";
+      fieldErrors["name"] = "Required";
     } else if (isReservedWord(t.getId)) {
-      field_errors["name"] = "Cannot use '${t.getName}' as name";
+      fieldErrors["name"] = "Cannot use '${t.getName}' as name";
     }
 
-    await validateFieldsInternal(field_errors, t, creating);
+    await validateFieldsInternal(fieldErrors, t, creating);
 
-    return field_errors;
+    return fieldErrors;
   }
 
   @protected
-  Future validateFieldsInternal(Map field_errors, T t, bool creating) async =>
+  Future<Null> validateFieldsInternal(Map<String,String> fieldErrors, T t, bool creating) async =>
       {};
 
   @protected
-  Future validateGetAllIdsAndNamesPrivileges() async {
+  Future<Null> validateGetAllIdsAndNamesPrivileges() async {
     await validateGetPrivileges();
   }
 
   @protected
-  Future validateGetAllPrivileges() async {
+  Future<Null> validateGetAllPrivileges() async {
     await validateGetPrivileges();
   }
 
   @protected
-  Future validateGetByIdPrivileges() async {
+  Future<Null> validateGetByIdPrivileges() async {
     await validateGetPrivileges();
   }
 
   @protected
-  Future validateSearchPrivileges() async {
+  Future<Null> validateSearchPrivileges() async {
     await validateGetPrivileges();
   }
 }

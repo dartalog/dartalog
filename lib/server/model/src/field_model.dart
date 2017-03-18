@@ -11,23 +11,29 @@ class FieldModel extends AIdNameBasedModel<Field> {
   static final Logger _log = new Logger('FieldModel');
   @override
   Logger get childLogger => _log;
+  @override
   AIdNameBasedDataSource<Field> get dataSource => data_sources.fields;
 
   @override
   String get defaultReadPrivilegeRequirement => UserPrivilege.curator;
 
   @override
-  Future validateFieldsInternal(
-      Map field_errors, Field field, bool creating) async {
+  Future<Null> validateFieldsInternal(
+      final Map<String,String> fieldErrors, Field field, bool creating) async {
     if (StringTools.isNullOrWhitespace(field.type))
-      field_errors["type"] = "Required";
+      fieldErrors["type"] = "Required";
     else if (!FIELD_TYPES.containsKey(field.type)) {
-      field_errors["type"] = "Invalid";
+      fieldErrors["type"] = "Invalid";
     }
 
     if (!StringTools.isNullOrWhitespace(field.format)) {
-      String test = validateRegularExpression(field.format);
-      if (!StringTools.isNullOrWhitespace(test)) field_errors["format"] = test;
+      final String test = validateRegularExpression(field.format);
+      if (!StringTools.isNullOrWhitespace(test)) fieldErrors["format"] = test;
     }
   }
+
+  Future<String> delete(String id) async {
+    throw new Exception("Not implemented");
+  }
+
 }

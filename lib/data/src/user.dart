@@ -18,13 +18,13 @@ class User extends AIdData {
   String get getId => id; // For library cards and such
 
   @override
-  set getId(String value) => id = value;
+  set setId(String value) => id = value;
 
   @override
   String get getName => name;
 
   @override
-  set getName(String value) => name = value;
+  set setName(String value) => name = value;
 
   void copyTo(dynamic to) {
     _copy(this, to);

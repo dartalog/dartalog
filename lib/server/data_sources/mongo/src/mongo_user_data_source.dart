@@ -13,30 +13,34 @@ class MongoUserDataSource extends AMongoIdDataSource<User>
 
   static const String TYPE_FIELD = "type";
   static const String PASSWORD_FIELD = "password";
+
+  @override
   Future<List<User>> getAdmins() {
     return this.getFromDb(where.eq(TYPE_FIELD, UserPrivilege.admin));
   }
 
+  @override
   Future<Option<String>> getPasswordHash(String id) async {
-    SelectorBuilder selector = where.eq(ID_FIELD, id);
-    Option data = await genericFindOne(selector);
+    final SelectorBuilder selector = where.eq(ID_FIELD, id);
+    final Option<String> data = await genericFindOne(selector);
     return data.map((Map user) {
       if (user.containsKey(PASSWORD_FIELD)) return user[PASSWORD_FIELD];
     });
   }
 
-  Future setPassword(String id, String password) async {
-    SelectorBuilder selector = where.eq(ID_FIELD, id);
+  @override
+  Future<Null> setPassword(String id, String password) async {
+    final SelectorBuilder selector = where.eq(ID_FIELD, id);
 
-    ModifierBuilder modifier = modify.set(PASSWORD_FIELD, password);
+    final ModifierBuilder modifier = modify.set(PASSWORD_FIELD, password);
     await genericUpdate(selector, modifier, multiUpdate: false);
   }
 
   @override
   User createObject(Map data) {
-    User output = new User();
-    output.getId = data[ID_FIELD];
-    output.getName = data["name"];
+    final User output = new User();
+    output.setId = data[ID_FIELD];
+    output.setName = data["name"];
     if (data.containsKey(TYPE_FIELD)) output.type = data[TYPE_FIELD];
     return output;
   }

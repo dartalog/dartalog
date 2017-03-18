@@ -56,6 +56,7 @@ class ItemBrowseComponent implements OnInit, OnDestroy {
     _pageActionSubscription =
         _pageControl.pageActionRequested.listen(onPageActionRequested);
     _authChangedSubscription =    _auth.authStatusChanged.listen(onAuthStatusChange);
+    _pageControl.setAvailablePageActions(<PageActions>[PageActions.Refresh, PageActions.Search]);
   }
 
   Future<Null >onAuthStatusChange(bool value) async {

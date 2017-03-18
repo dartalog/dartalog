@@ -5,12 +5,16 @@ import 'package:option/option.dart';
 
 class Item extends AIdData {
   String id = "";
+  @override
   String get getId => id;
-  set getId(String value) => id = value;
+  @override
+  set setId(String value) => id = value;
 
   String name = "";
+  @override
   String get getName => name;
-  set getName(String value) => name = value;
+  @override
+  set setName(String value) => name = value;
 
   String typeId;
 

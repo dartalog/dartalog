@@ -8,6 +8,7 @@ abstract class AItemCopyDataSource extends ADataSource {
   static final Logger _log = new Logger('AItemCopyModel');
 
   Future<Null> delete(String itemId, int copy);
+  Future<Null> deleteByCollection(String collectionId);
   Future<Option<ItemCopy>> getByItemIdAndCopy(String itemId, int copy);
   Future<bool> existsByItemIdAndCopy(String itemId, int copy);
   Future<Option<ItemCopy>> getByUniqueId(String uniqueId);

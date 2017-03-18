@@ -84,6 +84,12 @@ abstract class AMongoDataSource {
     });
   }
 
+  Future<Stream<dynamic>> genericFindStream(SelectorBuilder selector) async  {
+    return await collectionWrapper((DbCollection collection) async {
+      return collection.find(selector);
+    });
+  }
+
   @protected
   Future<int> genericCount(SelectorBuilder selector) async {
     return await collectionWrapper((DbCollection collection) async {

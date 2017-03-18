@@ -8,27 +8,30 @@ import 'package:dartalog/client/api/api.dart' as api;
 import 'package:logging/logging.dart';
 import '../src/a_page.dart';
 import 'package:dartalog/client/views/controls/common_controls.dart';
+import 'package:dartalog/global.dart';
 
 @Component(
-    selector: 'collections-page',
+    selector: 'fields-page',
     directives: const [materialDirectives,commonControls],
     providers: const [materialProviders],
-    styleUrls: const ["../../shared.css","collections_page.css"],
-    templateUrl: 'collections_page.html')
-class CollectionsPage extends APage implements OnInit, OnDestroy {
-  static final Logger _log = new Logger("CollectionsPage");
+    styleUrls: const ["../../shared.css"],
+    templateUrl: 'fields_page.html')
+class FieldsPage extends APage implements OnInit, OnDestroy {
+  static final Logger _log = new Logger("FieldsPage");
 
   @ViewChild("editForm")
   NgForm form;
-
-  api.IdNamePair selectedUser;
 
   bool userAuthorized = false;
 
   List<IdNamePair> items = <IdNamePair>[];
 
   IdNamePair selectedItem;
-  api.Collection model = new api.Collection();
+
+  api.Field model = new api.Field();
+
+  Map<String,String> get fieldTypes => FIELD_TYPES;
+
 
   bool editVisible = false;
 
@@ -41,9 +44,9 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
 
   final ApiService _api;
 
-  CollectionsPage(this._pageControl, this._api, AuthenticationService _auth)
+  FieldsPage(this._pageControl, this._api, AuthenticationService _auth)
       : super(_pageControl, _auth) {
-    _pageControl.setPageTitle("Collections");
+    _pageControl.setPageTitle("Fields");
     _pageControl.setAvailablePageActions(
         <PageActions>[PageActions.Refresh, PageActions.Add]);
     _pageActionSubscription =
@@ -81,10 +84,7 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
   Future<Null> selectItem(IdNamePair item) async {
     await performApiCall(() async {
       reset();
-      if(item!=null) {
-        model = await _api.collections.getById(item.id);
-      }
-      users = await _api.users.getAllIdsAndNames();
+      model = await _api.fields.getById(item.id);
       selectedItem = item;
       editVisible = true;
     });
@@ -97,7 +97,8 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
           this.refresh();
           break;
         case PageActions.Add:
-          selectItem(null);
+          reset();
+          editVisible = true;
           break;
         default:
           throw new Exception(
@@ -111,9 +112,9 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
   Future<Null> onSubmit() async {
     await performApiCall(() async {
       if(isNewItem) {
-        await _api.collections.create(model);
+        await _api.fields.create(model);
       } else {
-        await _api.collections.update(model,selectedItem.id);
+        await _api.fields.update(model,selectedItem.id);
       }
       editVisible = false;
       await this.refresh();
@@ -124,7 +125,7 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
     await performApiCall(() async {
       editVisible = false;
       items.clear();
-      final ListOfIdNamePair data =await _api.collections.getAllIdsAndNames();
+      final ListOfIdNamePair data =await _api.fields.getAllIdsAndNames();
       items.addAll(data);
     });
   }
@@ -135,58 +136,11 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
   }
 
   void reset() {
-    model = new api.Collection();
-    model.curators = <String>[];
-    model.browsers = <String>[];
+    model = new api.Field();
     selectedItem = null;
-    selectedUser = null;
-    showDeleteConfirmation = false;
     errorMessage = "";
   }
 
-  void removeCurator(String user ) {
-    if(model!=null&&model.curators.contains(user)) {
-      model.curators.remove(user);
-    }
-  }
-  void removeBrowser(String user ) {
-    if(model!=null&&model.browsers.contains(user)) {
-      model.browsers.remove(user);
-    }
-  }
 
-  void addCurator() {
-    if(selectedUser!=null&&this.model!=null) {
-      if(this.model.curators==null)
-        this.model.curators = <String>[];
-      if (!this.model.curators.contains(selectedUser.id)) {
-        this.model.curators.add(selectedUser.id);
-      }
-    }
-  }
-
-  void addBrowser() {
-    if(selectedUser!=null&&this.model!=null) {
-      if(this.model.browsers==null)
-        this.model.browsers = <String>[];
-      if (!this.model.browsers.contains(selectedUser.id)) {
-        this.model.browsers.add(selectedUser.id);
-      }
-    }
-  }
-
-  Future<Null> deleteClicked() async {
-    showDeleteConfirmation = true;
-  }
-
-  bool showDeleteConfirmation = false;
-
-  Future<Null> deleteConfirmClicked() async {
-    await performApiCall(() async {
-      await _api.collections.delete(selectedItem.id);
-      editVisible = false;
-      await refresh();
-    });
-  }
 
 }

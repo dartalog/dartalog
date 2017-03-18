@@ -9,6 +9,7 @@ import 'package:mongo_dart/mongo_dart.dart';
 import 'package:option/option.dart';
 import 'a_mongo_object_data_source.dart';
 import 'a_mongo_id_data_source.dart';
+import 'mongo_item_data_source.dart';
 
 class MongoItemCopyDataSource extends AMongoObjectDataSource<ItemCopy>
     with AItemCopyDataSource {
@@ -24,6 +25,9 @@ class MongoItemCopyDataSource extends AMongoObjectDataSource<ItemCopy>
   static const String _ITEM_COPIES_COPY_FIELD_PATH =
       "${_ITEM_COPIES_FIELD}.${_COPY_FIELD}";
 
+  static const String _itemCopiesCollectionIdPath =
+      "${_ITEM_COPIES_FIELD}.${_COLLECTION_ID_FIELD}";
+
   @override
   Future<Null> delete(String itemId, int copy) => genericUpdate(
       where.eq(ID_FIELD, itemId),
@@ -38,6 +42,32 @@ class MongoItemCopyDataSource extends AMongoObjectDataSource<ItemCopy>
     }
     return false;
   }
+
+  @override
+  Future<Null> deleteByCollection(String collectionId) async {
+    final SelectorBuilder selector = where
+        .eq(_itemCopiesCollectionIdPath, collectionId);
+
+    final MongoItemDataSource itemsSource = data_sources.items;
+    final Stream<Map<dynamic,dynamic>> items = await itemsSource.genericFindStream(selector);
+    await items.forEach((Map<dynamic,dynamic> item) {
+      final List<dynamic> copies = item[_ITEM_COPIES_FIELD];
+      if(copies==null)
+        return;
+
+      for(int i = 0; i < copies.length; i++) {
+        final Map<dynamic,dynamic> copy = copies[i];
+        if(copy[_COLLECTION_ID_FIELD]==collectionId) {
+          copies.removeAt(i);
+          i--;
+        }
+      }
+      final SelectorBuilder selector = where
+          .eq(ID_FIELD, item[ID_FIELD]);
+      itemsSource.genericUpdate(selector, item, multiUpdate: false);
+    });
+  }
+
 
   @override
   Future<bool> existsByUniqueId(String uniqueId) =>
@@ -76,7 +106,7 @@ class MongoItemCopyDataSource extends AMongoObjectDataSource<ItemCopy>
       {bool includeRemoved: false}) async {
     //if (!includeRemoved) where.nin(_STATUS_FIELD, [ITEM_STATUS_REMOVED]);
     // TODO: Make sure removed items don't get returned when not requested
-    final List<ItemCopy> output =
+    final L1ist<ItemCopy> output =
         _convertList((await _getItemData(itemId))[_ITEM_COPIES_FIELD]);
     if (output.length == 0) return <ItemCopy>[];
     final IdNameList<Collection> visibleCollections =
@@ -210,8 +240,8 @@ class MongoItemCopyDataSource extends AMongoObjectDataSource<ItemCopy>
       data[_STATUS_FIELD] = itemCopy.status;
   }
 
-  static List<ItemCopy> _convertList(List data) {
-    List<ItemCopy> output = new List<ItemCopy>();
+  static List<ItemCopy> _convertList(List<dynamic> data) {
+    final List<ItemCopy> output = new List<ItemCopy>();
     if (data == null) return output;
     for (dynamic item in data) {
       output.add(_staticCreateObject(item));

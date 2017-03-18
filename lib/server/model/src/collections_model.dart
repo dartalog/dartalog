@@ -5,6 +5,7 @@ import 'package:dartalog/server/data/data.dart';
 import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
 import 'package:dartalog/server/data_sources/data_sources.dart' as data_sources;
 import 'a_id_name_based_model.dart';
+import '../model.dart' as model;
 
 class CollectionsModel extends AIdNameBasedModel<Collection> {
   // TODO: Currently denies admins the ability to save collections that they are not curators for
@@ -27,6 +28,13 @@ class CollectionsModel extends AIdNameBasedModel<Collection> {
     if (!col.curators.contains(this.currentUserId))
       throw new ForbiddenException.withMessage(
           "You are not a curator for collection \"${col.name}\"");
+  }
+
+  @override
+  Future<String> delete(String id) async {
+    final String normId = await super.delete(id);
+    await data_sources.itemCopies.deleteByCollection(normId);
+    return normId;
   }
 
   @override

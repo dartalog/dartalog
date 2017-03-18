@@ -11,9 +11,9 @@ class MongoItemTypeDataSource extends AMongoIdDataSource<ItemType>
 
   @override
   ItemType createObject(Map data) {
-    ItemType template = new ItemType();
-    template.getId = data[ID_FIELD];
-    template.getName = data["name"];
+    final ItemType template = new ItemType();
+    template.id = data[ID_FIELD];
+    template.name= data["name"];
     template.fieldIds = data["fieldIds"];
     return template;
   }

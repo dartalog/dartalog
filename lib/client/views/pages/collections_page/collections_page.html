@@ -24,7 +24,7 @@
                             <br/>
                         </td>
                         <td>
-                            <material-checkbox [(ngModel)]="model.publiclyBrowsable"
+                            <material-checkbox [(ngModel)]="model.publiclyBrowsable" ngControl="publiclyBrowsable"
                                                label="Publicly Browsable"></material-checkbox>
                         </td>
                     </tr>
@@ -63,12 +63,22 @@
                 </span>
                 <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/>
             </form>
-            <div footer style="text-align: right">
-                <material-yes-no-buttons yesHighlighted
-                                         yesText="Save" (yes)="onSubmit()"
-                                         noText="Cancel" (no)="editVisible = false"
-                                         [pending]="processing" [yesDisabled]="!editForm.valid">
-                </material-yes-no-buttons>
+            <div footer>
+                <table style="width:100%;">
+                    <tr>
+                        <td>
+                            <material-button *ngIf="!isNewItem" icon (trigger)="deleteClicked()"><glyph icon="delete_forever"></glyph></material-button>
+                            <material-button *ngIf="showDeleteConfirmation" (trigger)="deleteConfirmClicked()" raised class="red">Confirm</material-button>
+                        </td>
+                        <td style="width:200px">
+                            <material-yes-no-buttons yesHighlighted
+                                                     yesText="Save" (yes)="onSubmit()"
+                                                     noText="Cancel" (no)="editVisible = false"
+                                                     [pending]="processing" [yesDisabled]="!editForm.valid">
+                            </material-yes-no-buttons>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </material-dialog>
     </modal>

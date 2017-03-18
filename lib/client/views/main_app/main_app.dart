@@ -72,9 +72,14 @@ import 'package:polymer_elements/paper_toolbar.dart';
     component: ItemBrowseComponent,
   ),
   const Route(
-    path: '/collections',
-    name: 'Collections',
-    component: CollectionsPage,
+      path: '/collections',
+      name: 'Collections',
+      component: CollectionsPage,
+  ),
+  const Route(
+      path: '/fields',
+      name: 'Fields',
+      component: FieldsPage,
   ),
 ])
 class MainApp implements OnInit, OnDestroy {

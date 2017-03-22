@@ -30,7 +30,7 @@ class MongoItemCopyDataSource extends AMongoObjectDataSource<ItemCopy>
 
   @override
   Future<Null> delete(String itemId, int copy) => genericUpdate(
-      where.eq(ID_FIELD, itemId),
+      where.eq(idField, itemId),
       modify.pull(_ITEM_COPIES_FIELD, {_COPY_FIELD: copy}));
 
   @override
@@ -63,7 +63,7 @@ class MongoItemCopyDataSource extends AMongoObjectDataSource<ItemCopy>
         }
       }
       final SelectorBuilder selector = where
-          .eq(ID_FIELD, item[ID_FIELD]);
+          .eq(idField, item[idField]);
       itemsSource.genericUpdate(selector, item, multiUpdate: false);
     });
   }
@@ -106,7 +106,7 @@ class MongoItemCopyDataSource extends AMongoObjectDataSource<ItemCopy>
       {bool includeRemoved: false}) async {
     //if (!includeRemoved) where.nin(_STATUS_FIELD, [ITEM_STATUS_REMOVED]);
     // TODO: Make sure removed items don't get returned when not requested
-    final L1ist<ItemCopy> output =
+    final List<ItemCopy> output =
         _convertList((await _getItemData(itemId))[_ITEM_COPIES_FIELD]);
     if (output.length == 0) return <ItemCopy>[];
     final IdNameList<Collection> visibleCollections =
@@ -138,7 +138,7 @@ class MongoItemCopyDataSource extends AMongoObjectDataSource<ItemCopy>
       for (Map<String, dynamic> copy in data[_ITEM_COPIES_FIELD]) {
         if (copy[_UNIQUE_ID_FIELD] == uniqueId) {
           final ItemCopy output = createObject(copy);
-          output.itemId = data[ID_FIELD];
+          output.itemId = data[idField];
           return new Some<ItemCopy>(output);
         }
       }
@@ -177,11 +177,11 @@ class MongoItemCopyDataSource extends AMongoObjectDataSource<ItemCopy>
     for (ItemCopyId id in itemCopies) {
       if (selector == null) {
         selector = where
-            .eq(ID_FIELD, id.itemId)
+            .eq(idField, id.itemId)
             .eq(_ITEM_COPIES_COPY_FIELD_PATH, id.copy);
       } else {
         selector = selector.or(where
-            .eq(ID_FIELD, id.itemId)
+            .eq(idField, id.itemId)
             .eq(_ITEM_COPIES_COPY_FIELD_PATH, id.copy));
       }
     }
@@ -198,7 +198,7 @@ class MongoItemCopyDataSource extends AMongoObjectDataSource<ItemCopy>
     dynamic modifier;
     if (update) {
       selector = where
-          .eq(ID_FIELD, itemCopy.itemId)
+          .eq(idField, itemCopy.itemId)
           .eq(_ITEM_COPIES_COPY_FIELD_PATH, itemCopy.copy);
 
       modifier = modify;
@@ -206,7 +206,7 @@ class MongoItemCopyDataSource extends AMongoObjectDataSource<ItemCopy>
         modifier = modifier.set("$_ITEM_COPIES_FIELD.\$.$key", data[key]);
       }
     } else {
-      selector = where.eq(ID_FIELD, itemCopy.itemId);
+      selector = where.eq(idField, itemCopy.itemId);
       modifier = modify.push(_ITEM_COPIES_FIELD, data);
     }
 
@@ -223,7 +223,7 @@ class MongoItemCopyDataSource extends AMongoObjectDataSource<ItemCopy>
       con.getItemsCollection();
 
   Future<Map<String, dynamic>> _getItemData(String itemId) async {
-    final dynamic criteria = where.eq(ID_FIELD, itemId);
+    final dynamic criteria = where.eq(idField, itemId);
     final List<dynamic> results = await genericFind(criteria);
     if (results.length == 0)
       throw new NotFoundException("Requested item not found");

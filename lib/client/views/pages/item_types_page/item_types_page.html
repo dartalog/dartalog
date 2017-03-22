@@ -19,18 +19,22 @@
                 <material-input [(ngModel)]="model.name" ngControl="name" floatingLabel required
                                 label="Name"></material-input>
                 <br/>
-                <material-input [(ngModel)]="model.format" ngControl="format" floatingLabel
-                                label="Format"></material-input>
-                <br/>
-            <material-checkbox [(ngModel)]="model.unique" ngControl="unique"
-                               label="Unique"></material-checkbox>
-                <br/>
-                Type:
-            <select [(ngModel)]="model.type">
-                <option *ngFor="let f of fieldTypes.keys" [ngValue]="f">
-                    {{fieldTypes[f]}}
-                </option>
-            </select>
+                Fields
+                <select [(ngModel)]="selectedField">
+                    <option></option>
+                    <option *ngFor="let f of fields" [ngValue]="f">
+                        {{f.name}}
+                    </option>
+                </select>
+                <material-button (trigger)="addField()" raised >Add</material-button>
+                <ol>
+                <reorder-list  (reorder)="onReorder($event)">
+                    <material-list-item *ngFor="let f of model.fieldIds" (trigger)="removeField(f)" reorderItem>
+                        {{f}}
+                    </material-list-item>
+                </reorder-list>
+                </ol>
+
 
             <span *ngIf="hasErrorMessage" class="error_output">
                     <glyph icon="error_outline"></glyph>

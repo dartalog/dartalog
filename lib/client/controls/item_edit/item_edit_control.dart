@@ -172,7 +172,7 @@ class ItemEditControl extends AControl {
           if (f.type == "image") {
             if (f.mediaMessage != null) {
               files.add(f.mediaMessage);
-              f.value = "$FILE_UPLOAD_PREFIX${files.length - 1}";
+              f.value = "$fileUploadPrefix${files.length - 1}";
             }
           }
         }

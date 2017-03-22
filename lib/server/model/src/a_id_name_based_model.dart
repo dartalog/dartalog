@@ -20,6 +20,9 @@ abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel<T> {
   Future<String> create(T t) async {
     await validateCreatePrivileges();
     await validate(t, true);
+
+    t.setId = generateUuid();
+
     return await dataSource.write(t);
   }
 
@@ -62,31 +65,37 @@ abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel<T> {
   }
 
   Future<String> update(String id, T t) async {
-    final String normId = normalizeId(id);
-    await validateUpdatePrivileges(normId);
-    await validate(t, normId!= t.getId);
-    return await dataSource.write(t, normId);
+    await validateUpdatePrivileges(id);
+    await validate(t, existingId:  id);
+    return await dataSource.write(t, id);
   }
 
   @protected
   void performAdjustments(T t) {}
 
   @override
-  Future<Map<String, String>> validateFields(T t, bool creating) async {
+  Future<Map<String, String>> validateFields(T t, {String existingId: null}) async {
     final Map<String, String> fieldErrors = new Map<String, String>();
 
-    t.setId = normalizeId(t.getId);
+    t.setReadableId = normalizeId(t.getReadableId);
     t.setName = t.getName.trim();
 
-    if (StringTools.isNullOrWhitespace(t.getId))
-      fieldErrors["id"] = "Required";
+    if (StringTools.isNullOrWhitespace(t.getReadableId))
+      fieldErrors["readableId"] = "Required";
     else {
-      if (creating) {
-        if (await dataSource.existsByID(t.getId))
-          fieldErrors["id"] = "Already in use";
+      final Option<T> item = await dataSource.getByReadableId(t.getReadableId);
+
+      if(StringTools.isNullOrWhitespace(existingId)) {
+        // Creating
+        if(item.isNotEmpty)
+          fieldErrors["readableId"] = "Already in use";
+      } else {
+        // Updating
+        if(item.isNotEmpty&&item.first.getId!=existingId)
+          fieldErrors["readableId"] = "Already in use";
       }
       if (isReservedWord(t.getId)) {
-        fieldErrors["id"] = "Cannot use '${t.getId}' as ID";
+        fieldErrors["readableId"] = "Cannot use '${t.getReadableId}' as Readable ID";
       }
     }
 
@@ -96,13 +105,13 @@ abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel<T> {
       fieldErrors["name"] = "Cannot use '${t.getName}' as name";
     }
 
-    await validateFieldsInternal(fieldErrors, t, creating);
+    await validateFieldsInternal(fieldErrors, t, existingId: existingId);
 
     return fieldErrors;
   }
 
   @protected
-  Future<Null> validateFieldsInternal(Map<String,String> fieldErrors, T t, bool creating) async =>
+  Future<Null> validateFieldsInternal(Map<String,String> fieldErrors, T t, {String existingId: null}) async =>
       {};
 
   @protected

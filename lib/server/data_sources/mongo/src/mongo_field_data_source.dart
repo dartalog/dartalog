@@ -16,7 +16,7 @@ class MongoFieldDataSource extends AMongoIdDataSource<Field> with AFieldModel {
     SelectorBuilder query = null;
 
     for (String id in ids) {
-      SelectorBuilder sb = where.eq(ID_FIELD, id);
+      SelectorBuilder sb = where.eq(idField, id);
       if (query == null) {
         query = sb;
       } else {
@@ -36,7 +36,7 @@ class MongoFieldDataSource extends AMongoIdDataSource<Field> with AFieldModel {
   @override
   Field createObject(Map data) {
     Field output = new Field();
-    output.id = data[ID_FIELD];
+    output.id = data[idField];
     output.name= data["name"];
     output.type = data["type"];
     output.format = data["format"];
@@ -51,7 +51,7 @@ class MongoFieldDataSource extends AMongoIdDataSource<Field> with AFieldModel {
 
   @override
   void updateMap(Field field, Map data) {
-    data[ID_FIELD] = field.getId;
+    data[idField] = field.getId;
     data["name"] = field.getName;
     data["type"] = field.type;
     data["format"] = field.format;

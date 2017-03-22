@@ -1,0 +1,101 @@
+<auth-status (authorizedChanged)="authorizationChanged($event)" require="curator" [showMessage]="true"></auth-status>
+
+<div *ngIf="userAuthorized">
+    <div *ngIf="noItemTypesFound&&!processing" class="no-items">No Item Types Found</div>
+    <div *ngIf="noCollectionsFound&&!processing" class="no-items">No Collections Found</div>
+
+    <div *ngIf="!noItemTypesFound&&!noCollectionsFound">
+        <material-tab-panel [activeTabIndex]="currentTab">
+            <material-tab label="Import">
+                <div>
+                    <form #importForm="ngForm">
+                        (Currently only Amazon is implemented)
+                        <material-input [(ngModel)]="importSearchQuery" floatingLabel autoFocus required
+                                        ngControl="search"
+                                        label="Search"></material-input>
+                        <material-yes-no-buttons yesHighlighted
+                                                 yesText="Search" (yes)="importSearch()"
+                                                 noText="Clear" (no)="reset()"
+                                                 [pending]="importSearchBusy" [yesDisabled]="!importForm.valid">
+                        </material-yes-no-buttons>
+                    </form>
+                    <span *ngIf="hasErrorMessage" class="error_output">
+                    <glyph icon="error_outline"></glyph>
+                    {{errorMessage}}
+                </span>
+
+                    <material-list>
+                        <material-list-item *ngFor="let r of importSearchResults.results"
+                                            (trigger)="importSearchResult(r)">
+                            <img src="{{r.thumbnail}}" style="height:100px;"/>
+                            {{r.title}}
+                        </material-list-item>
+                    </material-list>
+                </div>
+            </material-tab>
+            <material-tab label="Bulk Import">
+                <div>
+                    TBI
+                </div>
+            </material-tab>
+            <material-tab label="Manual">
+                <div>
+                    <form #manualForm="ngForm">
+                    <select [(ngModel)]="selectedItemTypeId">
+                        <option></option>
+                        <option *ngFor="let t of itemTypes" [ngValue]="t.id">
+                            {{t.name}}
+                        </option>
+                    </select>
+                    <span>
+                    <select [(ngModel)]="selectedCollectionId">
+                        <option></option>
+                        <option *ngFor="let t of itemTypes" [ngValue]="t.id">
+                            {{t.name}}
+                        </option>
+                    </select>
+                        <material-input [(ngModel)]="newUniqueId"
+                                        floatingLabel ngControl="uniqueId"
+                                        label="Unique ID"></material-input>
+                    </span>
+                        <material-input [(ngModel)]="itemName" autofocus
+                                        floatingLabel ngControl="name"
+                                        label="Name"></material-input>
+
+                        <div *ngFor="let f of fields">
+                            <material-input *ngIf="f.isTypeString" [(ngModel)]="f.value"
+                                            floatingLabel ngControl="{{f.id}}"
+                                            label="{{f.name}}"></material-input>
+
+                            <div class="layout horizontal" *ngIf="f.isTypeImage">
+                                <input type="file" (change)="fileUploadChanged($event, f.id)" style="display:none"/>
+                                <material-input *ngIf="f.type=='string'" [(ngModel)]="modef.value"
+                                                floatingLabel ngControl="{{f.id}}"
+                                                label="{{f.name}}"></material-input>
+
+                                <iron-image src="{{f.displayImageUrl}}" style="width:100px; height:100px;"
+                                            sizing="contain"></iron-image>
+
+                                <material-button (trigger)="uploadClicked()" raised icon>
+                                    <glyph icon="file_upload"></glyph>
+                                </material-button>
+
+                                <div>
+                                    <material-spinner *ngIf="f.imageLoading"></material-spinner>
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <material-yes-no-buttons yesHighlighted
+                                                 yesText="Save" (yes)="submitManualForm()"
+                                                 noText="Cancel" (no)="reset()"
+                                                 [pending]="processing" [yesDisabled]="!manualForm.valid">
+                        </material-yes-no-buttons>
+                    </form>
+                </div>
+            </material-tab>
+        </material-tab-panel>
+
+    </div>
+</div>

@@ -22,7 +22,7 @@ class FieldModel extends AIdNameBasedModel<Field> {
       final Map<String,String> fieldErrors, Field field, bool creating) async {
     if (StringTools.isNullOrWhitespace(field.type))
       fieldErrors["type"] = "Required";
-    else if (!FIELD_TYPES.containsKey(field.type)) {
+    else if (!globalFieldTypes.containsKey(field.type)) {
       fieldErrors["type"] = "Invalid";
     }
 
@@ -32,6 +32,7 @@ class FieldModel extends AIdNameBasedModel<Field> {
     }
   }
 
+  @override
   Future<String> delete(String id) async {
     throw new Exception("Not implemented");
   }

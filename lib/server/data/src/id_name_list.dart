@@ -1,5 +1,5 @@
 import 'package:option/option.dart';
-import 'package:dartalog/data/src/a_id_data.dart';
+import 'a_id_data.dart';
 import 'dart:collection';
 
 class IdNameList<T extends AIdData> extends ListBase<T> {

@@ -88,6 +88,7 @@ abstract class AMongoObjectDataSource<T> extends AMongoDataSource {
   Future<Null> insertIntoDb(T item) async {
     return await collectionWrapper((DbCollection collection) async {
       final Map<String, dynamic> data = _createMap(item);
+
       await collection.insert(data);
     });
   }

@@ -85,9 +85,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   @override
   Item createObject(Map<String, dynamic> data) {
     final Item output = new Item();
-
-    output.id = data[ID_FIELD];
-    output.name = data['name'];
+    setIdDataFields(output, data);
     output.typeId = data['typeId'];
     output.values = data["values"];
     output.dateAdded = data["dateAdded"];
@@ -102,8 +100,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
 
   @override
   void updateMap(Item item, Map<String, dynamic> data) {
-    data[ID_FIELD] = item.id;
-    data["name"] = item.getName;
+    super.updateMap(item, data);
     data["typeId"] = item.typeId;
     data["values"] = item.values;
     if (item.dateAdded != null) data["dateAdded"] = item.dateAdded;

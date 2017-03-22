@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:indexed_db' as idb;
 
-import 'package:dartalog/data/data.dart';
+import 'package:dartalog/client/api/api.dart';
 
 import 'a_data_source.dart';
 import 'package:angular2/core.dart';

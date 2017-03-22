@@ -29,16 +29,19 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>
+                        <td colspan="2">
                             Users
-                            <material-list>
-                                <material-list-item *ngFor="let i of users" (trigger)="selectedUser=i">
-                                    {{i.name}}
-                                </material-list-item>
-                            </material-list>
-                            <material-button (trigger)="addCurator()" raised >Add Curator</material-button>
-                            <material-button (trigger)="addBrowser()" raised >Add Browser</material-button>
+                            <select [(ngModel)]="selectedUser">
+                                <option></option>
+                                <option *ngFor="let u of users" [ngValue]="u">
+                                    {{u.name}}
+                                </option>
+                            </select>
+                            <material-button (trigger)="addCurator()" raised>Add Curator</material-button>
+                            <material-button (trigger)="addBrowser()" raised>Add Browser</material-button>
                         </td>
+                    </tr>
+                    <tr>
                         <td>
                             Curators
                             <material-list>
@@ -67,8 +70,12 @@
                 <table style="width:100%;">
                     <tr>
                         <td>
-                            <material-button *ngIf="!isNewItem" icon (trigger)="deleteClicked()"><glyph icon="delete_forever"></glyph></material-button>
-                            <material-button *ngIf="showDeleteConfirmation" (trigger)="deleteConfirmClicked()" raised class="red">Confirm</material-button>
+                            <material-button *ngIf="!isNewItem" icon (trigger)="deleteClicked()">
+                                <glyph icon="delete_forever"></glyph>
+                            </material-button>
+                            <material-button *ngIf="showDeleteConfirmation" (trigger)="deleteConfirmClicked()" raised
+                                             class="red">Confirm
+                            </material-button>
                         </td>
                         <td style="width:200px">
                             <material-yes-no-buttons yesHighlighted

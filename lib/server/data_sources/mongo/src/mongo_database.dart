@@ -65,7 +65,7 @@ class MongoDatabase {
     await con.conn.createIndex(_itemsCollection,
         keys: {r"$**": "text"}, name: "TextIndex");
     await con.conn.createIndex(_itemsCollection,
-        keys: {ID_FIELD: 1, "copies.copy": 1}, unique: true, name: "CopyIndex");
+        keys: {idField: 1, "copies.copy": 1}, unique: true, name: "CopyIndex");
     await con.conn.createIndex(_itemsCollection,
         key: "copies.uniqueId",
         unique: true,

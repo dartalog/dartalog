@@ -7,17 +7,19 @@ import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/services/services.dart';
 import 'package:dartalog/client/views/controls/auth_status_component.dart';
-import 'package:dartalog/data/data.dart';
+import 'package:dartalog/client/api/api.dart';
 import 'package:dartalog/tools.dart';
 import 'package:logging/logging.dart';
 import 'package:polymer_elements/iron_flex_layout/classes/iron_flex_layout.dart';
+import 'package:angular2_components/angular2_components.dart';
 
 @Component(
     selector: 'item-browse',
-    providers: const [],
-    directives: const [ROUTER_DIRECTIVES, AuthStatusComponent],
+    providers: const [materialProviders],
+    directives: const [materialDirectives,ROUTER_DIRECTIVES, AuthStatusComponent,],
     styleUrls: const ["../../shared.css","item_browse.css"],
     template: '''
+      <auth-status (authedChanged)="refresh()"></auth-status>
       <div *ngIf="noItemsFound&&!loading" class="no-items">No Items Found</div>
       <span *ngFor="let i of items" >
       <a [routerLink]="['Item', {id: i.id}]" class="item_card">
@@ -30,7 +32,9 @@ import 'package:polymer_elements/iron_flex_layout/classes/iron_flex_layout.dart'
             </paper-material>
       </a>
       </span>
-      <auth-status (authedChanged)="refresh()"></auth-status>
+    <material-fab raised [routerLink]="['ItemAdd']" style="position: fixed; right: 8pt; bottom: 8pt;z-index:9999999;" class="red">
+      <glyph icon="add"></glyph>
+    </material-fab>
     ''')
 class ItemBrowseComponent implements OnInit, OnDestroy {
   static final Logger _log = new Logger("ItemBrowseComponent");
@@ -127,7 +131,7 @@ class ItemBrowseComponent implements OnInit, OnDestroy {
 
       items.clear();
       if (response.items.isNotEmpty)
-        items.addAll(ItemSummary.convertObjectList(response.items));
+        items.addAll(response.items);
 
       final PaginationInfo info = new PaginationInfo();
       for (int i = 0; i < response.totalPages; i++) {

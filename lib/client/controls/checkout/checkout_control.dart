@@ -63,7 +63,8 @@ class CheckoutControl extends AControl {
 
   Logger get loggerImpl => _log;
 
-  Future addToCart(ItemCopy itemCopy) async {
+  @override
+  Future<Null> addToCart(ItemCopy itemCopy) async {
     for (ItemCopy test in this.cart) {
       if (itemCopy.matchesItemCopy(test)) return;
     }
@@ -72,7 +73,8 @@ class CheckoutControl extends AControl {
     _evaluateCart();
   }
 
-  attached() {
+  @override
+  void attached() {
     super.attached();
   }
 

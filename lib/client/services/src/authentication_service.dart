@@ -2,9 +2,8 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:angular2/core.dart';
-import 'package:dartalog/client/api/api.dart' as api;
+import 'package:dartalog/client/api/api.dart';
 import 'package:dartalog/client/client.dart';
-import 'package:dartalog/data/data.dart';
 import 'package:dartalog/global.dart';
 import 'package:dartalog/tools.dart';
 import 'package:logging/logging.dart';
@@ -25,20 +24,19 @@ class AuthenticationService {
       new StreamController<bool>.broadcast();
 
   final StreamController<Null> _promptController =
-  new StreamController<Null>.broadcast();
+      new StreamController<Null>.broadcast();
 
   AuthenticationService(this._settings, this._api);
 
   Stream<bool> get authStatusChanged => _authStatusController.stream;
-  Stream<Null> get loginPrompted => _promptController.stream;
-
-
   bool get canCheckout => hasPrivilege(UserPrivilege.checkout);
+
   bool get isAdmin => hasPrivilege(UserPrivilege.admin);
   bool get isAuthenticated => user.isNotEmpty;
-
   bool get isCurator => hasPrivilege(UserPrivilege.curator);
+
   bool get isPatron => hasPrivilege(UserPrivilege.patron);
+  Stream<Null> get loginPrompted => _promptController.stream;
 
   Future<Null> authenticate(String user, String password) async {
     final String url = "${getServerRoot()}login/";
@@ -65,16 +63,12 @@ class AuthenticationService {
     await _settings.clearAuthCache();
   }
 
-  Future<Null> promptForAuthentication() async {
-    _promptController.add(null);
-  }
-
   Future<Null> evaluateAuthentication() async {
     try {
-      final api.User apiUser = await _api.users.getMe();
-      this.user = new Some<User>(new User.copy(apiUser));
+      final User apiUser = await _api.users.getMe();
+      this.user = new Some<User>(apiUser);
       _authStatusController.add(true);
-    } on api.DetailedApiRequestError catch (e, st) {
+    } on DetailedApiRequestError catch (e, st) {
       if (e.status >= 400 && e.status < 500) {
         // Not authenticated, nothing to see here
         await clear();
@@ -87,7 +81,11 @@ class AuthenticationService {
 
   bool hasPrivilege(String needed) {
     return this.user.any((User user) {
-      return user.evaluateType(needed);
+      return UserPrivilege.evaluate(needed, user.type);
     });
+  }
+
+  Future<Null> promptForAuthentication() async {
+    _promptController.add(null);
   }
 }

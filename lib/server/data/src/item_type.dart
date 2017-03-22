@@ -1,10 +1,12 @@
-import 'package:dartalog/data/src/a_id_data.dart';
+import 'a_id_data.dart';
 
 import 'field.dart';
 
 class ItemType extends AIdData {
   String id = "";
   String name = "";
+  String readableId = "";
+
   List<String> fieldIds = new List<String>();
 
   List<Field> fields;
@@ -20,4 +22,9 @@ class ItemType extends AIdData {
 
   @override
   set setName(String value) => name = value;
+
+  @override
+  String get getReadableId => readableId;
+  @override
+  set setReadableId(String value) => readableId = value;
 }

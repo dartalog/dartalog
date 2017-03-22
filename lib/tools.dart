@@ -31,6 +31,9 @@ String formatUuid(String input) {
   return output.toString();
 }
 
+const String uuidNamespace = "d34f2371-60dc-46d5-abe1-57a53fd03750";
+const String uniqueKeySomeday = "uniqueKey";
+
 /// Generate a brand new uuid.
 String generateUuid() => new Uuid().v4();
 

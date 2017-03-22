@@ -22,6 +22,12 @@
                     <paper-item-body>Browse Items</paper-item-body>
                 </paper-item>
             </a>
+            <a [routerLink]="['ItemAdd']">
+                <paper-item>
+                    <iron-icon icon="label-outline"></iron-icon>
+                    <paper-item-body>Add Item</paper-item-body>
+                </paper-item>
+            </a>
             <a [routerLink]="['Collections']">
                 <paper-item>
                     <iron-icon icon="label-outline"></iron-icon>
@@ -34,10 +40,18 @@
                     <paper-item-body>Fields</paper-item-body>
                 </paper-item>
             </a>
+            <a [routerLink]="['ItemTypes']">
+                <paper-item>
+                    <iron-icon icon="label-outline"></iron-icon>
+                    <paper-item-body>Item Types</paper-item-body>
+                </paper-item>
+            </a>
         </div>
     </paper-header-panel>
     <paper-header-panel main>
         <paper-toolbar class="container">
+            <material-button icon paper-drawer-toggle><glyph icon="menu"></glyph></material-button>
+
             <span class="title" style="margin-left:0pt;">{{pageTitle}}</span>
             <page-control-toolbar style="margin-top:16pt;"></page-control-toolbar>
         </paper-toolbar>

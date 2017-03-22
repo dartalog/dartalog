@@ -1,8 +1,10 @@
-import 'package:dartalog/data/src/a_id_data.dart';
+import 'a_id_data.dart';
 
 class Collection extends AIdData {
   String id = "";
   String name = "";
+  String readableId = "";
+
   bool publiclyBrowsable = false;
 
   List<String> curators = <String>[];
@@ -19,4 +21,10 @@ class Collection extends AIdData {
 
   @override
   set setName(String value) => name = value;
+
+  @override
+  String get getReadableId => readableId;
+  @override
+  set setReadableId(String value) => readableId = value;
+
 }

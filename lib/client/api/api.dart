@@ -24,5 +24,6 @@ export 'src/item.dart'
         MediaMessage,
         UpdateItemRequest,
         TransferRequest,
-        IdResponse;
+        IdResponse,
+        ItemSummary;
 

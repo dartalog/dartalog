@@ -14,7 +14,7 @@ class AmazonImportProvider extends AScrapingImportProvider {
 
   static const String BASE_URL = "www.amazon.com";
 
-  static final List VALID_TYPES = ["music", "dvd", "videogames", "vhs"];
+  static final List<String> VALID_TYPES = ["music", "dvd", "videogames", "vhs"];
 
   static final RegExp _item_link_reg = new RegExp(
       r'https?://www.amazon.com/[^/]+/dp/([^/]+)/.+',
@@ -23,7 +23,7 @@ class AmazonImportProvider extends AScrapingImportProvider {
 
   static const String NAME = "amazon";
 
-  static List<ScrapingImportCriteria> _itemTypeCriteria = [
+  static final List<ScrapingImportCriteria> _itemTypeCriteria = [
     new ScrapingImportCriteria(
         elementSelector: 'h1#title > span.a-color-secondary',
         replaceRegex: {
@@ -41,7 +41,7 @@ class AmazonImportProvider extends AScrapingImportProvider {
         replaceRegex: {r"videogames": "video_game"}),
   ];
 
-  static List<ScrapingImportCriteria> _fieldCriteria = [
+  static final List<ScrapingImportCriteria> _fieldCriteria = [
     new ScrapingImportCriteria(
         field: "name",
         elementSelector: 'span#productTitle',
@@ -149,21 +149,22 @@ class AmazonImportProvider extends AScrapingImportProvider {
       throw new Exception(
           "Amazon is refusing our request due to bot detection, please try again later");
 
-    List<Element> top_elements = doc.querySelectorAll(".s-result-item");
+    final List<Element> top_elements = doc.querySelectorAll(".s-result-item");
 
     for (Element top_element in top_elements) {
-      Element image_element = top_element.querySelector("img.s-access-image");
-      Element title_element = top_element.querySelector("h2");
-      Element title_parent_element = title_element.parent;
-      if (title_element == null || title_parent_element == null) continue;
+      final Element image_element = top_element.querySelector("img.s-access-image");
+      final Element title_element = top_element.querySelector("h2");
+      if (title_element == null) continue;
+      final Element title_parent_element = title_element.parent;
+      if (title_parent_element == null) continue;
 
-      String title = title_element.text;
-      String top_url = title_parent_element.attributes["href"];
+      final String title = title_element.text;
+      final String top_url = title_parent_element.attributes["href"];
       if (StringTools.isNullOrWhitespace(top_url) ||
           !_item_link_reg.hasMatch(top_url)) {
         continue;
       }
-      String top_id = _item_link_reg.firstMatch(top_url).group(1);
+      final String top_id = _item_link_reg.firstMatch(top_url).group(1);
 
       String image_url = null;
 
@@ -171,7 +172,7 @@ class AmazonImportProvider extends AScrapingImportProvider {
         image_url = image_element.attributes["src"];
       }
 
-      SearchResult top_result = new SearchResult();
+      final SearchResult top_result = new SearchResult();
       top_result.id = top_id;
       top_result.thumbnail = image_url;
       top_result.title = title;

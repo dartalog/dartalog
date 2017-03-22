@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart';
+import 'package:angular2/di.dart';
 
 export 'src/settings.dart';
 export 'src/exceptions/setup_disabled_exception.dart';
@@ -26,3 +27,4 @@ Future<Map<String, dynamic>> loadJSONFile(String path) async {
 //}
 
 enum SettingNames { itemNameFormat }
+

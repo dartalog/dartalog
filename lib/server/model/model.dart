@@ -6,6 +6,7 @@ import 'src/item_model.dart';
 import 'src/import_model.dart';
 import 'src/collections_model.dart';
 import 'src/item_type_model.dart';
+import 'src/export_model.dart';
 export 'src/a_id_name_based_model.dart';
 export 'src/item_type_model.dart';
 
@@ -17,3 +18,4 @@ final ItemModel items = new ItemModel();
 final SetupModel setup = new SetupModel();
 final SettingsModel settings = new SettingsModel();
 final ImportModel import = new ImportModel();
+final ExportModel export = new ExportModel();

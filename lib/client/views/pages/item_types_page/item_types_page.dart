@@ -12,13 +12,13 @@ import 'package:logging/logging.dart';
 import '../src/a_page.dart';
 
 @Component(
-    selector: 'fields-page',
+    selector: 'item-types-page',
     directives: const [materialDirectives, commonControls],
     providers: const [materialProviders],
     styleUrls: const ["../../shared.css"],
-    templateUrl: 'fields_page.html')
-class FieldsPage extends APage implements OnInit, OnDestroy {
-  static final Logger _log = new Logger("FieldsPage");
+    templateUrl: 'item_types_page.html')
+class ItemTypesPage extends APage implements OnInit, OnDestroy {
+  static final Logger _log = new Logger("ItemTypesPage");
 
   @ViewChild("editForm")
   NgForm form;
@@ -27,9 +27,12 @@ class FieldsPage extends APage implements OnInit, OnDestroy {
 
   List<IdNamePair> items = <IdNamePair>[];
 
-  IdNamePair selectedItem;
+  List<api.IdNamePair> fields = <api.IdNamePair>[];
 
-  api.Field model = new api.Field();
+  IdNamePair selectedItem;
+  IdNamePair selectedField;
+
+  api.ItemType model = new api.ItemType();
 
   bool editVisible = false;
 
@@ -44,15 +47,19 @@ class FieldsPage extends APage implements OnInit, OnDestroy {
 
   List<api.IdNamePair> users = <api.IdNamePair>[];
 
-  FieldsPage(this._pageControl, this._api, AuthenticationService _auth)
+  ItemTypesPage(this._pageControl, this._api, AuthenticationService _auth)
       : super(_pageControl, _auth) {
-    _pageControl.setPageTitle("Fields");
+    _pageControl.setPageTitle("Item Types");
     _pageControl.setAvailablePageActions(
         <PageActions>[PageActions.Refresh, PageActions.Add]);
     _pageActionSubscription =
         _pageControl.pageActionRequested.listen(onPageActionRequested);
   }
-  Map<String, String> get fieldTypes => globalFieldTypes;
+
+  void onReorder(ReorderEvent reorder) {
+    model.fieldIds.insert(
+        reorder.destIndex, model.fieldIds.removeAt(reorder.sourceIndex));
+  }
 
   bool get isNewItem => selectedItem == null;
 
@@ -108,9 +115,9 @@ class FieldsPage extends APage implements OnInit, OnDestroy {
   Future<Null> onSubmit() async {
     await performApiCall(() async {
       if (isNewItem) {
-        await _api.fields.create(model);
+        await _api.itemTypes.create(model);
       } else {
-        await _api.fields.update(model, selectedItem.id);
+        await _api.itemTypes.update(model, selectedItem.id);
       }
       editVisible = false;
       await this.refresh();
@@ -121,23 +128,41 @@ class FieldsPage extends APage implements OnInit, OnDestroy {
     await performApiCall(() async {
       editVisible = false;
       items.clear();
-      final ListOfIdNamePair data = await _api.fields.getAllIdsAndNames();
+      final ListOfIdNamePair data = await _api.itemTypes.getAllIdsAndNames();
       items.addAll(data);
     });
   }
 
   void reset() {
-    model = new api.Field();
+    model = new api.ItemType();
     selectedItem = null;
+    selectedField = null;
     errorMessage = "";
   }
 
   Future<Null> selectItem(IdNamePair item) async {
     await performApiCall(() async {
       reset();
-      model = await _api.fields.getById(item.id);
+      model = await _api.itemTypes.getById(item.id);
+      fields = await _api.fields.getAllIdsAndNames();
       selectedItem = item;
       editVisible = true;
     });
+  }
+
+  void removeField(String field) {
+    if(model!=null&&model.fieldIds.contains(field)) {
+      model.fieldIds.remove(field);
+    }
+  }
+
+  void addField() {
+    if(selectedField!=null&&this.model!=null) {
+      if(this.model.fieldIds==null)
+        this.model.fieldIds = <String>[];
+      if (!this.model.fieldIds.contains(selectedField.id)) {
+        this.model.fieldIds.add(selectedField.id);
+      }
+    }
   }
 }

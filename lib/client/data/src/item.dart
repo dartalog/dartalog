@@ -1,8 +1,9 @@
-import 'package:polymer/polymer.dart';
-import 'item_type.dart';
-import 'item_copy.dart';
-import 'field.dart';
 import 'package:dartalog/client/api/api.dart' as API;
+import 'package:polymer/polymer.dart';
+
+import 'field.dart';
+import 'item_copy.dart';
+import 'item_type.dart';
 
 class Item {
   @reflectable
@@ -22,36 +23,7 @@ class Item {
   @Property(notify: true)
   List<Field> fields;
 
-  @property
-  List<Field> get imageFieldsWithValue {
-    List output = this.fields.toList();
-    output.retainWhere((Field f) => f.isTypeImage && f.hasValue);
-    return output;
-  }
-
-  Map<String, String> get values {
-    Map<String, String> output = new Map<String, String>();
-    for (Field f in fields) {
-      output[f.id] = f.value;
-    }
-    return output;
-  }
-
-  void set values(Map<String, String> newValues) {
-    for (String key in newValues.keys) {
-      Field f = getField(key);
-      if (f == null) continue;
-      f.value = newValues[key];
-    }
-  }
-
   Item();
-
-  Item.forType(ItemType type) {
-    this.typeId = type.id;
-    this.fields = type.fields;
-    this.type = type;
-  }
 
   Item.copy(dynamic input) {
     if (input.type != null) {
@@ -66,12 +38,33 @@ class Item {
     _copy(input, this);
   }
 
-  Field getField(String id) {
-    if (this.fields == null) return null;
-    for (Field f in this.fields) {
-      if (f.id == id) return f;
+  Item.forType(ItemType type) {
+    this.typeId = type.id;
+    this.fields = type.fields;
+    this.type = type;
+  }
+
+  @property
+  List<Field> get imageFieldsWithValue {
+    final List<Field> output = this.fields.toList();
+    output.retainWhere((Field f) => f.isTypeImage && f.hasValue);
+    return output;
+  }
+
+  Map<String, String> get values {
+    final Map<String, String> output = new Map<String, String>();
+    for (Field f in fields) {
+      output[f.id] = f.value;
     }
-    return null;
+    return output;
+  }
+
+  set values(Map<String, String> newValues) {
+    for (String key in newValues.keys) {
+      final Field f = getField(key);
+      if (f == null) continue;
+      f.value = newValues[key];
+    }
   }
 
   void applyImportResult(API.ImportResult result) {
@@ -81,19 +74,20 @@ class Item {
     this.name = _getImportResultValue(result, "name");
   }
 
-  String _getImportResultValue(API.ImportResult result, String name) {
-    if (result == null ||
-        !result.values.containsKey(name) ||
-        result.values[name].length == 0) return "";
-    return result.values[name][0];
+  void copyTo(dynamic output) {
+    _copy(this, output);
+  }
+
+  Field getField(String id) {
+    if (this.fields == null) return null;
+    for (Field f in this.fields) {
+      if (f.id == id) return f;
+    }
+    return null;
   }
 
   String getFieldValue(String id) {
     return values[id];
-  }
-
-  void copyTo(dynamic output) {
-    _copy(this, output);
   }
 
   void _copy(dynamic from, dynamic to) {
@@ -104,8 +98,15 @@ class Item {
     to.canEdit = from.canEdit;
   }
 
-  static List<Item> convertList(Iterable input) {
-    List<Item> output = new List<Item>();
+  String _getImportResultValue(API.ImportResult result, String name) {
+    if (result == null ||
+        !result.values.containsKey(name) ||
+        result.values[name].length == 0) return "";
+    return result.values[name][0];
+  }
+
+  static List<Item> convertList(Iterable<dynamic> input) {
+    final List<Item> output = new List<Item>();
     for (dynamic obj in input) {
       output.add(new Item.copy(obj));
     }

@@ -43,7 +43,7 @@ abstract class AModel {
 
   @protected
   Future<User> getCurrentUser() async {
-    Principal p = userPrincipal.getOrElse(
+    final Principal p = userPrincipal.getOrElse(
         () => throw new NotAuthorizedException.withMessage("Please log in"));
     return (await data_sources.users.getById(p.name)).getOrElse(
         () => throw new NotAuthorizedException.withMessage("User not found"));
@@ -53,7 +53,7 @@ abstract class AModel {
   Future<bool> userHasPrivilege(String userType) async {
     if (userType == UserPrivilege.none)
       return true; //None is equivalent to not being logged in, or logged in as a user with no privileges
-    User user = await getCurrentUser();
+    final User user = await getCurrentUser();
     return UserPrivilege.evaluate(userType, user.type);
   }
 
@@ -62,7 +62,7 @@ abstract class AModel {
       validateUserPrivilege(defaultCreatePrivilegeRequirement);
 
   @protected
-  Future validateCreatePrivileges() async {
+  Future<Null> validateCreatePrivileges() async {
     if (!userAuthenticated) {
       throw new NotAuthorizedException();
     }
@@ -78,7 +78,7 @@ abstract class AModel {
       validateUserPrivilege(defaultDeletePrivilegeRequirement);
 
   @protected
-  Future validateDeletePrivileges(String id) async {
+  Future<Null> validateDeletePrivileges(String id) async {
     if (!userAuthenticated) {
       throw new NotAuthorizedException();
     }
@@ -86,7 +86,7 @@ abstract class AModel {
   }
 
   @protected
-  Future validateGetPrivileges() async {
+  Future<Null> validateGetPrivileges() async {
     await validateReadPrivilegeRequirement();
   }
 
@@ -99,7 +99,7 @@ abstract class AModel {
       validateUserPrivilege(defaultUpdatePrivilegeRequirement);
 
   @protected
-  Future validateUpdatePrivileges(String id) async {
+  Future<Null> validateUpdatePrivileges(String id) async {
     if (!userAuthenticated) {
       throw new NotAuthorizedException();
     }
@@ -109,6 +109,6 @@ abstract class AModel {
   @protected
   Future<bool> validateUserPrivilege(String privilege) async {
     if (await userHasPrivilege(privilege)) return true;
-    throw new ForbiddenException.withMessage("${privilege} required");
+    throw new ForbiddenException.withMessage("$privilege required");
   }
 }

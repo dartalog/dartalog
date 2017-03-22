@@ -10,9 +10,9 @@ import 'package:dartalog/client/views/controls/login_form_component.dart';
 import 'package:dartalog/client/views/controls/page_control_toolbar_component.dart';
 import 'package:dartalog/client/views/controls/paginator_component.dart';
 import 'package:dartalog/client/views/pages/pages.dart';
-import 'package:dartalog/data/data.dart';
 import 'package:dartalog/global.dart';
 import 'package:dartalog/tools.dart';
+import 'package:dartalog/client/api/api.dart';
 import 'package:polymer_elements/iron_flex_layout/classes/iron_flex_layout.dart';
 import 'package:polymer_elements/iron_icon.dart';
 import 'package:polymer_elements/iron_image.dart';
@@ -40,6 +40,7 @@ import 'package:polymer_elements/paper_toolbar.dart';
       PaginatorComponent,
     ],
     providers: const [
+      FORM_PROVIDERS,
       ROUTER_PROVIDERS,
       materialProviders,
       PageControlService,
@@ -67,6 +68,10 @@ import 'package:polymer_elements/paper_toolbar.dart';
       name: 'ItemsSearchPage',
       component: ItemBrowseComponent),
   const Route(
+      path: '/items/add',
+      name: 'ItemAdd',
+      component: ItemAddPage),
+  const Route(
     path: '/item/:id',
     name: 'Item',
     component: ItemBrowseComponent,
@@ -80,6 +85,11 @@ import 'package:polymer_elements/paper_toolbar.dart';
       path: '/fields',
       name: 'Fields',
       component: FieldsPage,
+  ),
+  const Route(
+      path: '/item_types',
+      name: 'ItemTypes',
+      component: ItemTypesPage,
   ),
 ])
 class MainApp implements OnInit, OnDestroy {

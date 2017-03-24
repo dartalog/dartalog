@@ -18,9 +18,9 @@ class ExportModel extends AModel {
 
   // This is a temporary implementation to insert UUIds where there where none before
   void fixIds(AIdData data) {
-    if(StringTools.isNullOrWhitespace(data.getReadableId)) {
-      data.setReadableId = data.getId;
-      data.setId = generateUuid();
+    if(StringTools.isNullOrWhitespace(data.readableId)) {
+      data.readableId = data.id;
+      data.id = generateUuid();
     }
   }
 

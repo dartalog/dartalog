@@ -51,26 +51,26 @@ HttpServer _server;
 Future<Option<Principal>> _authenticateUser(
     String userName, String password) async {
   final Option<User> user =
-      await data_source.users.getById(userName.trim().toLowerCase());
+      await data_source.users.getByUsername(userName.trim().toLowerCase());
 
   if (user.isEmpty) return new None<Principal>();
 
   final Option<String> hashOption =
-      await data_source.users.getPasswordHash(user.get().getId);
+      await data_source.users.getPasswordHash(user.get().id);
 
   if (hashOption.isEmpty)
     throw new Exception("User does not have a password set");
 
   if (model.users.verifyPassword(hashOption.get(), password))
-    return new Some<Principal>(new Principal(user.get().getId));
+    return new Some<Principal>(new Principal(user.get().id));
   else
     return new None<Principal>();
 }
 
 Future<Option<Principal>> _getUser(String userName) async {
-  final Option<User> user = await data_source.users.getById(userName);
+  final Option<User> user = await data_source.users.getByUsername(userName);
   if (user.isEmpty) return new None<Principal>();
-  return new Some<Principal>(new Principal(user.get().getId));
+  return new Some<Principal>(new Principal(user.get().id));
 }
 
 dynamic _startServer() async {

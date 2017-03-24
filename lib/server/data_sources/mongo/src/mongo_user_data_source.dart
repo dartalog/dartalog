@@ -39,8 +39,7 @@ class MongoUserDataSource extends AMongoIdDataSource<User>
   @override
   User createObject(Map data) {
     final User output = new User();
-    output.setId = data[idField];
-    output.setName = data["name"];
+    setIdDataFields(output, data);
     if (data.containsKey(TYPE_FIELD)) output.type = data[TYPE_FIELD];
     return output;
   }
@@ -51,8 +50,7 @@ class MongoUserDataSource extends AMongoIdDataSource<User>
 
   @override
   void updateMap(User user, Map data) {
-    data[idField] = user.getId;
-    data["name"] = user.getName;
+    super.updateMap(user, data);
     data["type"] = user.type;
   }
 }

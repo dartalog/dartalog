@@ -9,5 +9,6 @@ class PaginatedData<T> {
   int get totalPages => (totalCount / limit).ceil();
   int get currentPage => (startIndex / limit).floor();
 
-  List<T> data = [];
+  final List<T> _data = <T>[];
+  List<T> get data => _data;
 }

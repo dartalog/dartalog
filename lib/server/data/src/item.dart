@@ -3,25 +3,9 @@ import 'item_copy.dart';
 import 'item_type.dart';
 import 'package:option/option.dart';
 
+import 'package:rpc/rpc.dart';
+@ApiMessage(includeSuper: true)
 class Item extends AIdData {
-  String id = "";
-  @override
-  String get getId => id;
-  @override
-  set setId(String value) => id = value;
-
-  String name = "";
-  @override
-  String get getName => name;
-  @override
-  set setName(String value) => name = value;
-
-  String readableId = "";
-  @override
-  String get getReadableId => readableId;
-  @override
-  set setReadableId(String value) => readableId = value;
-
   String typeId;
 
   DateTime dateAdded;

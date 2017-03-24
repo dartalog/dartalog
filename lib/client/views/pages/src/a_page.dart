@@ -52,7 +52,7 @@ abstract class APage {
         errorMessage = error.message;
       } else if (error.status == 401) {
         await this._auth.clear();
-        await this._auth.promptForAuthentication();
+        this._auth.promptForAuthentication();
       } else if (error.status == 413) {
         errorMessage =
         "The submitted data was too large, please submit smaller images";

@@ -1,37 +1,16 @@
 import 'a_id_data.dart';
+import 'package:rpc/rpc.dart';
 
+@ApiMessage(includeSuper: true)
 class IdNamePair extends AIdData {
-  String id = "";
-  String name = "";
-  String readableId = "";
 
   IdNamePair();
 
-  IdNamePair.copy(dynamic o) {
-    this.id = o.id;
-    this.name = o.name;
-    this.readableId = o.readableId;
-  }
+  IdNamePair.withValues(String id, String name, String readableId):
+        super.withValues(id,name, readableId);
 
-  IdNamePair.from(this.id, this.name, {this.readableId});
+  IdNamePair.copy(dynamic o): super.copy(o);
 
-  @override
-  String get getId => id;
-
-  @override
-  String get getName => name;
-
-  @override
-  String get getReadableId => readableId;
-
-  @override
-  set setId(String value) => id = value;
-
-  @override
-  set setName(String value) => name = value;
-
-  @override
-  set setReadableId(String value) => readableId = value;
   static List<IdNamePair> convertList(Iterable<dynamic> i) {
     final List<IdNamePair> output = new List<IdNamePair>();
     for (dynamic o in i) {

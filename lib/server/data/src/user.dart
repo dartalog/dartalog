@@ -5,9 +5,6 @@ import 'a_id_data.dart';
 
 @ApiMessage(includeSuper: true)
 class User extends AIdData {
-  String _id = "";
-  String name = "";
-
   String password;
   String idNumber = "";
 
@@ -16,20 +13,6 @@ class User extends AIdData {
   User.copy(dynamic field) {
     _copy(field, this);
   }
-
-  @override
-  String get getId => id;
-
-  @override
-  String get getName => name; // For library cards and such
-
-  String get id => _id;
-
-  @override
-  set setId(String value) => id = value;
-
-  @override
-  set setName(String value) => name = value;
 
   void copyTo(dynamic to) {
     _copy(this, to);

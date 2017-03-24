@@ -25,7 +25,7 @@ abstract class AMongoIdDataSource<T extends AIdData>
   }
 
   @override
-  Future deleteByID(String id) => deleteFromDb(where.eq(idField, prepareId(id)));
+  Future<Null> deleteByID(String id) => deleteFromDb(where.eq(idField, prepareId(id)));
 
   @override
   Future<bool> existsByID(String id) => super.exists(where.eq(idField, prepareId(id)));
@@ -62,7 +62,7 @@ abstract class AMongoIdDataSource<T extends AIdData>
       final IdNameList<IdNamePair> output = new IdNameList<IdNamePair>();
 
       for (Map<String, dynamic> result in results) {
-        output.add(new IdNamePair.from(result[idField], result["name"]));
+        output.add(new IdNamePair.withValues(result[idField], result[nameField], result[readableIdField]));
       }
 
       return output;
@@ -90,10 +90,7 @@ abstract class AMongoIdDataSource<T extends AIdData>
       output.totalCount = count;
 
       for (Map<String, dynamic> result in results) {
-        if(StringTools.isNullOrWhitespace(result[readableIdField]))
-          output.data.add(new IdNamePair.from(result[idField], result[nameField]));
-        else
-          output.data.add(new IdNamePair.from(result[idField], result[nameField], readableId: result[readableIdField]));
+        output.data.add(new IdNamePair.withValues(result[idField], result[nameField], result[readableIdField]));
       }
 
       return output;
@@ -115,20 +112,20 @@ abstract class AMongoIdDataSource<T extends AIdData>
     } else {
       await insertIntoDb(object);
     }
-    return object.getId;
+    return object.id;
   }
 
   @override
   void updateMap(T item, Map<String, dynamic> data) {
-    data[idField] = item.getId;
-    data[nameField] = item.getName;
-    data[readableIdField] = item.getReadableId;
+    data[idField] = item.id;
+    data[nameField] = item.name;
+    data[readableIdField] = item.readableId;
   }
 
   void setIdDataFields(T item, Map<String, dynamic> data) {
-    item.setId = data[idField];
-    item.setName = data[nameField];
-    item.setReadableId = data[readableIdField];
+    item.id = data[idField];
+    item.name = data[nameField];
+    item.readableId = data[readableIdField];
   }
 
   @protected
@@ -148,7 +145,7 @@ abstract class AMongoIdDataSource<T extends AIdData>
           {SelectorBuilder selector,
           int offset: 0,
           int limit: PAGINATED_DATA_LIMIT}) async =>
-      new PaginatedIdNameData.copyPaginatedData(
+      new PaginatedIdNameData<T>.copyPaginatedData(
           await super.searchPaginated(query, offset: offset, limit: limit));
 
   @protected
@@ -160,6 +157,6 @@ abstract class AMongoIdDataSource<T extends AIdData>
       {SelectorBuilder selector, String sortBy}) async {
     final List<dynamic> data =
         await super.searchAndSort(query, selector: selector, sortBy: sortBy);
-    return new IdNameList.copy(data);
+    return new IdNameList<T>.copy(data);
   }
 }

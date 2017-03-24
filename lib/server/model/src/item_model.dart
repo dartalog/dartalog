@@ -94,17 +94,18 @@ class ItemModel extends AIdNameBasedModel<Item> {
   }
 
   @override
-  Future<String> create(Item item, {List<List<int>> files}) =>
-      throw new Exception("Use createWithCopy");
+  Future<String> create(Item item, {List<List<int>> files, bool bypassAuthentication: false}) =>
+      throw new InvalidInputException("Use createWithCopy");
 
   Future<ItemCopyId> createWithCopy(Item item, String collectionId,
       {String uniqueId, List<List<int>> files}) async {
     await validateCreatePrivileges();
 
+    item.id = generateUuid();
     item.dateAdded = new DateTime.now();
     item.dateUpdated = new DateTime.now();
-    if (!StringTools.isNullOrWhitespace(item.getName))
-      item.setId = await _generateUniqueId(item);
+    if (!StringTools.isNullOrWhitespace(item.name))
+      item.readableId = await _generateUniqueReadableId(item);
 
     final ItemCopy itemCopy = new ItemCopy();
     itemCopy.collectionId = collectionId;
@@ -179,13 +180,13 @@ class ItemModel extends AIdNameBasedModel<Item> {
     item.dateAdded = null;
     item.dateUpdated = new DateTime.now();
 
-    if (!StringTools.isNullOrWhitespace(item.getName)) {
+    if (!StringTools.isNullOrWhitespace(item.name)) {
       final Item oldItem = (await data_sources.items.getById(id)).getOrElse(
           () => throw new NotFoundException("Item $item not found"));
 
-      if (oldItem.getName.trim().toLowerCase() !=
-          item.getName.trim().toLowerCase())
-        item.setId = await _generateUniqueId(item);
+      if (oldItem.name.trim().toLowerCase() !=
+          item.name.trim().toLowerCase())
+        item.readableId = await _generateUniqueReadableId(item);
     }
 
     await _handleFileUploads(item, files);
@@ -200,12 +201,12 @@ class ItemModel extends AIdNameBasedModel<Item> {
 
     for (Field f in fields) {
       if (f.type != "image" ||
-          !item.values.containsKey(f.getId) ||
-          StringTools.isNullOrWhitespace(item.values[f.getId])) continue;
+          !item.values.containsKey(f.id) ||
+          StringTools.isNullOrWhitespace(item.values[f.id])) continue;
 
       //TODO: Old image cleanup
 
-      final String value = item.values[f.getId];
+      final String value = item.values[f.id];
 
       if (value.startsWith(HOSTED_IMAGE_PREFIX)) {
         // This should indicate that the submitted image is one that is already hosted on the server, so nothing to do here
@@ -231,7 +232,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
         final int filePosition = int.parse(m.group(1));
         if (files.length - 1 < filePosition) {
           throw new InvalidInputException(
-              "Field ${f.getId} specifies unprovided upload file at position $filePosition");
+              "Field ${f.id} specifies unprovided upload file at position $filePosition");
         }
         data = files[filePosition];
       } else {
@@ -254,7 +255,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
       final Digest hash = sha256.convert(data);
       final String hashString = hash.toString();
       filesToWrite[hashString] = data;
-      item.values[f.getId] = "$HOSTED_IMAGE_PREFIX$hashString";
+      item.values[f.id] = "$HOSTED_IMAGE_PREFIX$hashString";
     }
 
     // Now that the above sections have completed gathering all the file services for saving, we save it all
@@ -334,13 +335,13 @@ class ItemModel extends AIdNameBasedModel<Item> {
     }
   }
 
-  static Future<String> _generateUniqueId(Item item) async {
-    if (StringTools.isNullOrWhitespace(item.getName))
+  static Future<String> _generateUniqueReadableId(Item item) async {
+    if (StringTools.isNullOrWhitespace(item.name))
       throw new InvalidInputException("Name required to generate unique ID");
 
     final StringBuffer output = new StringBuffer();
     String lastChar = "_";
-    String name = item.getName.trim().toLowerCase();
+    String name = item.name.trim().toLowerCase();
     final String firstWord = name.split(" ")[0];
     if (NON_SORTING_WORDS.contains(firstWord))
       name = name.substring(name.indexOf(" ") + 1, name.length);
@@ -366,11 +367,11 @@ class ItemModel extends AIdNameBasedModel<Item> {
 
     if (output.length == 0)
       throw new InvalidInputException(
-          "Could not generate safe ID from name '${item.getName}'");
+          "Could not generate safe ID from name '${item.name}'");
 
     final String baseName = output.toString();
     String testName = baseName;
-    Option<Item> testItem = await data_sources.items.getById(baseName);
+    Option<Item> testItem = await data_sources.items.getByReadableId(baseName);
     int i = 1;
     while (testItem.isNotEmpty) {
       testName = "${baseName}_$i";

@@ -31,8 +31,7 @@ class MongoCollectionDataSource extends AMongoIdDataSource<Collection>
   @override
   Collection createObject(Map data) {
     final Collection output = new Collection();
-    output.id = data[idField];
-    output.name = data[nameField];
+    setIdDataFields(output, data);
     if (data.containsKey(publiclyBrowsableField))
       output.publiclyBrowsable = data[publiclyBrowsableField];
     if (data.containsKey(curatorsField)) output.curators = data[curatorsField];
@@ -46,8 +45,7 @@ class MongoCollectionDataSource extends AMongoIdDataSource<Collection>
 
   @override
   void updateMap(Collection collection, Map data) {
-    data[idField] = collection.id;
-    data[nameField] = collection.name;
+    super.updateMap(collection, data);
     data[publiclyBrowsableField] = collection.publiclyBrowsable;
     data[curatorsField] = collection.curators;
     data[browsersField] = collection.browsers;

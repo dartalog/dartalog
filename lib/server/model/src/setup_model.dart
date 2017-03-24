@@ -89,7 +89,7 @@ class SetupModel extends AModel {
       }
     });
 
-    //await new File(setupLockFilePath).create();
+    await new File(setupLockFilePath).create();
 
     return await checkSetup();
   }

@@ -23,7 +23,7 @@ abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel<T> {
 
     await validate(t);
 
-    t.setId = generateUuid();
+    t.id = generateUuid();
 
     return await dataSource.write(t);
   }
@@ -79,13 +79,13 @@ abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel<T> {
   Future<Map<String, String>> validateFields(T t, {String existingId: null}) async {
     final Map<String, String> fieldErrors = new Map<String, String>();
 
-    t.setReadableId = normalizeId(t.getReadableId);
-    t.setName = t.getName.trim();
+    t.readableId = normalizeId(t.readableId);
+    t.name = t.name.trim();
 
-    if (StringTools.isNullOrWhitespace(t.getReadableId))
+    if (StringTools.isNullOrWhitespace(t.readableId))
       fieldErrors["readableId"] = "Required";
     else {
-      final Option<T> item = await dataSource.getByReadableId(t.getReadableId);
+      final Option<T> item = await dataSource.getByReadableId(t.readableId);
 
       if(StringTools.isNullOrWhitespace(existingId)) {
         // Creating
@@ -93,18 +93,18 @@ abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel<T> {
           fieldErrors["readableId"] = "Already in use";
       } else {
         // Updating
-        if(item.isNotEmpty&&item.first.getId!=existingId)
+        if(item.isNotEmpty&&item.first.id!=existingId)
           fieldErrors["readableId"] = "Already in use";
       }
-      if (isReservedWord(t.getId)) {
-        fieldErrors["readableId"] = "Cannot use '${t.getReadableId}' as Readable ID";
+      if (isReservedWord(t.readableId)) {
+        fieldErrors["readableId"] = "Cannot use '${t.readableId}' as Readable ID";
       }
     }
 
-    if (StringTools.isNullOrWhitespace(t.getName)) {
+    if (StringTools.isNullOrWhitespace(t.name)) {
       fieldErrors["name"] = "Required";
-    } else if (isReservedWord(t.getId)) {
-      fieldErrors["name"] = "Cannot use '${t.getName}' as name";
+    } else if (isReservedWord(t.name)) {
+      fieldErrors["name"] = "Cannot use '${t.name}' as name";
     }
 
     await validateFieldsInternal(fieldErrors, t, existingId: existingId);

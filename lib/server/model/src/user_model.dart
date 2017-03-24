@@ -54,6 +54,7 @@ class UserModel extends AIdNameBasedModel<User> {
 
   Future<String> createUserWith(String username, String password, String type, {bool bypassAuthentication: false}) async {
     final User newUser = new User();
+    newUser.readableId = username;
     newUser.name = username;
     newUser.password = password;
     newUser.type = type;

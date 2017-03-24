@@ -8,15 +8,16 @@ import 'a_mongo_id_data_source.dart';
 class MongoFieldDataSource extends AMongoIdDataSource<Field> with AFieldModel {
   static final Logger _log = new Logger('MongoFieldDataSource');
 
+  @override
   Future<IdNameList<Field>> getByIds(List<String> ids) async {
     _log.info("Getting all fields for IDs");
 
     if (ids == null) return new List<Field>();
 
-    SelectorBuilder query = null;
+    SelectorBuilder query;
 
     for (String id in ids) {
-      SelectorBuilder sb = where.eq(idField, id);
+      final SelectorBuilder sb = where.eq(idField, id);
       if (query == null) {
         query = sb;
       } else {
@@ -24,9 +25,9 @@ class MongoFieldDataSource extends AMongoIdDataSource<Field> with AFieldModel {
       }
     }
 
-    List results = await getFromDb(query);
+    final List results = await getFromDb(query);
 
-    IdNameList<Field> output = new IdNameList<Field>.copy(results);
+    final IdNameList<Field> output = new IdNameList<Field>.copy(results);
 
     output.sortBytList(ids);
 
@@ -36,8 +37,7 @@ class MongoFieldDataSource extends AMongoIdDataSource<Field> with AFieldModel {
   @override
   Field createObject(Map data) {
     Field output = new Field();
-    output.id = data[idField];
-    output.name= data["name"];
+    setIdDataFields(output, data);
     output.type = data["type"];
     output.format = data["format"];
 
@@ -51,8 +51,7 @@ class MongoFieldDataSource extends AMongoIdDataSource<Field> with AFieldModel {
 
   @override
   void updateMap(Field field, Map data) {
-    data[idField] = field.getId;
-    data["name"] = field.getName;
+    updateMap(field, data);
     data["type"] = field.type;
     data["format"] = field.format;
     data["unique"] = field.unique;

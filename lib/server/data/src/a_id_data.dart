@@ -2,15 +2,22 @@ import 'a_data.dart';
 import 'package:dartalog/tools.dart';
 import 'package:dartalog/global.dart';
 export 'a_data.dart';
+import 'package:rpc/rpc.dart';
 
-
+@ApiMessage()
 abstract class AIdData extends AData {
-  String get getId;
-  set setId(String value);
+  String id = "";
+  String name = "";
+  String readableId = "";
 
-  String get getName;
-  set setName(String value);
+  AIdData();
 
-  String get getReadableId =>  getId.toString();
-  set setReadableId(String value) {  }
+  AIdData.withValues(this.id, this.name, this.readableId);
+
+  AIdData.copy(dynamic o) {
+    this.id = o.id;
+    this.name = o.name;
+    this.readableId = o.readableId;
+  }
+
 }

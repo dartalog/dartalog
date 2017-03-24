@@ -1,9 +1,8 @@
 import 'a_id_data.dart';
 
+import 'package:rpc/rpc.dart';
+@ApiMessage(includeSuper: true)
 class Field extends AIdData {
-  String id = "";
-  String name = "";
-  String readableId = "";
 
   bool unique = false;
 
@@ -15,24 +14,9 @@ class Field extends AIdData {
     copyObject(from, this);
   }
 
-  Field.fromValues(this.id, this.name, this.readableId, this.type,
-      {this.unique: false, this.format: ""});
+  Field.withValues(String id, String name, String readableId, this.type,
+      {this.unique: false, this.format: ""}): super.withValues(id,name, readableId);
 
-  @override
-  String get getId => id;
-
-  @override
-  String get getName => name;
-
-  @override
-  String get getReadableId => readableId;
-  @override
-  set setId(String value) => id = value;
-  @override
-  set setName(String value) => name = value;
-
-  @override
-  set setReadableId(String value) => readableId = value;
 
   void copyObject(dynamic from, dynamic to) {
     to.format = from.format;

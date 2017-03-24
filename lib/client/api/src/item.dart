@@ -2923,6 +2923,7 @@ class User {
   core.String idNumber;
   core.String name;
   core.String password;
+  core.String readableId;
   core.String type;
 
   User();
@@ -2939,6 +2940,9 @@ class User {
     }
     if (_json.containsKey("password")) {
       password = _json["password"];
+    }
+    if (_json.containsKey("readableId")) {
+      readableId = _json["readableId"];
     }
     if (_json.containsKey("type")) {
       type = _json["type"];
@@ -2958,6 +2962,9 @@ class User {
     }
     if (password != null) {
       _json["password"] = password;
+    }
+    if (readableId != null) {
+      _json["readableId"] = readableId;
     }
     if (type != null) {
       _json["type"] = type;

@@ -11,11 +11,10 @@ class MongoItemTypeDataSource extends AMongoIdDataSource<ItemType>
 
   @override
   ItemType createObject(Map data) {
-    final ItemType template = new ItemType();
-    template.id = data[idField];
-    template.name= data["name"];
-    template.fieldIds = data["fieldIds"];
-    return template;
+    final ItemType output = new ItemType();
+    setIdDataFields(output,data);
+    output.fieldIds = data["fieldIds"];
+    return output;
   }
 
   @override
@@ -23,9 +22,8 @@ class MongoItemTypeDataSource extends AMongoIdDataSource<ItemType>
       con.getItemTypesCollection();
 
   @override
-  void updateMap(ItemType template, Map data) {
-    data[idField] = template.getId;
-    data["name"] = template.getName;
-    data["fieldIds"] = template.fieldIds;
+  void updateMap(ItemType itemType, Map data) {
+    updateMap(itemType, data);
+    data["fieldIds"] = itemType.fieldIds;
   }
 }

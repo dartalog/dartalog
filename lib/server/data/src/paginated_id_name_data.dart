@@ -3,8 +3,10 @@ import 'a_id_data.dart';
 import 'id_name_list.dart';
 
 class PaginatedIdNameData<T extends AIdData> extends PaginatedData<T> {
+  IdNameList<T> _data = new IdNameList<T>();
+
   @override
-  IdNameList<T> data = new IdNameList<T>();
+  IdNameList<T> get data => _data;
 
   PaginatedIdNameData();
 
@@ -12,6 +14,6 @@ class PaginatedIdNameData<T extends AIdData> extends PaginatedData<T> {
     this.totalCount = data.totalCount;
     this.limit = data.limit;
     this.startIndex = data.startIndex;
-    this.data = new IdNameList<T>.copy(data.data);
+    this._data = new IdNameList<T>.copy(data.data);
   }
 }

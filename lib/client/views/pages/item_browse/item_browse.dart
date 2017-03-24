@@ -15,6 +15,7 @@ import 'package:logging/logging.dart';
 import 'package:polymer_elements/iron_flex_layout/classes/iron_flex_layout.dart';
 import 'package:dartalog/client/routes.dart';
 import 'package:dartalog/global.dart';
+import '../src/a_page.dart';
 
 @Component(
     selector: 'item-browse',
@@ -40,8 +41,10 @@ import 'package:dartalog/global.dart';
       </a>
       </span>
     ''')
-class ItemBrowseComponent implements OnInit, OnDestroy {
+class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
   static final Logger _log = new Logger("ItemBrowseComponent");
+  @override
+  Logger get loggerImpl => _log;
 
   bool curatorAuth = false;
   bool userLoggedIn;
@@ -60,7 +63,7 @@ class ItemBrowseComponent implements OnInit, OnDestroy {
   StreamSubscription<bool> _authChangedSubscription;
 
   ItemBrowseComponent(this._api, this._routeParams, this._pageControl,
-      this._router, this._auth) {
+      this._router, this._auth): super(_pageControl, _auth, _router) {
     _searchSubscription = _pageControl.searchChanged.listen(onSearchChanged);
     _pageActionSubscription =
         _pageControl.pageActionRequested.listen(onPageActionRequested);
@@ -132,6 +135,9 @@ class ItemBrowseComponent implements OnInit, OnDestroy {
   }
 
   Future<Null> refresh() async {
+    await performApiCall(() {
+
+    });
     try {
       loading = true;
       int page = 0;

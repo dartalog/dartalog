@@ -26,7 +26,7 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
 
     itemCopy.copy = await data_sources.itemCopies.getNextCopyNumber(itemId);
 
-    await validate(itemCopy, true);
+    await validate(itemCopy);
 
     return await data_sources.itemCopies.write(itemCopy, false);
   }
@@ -235,7 +235,7 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
     await validateUpdatePrivileges(itemId);
 
     itemCopy.status = "";
-    await validate(itemCopy, false);
+    await validate(itemCopy, existingId:  itemId);
     return await data_sources.itemCopies.write(itemCopy, true);
   }
 
@@ -293,8 +293,8 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
   }
 
   @override
-  Future<Null> validateFields(ItemCopy itemCopy, bool creating,
-      {bool skipItemIdCheck: false}) async {
+  Future<Null> validateFields(ItemCopy itemCopy,
+      {String existingId: null, bool skipItemIdCheck: false}) async {
     final Map<String, String> fieldErrors = new Map<String, String>();
 
     if (!skipItemIdCheck) {
@@ -309,7 +309,7 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
       else {
         final bool test = await data_sources.itemCopies
             .existsByItemIdAndCopy(itemCopy.itemId, itemCopy.copy);
-        if (creating) {
+        if (StringTools.isNullOrWhitespace(existingId)) {
           if (test) throw new InvalidInputException("Copy already exists");
         } else {
           if (!test) throw new NotFoundException("Specified copy not found");
@@ -346,7 +346,7 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
       }
     }
 
-    if (creating) {
+    if (StringTools.isNullOrWhitespace(existingId)) {
       if (StringTools.isNullOrWhitespace(itemCopy.status)) {
         fieldErrors["status"] = "Required";
       } else {

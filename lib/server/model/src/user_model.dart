@@ -15,47 +15,54 @@ class UserModel extends AIdNameBasedModel<User> {
   @override
   Logger get childLogger => _log;
 
+  @override
   AUserDataSource get dataSource => data_sources.users;
 
   @override
   String get defaultReadPrivilegeRequirement => UserPrivilege.checkout;
 
   @override
-  Future validateFieldsInternal(
-      Map field_errors, User user, bool creating) async {
-    if (creating || !StringTools.isNullOrWhitespace(user.password)) {
-      _validatePassword(field_errors, user.password);
+  Future<Null> validateFieldsInternal(
+      Map<String,String> fieldErrors, User user, {String existingId: null}) async {
+    if (StringTools.isNullOrWhitespace(existingId) || !StringTools.isNullOrWhitespace(user.password)) {
+      _validatePassword(fieldErrors, user.password);
     }
     if (StringTools.isNullOrWhitespace(user.type)) {
-      field_errors["type"] = "Required";
+      fieldErrors["type"] = "Required";
     } else {
       if (!UserPrivilege.values.contains(user.type))
-        field_errors["type"] = "Invalid";
+        fieldErrors["type"] = "Invalid";
     }
   }
 
-  _validatePassword(Map field_errors, String password) {
+  void _validatePassword(Map<String,String> fieldErrors, String password) {
     if (StringTools.isNullOrWhitespace(password)) {
-      field_errors["password"] = "Required";
+      fieldErrors["password"] = "Required";
     } else if (password.length < 8) {
       //TODO: Additional restrictions? Keep them sane.
-      field_errors["password"] = "Must be at least 8 digits long";
+      fieldErrors["password"] = "Must be at least 8 digits long";
     }
   }
 
   Future<User> getMe() async {
     if (!userAuthenticated) throw new NotAuthorizedException();
 
-    Option<User> output = await dataSource.getById(userPrincipal.get().name);
+    final Option<User> output = await dataSource.getById(userPrincipal.get().name);
     return output.getOrElse(() =>
         throw new Exception("Authenticated user not present in database"));
   }
 
-  @override
-  Future<String> create(User user, {List<String> privileges}) async {
-    await validateCreatePrivileges();
+  Future<String> createUserWith(String username, String password, String type, {bool bypassAuthentication: false}) async {
+    final User newUser = new User();
+    newUser.name = username;
+    newUser.password = password;
+    newUser.type = type;
+    return await create(newUser, bypassAuthentication: bypassAuthentication);
+  }
 
-    String output = await super.create(user);
+  @override
+  Future<String> create(User user, {List<String> privileges, bool bypassAuthentication: false}) async {
+    final String output = await super.create(user, bypassAuthentication: bypassAuthentication);
 
     await _setPassword(output, user.password);
 
@@ -65,10 +72,9 @@ class UserModel extends AIdNameBasedModel<User> {
   @override
   Future<String> update(String id, User user) async {
     id = normalizeId(id);
-    await validateUpdatePrivileges(id);
     // Only admin can update...for now
 
-    String output = await super.update(id, user);
+    final String output = await super.update(id, user);
 
     if (!StringTools.isNullOrWhitespace(user.password))
       await _setPassword(output, user.password);
@@ -76,7 +82,7 @@ class UserModel extends AIdNameBasedModel<User> {
     return output;
   }
 
-  Future changePassword(
+  Future<Null> changePassword(
       String id, String currentPassword, String newPassword) async {
     id = normalizeId(id);
     if (!userAuthenticated) {
@@ -86,27 +92,27 @@ class UserModel extends AIdNameBasedModel<User> {
       throw new ForbiddenException.withMessage(
           "You do not have permission to change another user's password");
 
-    String userPassword = (await data_sources.users.getPasswordHash(id))
+    final String userPassword = (await data_sources.users.getPasswordHash(id))
         .getOrElse(() =>
-            throw new Exception("User ${id} does not have a current password"));
+            throw new Exception("User $id does not have a current password"));
 
-    await DataValidationException.PerformValidation((Map field_errors) async {
+    await DataValidationException.PerformValidation((Map<String,String> fieldErrors) async {
       if (StringTools.isNullOrWhitespace(currentPassword)) {
-        field_errors["currentPassword"] = "Required";
+        fieldErrors["currentPassword"] = "Required";
       } else if (!verifyPassword(userPassword, currentPassword)) {
-        field_errors["currentPassword"] = "Incorrect";
+        fieldErrors["currentPassword"] = "Incorrect";
       }
     });
     await _setPassword(id, newPassword);
   }
 
-  Future _setPassword(String id, String newPassword) async {
+  Future<Null> _setPassword(String id, String newPassword) async {
     id = normalizeId(id);
-    await DataValidationException.PerformValidation((Map field_errors) async {
-      _validatePassword(field_errors, newPassword);
+    await DataValidationException.PerformValidation((Map<String,String> fieldErrors) async {
+      _validatePassword(fieldErrors, newPassword);
     });
 
-    String passwordHash = hashPassword(newPassword);
+    final String passwordHash = hashPassword(newPassword);
     await dataSource.setPassword(id, passwordHash);
   }
 

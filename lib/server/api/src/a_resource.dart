@@ -10,18 +10,23 @@ import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 import 'package:rpc/rpc.dart';
 import 'package:stack_trace/stack_trace.dart';
+import '../api.dart';
+
 
 abstract class AResource {
   @protected
   Logger get childLogger;
 
+  String get resourcePath => "";
+
   @protected
-  Future<dynamic> catchExceptionsAwait(Future toAwait()) async {
+  Future<dynamic> catchExceptionsAwait(Future<dynamic> toAwait()) async {
     return _catchExceptions(toAwait());
   }
 
-  Future checkIfSetupRequired() async {
-    if (await model.setup.isSetupRequired()) throw new SetupRequiredException();
+  Future<Null> checkIfSetupRequired() async {
+    if (await model.setup.isSetupAvailable())
+      throw new SetupRequiredException();
   }
 
   @protected
@@ -30,11 +35,15 @@ abstract class AResource {
     return "";
   }
 
-  Future<dynamic> _catchExceptions(Future toAwait) async {
+  Future<dynamic> _catchExceptions(Future<dynamic> toAwait) async {
     RpcError output;
     dynamic exception, stackTrace;
 
     try {
+      if (resourcePath!=setupApiPath&&await model.setup.isSetupAvailable()) {
+        throw new SetupRequiredException();
+      }
+
       return await toAwait;
     } on NotAuthorizedException catch (e, st) {
       exception = e;
@@ -48,7 +57,7 @@ abstract class AResource {
     } on DataMovedException catch (e, st) {
       exception = e;
       stackTrace = st;
-      String redirect = generateRedirect(e.newId);
+      final String redirect = generateRedirect(e.newId);
       if (StringTools.isNullOrWhitespace(redirect))
         output = new ApplicationError(
             "Redirect information found, but could not generate new path");

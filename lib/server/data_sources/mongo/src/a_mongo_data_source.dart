@@ -8,11 +8,11 @@ import 'package:meta/meta.dart';
 export 'mongo_database.dart';
 
 abstract class AMongoDataSource {
-  static final Logger _log = new Logger('_AMongoDataSource');
+  static final Logger _log = new Logger('AMongoDataSource');
 
   int getOffset(int page, int perPage) => page * perPage;
 
-  Future<dynamic> _connectionWrapper(Future<dynamic> statement(_MongoDatabase),
+  Future<dynamic> _connectionWrapper(Future<dynamic> statement(MongoDatabase db),
       {int retries: 3}) async {
     for (int i = 0; i < retries; i++) {
       final MongoDatabase con = await MongoDatabase.getConnection();
@@ -30,9 +30,9 @@ abstract class AMongoDataSource {
   }
 
   @protected
-  Future<dynamic> collectionWrapper(Future<dynamic> statement(DbCollection)) =>
+  Future<dynamic> collectionWrapper(Future<dynamic> statement(DbCollection c)) =>
       _connectionWrapper(
-          (con) async => await statement(await getCollection(con)));
+          (MongoDatabase con) async => await statement(await getCollection(con)));
 
   @protected
   Future<Null> deleteFromDb(dynamic selector) async {

@@ -22,25 +22,29 @@
                     <paper-item-body>Browse Items</paper-item-body>
                 </paper-item>
             </a>
-            <a [routerLink]="['ItemAdd']">
+            <auth-status (authorizedChanged)="userIsCurator=$event" require="curator"></auth-status>
+
+            <a [routerLink]="['ItemAdd']" *ngIf="userIsCurator">
                 <paper-item>
                     <iron-icon icon="label-outline"></iron-icon>
                     <paper-item-body>Add Item</paper-item-body>
                 </paper-item>
             </a>
-            <a [routerLink]="['Collections']">
+            <a [routerLink]="['Collections']" *ngIf="userIsCurator">
                 <paper-item>
                     <iron-icon icon="label-outline"></iron-icon>
                     <paper-item-body>Collections</paper-item-body>
                 </paper-item>
             </a>
-            <a [routerLink]="['Fields']">
+
+            <auth-status (authorizedChanged)="userIsAdmin=$event" require="admin"></auth-status>
+            <a [routerLink]="['Fields']" *ngIf="userIsAdmin">
                 <paper-item>
                     <iron-icon icon="label-outline"></iron-icon>
                     <paper-item-body>Fields</paper-item-body>
                 </paper-item>
             </a>
-            <a [routerLink]="['ItemTypes']">
+            <a [routerLink]="['ItemTypes']" *ngIf="userIsAdmin">
                 <paper-item>
                     <iron-icon icon="label-outline"></iron-icon>
                     <paper-item-body>Item Types</paper-item-body>
@@ -53,11 +57,17 @@
             <material-button icon paper-drawer-toggle><glyph icon="menu"></glyph></material-button>
 
             <span class="title" style="margin-left:0pt;">{{pageTitle}}</span>
-            <page-control-toolbar style="margin-top:16pt;"></page-control-toolbar>
+
+            <material-input *ngIf="showSearch" [(ngModel)]="query" style="color:white;" label="Search" trailingGlyph="search" (keyup)="searchKeyup($event)" ></material-input>
+            <!--<material-button *ngIf="showAddButton" icon (trigger)="addClicked()"><glyph icon="add"></glyph></material-button>-->
+            <material-button *ngIf="showRefreshButton" icon (trigger)="refreshClicked()"><glyph icon="refresh"></glyph></material-button>
         </paper-toolbar>
         <div>
             <router-outlet></router-outlet>
             <paginator></paginator>
+            <material-fab *ngIf="showAddButton" raised (trigger)="addClicked()" style="position: fixed; right: 8pt; bottom: 8pt;z-index:10;" class="red">
+                <glyph icon="add"></glyph>
+            </material-fab>
         </div>
     </paper-header-panel>
 </paper-drawer-panel>

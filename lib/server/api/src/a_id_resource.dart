@@ -14,7 +14,7 @@ abstract class AIdResource<T extends AIdData> extends AResource {
   Future<IdResponse> create(T t);
   @protected
   Future<IdResponse> createWithCatch(T t) => catchExceptionsAwait(() async {
-        String output = await idModel.create(t);
+        final String output = await idModel.create(t);
         return new IdResponse.fromId(output, this.generateRedirect(output));
       });
 

@@ -1,27 +1,32 @@
-import 'a_id_data.dart';
 import 'package:dartalog/global.dart';
+import 'package:rpc/rpc.dart';
 
+import 'a_id_data.dart';
+
+@ApiMessage(includeSuper: true)
 class User extends AIdData {
-  String id = "";
+  String _id = "";
   String name = "";
-  String password;
 
+  String password;
   String idNumber = "";
+
   String type;
   User();
-
   User.copy(dynamic field) {
     _copy(field, this);
   }
 
   @override
-  String get getId => id; // For library cards and such
+  String get getId => id;
+
+  @override
+  String get getName => name; // For library cards and such
+
+  String get id => _id;
 
   @override
   set setId(String value) => id = value;
-
-  @override
-  String get getName => name;
 
   @override
   set setName(String value) => name = value;

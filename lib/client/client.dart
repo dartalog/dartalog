@@ -3,9 +3,6 @@ import 'package:dartalog/global.dart';
 import 'package:option/option.dart';
 export 'src/http_headers.dart';
 
-
-const String itemsPageRoute = "ItemsPage";
-
 /// Gets the first child [Element] matching the specified name.
 Option<Element> getChildElement(Element start, String tagName) {
   if (start == null) return new None<Element>();

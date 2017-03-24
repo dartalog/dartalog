@@ -14,6 +14,7 @@ import 'package:option/option.dart';
 import 'package:mime/mime.dart' as mime;
 import 'item_edit_field.dart';
 import '../src/a_page.dart';
+import 'package:angular2/router.dart';
 
 @Component(
     selector: 'item-add-page',
@@ -54,8 +55,8 @@ class ItemAddPage extends APage implements OnInit, OnDestroy {
 
   List<IdNamePair> users = <IdNamePair>[];
 
-  ItemAddPage(this._pageControl, this._api, AuthenticationService _auth)
-      : super(_pageControl, _auth) {
+  ItemAddPage(this._pageControl, this._api, AuthenticationService _auth, Router router)
+      : super(_pageControl, _auth, router) {
     _pageControl.setPageTitle("Add Item(s)");
     _pageControl.setAvailablePageActions(<PageActions>[PageActions.Refresh]);
     _pageActionSubscription =

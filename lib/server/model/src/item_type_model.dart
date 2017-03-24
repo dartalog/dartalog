@@ -10,6 +10,8 @@ class ItemTypeModel extends AIdNameBasedModel<ItemType> {
   static final Logger _log = new Logger('ItemTypeModel');
   @override
   Logger get childLogger => _log;
+
+  @override
   AIdNameBasedDataSource<ItemType> get dataSource => data_sources.itemTypes;
 
   @override
@@ -18,7 +20,7 @@ class ItemTypeModel extends AIdNameBasedModel<ItemType> {
   @override
   Future<ItemType> getById(String id,
       {bool includeFields: false, bool bypassAuth: false}) async {
-    ItemType output = await super.getById(id, bypassAuth: bypassAuth);
+    final ItemType output = await super.getById(id, bypassAuth: bypassAuth);
     if (includeFields) {
       output.fields = await data_sources.fields.getByIds(output.fieldIds);
     }
@@ -26,14 +28,14 @@ class ItemTypeModel extends AIdNameBasedModel<ItemType> {
   }
 
   @override
-  Future validateFieldsInternal(Map<String, String> field_errors,
-      ItemType itemType, bool creating) async {
+  Future validateFieldsInternal(Map<String, String> fieldErrors,
+      ItemType itemType, {String existingId: null}) async {
     if (itemType.fieldIds == null || itemType.fieldIds.length == 0)
-      field_errors["fieldIds"] = "Required";
+      fieldErrors["fieldIds"] = "Required";
     else {
-      List test = await data_sources.fields.getByIds(itemType.fieldIds);
+      final List test = await data_sources.fields.getByIds(itemType.fieldIds);
       if (test.length != itemType.fieldIds.length)
-        field_errors["fieldIds"] = "Not found";
+        fieldErrors["fieldIds"] = "Not found";
     }
   }
 }

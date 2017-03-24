@@ -1,0 +1,22 @@
+<form (ngSubmit)="onSubmit()" #setupForm="ngForm">
+    Please create a new admin user<br/>
+    <material-input [(ngModel)]="request.adminUser" ngControl="adminUser"
+                    floatingLabel required  autoFocus label="User"></material-input><br/>
+    <material-input [(ngModel)]="request.adminPassword" ngControl="adminPassword"
+                    floatingLabel required  label="Password" type="password"></material-input><br/>
+    <material-input [(ngModel)]="confirmPassword" ngControl="confirmPassword"
+                    floatingLabel required  label="Password (Confirm)" type="password"></material-input><br/>
+    <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/>
+    <span *ngIf="hasErrorMessage" class="error_output">
+                <glyph icon="error_outline"></glyph>
+                {{errorMessage}}
+            </span>
+</form>
+<div footer style="text-align: right">
+    <material-yes-no-buttons yesHighlighted
+                             yesText="Save" (yes)="onSubmit()"
+                             noText="Reset" (no)="clear()"
+                             [pending]="processing" [yesDisabled]="!setupForm.valid">
+    </material-yes-no-buttons>
+
+</div>

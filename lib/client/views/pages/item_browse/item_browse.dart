@@ -3,23 +3,30 @@ import 'dart:async';
 import 'package:angular2/angular2.dart';
 import 'package:angular2/platform/common.dart';
 import 'package:angular2/router.dart';
+import 'package:angular2_components/angular2_components.dart';
+import 'package:dartalog/client/api/api.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/data/data.dart';
+import 'package:dartalog/client/routes.dart';
 import 'package:dartalog/client/services/services.dart';
 import 'package:dartalog/client/views/controls/auth_status_component.dart';
-import 'package:dartalog/client/api/api.dart';
 import 'package:dartalog/tools.dart';
 import 'package:logging/logging.dart';
 import 'package:polymer_elements/iron_flex_layout/classes/iron_flex_layout.dart';
-import 'package:angular2_components/angular2_components.dart';
+import 'package:dartalog/client/routes.dart';
+import 'package:dartalog/global.dart';
 
 @Component(
     selector: 'item-browse',
     providers: const [materialProviders],
-    directives: const [materialDirectives,ROUTER_DIRECTIVES, AuthStatusComponent,],
-    styleUrls: const ["../../shared.css","item_browse.css"],
+    directives: const [
+      materialDirectives,
+      ROUTER_DIRECTIVES,
+      AuthStatusComponent,
+    ],
+    styleUrls: const ["../../shared.css", "item_browse.css"],
     template: '''
-      <auth-status (authedChanged)="refresh()"></auth-status>
+      <auth-status (authedChanged)="onAuthChanged(\$event)"></auth-status>
       <div *ngIf="noItemsFound&&!loading" class="no-items">No Items Found</div>
       <span *ngFor="let i of items" >
       <a [routerLink]="['Item', {id: i.id}]" class="item_card">
@@ -32,13 +39,11 @@ import 'package:angular2_components/angular2_components.dart';
             </paper-material>
       </a>
       </span>
-    <material-fab raised [routerLink]="['ItemAdd']" style="position: fixed; right: 8pt; bottom: 8pt;z-index:9999999;" class="red">
-      <glyph icon="add"></glyph>
-    </material-fab>
     ''')
 class ItemBrowseComponent implements OnInit, OnDestroy {
   static final Logger _log = new Logger("ItemBrowseComponent");
 
+  bool curatorAuth = false;
   bool userLoggedIn;
   bool loading = false;
   final ApiService _api;
@@ -54,17 +59,29 @@ class ItemBrowseComponent implements OnInit, OnDestroy {
   StreamSubscription<PageActions> _pageActionSubscription;
   StreamSubscription<bool> _authChangedSubscription;
 
-  ItemBrowseComponent(
-      this._api, this._routeParams, this._pageControl, this._router, this._auth) {
+  ItemBrowseComponent(this._api, this._routeParams, this._pageControl,
+      this._router, this._auth) {
     _searchSubscription = _pageControl.searchChanged.listen(onSearchChanged);
     _pageActionSubscription =
         _pageControl.pageActionRequested.listen(onPageActionRequested);
-    _authChangedSubscription =    _auth.authStatusChanged.listen(onAuthStatusChange);
-    _pageControl.setAvailablePageActions(<PageActions>[PageActions.Refresh, PageActions.Search]);
+    _authChangedSubscription =
+        _auth.authStatusChanged.listen(onAuthStatusChange);
+    setActions();
   }
 
-  Future<Null >onAuthStatusChange(bool value) async {
-    await this.refresh();
+  Future<Null> onAuthChanged(bool status) async {
+    await refresh();
+    setActions();
+  }
+
+  void setActions() {
+    final List<PageActions> actions = <PageActions>[
+    PageActions.Refresh,
+    PageActions.Search];
+    if(_auth.hasPrivilege(UserPrivilege.curator)) {
+      actions.add(PageActions.Add);
+    }
+    _pageControl.setAvailablePageActions(actions);
   }
 
   bool get noItemsFound => items.isEmpty;
@@ -86,10 +103,17 @@ class ItemBrowseComponent implements OnInit, OnDestroy {
     refresh();
   }
 
+  Future<Null> onAuthStatusChange(bool value) async {
+    await this.refresh();
+  }
+
   void onPageActionRequested(PageActions action) {
     switch (action) {
       case PageActions.Refresh:
         this.refresh();
+        break;
+      case PageActions.Add:
+        _router.navigate([itemAddRoute.name]);
         break;
       default:
         throw new Exception(
@@ -101,8 +125,8 @@ class ItemBrowseComponent implements OnInit, OnDestroy {
     if (_currentQuery != query) {
       this._currentQuery = query;
       _router.navigate([
-        "ItemsSearch",
-        {"query": query}
+        itemsSearchRoute.name,
+        {queryRouteParameter: query}
       ]);
     }
   }
@@ -112,13 +136,13 @@ class ItemBrowseComponent implements OnInit, OnDestroy {
       loading = true;
       int page = 0;
       String query = "";
-      String routeName = itemsPageRoute;
-      if (_routeParams.params.containsKey("page")) {
+      String routeName = itemsPageRoute.name;
+      if (_routeParams.params.containsKey(pageRouteParameter)) {
         page =
-            int.parse(_routeParams.get("page") ?? '1', onError: (_) => 1) - 1;
+            int.parse(_routeParams.get(pageRouteParameter) ?? '1', onError: (_) => 1) - 1;
       }
-      if (_routeParams.params.containsKey("query")) {
-        query = _routeParams.get("query");
+      if (_routeParams.params.containsKey(queryRouteParameter)) {
+        query = _routeParams.get(queryRouteParameter);
       }
 
       PaginatedResponse response;
@@ -126,20 +150,19 @@ class ItemBrowseComponent implements OnInit, OnDestroy {
         response = await _api.items.getVisibleSummaries(page: page);
       } else {
         response = await _api.items.searchVisible(query, page: page);
-        routeName = "ItemsSearchPage";
+        routeName = itemsSearchPageRoute.name;
       }
 
       items.clear();
-      if (response.items.isNotEmpty)
-        items.addAll(response.items);
+      if (response.items.isNotEmpty) items.addAll(response.items);
 
       final PaginationInfo info = new PaginationInfo();
       for (int i = 0; i < response.totalPages; i++) {
         final Map<String, String> params = <String, String>{};
         if (StringTools.isNotNullOrWhitespace(query)) {
-          params["query"] = query;
+          params[queryRouteParameter] = query;
         }
-        params["page"] = (i + 1).toString();
+        params[pageRouteParameter] = (i + 1).toString();
         info.pageParams.add([routeName, params]);
       }
       info.currentPage = page;

@@ -1,18 +1,19 @@
 import 'dart:async';
+import 'dart:html' as html;
 
 import 'package:angular2/angular2.dart';
 import 'package:angular2/platform/common.dart';
 import 'package:angular2/router.dart';
 import 'package:angular2_components/angular2_components.dart';
+import 'package:dartalog/client/api/api.dart';
+import 'package:dartalog/client/routes.dart';
 import 'package:dartalog/client/services/services.dart';
 import 'package:dartalog/client/views/controls/auth_status_component.dart';
 import 'package:dartalog/client/views/controls/login_form_component.dart';
-import 'package:dartalog/client/views/controls/page_control_toolbar_component.dart';
 import 'package:dartalog/client/views/controls/paginator_component.dart';
 import 'package:dartalog/client/views/pages/pages.dart';
 import 'package:dartalog/global.dart';
 import 'package:dartalog/tools.dart';
-import 'package:dartalog/client/api/api.dart';
 import 'package:polymer_elements/iron_flex_layout/classes/iron_flex_layout.dart';
 import 'package:polymer_elements/iron_icon.dart';
 import 'package:polymer_elements/iron_image.dart';
@@ -22,12 +23,14 @@ import 'package:polymer_elements/paper_item.dart';
 import 'package:polymer_elements/paper_item_body.dart';
 import 'package:polymer_elements/paper_material.dart';
 import 'package:polymer_elements/paper_toolbar.dart';
+import 'package:logging/logging.dart';
 
 @Component(
     selector: 'main-app',
     //encapsulation: ViewEncapsulation.Native,
     templateUrl: 'main_app.html',
     styleUrls: const [
+      '../shared.css',
       'main_app.css'
     ],
     directives: const [
@@ -35,7 +38,6 @@ import 'package:polymer_elements/paper_toolbar.dart';
       materialDirectives,
       pageDirectives,
       LoginFormComponent,
-      PageControlToolbarComponent,
       AuthStatusComponent,
       PaginatorComponent,
     ],
@@ -51,48 +53,10 @@ import 'package:polymer_elements/paper_toolbar.dart';
       const Provider(APP_BASE_HREF, useValue: "/"),
       const Provider(LocationStrategy, useClass: HashLocationStrategy),
     ])
-@RouteConfig(const [
-  const Route(
-      path: '/',
-      name: 'Home',
-      component: ItemBrowseComponent,
-      useAsDefault: true),
-  const Route(
-      path: '/items/:page', name: 'ItemsPage', component: ItemBrowseComponent),
-  const Route(
-      path: '/items/search/:query',
-      name: 'ItemsSearch',
-      component: ItemBrowseComponent),
-  const Route(
-      path: '/items/search/:query/:page',
-      name: 'ItemsSearchPage',
-      component: ItemBrowseComponent),
-  const Route(
-      path: '/items/add',
-      name: 'ItemAdd',
-      component: ItemAddPage),
-  const Route(
-    path: '/item/:id',
-    name: 'Item',
-    component: ItemBrowseComponent,
-  ),
-  const Route(
-      path: '/collections',
-      name: 'Collections',
-      component: CollectionsPage,
-  ),
-  const Route(
-      path: '/fields',
-      name: 'Fields',
-      component: FieldsPage,
-  ),
-  const Route(
-      path: '/item_types',
-      name: 'ItemTypes',
-      component: ItemTypesPage,
-  ),
-])
+@RouteConfig(routes)
 class MainApp implements OnInit, OnDestroy {
+  static final Logger _log = new Logger("MainApp");
+
   final AuthenticationService _auth;
 
   final Location _location;
@@ -100,16 +64,33 @@ class MainApp implements OnInit, OnDestroy {
   final PageControlService _pageControl;
   bool isLoginOpen = false;
 
-  StreamSubscription<String> _pageTitleSubscription;
+  bool showRefreshButton = false;
 
+  bool showAddButton = false;
+
+  bool showSearch = false;
+
+  bool userIsCurator = false;
+  bool userIsAdmin = false;
+
+
+  StreamSubscription<String> _pageTitleSubscription;
+  StreamSubscription<String> _searchSubscription;
+  StreamSubscription<List> _pageActionsSubscription;
   StreamSubscription<Null> _loginRequestSubscription;
 
   String _pageTitleOverride = "";
 
+  String query = "";
+
   MainApp(this._auth, this._location, this._router, this._pageControl) {
     _pageTitleSubscription =
         _pageControl.pageTitleChanged.listen(onPageTitleChanged);
-    _loginRequestSubscription = _auth.loginPrompted.listen(promptForAuthentication);
+    _loginRequestSubscription =
+        _auth.loginPrompted.listen(promptForAuthentication);
+    _searchSubscription = _pageControl.searchChanged.listen(onSearchChanged);
+    _pageActionsSubscription =
+        _pageControl.availablePageActionsSet.listen(onPageActionsSet);
   }
 
   User get currentUser => _auth.user.first;
@@ -126,27 +107,63 @@ class MainApp implements OnInit, OnDestroy {
     return _auth.isAuthenticated;
   }
 
+  void addClicked() {
+    _pageControl.requestPageAction(PageActions.Add);
+  }
+
   Future<Null> clearAuthentication() async {
     await _auth.clear();
     //await _router.navigate(<dynamic>["Home"]);
   }
 
+
   @override
   void ngOnDestroy() {
     _pageTitleSubscription.cancel();
     _loginRequestSubscription.cancel();
+    _searchSubscription.cancel();
+    _pageActionsSubscription.cancel();
   }
 
   @override
-  void ngOnInit() {
-    _auth.evaluateAuthentication();
+  Future<Null> ngOnInit() async {
+    try {
+      await _auth.evaluateAuthentication();
+    } on DetailedApiRequestError catch (e, st) {
+      if (e.status == HTTP_STATUS_SERVER_NEEDS_SETUP) {
+        await _router.navigate([setupRoute.name]);
+      } else {
+        _log.severe("evaluateAuthentication", e, st);
+        rethrow;
+      }
+    }
+  }
+
+  void onPageActionsSet(List<PageActions> actions) {
+    showRefreshButton = actions.contains(PageActions.Refresh);
+    showAddButton = actions.contains(PageActions.Add);
+    showSearch = actions.contains(PageActions.Search);
   }
 
   void onPageTitleChanged(String title) {
     this._pageTitleOverride = title;
   }
 
+  void onSearchChanged(String query) {
+    this.query = query;
+  }
+
   void promptForAuthentication([Null nullValue = null]) {
     isLoginOpen = true;
+  }
+
+  void refreshClicked() {
+    _pageControl.requestPageAction(PageActions.Refresh);
+  }
+
+  void searchKeyup(html.KeyboardEvent e) {
+    if (e.keyCode == html.KeyCode.ENTER) {
+      _pageControl.search(query);
+    }
   }
 }

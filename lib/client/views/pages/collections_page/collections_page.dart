@@ -8,6 +8,7 @@ import 'package:dartalog/client/api/api.dart' as api;
 import 'package:logging/logging.dart';
 import '../src/a_page.dart';
 import 'package:dartalog/client/views/controls/common_controls.dart';
+import 'package:angular2/router.dart';
 
 @Component(
     selector: 'collections-page',
@@ -41,8 +42,8 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
 
   final ApiService _api;
 
-  CollectionsPage(this._pageControl, this._api, AuthenticationService _auth)
-      : super(_pageControl, _auth) {
+  CollectionsPage(this._pageControl, this._api, AuthenticationService _auth, Router router)
+      : super(_pageControl, _auth, router) {
     _pageControl.setPageTitle("Collections");
     _pageControl.setAvailablePageActions(
         <PageActions>[PageActions.Refresh, PageActions.Add]);

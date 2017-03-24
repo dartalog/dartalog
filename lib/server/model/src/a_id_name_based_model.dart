@@ -17,9 +17,11 @@ abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel<T> {
     return output;
   }
 
-  Future<String> create(T t) async {
-    await validateCreatePrivileges();
-    await validate(t, true);
+  Future<String> create(T t, {bool bypassAuthentication: false}) async {
+    if(!bypassAuthentication)
+      await validateCreatePrivileges();
+
+    await validate(t);
 
     t.setId = generateUuid();
 

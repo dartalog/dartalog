@@ -7,7 +7,7 @@ import 'package:connection_pool/connection_pool.dart';
 class MongoDbConnectionPool extends ConnectionPool<Db> {
   static final Logger _log = new Logger('_MongoDbConnectionPool');
 
-  String uri;
+  final String uri;
 
   MongoDbConnectionPool(this.uri, int poolSize) : super(poolSize);
 

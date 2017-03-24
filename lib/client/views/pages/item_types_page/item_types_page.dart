@@ -10,7 +10,7 @@ import 'package:dartalog/global.dart';
 import 'package:logging/logging.dart';
 
 import '../src/a_page.dart';
-
+import 'package:angular2/router.dart';
 @Component(
     selector: 'item-types-page',
     directives: const [materialDirectives, commonControls],
@@ -47,8 +47,8 @@ class ItemTypesPage extends APage implements OnInit, OnDestroy {
 
   List<api.IdNamePair> users = <api.IdNamePair>[];
 
-  ItemTypesPage(this._pageControl, this._api, AuthenticationService _auth)
-      : super(_pageControl, _auth) {
+  ItemTypesPage(this._pageControl, this._api, AuthenticationService _auth, Router router)
+      : super(_pageControl, _auth, router) {
     _pageControl.setPageTitle("Item Types");
     _pageControl.setAvailablePageActions(
         <PageActions>[PageActions.Refresh, PageActions.Add]);

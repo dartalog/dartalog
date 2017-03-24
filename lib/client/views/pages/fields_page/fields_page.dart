@@ -8,7 +8,7 @@ import 'package:dartalog/client/services/services.dart';
 import 'package:dartalog/client/views/controls/common_controls.dart';
 import 'package:dartalog/global.dart';
 import 'package:logging/logging.dart';
-
+import 'package:angular2/router.dart';
 import '../src/a_page.dart';
 
 @Component(
@@ -44,8 +44,8 @@ class FieldsPage extends APage implements OnInit, OnDestroy {
 
   List<api.IdNamePair> users = <api.IdNamePair>[];
 
-  FieldsPage(this._pageControl, this._api, AuthenticationService _auth)
-      : super(_pageControl, _auth) {
+  FieldsPage(this._pageControl, this._api, AuthenticationService _auth, Router router)
+      : super(_pageControl, _auth, router) {
     _pageControl.setPageTitle("Fields");
     _pageControl.setAvailablePageActions(
         <PageActions>[PageActions.Refresh, PageActions.Add]);

@@ -106,21 +106,21 @@ class ItemModel extends AIdNameBasedModel<Item> {
     if (!StringTools.isNullOrWhitespace(item.getName))
       item.setId = await _generateUniqueId(item);
 
-    ItemCopy itemCopy = new ItemCopy();
+    final ItemCopy itemCopy = new ItemCopy();
     itemCopy.collectionId = collectionId;
     itemCopy.uniqueId = uniqueId;
     itemCopy.status = ItemStatus.defaultStatus;
 
     await DataValidationException.PerformValidation((Map output) async {
-      output.addAll(await validateFields(item, true));
+      output.addAll(await validateFields(item));
       output.addAll(
-          await copies.validateFields(itemCopy, true, skipItemIdCheck: true));
+          await copies.validateFields(itemCopy, skipItemIdCheck: true));
     });
 
     await _handleFileUploads(item, files);
     //TODO: More thorough cleanup of files in case of failure
 
-    String itemId = await data_sources.items.write(item);
+    final String itemId = await data_sources.items.write(item);
     return await copies.create(itemId, itemCopy);
   }
 
@@ -133,7 +133,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
       bool bypassAuth: false}) async {
     await validateGetPrivileges();
 
-    Item output = await super.getById(id, bypassAuth: bypassAuth);
+    final Item output = await super.getById(id, bypassAuth: bypassAuth);
 
     if (includeType) {
       output.type = (await data_sources.itemTypes.getById(output.typeId))
@@ -181,7 +181,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
 
     if (!StringTools.isNullOrWhitespace(item.getName)) {
       final Item oldItem = (await data_sources.items.getById(id)).getOrElse(
-          () => throw new NotFoundException("Item ${item} not found"));
+          () => throw new NotFoundException("Item $item not found"));
 
       if (oldItem.getName.trim().toLowerCase() !=
           item.getName.trim().toLowerCase())
@@ -193,7 +193,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
     return await super.update(id, item);
   }
 
-  Future _handleFileUploads(Item item, List<List<int>> files) async {
+  Future<Null> _handleFileUploads(Item item, List<List<int>> files) async {
     final ItemType type = await itemTypes.getById(item.typeId);
     final List<Field> fields = await data_sources.fields.getByIds(type.fieldIds);
     final Map<String, List<int>> filesToWrite = new Map<String, List<int>>();
@@ -205,7 +205,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
 
       //TODO: Old image cleanup
 
-      String value = item.values[f.getId];
+      final String value = item.values[f.getId];
 
       if (value.startsWith(HOSTED_IMAGE_PREFIX)) {
         // This should indicate that the submitted image is one that is already hosted on the server, so nothing to do here
@@ -225,22 +225,22 @@ class ItemModel extends AIdNameBasedModel<Item> {
 
       List<int> data;
 
-      Match m = FILE_UPLOAD_REGEX.firstMatch(value);
+      final Match m = FILE_UPLOAD_REGEX.firstMatch(value);
       if (m != null) {
         // This is a new file upload
-        int filePosition = int.parse(m.group(1));
+        final int filePosition = int.parse(m.group(1));
         if (files.length - 1 < filePosition) {
           throw new InvalidInputException(
-              "Field ${f.getId} specifies unprovided upload file at position ${filePosition}");
+              "Field ${f.getId} specifies unprovided upload file at position $filePosition");
         }
         data = files[filePosition];
       } else {
         // So we assume it's a URL
-        _log.fine("Processing as URL: ${value}");
-        Uri fileUri = Uri.parse(value);
-        HttpClientRequest req = await new HttpClient().getUrl(fileUri);
-        HttpClientResponse response = await req.close();
-        List<List<int>> output = await response.toList();
+        _log.fine("Processing as URL: $value");
+        final Uri fileUri = Uri.parse(value);
+        final HttpClientRequest req = await new HttpClient().getUrl(fileUri);
+        final HttpClientResponse response = await req.close();
+        final List<List<int>> output = await response.toList();
         data = new List<int>();
         for (List<int> chunk in output) {
           data.addAll(chunk);
@@ -249,16 +249,16 @@ class ItemModel extends AIdNameBasedModel<Item> {
 
       if (data.length == 0)
         throw new InvalidInputException(
-            "Specified file upload ${value} is empty");
+            "Specified file upload $value is empty");
 
-      Digest hash = sha256.convert(data);
-      String hashString = hash.toString();
+      final Digest hash = sha256.convert(data);
+      final String hashString = hash.toString();
       filesToWrite[hashString] = data;
-      item.values[f.getId] = "${HOSTED_IMAGE_PREFIX}${hashString}";
+      item.values[f.getId] = "$HOSTED_IMAGE_PREFIX$hashString";
     }
 
     // Now that the above sections have completed gathering all the file services for saving, we save it all
-    List<String> filesWritten = new List<String>();
+    final List<String> filesWritten = new List<String>();
     try {
       if (!ORIGINAL_IMAGE_DIR.existsSync())
         ORIGINAL_IMAGE_DIR.createSync(recursive: true);
@@ -266,39 +266,39 @@ class ItemModel extends AIdNameBasedModel<Item> {
         THUMBNAIL_DIR.createSync(recursive: true);
 
       for (String key in filesToWrite.keys) {
-        File file = new File(path.join(ORIGINAL_IMAGE_PATH, key));
-        bool fileExists = await file.exists();
+        final File file = new File(path.join(ORIGINAL_IMAGE_PATH, key));
+        final bool fileExists = await file.exists();
         if (!fileExists) {
           await file.create();
         } else {
-          int size = await file.length();
+          final int size = await file.length();
           if (size != filesToWrite[key].length)
             throw new Exception("File already exists with a different size");
           continue;
         }
 
-        Image image = decodeImage(filesToWrite[key]);
+        final Image image = decodeImage(filesToWrite[key]);
         List<int> thumbnailData;
-        File thumbnailFile = new File(path.join(THUMBNAIL_IMAGE_PATH, key));
+        final File thumbnailFile = new File(path.join(THUMBNAIL_IMAGE_PATH, key));
         if (thumbnailFile.existsSync()) thumbnailFile.deleteSync();
         thumbnailFile.createSync();
 
         if (image.width > 300) {
-          Image thumbnail = copyResize(image, 300, -1, AVERAGE);
+          final Image thumbnail = copyResize(image, 300, -1, AVERAGE);
           thumbnailData = encodeJpg(thumbnail, quality: 90);
         } else {
           thumbnailData = filesToWrite[key];
         }
 
-        RandomAccessFile imageRaf = await file.open(mode: FileMode.WRITE_ONLY);
-        RandomAccessFile thumbnailRaf =
+        final RandomAccessFile imageRaf = await file.open(mode: FileMode.WRITE_ONLY);
+        final RandomAccessFile thumbnailRaf =
             await thumbnailFile.open(mode: FileMode.WRITE_ONLY);
         try {
           _log.fine("Writing to ${file.path}");
-          imageRaf.writeFrom(filesToWrite[key]);
+          await imageRaf.writeFrom(filesToWrite[key]);
           filesWritten.add(file.path);
           _log.fine("Writing to ${thumbnailFile.path}");
-          thumbnailRaf.writeFrom(thumbnailData);
+          await thumbnailRaf.writeFrom(thumbnailData);
           filesWritten.add(thumbnailFile.path);
         } finally {
           try {
@@ -313,8 +313,8 @@ class ItemModel extends AIdNameBasedModel<Item> {
       _log.severe(e.message, e, st);
       for (String f in filesWritten) {
         try {
-          File file = new File(f);
-          bool exists = await file.exists();
+          final File file = new File(f);
+          final bool exists = await file.exists();
           if (exists) await file.delete();
         } catch (e) {}
       }
@@ -323,14 +323,14 @@ class ItemModel extends AIdNameBasedModel<Item> {
   }
 
   @override
-  Future validateFieldsInternal(
-      Map<String, String> field_errors, Item item, bool creating) async {
+  Future<Null> validateFieldsInternal(
+      Map<String, String> fieldErrors, Item item, {String existingId: null}) async {
     //TODO: add dynamic field validation
     if (StringTools.isNullOrWhitespace(item.typeId))
-      field_errors["typeId"] = "Required";
+      fieldErrors["typeId"] = "Required";
     else {
-      dynamic test = await data_sources.itemTypes.getById(item.typeId);
-      if (test == null) field_errors["typeId"] = "Not found";
+      final dynamic test = await data_sources.itemTypes.getById(item.typeId);
+      if (test == null) fieldErrors["typeId"] = "Not found";
     }
   }
 
@@ -338,15 +338,15 @@ class ItemModel extends AIdNameBasedModel<Item> {
     if (StringTools.isNullOrWhitespace(item.getName))
       throw new InvalidInputException("Name required to generate unique ID");
 
-    StringBuffer output = new StringBuffer();
+    final StringBuffer output = new StringBuffer();
     String lastChar = "_";
     String name = item.getName.trim().toLowerCase();
-    String first_word = name.split(" ")[0];
-    if (NON_SORTING_WORDS.contains(first_word))
+    final String firstWord = name.split(" ")[0];
+    if (NON_SORTING_WORDS.contains(firstWord))
       name = name.substring(name.indexOf(" ") + 1, name.length);
 
     for (int i = 0; i < name.length; i++) {
-      String char = name.substring(i, i + 1);
+      final String char = name.substring(i, i + 1);
       switch (char) {
         case " ":
         case ":":
@@ -368,12 +368,12 @@ class ItemModel extends AIdNameBasedModel<Item> {
       throw new InvalidInputException(
           "Could not generate safe ID from name '${item.getName}'");
 
-    String base_name = output.toString();
-    String testName = base_name;
-    Option<Item> testItem = await data_sources.items.getById(base_name);
+    final String baseName = output.toString();
+    String testName = baseName;
+    Option<Item> testItem = await data_sources.items.getById(baseName);
     int i = 1;
     while (testItem.isNotEmpty) {
-      testName = "${base_name}_${i}";
+      testName = "${baseName}_$i";
       i++;
       testItem = await data_sources.items.getById(testName);
     }

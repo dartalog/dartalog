@@ -7,13 +7,14 @@ import 'src/resources/collection_resource.dart';
 import 'src/resources/preset_resource.dart';
 import 'src/resources/user_resource.dart';
 import 'package:dartalog/global.dart';
-
-export 'src/requests/bulk_item_action_request.dart';
-export 'src/requests/item_action_request.dart';
-export 'src/requests/create_item_request.dart';
-export 'src/requests/update_item_request.dart';
-export 'src/requests/transfer_request.dart';
 import 'src/resources/export_resource.dart';
+import 'src/resources/setup_resource.dart';
+
+//export 'src/requests/bulk_item_action_request.dart';
+//export 'src/requests/item_action_request.dart';
+//export 'src/requests/create_item_request.dart';
+//export 'src/requests/update_item_request.dart';
+//export 'src/requests/transfer_request.dart';
 
 @ApiClass(
     version: itemApiVersion, name: itemApiName, description: 'Item REST API')
@@ -52,6 +53,9 @@ class ItemApi {
 
   @ApiResource()
   final ExportResource export = new ExportResource();
+
+  @ApiResource()
+  final SetupResource setup = new SetupResource();
 
   ItemApi();
 }

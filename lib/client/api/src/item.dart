@@ -21,11 +21,13 @@ class ItemApi {
   final commons.ApiRequester _requester;
 
   CollectionsResourceApi get collections => new CollectionsResourceApi(_requester);
+  ExportResourceApi get export => new ExportResourceApi(_requester);
   FieldsResourceApi get fields => new FieldsResourceApi(_requester);
   ImportResourceApi get import => new ImportResourceApi(_requester);
   ItemTypesResourceApi get itemTypes => new ItemTypesResourceApi(_requester);
   ItemsResourceApi get items => new ItemsResourceApi(_requester);
   PresetsResourceApi get presets => new PresetsResourceApi(_requester);
+  SetupResourceApi get setup => new SetupResourceApi(_requester);
   UsersResourceApi get users => new UsersResourceApi(_requester);
 
   ItemApi(http.Client client, {core.String rootUrl: "http://localhost:8080/", core.String servicePath: "item/0.1/"}) :
@@ -222,6 +224,47 @@ class CollectionsResourceApi {
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
     return _response.then((data) => new IdResponse.fromJson(data));
+  }
+
+}
+
+
+class ExportResourceApi {
+  final commons.ApiRequester _requester;
+
+  ExportResourceApi(commons.ApiRequester client) : 
+      _requester = client;
+
+  /**
+   * Request parameters:
+   *
+   * Completes with a [ListOfCollection].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<ListOfCollection> exportCollections() {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+
+    _url = 'export/collections/';
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new ListOfCollection.fromJson(data));
   }
 
 }
@@ -1391,6 +1434,84 @@ class PresetsResourceApi {
 }
 
 
+class SetupResourceApi {
+  final commons.ApiRequester _requester;
+
+  SetupResourceApi(commons.ApiRequester client) : 
+      _requester = client;
+
+  /**
+   * [request] - The metadata request object.
+   *
+   * Request parameters:
+   *
+   * Completes with a [SetupResponse].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<SetupResponse> apply(SetupRequest request) {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+    if (request != null) {
+      _body = convert.JSON.encode((request).toJson());
+    }
+
+    _url = 'setup/';
+
+    var _response = _requester.request(_url,
+                                       "PUT",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new SetupResponse.fromJson(data));
+  }
+
+  /**
+   * Request parameters:
+   *
+   * Completes with a [SetupResponse].
+   *
+   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
+   * error.
+   *
+   * If the used [http.Client] completes with an error when making a REST call,
+   * this method will complete with the same error.
+   */
+  async.Future<SetupResponse> get() {
+    var _url = null;
+    var _queryParams = new core.Map();
+    var _uploadMedia = null;
+    var _uploadOptions = null;
+    var _downloadOptions = commons.DownloadOptions.Metadata;
+    var _body = null;
+
+
+    _url = 'setup/';
+
+    var _response = _requester.request(_url,
+                                       "GET",
+                                       body: _body,
+                                       queryParams: _queryParams,
+                                       uploadOptions: _uploadOptions,
+                                       uploadMedia: _uploadMedia,
+                                       downloadOptions: _downloadOptions);
+    return _response.then((data) => new SetupResponse.fromJson(data));
+  }
+
+}
+
+
 class UsersResourceApi {
   final commons.ApiRequester _requester;
 
@@ -1737,6 +1858,7 @@ class Collection {
   core.String id;
   core.String name;
   core.bool publiclyBrowsable;
+  core.String readableId;
 
   Collection();
 
@@ -1756,6 +1878,9 @@ class Collection {
     if (_json.containsKey("publiclyBrowsable")) {
       publiclyBrowsable = _json["publiclyBrowsable"];
     }
+    if (_json.containsKey("readableId")) {
+      readableId = _json["readableId"];
+    }
   }
 
   core.Map toJson() {
@@ -1774,6 +1899,9 @@ class Collection {
     }
     if (publiclyBrowsable != null) {
       _json["publiclyBrowsable"] = publiclyBrowsable;
+    }
+    if (readableId != null) {
+      _json["readableId"] = readableId;
     }
     return _json;
   }
@@ -1824,6 +1952,7 @@ class Field {
   core.String format;
   core.String id;
   core.String name;
+  core.String readableId;
   core.String type;
   core.bool unique;
 
@@ -1838,6 +1967,9 @@ class Field {
     }
     if (_json.containsKey("name")) {
       name = _json["name"];
+    }
+    if (_json.containsKey("readableId")) {
+      readableId = _json["readableId"];
     }
     if (_json.containsKey("type")) {
       type = _json["type"];
@@ -1858,6 +1990,9 @@ class Field {
     if (name != null) {
       _json["name"] = name;
     }
+    if (readableId != null) {
+      _json["readableId"] = readableId;
+    }
     if (type != null) {
       _json["type"] = type;
     }
@@ -1871,6 +2006,7 @@ class Field {
 class IdNamePair {
   core.String id;
   core.String name;
+  core.String readableId;
 
   IdNamePair();
 
@@ -1881,6 +2017,9 @@ class IdNamePair {
     if (_json.containsKey("name")) {
       name = _json["name"];
     }
+    if (_json.containsKey("readableId")) {
+      readableId = _json["readableId"];
+    }
   }
 
   core.Map toJson() {
@@ -1890,6 +2029,9 @@ class IdNamePair {
     }
     if (name != null) {
       _json["name"] = name;
+    }
+    if (readableId != null) {
+      _json["readableId"] = readableId;
     }
     return _json;
   }
@@ -1992,6 +2134,7 @@ class Item {
   core.DateTime dateUpdated;
   core.String id;
   core.String name;
+  core.String readableId;
   ItemType type;
   core.String typeId;
   core.Map<core.String, core.String> values;
@@ -2019,6 +2162,9 @@ class Item {
     }
     if (_json.containsKey("name")) {
       name = _json["name"];
+    }
+    if (_json.containsKey("readableId")) {
+      readableId = _json["readableId"];
     }
     if (_json.containsKey("type")) {
       type = new ItemType.fromJson(_json["type"]);
@@ -2053,6 +2199,9 @@ class Item {
     }
     if (name != null) {
       _json["name"] = name;
+    }
+    if (readableId != null) {
+      _json["readableId"] = readableId;
     }
     if (type != null) {
       _json["type"] = (type).toJson();
@@ -2257,6 +2406,7 @@ class ItemType {
   core.List<Field> fields;
   core.String id;
   core.String name;
+  core.String readableId;
 
   ItemType();
 
@@ -2272,6 +2422,9 @@ class ItemType {
     }
     if (_json.containsKey("name")) {
       name = _json["name"];
+    }
+    if (_json.containsKey("readableId")) {
+      readableId = _json["readableId"];
     }
   }
 
@@ -2289,7 +2442,36 @@ class ItemType {
     if (name != null) {
       _json["name"] = name;
     }
+    if (readableId != null) {
+      _json["readableId"] = readableId;
+    }
     return _json;
+  }
+}
+
+class ListOfCollection
+    extends collection_1.ListBase<Collection> {
+  final core.List<Collection> _inner;
+
+  ListOfCollection() : _inner = [];
+
+  ListOfCollection.fromJson(core.List json)
+      : _inner = json.map((value) => new Collection.fromJson(value)).toList();
+
+  core.List toJson() {
+    return _inner.map((value) => (value).toJson()).toList();
+  }
+
+  Collection operator [](core.int key) => _inner[key];
+
+  void operator []=(core.int key, Collection value) {
+    _inner[key] = value;
+  }
+
+  core.int get length => _inner.length;
+
+  void set length(core.int newLength) {
+    _inner.length = newLength;
   }
 }
 
@@ -2630,6 +2812,53 @@ class SearchResults {
     }
     if (totalResults != null) {
       _json["totalResults"] = totalResults;
+    }
+    return _json;
+  }
+}
+
+class SetupRequest {
+  core.String adminPassword;
+  core.String adminUser;
+
+  SetupRequest();
+
+  SetupRequest.fromJson(core.Map _json) {
+    if (_json.containsKey("adminPassword")) {
+      adminPassword = _json["adminPassword"];
+    }
+    if (_json.containsKey("adminUser")) {
+      adminUser = _json["adminUser"];
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (adminPassword != null) {
+      _json["adminPassword"] = adminPassword;
+    }
+    if (adminUser != null) {
+      _json["adminUser"] = adminUser;
+    }
+    return _json;
+  }
+}
+
+class SetupResponse {
+  core.bool adminUser;
+
+  SetupResponse();
+
+  SetupResponse.fromJson(core.Map _json) {
+    if (_json.containsKey("adminUser")) {
+      adminUser = _json["adminUser"];
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (adminUser != null) {
+      _json["adminUser"] = adminUser;
     }
     return _json;
   }

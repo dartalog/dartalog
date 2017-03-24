@@ -85,7 +85,7 @@ class AuthenticationService {
     });
   }
 
-  Future<Null> promptForAuthentication() async {
+  void promptForAuthentication() {
     _promptController.add(null);
   }
 }

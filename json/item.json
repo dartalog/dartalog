@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "334cc15e5c2428397ddfda4b6b7b169303f82a83",
+ "etag": "cc2c915e9609d473afec20850385efe84d02dede",
  "discoveryVersion": "v1",
  "id": "item:0.1",
  "name": "item",
@@ -22,6 +22,9 @@
      "type": "string"
     },
     "name": {
+     "type": "string"
+    },
+    "readableId": {
      "type": "string"
     },
     "unique": {
@@ -63,6 +66,9 @@
     },
     "name": {
      "type": "string"
+    },
+    "readableId": {
+     "type": "string"
     }
    }
   },
@@ -74,6 +80,9 @@
      "type": "string"
     },
     "name": {
+     "type": "string"
+    },
+    "readableId": {
      "type": "string"
     },
     "fieldIds": {
@@ -141,6 +150,9 @@
      "type": "string"
     },
     "name": {
+     "type": "string"
+    },
+    "readableId": {
      "type": "string"
     },
     "publiclyBrowsable": {
@@ -272,6 +284,9 @@
      "type": "string"
     },
     "name": {
+     "type": "string"
+    },
+    "readableId": {
      "type": "string"
     },
     "typeId": {
@@ -522,6 +537,34 @@
     "newPassword": {
      "type": "string",
      "required": true
+    }
+   }
+  },
+  "ListOfCollection": {
+   "id": "ListOfCollection",
+   "type": "array",
+   "items": {
+    "$ref": "Collection"
+   }
+  },
+  "SetupRequest": {
+   "id": "SetupRequest",
+   "type": "object",
+   "properties": {
+    "adminUser": {
+     "type": "string"
+    },
+    "adminPassword": {
+     "type": "string"
+    }
+   }
+  },
+  "SetupResponse": {
+   "id": "SetupResponse",
+   "type": "object",
+   "properties": {
+    "adminUser": {
+     "type": "boolean"
     }
    }
   }
@@ -1344,6 +1387,49 @@
      ],
      "response": {
       "$ref": "ListOfIdNamePair"
+     }
+    }
+   },
+   "resources": {}
+  },
+  "export": {
+   "methods": {
+    "exportCollections": {
+     "id": "ItemApi.export.exportCollections",
+     "path": "export/collections/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "ListOfCollection"
+     }
+    }
+   },
+   "resources": {}
+  },
+  "setup": {
+   "methods": {
+    "apply": {
+     "id": "ItemApi.setup.apply",
+     "path": "setup/",
+     "httpMethod": "PUT",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "SetupRequest"
+     },
+     "response": {
+      "$ref": "SetupResponse"
+     }
+    },
+    "get": {
+     "id": "ItemApi.setup.get",
+     "path": "setup/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "SetupResponse"
      }
     }
    },

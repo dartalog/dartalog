@@ -18,7 +18,8 @@ abstract class AMongoIdDataSource<T extends AIdData>
     extends AMongoObjectDataSource<T> with AIdNameBasedDataSource<T> {
   dynamic prepareId(String id) {
     if(isUuid(id)) {
-      return new ObjectId.fromHexString(id);
+      bsonObjectFromTypeByte(3);
+      return new ObjectId.fromHexString(id.replaceAll("\-",""));
     } else {
       return id;
     }

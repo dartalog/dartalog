@@ -6,12 +6,11 @@ import 'package:dartalog/client/api/api.dart';
 import 'package:dartalog/client/services/services.dart';
 import 'package:dartalog/global.dart';
 import 'package:dartalog/tools.dart';
-import 'package:logging/logging.dart';
 import 'package:angular2/router.dart';
 import 'package:dartalog/client/routes.dart';
+import '../../src/a_error_thing.dart';
 
-abstract class APage {
-  String errorMessage = "";
+abstract class APage extends AErrorThing {
 
   bool processing = false;
 
@@ -21,8 +20,6 @@ abstract class APage {
 
   APage(this._pageControl, this._auth, this._router);
   bool get hasErrorMessage => StringTools.isNotNullOrWhitespace(errorMessage);
-
-  Logger get loggerImpl;
 
   void handleException(dynamic e, dynamic st) {
     loggerImpl.severe("handleException", e, st);
@@ -35,9 +32,10 @@ abstract class APage {
       processing = true;
       return await toAwait();
     } on DetailedApiRequestError catch (e, st) {
+      loggerImpl.severe(e, st);
       await _handleApiError(e, st, form);
     } catch (e, st) {
-      errorMessage = e.message;
+      setErrorMessage(e,st);
     } finally {
       processing = false;
     }

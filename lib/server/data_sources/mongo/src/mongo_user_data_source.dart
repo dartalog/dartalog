@@ -11,12 +11,12 @@ class MongoUserDataSource extends AMongoIdDataSource<User>
     with AUserDataSource {
   static final Logger _log = new Logger('MongoUserDataSource');
 
-  static const String TYPE_FIELD = "type";
-  static const String PASSWORD_FIELD = "password";
+  static const String typeField = "type";
+  static const String passwordField = "password";
 
   @override
   Future<List<User>> getAdmins() {
-    return this.getFromDb(where.eq(TYPE_FIELD, UserPrivilege.admin));
+    return this.getFromDb(where.eq(typeField, UserPrivilege.admin));
   }
 
   @override
@@ -24,7 +24,7 @@ class MongoUserDataSource extends AMongoIdDataSource<User>
     final SelectorBuilder selector = where.eq(idField, id);
     final Option<String> data = await genericFindOne(selector);
     return data.map((Map user) {
-      if (user.containsKey(PASSWORD_FIELD)) return user[PASSWORD_FIELD];
+      if (user.containsKey(passwordField)) return user[passwordField];
     });
   }
 
@@ -32,7 +32,7 @@ class MongoUserDataSource extends AMongoIdDataSource<User>
   Future<Null> setPassword(String id, String password) async {
     final SelectorBuilder selector = where.eq(idField, id);
 
-    final ModifierBuilder modifier = modify.set(PASSWORD_FIELD, password);
+    final ModifierBuilder modifier = modify.set(passwordField, password);
     await genericUpdate(selector, modifier, multiUpdate: false);
   }
 
@@ -40,7 +40,7 @@ class MongoUserDataSource extends AMongoIdDataSource<User>
   User createObject(Map data) {
     final User output = new User();
     setIdDataFields(output, data);
-    if (data.containsKey(TYPE_FIELD)) output.type = data[TYPE_FIELD];
+    if (data.containsKey(typeField)) output.type = data[typeField];
     return output;
   }
 

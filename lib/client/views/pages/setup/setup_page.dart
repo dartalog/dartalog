@@ -1,21 +1,14 @@
 import 'dart:async';
 
 import 'package:angular2/angular2.dart';
-import 'package:angular2/platform/common.dart';
 import 'package:angular2/router.dart';
 import 'package:angular2_components/angular2_components.dart';
 import 'package:dartalog/client/api/api.dart';
-import 'package:dartalog/client/client.dart';
-import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/routes.dart';
 import 'package:dartalog/client/services/services.dart';
 import 'package:dartalog/client/views/controls/auth_status_component.dart';
-import 'package:dartalog/tools.dart';
 import 'package:logging/logging.dart';
-import 'package:dartalog/client/routes.dart';
-import 'package:dartalog/global.dart';
 import '../src/a_page.dart';
-import 'package:angular2/router.dart';
 @Component(
     selector: 'setup-page',
     providers: const [materialProviders],
@@ -58,11 +51,12 @@ class SetupPage extends APage implements OnInit {
   Future<Null> refresh() async {
     await performApiCall(() async {
       try {
-        SetupResponse response = await _api.setup.get();
+        final SetupResponse response = await _api.setup.get();
       } on DetailedApiRequestError catch (e, st) {
+        loggerImpl.warning(e, st);
         if(e.status==403) {
           // This indicates that setup is disabled, so we redirect to the main page and prompt for login
-          await _router.navigate(homeRoute.name);
+          await _router.navigate([homeRoute.name]);
           _auth.promptForAuthentication();
         } else {
           rethrow;
@@ -81,12 +75,13 @@ class SetupPage extends APage implements OnInit {
       }
       await performApiCall(() async {
         try {
-          SetupResponse response = await _api.setup.apply(request);
+          final SetupResponse response = await _api.setup.apply(request);
           await refresh();
         } on DetailedApiRequestError catch (e, st) {
+          loggerImpl.warning(e, st);
           if(e.status==403) {
             // This indicates that setup is disabled, so we redirect to the main page and prompt for login
-            await _router.navigate(homeRoute.name);
+            await _router.navigate([homeRoute.name]);
             _auth.promptForAuthentication();
           } else {
             rethrow;
@@ -95,7 +90,7 @@ class SetupPage extends APage implements OnInit {
       });
 
     } catch(e,st) {
-      errorMessage = e.toString();
+      setErrorMessage(e,st);
     }
   }
 

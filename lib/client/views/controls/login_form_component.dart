@@ -4,8 +4,11 @@ import 'dart:html';
 import 'package:angular2/angular2.dart';
 import 'package:angular2_components/angular2_components.dart';
 import 'package:dartalog/client/services/services.dart';
-import 'package:logging/logging.dart';
 import 'package:dartalog/tools.dart';
+import 'package:logging/logging.dart';
+
+import '../src/a_error_thing.dart';
+
 @Component(
     selector: 'login-form',
     styleUrls: const ["../shared.css"],
@@ -35,14 +38,12 @@ import 'package:dartalog/tools.dart';
           </div>
       </material-dialog>
     </modal>''')
-class LoginFormComponent {
-  static final Logger _log = new Logger("UserAuthComponent");
+class LoginFormComponent extends AErrorThing {
+  static final Logger _log = new Logger("LoginFormComponent");
+
   String userName = "";
+
   String password = "";
-
-  bool get hasErrorMessage => StringTools.isNotNullOrWhitespace(errorMessage);
-  String errorMessage = "";
-
   bool _visible = false;
 
   @Output()
@@ -50,16 +51,21 @@ class LoginFormComponent {
 
   final AuthenticationService _auth;
 
+  bool processing = false;
+
   LoginFormComponent(this._auth);
 
-  bool processing = false;
+  bool get hasErrorMessage => StringTools.isNotNullOrWhitespace(errorMessage);
+
+  @override
+  Logger get loggerImpl => _log;
 
   bool get visible => _visible;
 
   @Input()
   set visible(bool value) {
     reset();
-    if(value) {
+    if (value) {
       processing = false;
     }
     _visible = value;
@@ -70,12 +76,12 @@ class LoginFormComponent {
     errorMessage = "";
     processing = true;
     try {
-      await _auth.authenticate(userName,password);
+      await _auth.authenticate(userName, password);
       visible = false;
     } on Exception catch (e, st) {
-      errorMessage = e.toString();
-      _log.severe("logInClicked", e, st);
-    } catch (e) {
+      setErrorMessage(e,st);
+    } catch (e, st) {
+      _log.severe(e, st);
       final HttpRequest request = e.target;
       if (request != null) {
         String message;
@@ -84,8 +90,7 @@ class LoginFormComponent {
             message = "Login incorrect";
             break;
           default:
-            message =
-            "${request.status} - ${request.statusText} - ${request
+            message = "${request.status} - ${request.statusText} - ${request
                 .responseText}";
             break;
         }

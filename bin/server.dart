@@ -67,8 +67,8 @@ Future<Option<Principal>> _authenticateUser(
     return new None<Principal>();
 }
 
-Future<Option<Principal>> _getUser(String userName) async {
-  final Option<User> user = await data_source.users.getByUsername(userName);
+Future<Option<Principal>> _getUser(String id) async {
+  final Option<User> user = await data_source.users.getById(id);
   if (user.isEmpty) return new None<Principal>();
   return new Some<Principal>(new Principal(user.get().id));
 }

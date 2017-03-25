@@ -15,7 +15,7 @@ class ImportModel extends AModel {
   Future<Map<String, String>> getAvailableImportProviders() async {
     await validateReadPrivilegeRequirement();
 
-    Map<String, String> output = new Map<String, String>();
+    final Map<String, String> output = new Map<String, String>();
 
     output[ImportProvider.AMAZON] = "Amazon";
     output[ImportProvider.AMAZON] = "Amazon";

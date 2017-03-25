@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'dart:html';
-
+import 'package:dartalog/client/routes.dart';
 import 'package:angular2/angular2.dart';
 import 'package:angular2_components/angular2_components.dart';
 import 'package:dartalog/client/services/services.dart';
 import 'package:dartalog/tools.dart';
 import 'package:logging/logging.dart';
-
+import 'package:angular2/router.dart';
 import '../src/a_error_thing.dart';
-
+import 'package:dartalog/global.dart';
 @Component(
     selector: 'login-form',
     styleUrls: const ["../shared.css"],
@@ -49,11 +49,12 @@ class LoginFormComponent extends AErrorThing {
   @Output()
   EventEmitter<bool> visibleChange = new EventEmitter<bool>();
 
+  final Router _router;
   final AuthenticationService _auth;
 
   bool processing = false;
 
-  LoginFormComponent(this._auth);
+  LoginFormComponent(this._auth, this._router);
 
   bool get hasErrorMessage => StringTools.isNotNullOrWhitespace(errorMessage);
 
@@ -88,6 +89,9 @@ class LoginFormComponent extends AErrorThing {
         switch (request.status) {
           case 401:
             message = "Login incorrect";
+            break;
+          case HTTP_STATUS_SERVER_NEEDS_SETUP:
+            await _router.navigate([setupRoute.name]);
             break;
           default:
             message = "${request.status} - ${request.statusText} - ${request

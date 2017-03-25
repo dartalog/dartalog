@@ -24,3 +24,4 @@ pubspec.lock
 images/
 server.options
 server.snapshot
+setup.lock

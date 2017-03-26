@@ -43,14 +43,14 @@
                     <form #manualForm="ngForm">
                     <select [(ngModel)]="selectedItemTypeId">
                         <option></option>
-                        <option *ngFor="let t of itemTypes" [ngValue]="t.id">
+                        <option *ngFor="let t of itemTypes" [ngValue]="t.uuid">
                             {{t.name}}
                         </option>
                     </select>
                     <span>
                     <select [(ngModel)]="selectedCollectionId">
                         <option></option>
-                        <option *ngFor="let t of itemTypes" [ngValue]="t.id">
+                        <option *ngFor="let t of itemTypes" [ngValue]="t.uuid">
                             {{t.name}}
                         </option>
                     </select>
@@ -64,13 +64,13 @@
 
                         <div *ngFor="let f of fields">
                             <material-input *ngIf="f.isTypeString" [(ngModel)]="f.value"
-                                            floatingLabel ngControl="{{f.id}}"
+                                            floatingLabel ngControl="{{f.uuid}}"
                                             label="{{f.name}}"></material-input>
 
                             <div class="layout horizontal" *ngIf="f.isTypeImage">
-                                <input type="file" (change)="fileUploadChanged($event, f.id)" style="display:none"/>
+                                <input type="file" (change)="fileUploadChanged($event, f.uuid)" style="display:none"/>
                                 <material-input *ngIf="f.type=='string'" [(ngModel)]="modef.value"
-                                                floatingLabel ngControl="{{f.id}}"
+                                                floatingLabel ngControl="{{f.uuid}}"
                                                 label="{{f.name}}"></material-input>
 
                                 <iron-image src="{{f.displayImageUrl}}" style="width:100px; height:100px;"

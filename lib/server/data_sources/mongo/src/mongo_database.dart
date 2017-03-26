@@ -7,6 +7,7 @@ import 'package:mongo_dart/mongo_dart.dart';
 
 import 'a_mongo_id_data_source.dart';
 import 'mongo_db_connection_pool.dart';
+import 'constants.dart';
 
 class MongoDatabase {
   static final Logger _log = new Logger('_MongoDatabase');
@@ -16,7 +17,6 @@ class MongoDatabase {
   static const String _itemsCollection = "items";
   static const String _fieldsCollection = "fields";
   static const String _itemTypesCollection = "itemTypes";
-  static const String _historyCollection = "itemCopyHistory";
   static const String _collectionsCollection = "collections";
   static const String _usersCollection = "users";
 
@@ -34,63 +34,57 @@ class MongoDatabase {
     }
   }
 
-  Map createRedirectMap(String oldId, String newId) {
-    return {"id": oldId, redirectEntryName: newId};
+  Map createRedirectMap(String oldUuid, String newUuid) {
+    return {"uuid": oldUuid, redirectEntryName: newUuid};
   }
 
-  Future<DbCollection> getCollectionsCollection() async {
+  Future<DbCollection> getUuidCollection(String collectionName) async {
     _checkConnection();
+    await con.conn.createIndex(collectionName,
+        keys: {uuidField: 1}, name: "UuidIndex", unique: true);
+    return con.conn.collection(collectionName);
+  }
 
-    final DbCollection output = con.conn.collection(_collectionsCollection);
+  Future<DbCollection> getHumanReadableCollection(String collectionName) async {
+    final DbCollection output = await getUuidCollection(collectionName);
+    await con.conn.createIndex(collectionName,
+        keys: {readableIdField: 1}, name: "ReadableIdIndex", unique: true);
     return output;
+  }
+
+
+  Future<DbCollection> getCollectionsCollection() async {
+    return await getHumanReadableCollection(_collectionsCollection);
   }
 
   Future<DbCollection> getFieldsCollection() async {
-    _checkConnection();
-
-    final DbCollection output = con.conn.collection(_fieldsCollection);
-    return output;
-  }
-
-  Future<DbCollection> getItemCopyHistoryCollection() async {
-    _checkConnection();
-
-    final DbCollection output = con.conn.collection(_historyCollection);
-    await con.conn.createIndex(_historyCollection,
-        keys: {"itemId": 1, "copy": 1}, name: "ItemIdIndex");
-    return output;
+    return await getHumanReadableCollection(_fieldsCollection);
   }
 
   Future<DbCollection> getItemsCollection() async {
-    _checkConnection();
-    final DbCollection output = con.conn.collection(_itemsCollection);
+    final DbCollection output = await getHumanReadableCollection(_itemsCollection);
     await con.conn.createIndex(_itemsCollection,
         keys: {r"$**": "text"}, name: "TextIndex");
     await con.conn.createIndex(_itemsCollection,
-        keys: {idField: 1, "copies.copy": 1}, unique: true, name: "CopyIndex");
-    await con.conn.createIndex(_itemsCollection,
-        key: "copies.uniqueId",
+        key: itemCopyUniqueIdPath,
         unique: true,
         sparse: true,
         name: "UniqueIdIndex");
+    await con.conn.createIndex(_itemsCollection,
+        key: itemCopyUuidPath,
+        unique: true,
+        sparse: true,
+        name: "ItemCopyUuidIndex");
     return output;
   }
 
   Future<DbCollection> getItemTypesCollection() async {
-    _checkConnection();
-    final DbCollection output = con.conn.collection(_itemTypesCollection);
-    return output;
+    return await getHumanReadableCollection(_itemTypesCollection);
   }
 
   Future<DbCollection> getSettingsCollection() async {
     _checkConnection();
     final DbCollection output = con.conn.collection(_settingsCollection);
-    return output;
-  }
-
-  Future<DbCollection> getSetupCollection() async {
-    _checkConnection();
-    final DbCollection output = con.conn.collection("setup");
     return output;
   }
 
@@ -101,10 +95,9 @@ class MongoDatabase {
   }
 
   Future<DbCollection> getUsersCollection() async {
-    _checkConnection();
-    final DbCollection output = con.conn.collection(_usersCollection);
+    final DbCollection output = await getUuidCollection(_usersCollection);
     await con.conn.createIndex(_usersCollection,
-        keys: {"id": "text", "name": "text", "idNumber": "text"},
+        keys: {"id": "text", "name": "text"},
         name: "TextIndex");
     return output;
   }

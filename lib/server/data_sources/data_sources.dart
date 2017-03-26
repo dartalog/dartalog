@@ -8,7 +8,7 @@ final AItemDataSource items = new MongoItemDataSource();
 
 final AFieldModel fields = new MongoFieldDataSource();
 
-final AItemTypeModel itemTypes = new MongoItemTypeDataSource();
+final AItemTypeDataSource itemTypes = new MongoItemTypeDataSource();
 
 //final PresetModel presets = new PresetModel();
 final AUserDataSource users = new MongoUserDataSource();

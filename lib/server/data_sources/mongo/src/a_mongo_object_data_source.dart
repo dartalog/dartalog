@@ -41,7 +41,6 @@ abstract class AMongoObjectDataSource<T> extends AMongoDataSource {
   @override
   Future<DbCollection> getCollection(MongoDatabase con);
 
-  @protected
   Future<Option<T>> getForOneFromDb(SelectorBuilder selector) async {
     final List<T> results = await getFromDb(selector.limit(1));
     if (results.length == 0) {
@@ -50,7 +49,6 @@ abstract class AMongoObjectDataSource<T> extends AMongoDataSource {
     return new Some<T>(results.first);
   }
 
-  @protected
   Future<List<T>> getFromDb(dynamic selector) async {
     final List<dynamic> results = await genericFind(selector);
     final List<T> output = new List<T>();

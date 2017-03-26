@@ -18,9 +18,9 @@ import 'package:angular2/router.dart';
 
 @Component(
     selector: 'item-add-page',
-    directives: const [FORM_DIRECTIVES, materialDirectives, commonControls],
-    providers: const [FORM_PROVIDERS, materialProviders],
-    styleUrls: const ["../../shared.css"],
+    directives: const <dynamic>[FORM_DIRECTIVES, materialDirectives, commonControls],
+    providers: const <dynamic>[FORM_PROVIDERS, materialProviders],
+    styleUrls: const <String>["../../shared.css"],
     templateUrl: 'item_add_page.html')
 class ItemAddPage extends APage implements OnInit, OnDestroy {
   static final Logger _log = new Logger("ItemAddPage");
@@ -100,6 +100,7 @@ class ItemAddPage extends APage implements OnInit, OnDestroy {
       reader.readAsArrayBuffer(file);
       await for (dynamic fileEvent in reader.onLoad) {
         try {
+          _log.fine(fileEvent);
           field.mediaMessage = new MediaMessage();
           field.mediaMessage.bytes = reader.result;
           //List<String> parms = reader.result.toString().split(";");
@@ -226,10 +227,10 @@ class ItemAddPage extends APage implements OnInit, OnDestroy {
         if (f.type == "image") {
           if (f.mediaMessage != null) {
             files.add(f.mediaMessage);
-            newItem.values[f.field.id] = "$fileUploadPrefix${files.length - 1}";
+            newItem.values[f.field.uuid] = "$fileUploadPrefix${files.length - 1}";
           }
         } else {
-          newItem.values[f.field.id] = f.value;
+          newItem.values[f.field.uuid] = f.value;
         }
       }
 

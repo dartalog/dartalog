@@ -1,12 +1,11 @@
 import 'package:dartalog/global.dart';
 import 'package:rpc/rpc.dart';
 
-import 'a_id_data.dart';
+import 'a_human_friendly_data.dart';
 
 @ApiMessage(includeSuper: true)
-class User extends AIdData {
+class User extends AHumanFriendlyData {
   String password;
-  String idNumber = "";
 
   String type;
   User();
@@ -23,8 +22,9 @@ class User extends AIdData {
   }
 
   void _copy(dynamic from, dynamic to) {
-    to.id = from.id;
+    to.uuid = from.uuid;
     to.name = from.name;
+    to.readableId = from.readableId;
     to.type = from.type;
     if (from.password == null)
       to.password = "";

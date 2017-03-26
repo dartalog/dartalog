@@ -7,7 +7,7 @@ import 'a_model.dart';
 class ImportModel extends AModel {
   static final Logger _log = new Logger('ImportModel');
   @override
-  Logger get childLogger => _log;
+  Logger get loggerImpl => _log;
 
   @override
   String get defaultReadPrivilegeRequirement => UserPrivilege.curator;

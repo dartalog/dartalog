@@ -1855,10 +1855,10 @@ class BulkItemActionRequest {
 class Collection {
   core.List<core.String> browsers;
   core.List<core.String> curators;
-  core.String id;
   core.String name;
   core.bool publiclyBrowsable;
   core.String readableId;
+  core.String uuid;
 
   Collection();
 
@@ -1869,9 +1869,6 @@ class Collection {
     if (_json.containsKey("curators")) {
       curators = _json["curators"];
     }
-    if (_json.containsKey("id")) {
-      id = _json["id"];
-    }
     if (_json.containsKey("name")) {
       name = _json["name"];
     }
@@ -1880,6 +1877,9 @@ class Collection {
     }
     if (_json.containsKey("readableId")) {
       readableId = _json["readableId"];
+    }
+    if (_json.containsKey("uuid")) {
+      uuid = _json["uuid"];
     }
   }
 
@@ -1891,9 +1891,6 @@ class Collection {
     if (curators != null) {
       _json["curators"] = curators;
     }
-    if (id != null) {
-      _json["id"] = id;
-    }
     if (name != null) {
       _json["name"] = name;
     }
@@ -1902,6 +1899,9 @@ class Collection {
     }
     if (readableId != null) {
       _json["readableId"] = readableId;
+    }
+    if (uuid != null) {
+      _json["uuid"] = uuid;
     }
     return _json;
   }
@@ -1950,20 +1950,17 @@ class CreateItemRequest {
 
 class Field {
   core.String format;
-  core.String id;
   core.String name;
   core.String readableId;
   core.String type;
   core.bool unique;
+  core.String uuid;
 
   Field();
 
   Field.fromJson(core.Map _json) {
     if (_json.containsKey("format")) {
       format = _json["format"];
-    }
-    if (_json.containsKey("id")) {
-      id = _json["id"];
     }
     if (_json.containsKey("name")) {
       name = _json["name"];
@@ -1977,15 +1974,15 @@ class Field {
     if (_json.containsKey("unique")) {
       unique = _json["unique"];
     }
+    if (_json.containsKey("uuid")) {
+      uuid = _json["uuid"];
+    }
   }
 
   core.Map toJson() {
     var _json = new core.Map();
     if (format != null) {
       _json["format"] = format;
-    }
-    if (id != null) {
-      _json["id"] = id;
     }
     if (name != null) {
       _json["name"] = name;
@@ -1999,39 +1996,42 @@ class Field {
     if (unique != null) {
       _json["unique"] = unique;
     }
+    if (uuid != null) {
+      _json["uuid"] = uuid;
+    }
     return _json;
   }
 }
 
 class IdNamePair {
-  core.String id;
   core.String name;
   core.String readableId;
+  core.String uuid;
 
   IdNamePair();
 
   IdNamePair.fromJson(core.Map _json) {
-    if (_json.containsKey("id")) {
-      id = _json["id"];
-    }
     if (_json.containsKey("name")) {
       name = _json["name"];
     }
     if (_json.containsKey("readableId")) {
       readableId = _json["readableId"];
     }
+    if (_json.containsKey("uuid")) {
+      uuid = _json["uuid"];
+    }
   }
 
   core.Map toJson() {
     var _json = new core.Map();
-    if (id != null) {
-      _json["id"] = id;
-    }
     if (name != null) {
       _json["name"] = name;
     }
     if (readableId != null) {
       _json["readableId"] = readableId;
+    }
+    if (uuid != null) {
+      _json["uuid"] = uuid;
     }
     return _json;
   }
@@ -2132,11 +2132,11 @@ class Item {
   core.List<ItemCopy> copies;
   core.DateTime dateAdded;
   core.DateTime dateUpdated;
-  core.String id;
   core.String name;
   core.String readableId;
   ItemType type;
   core.String typeId;
+  core.String uuid;
   core.Map<core.String, core.String> values;
 
   Item();
@@ -2157,9 +2157,6 @@ class Item {
     if (_json.containsKey("dateUpdated")) {
       dateUpdated = core.DateTime.parse(_json["dateUpdated"]);
     }
-    if (_json.containsKey("id")) {
-      id = _json["id"];
-    }
     if (_json.containsKey("name")) {
       name = _json["name"];
     }
@@ -2171,6 +2168,9 @@ class Item {
     }
     if (_json.containsKey("typeId")) {
       typeId = _json["typeId"];
+    }
+    if (_json.containsKey("uuid")) {
+      uuid = _json["uuid"];
     }
     if (_json.containsKey("values")) {
       values = _json["values"];
@@ -2194,9 +2194,6 @@ class Item {
     if (dateUpdated != null) {
       _json["dateUpdated"] = (dateUpdated).toIso8601String();
     }
-    if (id != null) {
-      _json["id"] = id;
-    }
     if (name != null) {
       _json["name"] = name;
     }
@@ -2208,6 +2205,9 @@ class Item {
     }
     if (typeId != null) {
       _json["typeId"] = typeId;
+    }
+    if (uuid != null) {
+      _json["uuid"] = uuid;
     }
     if (values != null) {
       _json["values"] = values;
@@ -2404,9 +2404,9 @@ class ItemSummary {
 class ItemType {
   core.List<core.String> fieldIds;
   core.List<Field> fields;
-  core.String id;
   core.String name;
   core.String readableId;
+  core.String uuid;
 
   ItemType();
 
@@ -2417,14 +2417,14 @@ class ItemType {
     if (_json.containsKey("fields")) {
       fields = _json["fields"].map((value) => new Field.fromJson(value)).toList();
     }
-    if (_json.containsKey("id")) {
-      id = _json["id"];
-    }
     if (_json.containsKey("name")) {
       name = _json["name"];
     }
     if (_json.containsKey("readableId")) {
       readableId = _json["readableId"];
+    }
+    if (_json.containsKey("uuid")) {
+      uuid = _json["uuid"];
     }
   }
 
@@ -2436,14 +2436,14 @@ class ItemType {
     if (fields != null) {
       _json["fields"] = fields.map((value) => (value).toJson()).toList();
     }
-    if (id != null) {
-      _json["id"] = id;
-    }
     if (name != null) {
       _json["name"] = name;
     }
     if (readableId != null) {
       _json["readableId"] = readableId;
+    }
+    if (uuid != null) {
+      _json["uuid"] = uuid;
     }
     return _json;
   }
@@ -2919,19 +2919,16 @@ class UpdateItemRequest {
 }
 
 class User {
-  core.String id;
   core.String idNumber;
   core.String name;
   core.String password;
   core.String readableId;
   core.String type;
+  core.String uuid;
 
   User();
 
   User.fromJson(core.Map _json) {
-    if (_json.containsKey("id")) {
-      id = _json["id"];
-    }
     if (_json.containsKey("idNumber")) {
       idNumber = _json["idNumber"];
     }
@@ -2947,13 +2944,13 @@ class User {
     if (_json.containsKey("type")) {
       type = _json["type"];
     }
+    if (_json.containsKey("uuid")) {
+      uuid = _json["uuid"];
+    }
   }
 
   core.Map toJson() {
     var _json = new core.Map();
-    if (id != null) {
-      _json["id"] = id;
-    }
     if (idNumber != null) {
       _json["idNumber"] = idNumber;
     }
@@ -2968,6 +2965,9 @@ class User {
     }
     if (type != null) {
       _json["type"] = type;
+    }
+    if (uuid != null) {
+      _json["uuid"] = uuid;
     }
     return _json;
   }

@@ -9,7 +9,7 @@ import 'a_id_name_based_model.dart';
 class ItemTypeModel extends AIdNameBasedModel<ItemType> {
   static final Logger _log = new Logger('ItemTypeModel');
   @override
-  Logger get childLogger => _log;
+  Logger get loggerImpl => _log;
 
   @override
   AIdNameBasedDataSource<ItemType> get dataSource => data_sources.itemTypes;

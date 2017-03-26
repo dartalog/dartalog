@@ -8,10 +8,10 @@ import 'a_id_name_based_model.dart';
 import '../model.dart' as model;
 
 class CollectionsModel extends AIdNameBasedModel<Collection> {
-  // TODO: Currently denies admins the ability to save collections that they are not curators for
+  // TODO: Currently denies admins the ability to save collections that they are not curators for - this may be fixed
   static final Logger _log = new Logger('CollectionsModel');
   @override
-  Logger get childLogger => _log;
+  Logger get loggerImpl => _log;
 
   @override
   ACollectionDataSource get dataSource => data_sources.itemCollections;
@@ -19,29 +19,28 @@ class CollectionsModel extends AIdNameBasedModel<Collection> {
   @override
   String get defaultPrivilegeRequirement => UserPrivilege.curator;
 
-  Future<Null> _verifyUserIsCurator(String collectionId) async {
+  Future<Null> _verifyUserIsCurator(String collectionUuid) async {
     if(await userHasPrivilege(UserPrivilege.admin)) {
       return;
     }
     await validateDefaultPrivilegeRequirement();
-    final Collection col = await this.getById(collectionId);
+    final Collection col = await this.getByUuid(collectionUuid);
     if (!col.curators.contains(this.currentUserId))
       throw new ForbiddenException.withMessage(
           "You are not a curator for collection \"${col.name}\"");
   }
 
   @override
-  Future<String> delete(String id) async {
-    final String normId = await super.delete(id);
-    await data_sources.itemCopies.deleteByCollection(normId);
-    return normId;
+  Future<String> delete(String uuid) async {
+    await data_sources.itemCopies.deleteByCollection(uuid);
+    return uuid;
   }
 
   @override
-  Future<Null> validateDeletePrivileges(String id) => _verifyUserIsCurator(id);
+  Future<Null> validateDeletePrivileges(String uuid) => _verifyUserIsCurator(uuid);
 
   @override
-  Future<Null> validateUpdatePrivileges(String id) => _verifyUserIsCurator(id);
+  Future<Null> validateUpdatePrivileges(String uuid) => _verifyUserIsCurator(uuid);
 
   @override
   Future<List<Collection>> getAll() async {

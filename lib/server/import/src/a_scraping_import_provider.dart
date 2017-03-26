@@ -30,7 +30,7 @@ abstract class AScrapingImportProvider extends AImportProvider {
 
     Document doc = parse(contents);
 
-    List itemTypes = (await data_sources.itemTypes.getAllIdsAndNames()).idList;
+    List itemTypes = (await data_sources.itemTypes.getAllIdsAndNames()).uuidList;
 
     _log.fine("Attempting to determine item type");
     for (ScrapingImportCriteria criteria in itemTypeCriteria) {
@@ -41,8 +41,8 @@ abstract class AScrapingImportProvider extends AImportProvider {
           Option<ItemType> itemTypeOpt =
               await data_sources.itemTypes.getById(value);
           itemTypeOpt.map((ItemType itemType) {
-            _log.fine(("Item type determined to be ${itemType.id}"));
-            output.itemTypeId = itemType.id;
+            _log.fine(("Item type determined to be ${itemType.uuid}"));
+            output.itemTypeId = itemType.uuid;
             output.itemTypeName = itemType.name;
           });
 

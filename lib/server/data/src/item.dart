@@ -1,12 +1,12 @@
-import 'a_id_data.dart';
+import 'a_human_friendly_data.dart';
 import 'item_copy.dart';
 import 'item_type.dart';
 import 'package:option/option.dart';
 
 import 'package:rpc/rpc.dart';
 @ApiMessage(includeSuper: true)
-class Item extends AIdData {
-  String typeId;
+class Item extends AHumanFriendlyData {
+  String typeUuid;
 
   DateTime dateAdded;
   DateTime dateUpdated;

@@ -8,7 +8,7 @@ import 'package:rpc/rpc.dart';
 
 import 'a_resource.dart';
 
-abstract class AIdResource<T extends AIdData> extends AResource {
+abstract class AIdResource<T extends AHumanFriendlyData> extends AResource {
   model.AIdNameBasedModel<T> get idModel;
 
   Future<IdResponse> create(T t);

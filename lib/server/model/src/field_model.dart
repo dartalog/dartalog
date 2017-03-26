@@ -10,7 +10,7 @@ import 'a_id_name_based_model.dart';
 class FieldModel extends AIdNameBasedModel<Field> {
   static final Logger _log = new Logger('FieldModel');
   @override
-  Logger get childLogger => _log;
+  Logger get loggerImpl => _log;
   @override
   AIdNameBasedDataSource<Field> get dataSource => data_sources.fields;
 

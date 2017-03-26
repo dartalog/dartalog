@@ -16,7 +16,7 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
   String get defaultReadPrivilegeRequirement => UserPrivilege.none;
 
   @override
-  Logger get childLogger => _log;
+  Logger get loggerImpl => _log;
 
   Future<ItemCopyId> create(String itemId, ItemCopy itemCopy) async {
     await validateCreatePrivileges();
@@ -82,7 +82,7 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
         includeItemSummary: includeItemSummary,
         includeCollection: includeCollection);
 
-    final IdNameList<Collection> visibleCollection =
+    final UuidDataList<Collection> visibleCollection =
         await data_sources.itemCollections.getVisibleCollections(currentUserId);
     if (!visibleCollection.containsId(itemCopy.collectionId)) {
       throw new ForbiddenException();
@@ -98,7 +98,7 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
         includeItemSummary: includeItemSummary,
         includeCollection: includeCollection);
 
-    final IdNameList<Collection> visibleCollection =
+    final UuidDataList<Collection> visibleCollection =
     await data_sources.itemCollections.getVisibleCollections(currentUserId);
     if (!visibleCollection.containsId(itemCopy.collectionId)) {
       throw new ForbiddenException();
@@ -143,7 +143,7 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
     final List<ItemCopy> copies = await data_sources.itemCopies.getAll(itemCopyIds);
 
     await ItemActionException
-        .PerformValidation((Map<ItemCopyId, String> itemActionErrors) async {
+        .performValidation((Map<ItemCopyId, String> itemActionErrors) async {
       for (ItemCopyId itemCopyId in itemCopyIds) {
         ItemCopy itemCopy;
         for (ItemCopy ic in copies) {
@@ -197,7 +197,7 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
     final List<ItemCopy> copies = await data_sources.itemCopies.getAll(itemCopyIds);
 
     await TransferException
-        .PerformValidation((Map<ItemCopyId, String> transferErrors) async {
+        .performValidation((Map<ItemCopyId, String> transferErrors) async {
       for (ItemCopyId itemCopyId in itemCopyIds) {
         ItemCopy itemCopy;
         for (ItemCopy ic in copies) {
@@ -264,7 +264,7 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
   Future<Null> _setAdditionalFieldsOnList(List<ItemCopy> data, String itemId,
       {bool includeCollection: false, bool includeItemSummary: false}) async {
 
-    final IdNameList<Collection> foundCollections = new IdNameList<Collection>();
+    final UuidDataList<Collection> foundCollections = new UuidDataList<Collection>();
 
     ItemSummary itemSummary;
     if (includeItemSummary) {

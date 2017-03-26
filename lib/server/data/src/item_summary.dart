@@ -1,9 +1,9 @@
 import 'item.dart';
 
 class ItemSummary {
-  String id = "";
+  String uuid = "";
   String name = "";
-  String typeId = "";
+  String typeUuid = "";
   String thumbnail = "";
 
   ItemSummary();
@@ -13,9 +13,9 @@ class ItemSummary {
   }
 
   ItemSummary.copyItem(Item o, {String thumbnailField: "front_cover"}) {
-    this.id = o.id;
+    this.uuid = o.uuid;
     this.name = o.name;
-    this.typeId = o.typeId;
+    this.typeUuid= o.typeUuid;
     if (o.values == null) throw new Exception("Null value object");
 
     if (o.values.containsKey(thumbnailField)) {
@@ -28,9 +28,9 @@ class ItemSummary {
   }
 
   void _copy(dynamic from, dynamic to) {
-    to.id = from.id;
+    to.uuid = from.uuid;
     to.name = from.name;
-    to.typeId = from.typeId;
+    to.typeUuid = from.typeUuid;
     to.thumbnail = from.thumbnail;
   }
 

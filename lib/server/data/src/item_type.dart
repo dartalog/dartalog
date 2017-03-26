@@ -1,12 +1,17 @@
-import 'a_id_data.dart';
+import 'a_human_friendly_data.dart';
 
 import 'field.dart';
 import 'package:rpc/rpc.dart';
 @ApiMessage(includeSuper: true)
-class ItemType extends AIdData {
-  List<String> fieldIds = new List<String>();
+class ItemType extends AHumanFriendlyData {
+  List<String> fieldUuids = new List<String>();
 
   List<Field> fields;
 
   ItemType();
+
+  ItemType.withValues(String name, String readableId, this.fieldUuids,
+      {String id: ""})
+      : super.withValues(name, readableId, uuid: id);
+
 }

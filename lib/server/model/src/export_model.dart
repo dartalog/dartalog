@@ -11,16 +11,16 @@ import 'package:uuid/uuid.dart';
 class ExportModel extends AModel {
   static final Logger _log = new Logger('ExportModel');
   @override
-  Logger get childLogger => _log;
+  Logger get loggerImpl => _log;
 
   @override
   String get defaultReadPrivilegeRequirement => UserPrivilege.admin;
 
   // This is a temporary implementation to insert UUIds where there where none before
-  void fixIds(AIdData data) {
+  void fixIds(AHumanFriendlyData data) {
     if(StringTools.isNullOrWhitespace(data.readableId)) {
-      data.readableId = data.id;
-      data.id = generateUuid();
+      data.readableId = data.uuid;
+      data.uuid = generateUuid();
     }
   }
 

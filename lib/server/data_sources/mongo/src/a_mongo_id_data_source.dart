@@ -9,13 +9,12 @@ import 'a_mongo_object_data_source.dart';
 import 'package:meta/meta.dart';
 
 export 'a_mongo_object_data_source.dart';
+import 'a_mongo_uuid_based_data_source.dart';
+import 'constants.dart';
 
-const String idField = "_id";
-const String nameField = "name";
-const String readableIdField = "readableId";
 
-abstract class AMongoIdDataSource<T extends AIdData>
-    extends AMongoObjectDataSource<T> with AIdNameBasedDataSource<T> {
+abstract class AMongoIdDataSource<T extends AHumanFriendlyData>
+    extends AMongoUuidBasedDataSource<T> with AIdNameBasedDataSource<T> {
   dynamic prepareId(String id) {
     if(isUuid(id)) {
       //bsonObjectFromTypeByte(3);
@@ -27,32 +26,25 @@ abstract class AMongoIdDataSource<T extends AIdData>
   }
 
   @override
-  Future<Null> deleteByID(String id) => deleteFromDb(where.eq(idField, prepareId(id)));
-
-  @override
-  Future<bool> existsByID(String id) => super.exists(where.eq(idField, prepareId(id)));
-
-  @override
   Future<bool> existsByReadableID(String id) => super.exists(where.eq(readableIdField, id));
 
   @override
-  Future<IdNameList<T>> getAll({String sortField: idField}) =>
-      getIdNameListFromDb(where.sortBy(sortField));
-
-  Future<PaginatedIdNameData<T>> getPaginated(
-          {String sortField: idField,
-          int offset: 0,
-          int limit: PAGINATED_DATA_LIMIT}) =>
-      getPaginatedIdNameListFromDb(where.sortBy(sortField),
-          offset: offset, limit: limit);
+  Future<UuidDataList<T>> getAll({String sortField: null}) =>
+        super.getAll(sortField: sortField ?? readableIdField);
 
   @override
-  Future<IdNameList<IdNamePair>> getAllIdsAndNames(
-          {String sortField: idField}) =>
+  Future<PaginatedUuidData<T>> getPaginated(
+          {String sortField: null,
+          int offset: 0,
+          int limit: PAGINATED_DATA_LIMIT}) =>
+  super.getPaginated(sortField: sortField ?? readableIdField, offset: offset, limit: limit);
+
+  Future<UuidDataList<IdNamePair>> getAllIdsAndNames(
+          {String sortField: readableIdField}) =>
       getIdsAndNames(sortField: sortField);
 
-  Future<IdNameList<IdNamePair>> getIdsAndNames(
-      {SelectorBuilder selector, String sortField: idField}) async {
+  Future<UuidDataList<IdNamePair>> getIdsAndNames(
+      {SelectorBuilder selector, String sortField: readableIdField}) async {
     return await collectionWrapper((DbCollection collection) async {
       SelectorBuilder builder = selector;
       if (selector == null) builder = where;
@@ -61,19 +53,19 @@ abstract class AMongoIdDataSource<T extends AIdData>
 
       final List<dynamic> results = await collection.find(builder).toList();
 
-      final IdNameList<IdNamePair> output = new IdNameList<IdNamePair>();
+      final UuidDataList<IdNamePair> output = new UuidDataList<IdNamePair>();
 
       for (Map<String, dynamic> result in results) {
-        output.add(new IdNamePair.withValues(result[idField], result[nameField], result[readableIdField]));
+        output.add(new IdNamePair.withValues(result[uuidField], result[nameField], result[readableIdField]));
       }
 
       return output;
     });
   }
 
-  Future<PaginatedIdNameData<IdNamePair>> getPaginatedIdsAndNames(
+  Future<PaginatedUuidData<IdNamePair>> getPaginatedIdsAndNames(
       {SelectorBuilder selector,
-      String sortField: idField,
+      String sortField: uuidField,
       int offset: 0,
       int limit: 10}) async {
     return await collectionWrapper((DbCollection collection) async {
@@ -85,14 +77,14 @@ abstract class AMongoIdDataSource<T extends AIdData>
           .find(selector.sortBy(sortField).limit(limit).skip(offset))
           .toList();
 
-      final PaginatedIdNameData<IdNamePair> output =
-          new PaginatedIdNameData<IdNamePair>();
+      final PaginatedUuidData<IdNamePair> output =
+          new PaginatedUuidData<IdNamePair>();
       output.startIndex = offset;
       output.limit = limit;
       output.totalCount = count;
 
       for (Map<String, dynamic> result in results) {
-        output.data.add(new IdNamePair.withValues(result[idField], result[nameField], result[readableIdField]));
+        output.data.add(new IdNamePair.withValues(result[uuidField], result[nameField], result[readableIdField]));
       }
 
       return output;
@@ -100,65 +92,21 @@ abstract class AMongoIdDataSource<T extends AIdData>
   }
 
   @override
-  Future<Option<T>> getById(String id) =>
-      getForOneFromDb(where.eq(idField, prepareId(id)));
-
-  @override
   Future<Option<T>> getByReadableId(String id) =>
       getForOneFromDb(where.eq(readableIdField, id));
 
-  @override
-  Future<String> write(T object, [String id = null]) async {
-    if (!StringTools.isNullOrWhitespace(id)) {
-      await updateToDb(where.eq(idField, prepareId(id)), object);
-    } else {
-      await insertIntoDb(object);
-    }
-    return object.id;
-  }
 
   @override
   void updateMap(T item, Map<String, dynamic> data) {
-    data[idField] = item.id;
+    super.updateMap(item, data);
     data[nameField] = item.name;
     data[readableIdField] = item.readableId;
   }
 
   void setIdDataFields(T item, Map<String, dynamic> data) {
-    item.id = data[idField];
+    AMongoUuidBasedDataSource.setUuidForData<T>(item, data);
     item.name = data[nameField];
     item.readableId = data[readableIdField];
   }
 
-  @protected
-  Future<PaginatedIdNameData<T>> getPaginatedIdNameListFromDb(
-          SelectorBuilder selector,
-          {int offset: 0,
-          int limit: PAGINATED_DATA_LIMIT,
-          String sortField: idField}) async =>
-      new PaginatedIdNameData<T>.copyPaginatedData(await getPaginatedFromDb(
-          selector,
-          offset: offset,
-          limit: limit,
-          sortField: sortField));
-
-  @override
-  Future<PaginatedIdNameData<T>> searchPaginated(String query,
-          {SelectorBuilder selector,
-          int offset: 0,
-          int limit: PAGINATED_DATA_LIMIT}) async =>
-      new PaginatedIdNameData<T>.copyPaginatedData(
-          await super.searchPaginated(query, offset: offset, limit: limit));
-
-  @protected
-  Future<IdNameList<T>> getIdNameListFromDb(dynamic selector) async =>
-      new IdNameList<T>.copy(await getFromDb(selector));
-
-  @override
-  Future<IdNameList<T>> search(String query,
-      {SelectorBuilder selector, String sortBy}) async {
-    final List<dynamic> data =
-        await super.searchAndSort(query, selector: selector, sortBy: sortBy);
-    return new IdNameList<T>.copy(data);
-  }
 }

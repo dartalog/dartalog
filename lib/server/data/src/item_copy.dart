@@ -1,12 +1,12 @@
-import 'a_id_data.dart';
+import 'a_human_friendly_data.dart';
 import 'collection.dart';
 import 'item_summary.dart';
 import 'dart:convert';
+import 'a_uuid_data.dart';
 
-class ItemCopy extends AData {
-  String itemId = "";
-  int copy = 0;
-  String collectionId = "";
+class ItemCopy extends AUuidData {
+  String itemUuid = "";
+  String collectionUuid = "";
   String uniqueId = "";
   String status = "";
   String statusName = "";
@@ -20,10 +20,9 @@ class ItemCopy extends AData {
 
   ItemCopy();
 
-  ItemCopy.copyItem(ItemCopy o) {
-    this.itemId = o.itemId;
-    this.copy = o.copy;
-    this.collectionId = o.collectionId;
+  ItemCopy.copyItem(ItemCopy o): super.copy(o) {
+    this.itemUuid = o.itemUuid;
+    this.collectionUuid = o.collectionUuid;
     this.collection = o.collection;
     this.uniqueId = o.uniqueId;
     this.status = o.status;
@@ -35,7 +34,6 @@ class ItemCopy extends AData {
 
   @override
   String toString() {
-    return JSON
-        .encode(<String, dynamic>{"itemId": this.itemId, "copy": this.copy});
+    throw new Exception("Don't call this");
   }
 }

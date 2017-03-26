@@ -13,10 +13,10 @@ class ItemEditField {
   String _value = "";
   ItemEditField(this.field, [ImportResult result]) {
     if (result != null) {
-      this.value = getImportResultValue(result, field.id);
+      this.value = getImportResultValue(result, field.uuid);
     }
   }
-  String get id => field.id;
+  String get uuid => field.uuid;
   bool get isTypeImage => field.type == "image";
 
   bool get isTypeString => field.type == "string" || field.type == "hidden";

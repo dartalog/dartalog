@@ -6,14 +6,16 @@ import 'package:mongo_dart/mongo_dart.dart';
 import 'a_mongo_id_data_source.dart';
 
 class MongoItemTypeDataSource extends AMongoIdDataSource<ItemType>
-    with AItemTypeModel {
+    with AItemTypeDataSource {
   static final Logger _log = new Logger('MongoItemTypeDataSource');
 
+
+  static const String fieldUuidsField = "fieldUuids";
   @override
   ItemType createObject(Map data) {
     final ItemType output = new ItemType();
     setIdDataFields(output,data);
-    output.fieldIds = data["fieldIds"];
+    output.fieldUuids = data[fieldUuidsField];
     return output;
   }
 
@@ -24,6 +26,6 @@ class MongoItemTypeDataSource extends AMongoIdDataSource<ItemType>
   @override
   void updateMap(ItemType itemType, Map data) {
     updateMap(itemType, data);
-    data["fieldIds"] = itemType.fieldIds;
+    data[fieldUuidsField] = itemType.fieldUuids;
   }
 }

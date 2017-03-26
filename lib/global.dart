@@ -32,13 +32,15 @@ const String stringFieldTypeId = "string";
 const String dateFieldTypeId = "date";
 const String imageFieldTypeId = "image";
 const String hiddenFieldTypeId = "hidden";
+const String multiValueStringTypeID = "multiValueString";
 
 final Map<String, String> globalFieldTypes = {
   numericFieldTypeId: 'Numeric',
   stringFieldTypeId: 'String',
   dateFieldTypeId: 'Date',
   imageFieldTypeId: 'Image',
-  hiddenFieldTypeId: 'Hidden'
+  hiddenFieldTypeId: 'Hidden',
+  multiValueStringTypeID: "Multi-value String",
 };
 
 final RegExp FILE_UPLOAD_REGEX = new RegExp("$fileUploadPrefix(\\d+)");

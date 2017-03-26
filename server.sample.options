@@ -3,4 +3,4 @@ port=3278
 # this binds to IPv4 and IPv6 localhost addresses
 bind=::1
 # mongo options
-mongo=mongodb://192.168.1.10:27017/dartalog
+mongo=mongodb://127.0.0.1:27017/dartalog

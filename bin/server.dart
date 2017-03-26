@@ -56,13 +56,13 @@ Future<Option<Principal>> _authenticateUser(
   if (user.isEmpty) return new None<Principal>();
 
   final Option<String> hashOption =
-      await data_source.users.getPasswordHash(user.get().id);
+      await data_source.users.getPasswordHash(user.get().uuid);
 
   if (hashOption.isEmpty)
     throw new Exception("User does not have a password set");
 
   if (model.users.verifyPassword(hashOption.get(), password))
-    return new Some<Principal>(new Principal(user.get().id));
+    return new Some<Principal>(new Principal(user.get().uuid));
   else
     return new None<Principal>();
 }
@@ -70,7 +70,7 @@ Future<Option<Principal>> _authenticateUser(
 Future<Option<Principal>> _getUser(String id) async {
   final Option<User> user = await data_source.users.getById(id);
   if (user.isEmpty) return new None<Principal>();
-  return new Some<Principal>(new Principal(user.get().id));
+  return new Some<Principal>(new Principal(user.get().uuid));
 }
 
 dynamic _startServer() async {

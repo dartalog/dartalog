@@ -4,20 +4,23 @@ import 'package:dartalog/server/data/data.dart';
 import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'a_mongo_id_data_source.dart';
+import 'constants.dart';
 
 class MongoFieldDataSource extends AMongoIdDataSource<Field> with AFieldModel {
   static final Logger _log = new Logger('MongoFieldDataSource');
 
-  @override
-  Future<IdNameList<Field>> getByIds(List<String> ids) async {
-    _log.info("Getting all fields for IDs");
 
-    if (ids == null) return new List<Field>();
+
+  @override
+  Future<UuidDataList<Field>> getByUuids(List<String> uuids) async {
+    _log.info("Getting all fields for UUIDs");
+
+    if (uuids == null) return new List<Field>();
 
     SelectorBuilder query;
 
-    for (String id in ids) {
-      final SelectorBuilder sb = where.eq(idField, id);
+    for (String uuid in uuids) {
+      final SelectorBuilder sb = where.eq(uuidField, uuid);
       if (query == null) {
         query = sb;
       } else {
@@ -27,21 +30,25 @@ class MongoFieldDataSource extends AMongoIdDataSource<Field> with AFieldModel {
 
     final List results = await getFromDb(query);
 
-    final IdNameList<Field> output = new IdNameList<Field>.copy(results);
+    final UuidDataList<Field> output = new UuidDataList<Field>.copy(results);
 
-    output.sortBytList(ids);
+    output.sortBytList(uuids);
 
     return output;
   }
 
+  static const String uniqueField = "unique";
+  static const String typeField = "type";
+  static const String formatField = "format";
+
   @override
   Field createObject(Map data) {
-    Field output = new Field();
+    final Field output = new Field();
     setIdDataFields(output, data);
-    output.type = data["type"];
-    output.format = data["format"];
+    output.type = data[typeField];
+    output.format = data[formatField];
 
-    if (data.containsKey("unique")) output.unique = data["unique"];
+    if (data.containsKey(uniqueField)) output.unique = data[uniqueField];
     return output;
   }
 
@@ -52,8 +59,8 @@ class MongoFieldDataSource extends AMongoIdDataSource<Field> with AFieldModel {
   @override
   void updateMap(Field field, Map data) {
     updateMap(field, data);
-    data["type"] = field.type;
-    data["format"] = field.format;
-    data["unique"] = field.unique;
+    data[typeField] = field.type;
+    data[formatField] = field.format;
+    data[uniqueField] = field.unique;
   }
 }

@@ -37,7 +37,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
   AItemDataSource get dataSource => data_sources.items;
 
   @override
-  Logger get childLogger => _log;
+  Logger get loggerImpl => _log;
 
   @override
   String get defaultReadPrivilegeRequirement => UserPrivilege.none;
@@ -54,7 +54,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
 //    }
 //  }
 
-  Future<PaginatedIdNameData<IdNamePair>> getVisibleIdsAndNames(
+  Future<PaginatedUuidData<IdNamePair>> getVisibleIdsAndNames(
       {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
     if (page < 0) {
       throw new InvalidInputException("Page must be a non-negative number");
@@ -67,7 +67,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
         page: page, perPage: perPage);
   }
 
-  Future<PaginatedIdNameData<Item>> getVisible(
+  Future<PaginatedUuidData<Item>> getVisible(
       {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
     if (page < 0) {
       throw new InvalidInputException("Page must be a non-negative number");
@@ -80,7 +80,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
         page: page, perPage: perPage);
   }
 
-  Future<PaginatedIdNameData<Item>> searchVisible(String query,
+  Future<PaginatedUuidData<Item>> searchVisible(String query,
       {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
     if (page < 0) {
       throw new InvalidInputException("Page must be a non-negative number");
@@ -101,7 +101,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
       {String uniqueId, List<List<int>> files}) async {
     await validateCreatePrivileges();
 
-    item.id = generateUuid();
+    item.uuid = generateUuid();
     item.dateAdded = new DateTime.now();
     item.dateUpdated = new DateTime.now();
     if (!StringTools.isNullOrWhitespace(item.name))
@@ -201,12 +201,12 @@ class ItemModel extends AIdNameBasedModel<Item> {
 
     for (Field f in fields) {
       if (f.type != "image" ||
-          !item.values.containsKey(f.id) ||
-          StringTools.isNullOrWhitespace(item.values[f.id])) continue;
+          !item.values.containsKey(f.uuid) ||
+          StringTools.isNullOrWhitespace(item.values[f.uuid])) continue;
 
       //TODO: Old image cleanup
 
-      final String value = item.values[f.id];
+      final String value = item.values[f.uuid];
 
       if (value.startsWith(HOSTED_IMAGE_PREFIX)) {
         // This should indicate that the submitted image is one that is already hosted on the server, so nothing to do here
@@ -232,7 +232,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
         final int filePosition = int.parse(m.group(1));
         if (files.length - 1 < filePosition) {
           throw new InvalidInputException(
-              "Field ${f.id} specifies unprovided upload file at position $filePosition");
+              "Field ${f.uuid} specifies unprovided upload file at position $filePosition");
         }
         data = files[filePosition];
       } else {
@@ -255,7 +255,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
       final Digest hash = sha256.convert(data);
       final String hashString = hash.toString();
       filesToWrite[hashString] = data;
-      item.values[f.id] = "$HOSTED_IMAGE_PREFIX$hashString";
+      item.values[f.uuid] = "$HOSTED_IMAGE_PREFIX$hashString";
     }
 
     // Now that the above sections have completed gathering all the file services for saving, we save it all

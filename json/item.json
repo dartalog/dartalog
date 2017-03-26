@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "c9b2788cc57eefa60cec73a3c48d078e6cd8f217",
+ "etag": "22718aaf4e1af6af7324abedc479fc17c97413a0",
  "discoveryVersion": "v1",
  "id": "item:0.1",
  "name": "item",
@@ -27,7 +27,7 @@
     "format": {
      "type": "string"
     },
-    "id": {
+    "uuid": {
      "type": "string"
     },
     "name": {
@@ -61,7 +61,7 @@
    "id": "IdNamePair",
    "type": "object",
    "properties": {
-    "id": {
+    "uuid": {
      "type": "string"
     },
     "name": {
@@ -88,7 +88,7 @@
       "$ref": "Field"
      }
     },
-    "id": {
+    "uuid": {
      "type": "string"
     },
     "name": {
@@ -161,7 +161,7 @@
       "type": "string"
      }
     },
-    "id": {
+    "uuid": {
      "type": "string"
     },
     "name": {
@@ -312,7 +312,7 @@
     "canDelete": {
      "type": "boolean"
     },
-    "id": {
+    "uuid": {
      "type": "string"
     },
     "name": {
@@ -518,7 +518,7 @@
     "type": {
      "type": "string"
     },
-    "id": {
+    "uuid": {
      "type": "string"
     },
     "name": {

@@ -1,9 +1,8 @@
 import 'dart:async';
-import '../item_copy_id.dart';
 
 class ItemActionException implements Exception {
   String message;
-  Map<ItemCopyId, String> itemActionErrors = new Map<ItemCopyId, String>();
+  Map<String, String> itemActionErrors = new Map<String, String>();
   ItemActionException(this.message);
   ItemActionException.WithItemActionErrors(this.message, this.itemActionErrors);
 
@@ -12,17 +11,17 @@ class ItemActionException implements Exception {
     return message;
   }
 
-  static Future<Null> PerformValidation(
-      Future<Null> toAwait(Map<ItemCopyId, String> fieldErrors)) async {
-    final Map<ItemCopyId, String> itemActionErrors =
-        new Map<ItemCopyId, String>();
+  static Future<Null> performValidation(
+      Future<Null> toAwait(Map<String, String> fieldErrors)) async {
+    final Map<String, String> itemActionErrors =
+        new Map<String, String>();
 
     await toAwait(itemActionErrors);
 
     final Map<String, String> output = <String, String>{};
 
-    for (ItemCopyId id in itemActionErrors.keys) {
-      output[id.toString()] = itemActionErrors[id];
+    for (String id in itemActionErrors.keys) {
+      output[id] = itemActionErrors[id];
     }
 
     if (itemActionErrors.length > 0) {

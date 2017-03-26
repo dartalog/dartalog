@@ -110,7 +110,7 @@ class FieldsPage extends APage implements OnInit, OnDestroy {
       if (isNewItem) {
         await _api.fields.create(model);
       } else {
-        await _api.fields.update(model, selectedItem.id);
+        await _api.fields.update(model, selectedItem.uuid);
       }
       editVisible = false;
       await this.refresh();
@@ -135,7 +135,7 @@ class FieldsPage extends APage implements OnInit, OnDestroy {
   Future<Null> selectItem(IdNamePair item) async {
     await performApiCall(() async {
       reset();
-      model = await _api.fields.getById(item.id);
+      model = await _api.fields.getById(item.uuid);
       selectedItem = item;
       editVisible = true;
     });

@@ -11,13 +11,13 @@ import 'package:logging/logging.dart';
 import '../src/a_page.dart';
 @Component(
     selector: 'setup-page',
-    providers: const [materialProviders],
-    directives: const [
+    providers: const <dynamic>[materialProviders],
+    directives: const <dynamic>[
       materialDirectives,
       ROUTER_DIRECTIVES,
       AuthStatusComponent,
     ],
-    styleUrls: const ["../../shared.css"],
+    styleUrls: const <String>["../../shared.css"],
     templateUrl: "setup_page.html")
 class SetupPage extends APage implements OnInit {
   static final Logger _log = new Logger("SetupPage");
@@ -51,12 +51,13 @@ class SetupPage extends APage implements OnInit {
   Future<Null> refresh() async {
     await performApiCall(() async {
       try {
-        final SetupResponse response = await _api.setup.get();
+        //final SetupResponse response =
+        await _api.setup.get();
       } on DetailedApiRequestError catch (e, st) {
         loggerImpl.warning(e, st);
         if(e.status==403) {
           // This indicates that setup is disabled, so we redirect to the main page and prompt for login
-          await _router.navigate([homeRoute.name]);
+          await _router.navigate(<String>[homeRoute.name]);
           _auth.promptForAuthentication();
         } else {
           rethrow;
@@ -70,18 +71,19 @@ class SetupPage extends APage implements OnInit {
       // TODO: Figure out how to use angular's validators to do this on-the-fly
       if(request.adminPassword!=confirmPassword) {
         final AbstractControl control = form.controls["confirmPassword"];
-        control.setErrors({"confirmPassword": "Passwords must match"});
+        control.setErrors(<String,String>{"confirmPassword": "Passwords must match"});
         return;
       }
       await performApiCall(() async {
         try {
-          final SetupResponse response = await _api.setup.apply(request);
+          //final SetupResponse response =
+          await _api.setup.apply(request);
           await refresh();
         } on DetailedApiRequestError catch (e, st) {
           loggerImpl.warning(e, st);
           if(e.status==403) {
             // This indicates that setup is disabled, so we redirect to the main page and prompt for login
-            await _router.navigate([homeRoute.name]);
+            await _router.navigate(<String>[homeRoute.name]);
             _auth.promptForAuthentication();
           } else {
             rethrow;

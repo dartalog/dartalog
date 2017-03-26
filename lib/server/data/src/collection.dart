@@ -1,12 +1,12 @@
-import 'a_id_data.dart';
+import 'a_human_friendly_data.dart';
 
 import 'package:rpc/rpc.dart';
 @ApiMessage(includeSuper: true)
-class Collection extends AIdData {
+class Collection extends AHumanFriendlyData {
   bool publiclyBrowsable = false;
 
-  List<String> curators = <String>[];
-  List<String> browsers = <String>[];
+  List<String> curatorUuids = <String>[];
+  List<String> browserUuids = <String>[];
 
   Collection();
 

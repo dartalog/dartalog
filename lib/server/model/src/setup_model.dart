@@ -15,7 +15,7 @@ class SetupModel extends AModel {
   static final Logger _log = new Logger('UserModel');
 
   @override
-  Logger get childLogger => _log;
+  Logger get loggerImpl => _log;
 
   Future<SetupResponse> checkSetup() async {
     if (!await isSetupAvailable()) {

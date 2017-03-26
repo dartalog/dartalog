@@ -3,16 +3,12 @@ import 'package:logging/logging.dart';
 import 'package:dartalog/server/data/data.dart';
 import 'package:option/option.dart';
 
-abstract class AIdNameBasedDataSource<T extends AIdData> extends Object {
-  static final Logger _log = new Logger('AIdModel');
+import 'a_uuid_based_data_source.dart';
 
-  Future<IdNameList<T>> getAll();
-  Future<IdNameList<IdNamePair>> getAllIdsAndNames();
-  Future<Option<T>> getById(String id);
+abstract class AIdNameBasedDataSource<T extends AHumanFriendlyData> extends AUuidBasedDataSource<T> {
+  static final Logger _log = new Logger('AIdNameBasedDataSource');
+
+  Future<UuidDataList<IdNamePair>> getAllIdsAndNames();
   Future<Option<T>> getByReadableId(String id);
-  Future<String> write(T t, [String id = null]);
-  Future<Null> deleteByID(String id);
-  Future<bool> existsByID(String id);
   Future<bool> existsByReadableID(String id);
-  Future<IdNameList<T>> search(String query);
 }

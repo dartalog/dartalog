@@ -13,7 +13,7 @@ import 'a_id_name_based_model.dart';
 class UserModel extends AIdNameBasedModel<User> {
   static final Logger _log = new Logger('UserModel');
   @override
-  Logger get childLogger => _log;
+  Logger get loggerImpl => _log;
 
   @override
   AUserDataSource get dataSource => data_sources.users;

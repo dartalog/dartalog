@@ -8,13 +8,14 @@ import 'package:dartalog/client/api/api.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/routes.dart';
+import 'package:dartalog/client/routes.dart';
 import 'package:dartalog/client/services/services.dart';
 import 'package:dartalog/client/views/controls/auth_status_component.dart';
+import 'package:dartalog/global.dart';
 import 'package:dartalog/tools.dart';
 import 'package:logging/logging.dart';
 import 'package:polymer_elements/iron_flex_layout/classes/iron_flex_layout.dart';
-import 'package:dartalog/client/routes.dart';
-import 'package:dartalog/global.dart';
+
 import '../src/a_page.dart';
 
 @Component(
@@ -28,7 +29,7 @@ import '../src/a_page.dart';
     styleUrls: const ["../../shared.css", "item_browse.css"],
     template: '''
       <auth-status (authedChanged)="onAuthChanged(\$event)"></auth-status>
-      <div *ngIf="noItemsFound&&!loading" class="no-items">No Items Found</div>
+      <div *ngIf="noItemsFound&&!processing" class="no-items">No Items Found</div>
       <span *ngFor="let i of items" >
       <a [routerLink]="['Item', {id: i.id}]" class="item_card">
           <paper-material class="item_card" data-id="{{i.id}}" title="{{i.name}}" class="container">
@@ -43,27 +44,24 @@ import '../src/a_page.dart';
     ''')
 class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
   static final Logger _log = new Logger("ItemBrowseComponent");
-  @override
-  Logger get loggerImpl => _log;
-
   bool curatorAuth = false;
+
   bool userLoggedIn;
-  bool loading = false;
   final ApiService _api;
   final RouteParams _routeParams;
   final PageControlService _pageControl;
   final Router _router;
   final AuthenticationService _auth;
   final List<ItemSummary> items = <ItemSummary>[];
-
   String _currentQuery = "";
 
   StreamSubscription<String> _searchSubscription;
+
   StreamSubscription<PageActions> _pageActionSubscription;
   StreamSubscription<bool> _authChangedSubscription;
-
-  ItemBrowseComponent(this._api, this._routeParams, this._pageControl,
-      this._router, this._auth): super(_pageControl, _auth, _router) {
+  ItemBrowseComponent(
+      this._api, this._routeParams, this._pageControl, this._router, this._auth)
+      : super(_pageControl, _auth, _router) {
     _searchSubscription = _pageControl.searchChanged.listen(onSearchChanged);
     _pageActionSubscription =
         _pageControl.pageActionRequested.listen(onPageActionRequested);
@@ -72,20 +70,8 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
     setActions();
   }
 
-  Future<Null> onAuthChanged(bool status) async {
-    await refresh();
-    setActions();
-  }
-
-  void setActions() {
-    final List<PageActions> actions = <PageActions>[
-    PageActions.Refresh,
-    PageActions.Search];
-    if(_auth.hasPrivilege(UserPrivilege.curator)) {
-      actions.add(PageActions.Add);
-    }
-    _pageControl.setAvailablePageActions(actions);
-  }
+  @override
+  Logger get loggerImpl => _log;
 
   bool get noItemsFound => items.isEmpty;
 
@@ -104,6 +90,11 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
   @override
   void ngOnInit() {
     refresh();
+  }
+
+  Future<Null> onAuthChanged(bool status) async {
+    await refresh();
+    setActions();
   }
 
   Future<Null> onAuthStatusChange(bool value) async {
@@ -135,17 +126,14 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
   }
 
   Future<Null> refresh() async {
-    await performApiCall(() {
-
-    });
-    try {
-      loading = true;
+    await performApiCall(() async {
       int page = 0;
       String query = "";
       String routeName = itemsPageRoute.name;
       if (_routeParams.params.containsKey(pageRouteParameter)) {
-        page =
-            int.parse(_routeParams.get(pageRouteParameter) ?? '1', onError: (_) => 1) - 1;
+        page = int.parse(_routeParams.get(pageRouteParameter) ?? '1',
+                onError: (_) => 1) -
+            1;
       }
       if (_routeParams.params.containsKey(queryRouteParameter)) {
         query = _routeParams.get(queryRouteParameter);
@@ -173,10 +161,17 @@ class ItemBrowseComponent extends APage implements OnInit, OnDestroy {
       }
       info.currentPage = page;
       _pageControl.setPaginationInfo(info);
-    } catch (e, st) {
-      _log.severe("refresh", e, st);
-    } finally {
-      loading = false;
+    });
+  }
+
+  void setActions() {
+    final List<PageActions> actions = <PageActions>[
+      PageActions.Refresh,
+      PageActions.Search
+    ];
+    if (_auth.hasPrivilege(UserPrivilege.curator)) {
+      actions.add(PageActions.Add);
     }
+    _pageControl.setAvailablePageActions(actions);
   }
 }

@@ -117,7 +117,7 @@ class ItemTypesPage extends APage implements OnInit, OnDestroy {
       if (isNewItem) {
         await _api.itemTypes.create(model);
       } else {
-        await _api.itemTypes.update(model, selectedItem.id);
+        await _api.itemTypes.update(model, selectedItem.uuid);
       }
       editVisible = false;
       await this.refresh();
@@ -143,7 +143,7 @@ class ItemTypesPage extends APage implements OnInit, OnDestroy {
   Future<Null> selectItem(IdNamePair item) async {
     await performApiCall(() async {
       reset();
-      model = await _api.itemTypes.getById(item.id);
+      model = await _api.itemTypes.getById(item.uuid);
       fields = await _api.fields.getAllIdsAndNames();
       selectedItem = item;
       editVisible = true;
@@ -160,8 +160,8 @@ class ItemTypesPage extends APage implements OnInit, OnDestroy {
     if(selectedField!=null&&this.model!=null) {
       if(this.model.fieldIds==null)
         this.model.fieldIds = <String>[];
-      if (!this.model.fieldIds.contains(selectedField.id)) {
-        this.model.fieldIds.add(selectedField.id);
+      if (!this.model.fieldIds.contains(selectedField.uuid)) {
+        this.model.fieldIds.add(selectedField.uuid);
       }
     }
   }

@@ -3,8 +3,8 @@ import 'a_history_entry.dart';
 class TransferHistoryEntry extends AHistoryEntry {
   static const String type = "transfer";
 
-  String fromCollection = "";
-  String toCollection = "";
+  String fromCollectionUuid = "";
+  String toCollectionUuid = "";
 
   TransferHistoryEntry(): super(type);
 }

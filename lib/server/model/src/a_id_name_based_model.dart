@@ -7,7 +7,7 @@ import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
 import 'a_typed_model.dart';
 import 'package:meta/meta.dart';
 
-abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel<T> {
+abstract class AIdNameBasedModel<T extends AHumanFriendlyData> extends ATypedModel<T> {
   AIdNameBasedDataSource<T> get dataSource;
 
   @protected
@@ -23,19 +23,18 @@ abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel<T> {
 
     await validate(t);
 
-    t.id = generateUuid();
+    t.uuid = generateUuid();
 
     return await dataSource.write(t);
   }
 
-  Future<String> delete(String id) async {
-    final String normId = normalizeId(id);
-    await validateDeletePrivileges(normId);
-    await dataSource.deleteByID(normId);
-    return normId;
+  Future<String> delete(String uuid) async {
+    await validateDeletePrivileges(uuid);
+    await dataSource.deleteByID(uuid);
+    return uuid;
   }
 
-  Future<IdNameList<T>> getAll() async {
+  Future<UuidDataList<T>> getAll() async {
     await validateGetAllPrivileges();
 
     final List<T> output = await dataSource.getAll();
@@ -43,33 +42,32 @@ abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel<T> {
     return output;
   }
 
-  Future<IdNameList<IdNamePair>> getAllIdsAndNames() async {
+  Future<UuidDataList<IdNamePair>> getAllIdsAndNames() async {
     await validateGetAllIdsAndNamesPrivileges();
     return await dataSource.getAllIdsAndNames();
   }
 
-  Future<T> getById(String id, {bool bypassAuth: false}) async {
-    final String normId = normalizeId(id);
+  Future<T> getByUuid(String uuid, {bool bypassAuth: false}) async {
     if (!bypassAuth) await validateGetByIdPrivileges();
 
-    final Option<T> output = await dataSource.getById(normId);
+    final Option<T> output = await dataSource.getById(uuid);
 
-    if (output.isEmpty) throw new NotFoundException("ID '$normId' not found");
+    if (output.isEmpty) throw new NotFoundException("UUID '$uuid' not found");
 
     performAdjustments(output.get());
 
     return output.get();
   }
 
-  Future<IdNameList<T>> search(String query) async {
+  Future<UuidDataList<T>> search(String query) async {
     await validateSearchPrivileges();
     return await dataSource.search(query);
   }
 
-  Future<String> update(String id, T t) async {
-    await validateUpdatePrivileges(id);
-    await validate(t, existingId:  id);
-    return await dataSource.write(t, id);
+  Future<String> update(String uuid, T t) async {
+    await validateUpdatePrivileges(uuid);
+    await validate(t, existingId:  uuid);
+    return await dataSource.write(t, uuid);
   }
 
   @protected
@@ -93,7 +91,7 @@ abstract class AIdNameBasedModel<T extends AIdData> extends ATypedModel<T> {
           fieldErrors["readableId"] = "Already in use";
       } else {
         // Updating
-        if(item.isNotEmpty&&item.first.id!=existingId)
+        if(item.isNotEmpty&&item.first.uuid!=existingId)
           fieldErrors["readableId"] = "Already in use";
       }
       if (isReservedWord(t.readableId)) {

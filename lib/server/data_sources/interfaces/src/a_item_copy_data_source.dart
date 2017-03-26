@@ -7,18 +7,14 @@ import 'a_data_source.dart';
 abstract class AItemCopyDataSource extends ADataSource {
   static final Logger _log = new Logger('AItemCopyModel');
 
-  Future<Null> delete(String itemId, int copy);
-  Future<Null> deleteByCollection(String collectionId);
-  Future<Option<ItemCopy>> getByItemIdAndCopy(String itemId, int copy);
-  Future<bool> existsByItemIdAndCopy(String itemId, int copy);
+  Future<Null> deleteByCollection(String collectionUuid);
   Future<Option<ItemCopy>> getByUniqueId(String uniqueId);
+  Future<Option<ItemCopy>> getByUuid(String uuid);
   Future<bool> existsByUniqueId(String uniqueId);
-  Future<List<ItemCopy>> getAllForItemId(String itemId);
-  Future<List<ItemCopy>> getVisibleForItemId(String itemId, String userName);
-  Future<ItemCopyId> write(ItemCopy itemCopy, bool update);
-  Future<int> getNextCopyNumber(String itemId);
-  Future<List<ItemCopy>> getAll(List<ItemCopyId> itemCopies);
+  Future<List<ItemCopy>> getAllForItem(String itemUuid);
+  Future<List<ItemCopy>> getVisibleForItem(String itemUuid, String userUuid);
 
-  Future<Null> updateStatus(List<ItemCopyId> itemCopies, String status);
-  Future<Null> updateCollection(List<ItemCopyId> itemCopies, String status);
+  Future<List<ItemCopy>> getAll(List<String> itemCopyUuids);
+  Future<Null> updateStatus(List<String> itemCopyUuids, String status);
+  Future<Null> updateCollection(List<String> itemCopyUuids, String status);
 }

@@ -83,7 +83,7 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
     await performApiCall(() async {
       reset();
       if(item!=null) {
-        model = await _api.collections.getById(item.id);
+        model = await _api.collections.getById(item.uuid);
       }
       users = await _api.users.getAllIdsAndNames();
       selectedItem = item;
@@ -114,7 +114,7 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
       if(isNewItem) {
         await _api.collections.create(model);
       } else {
-        await _api.collections.update(model,selectedItem.id);
+        await _api.collections.update(model,selectedItem.uuid);
       }
       editVisible = false;
       await this.refresh();
@@ -160,8 +160,8 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
     if(selectedUser!=null&&this.model!=null) {
       if(this.model.curators==null)
         this.model.curators = <String>[];
-      if (!this.model.curators.contains(selectedUser.id)) {
-        this.model.curators.add(selectedUser.id);
+      if (!this.model.curators.contains(selectedUser.uuid)) {
+        this.model.curators.add(selectedUser.uuid);
       }
     }
   }
@@ -170,8 +170,8 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
     if(selectedUser!=null&&this.model!=null) {
       if(this.model.browsers==null)
         this.model.browsers = <String>[];
-      if (!this.model.browsers.contains(selectedUser.id)) {
-        this.model.browsers.add(selectedUser.id);
+      if (!this.model.browsers.contains(selectedUser.uuid)) {
+        this.model.browsers.add(selectedUser.uuid);
       }
     }
   }
@@ -184,7 +184,7 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
 
   Future<Null> deleteConfirmClicked() async {
     await performApiCall(() async {
-      await _api.collections.delete(selectedItem.id);
+      await _api.collections.delete(selectedItem.uuid);
       editVisible = false;
       await refresh();
     });

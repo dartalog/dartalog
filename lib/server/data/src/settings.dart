@@ -1,4 +1,4 @@
-import 'a_id_data.dart';
+import 'a_human_friendly_data.dart';
 import 'dart:async';
 
 class ImportSettings extends AData {

@@ -4,7 +4,7 @@ class ActionHistoryEntry extends AHistoryEntry {
   static const String type = "action";
 
   String action = "";
-  String actionerUserId = "";
+  String actionerUserUuid = "";
 
   ActionHistoryEntry(): super(type);
 }

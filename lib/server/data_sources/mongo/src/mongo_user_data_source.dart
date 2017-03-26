@@ -5,6 +5,7 @@ import 'package:dartalog/server/data/data.dart';
 import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:option/option.dart';
+import 'constants.dart';
 import 'a_mongo_id_data_source.dart';
 
 class MongoUserDataSource extends AMongoIdDataSource<User>
@@ -20,8 +21,8 @@ class MongoUserDataSource extends AMongoIdDataSource<User>
   }
 
   @override
-  Future<Option<String>> getPasswordHash(String id) async {
-    final SelectorBuilder selector = where.eq(idField, id);
+  Future<Option<String>> getPasswordHashByUuid(String uuid) async {
+    final SelectorBuilder selector = where.eq(uuidField, uuid);
     final Option<String> data = await genericFindOne(selector);
     return data.map((Map user) {
       if (user.containsKey(passwordField)) return user[passwordField];
@@ -29,8 +30,17 @@ class MongoUserDataSource extends AMongoIdDataSource<User>
   }
 
   @override
-  Future<Null> setPassword(String id, String password) async {
-    final SelectorBuilder selector = where.eq(idField, id);
+  Future<Option<String>> getPasswordHashByUsername(String username) async {
+    final SelectorBuilder selector = where.eq(readableIdField, username);
+    final Option<String> data = await genericFindOne(selector);
+    return data.map((Map user) {
+      if (user.containsKey(passwordField)) return user[passwordField];
+    });
+  }
+
+  @override
+  Future<Null> setPassword(String uuid, String password) async {
+    final SelectorBuilder selector = where.eq(uuidField, uuid);
 
     final ModifierBuilder modifier = modify.set(passwordField, password);
     await genericUpdate(selector, modifier, multiUpdate: false);
@@ -51,6 +61,6 @@ class MongoUserDataSource extends AMongoIdDataSource<User>
   @override
   void updateMap(User user, Map data) {
     super.updateMap(user, data);
-    data["type"] = user.type;
+    data[typeField] = user.type;
   }
 }

@@ -30,7 +30,7 @@ abstract class AModel {
   String get defaultWritePrivilegeRequirement => defaultPrivilegeRequirement;
 
   @protected
-  Logger get childLogger;
+  Logger get loggerImpl;
 
   @protected
   bool get userAuthenticated => userPrincipal
@@ -99,7 +99,7 @@ abstract class AModel {
       validateUserPrivilege(defaultUpdatePrivilegeRequirement);
 
   @protected
-  Future<Null> validateUpdatePrivileges(String id) async {
+  Future<Null> validateUpdatePrivileges(String uuid) async {
     if (!userAuthenticated) {
       throw new NotAuthorizedException();
     }

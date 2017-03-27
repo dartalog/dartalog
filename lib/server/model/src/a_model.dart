@@ -10,7 +10,7 @@ import 'package:meta/meta.dart';
 
 abstract class AModel {
   @protected
-  String get currentUserId =>
+  String get currentUserUuid =>
       userPrincipal.map((Principal p) => p.name).getOrDefault("");
 
   @protected
@@ -39,13 +39,13 @@ abstract class AModel {
 
   @protected
   Option<Principal> get userPrincipal => authenticatedContext()
-      .map((AuthenticatedContext context) => context.principal);
+      .map((AuthenticatedContext<Principal> context) => context.principal);
 
   @protected
   Future<User> getCurrentUser() async {
     final Principal p = userPrincipal.getOrElse(
         () => throw new NotAuthorizedException.withMessage("Please log in"));
-    return (await data_sources.users.getById(p.name)).getOrElse(
+    return (await data_sources.users.getByUuid(p.name)).getOrElse(
         () => throw new NotAuthorizedException.withMessage("User not found"));
   }
 

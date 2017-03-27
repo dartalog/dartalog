@@ -11,7 +11,6 @@ import 'package:dartalog/client/routes.dart';
 import '../../src/a_error_thing.dart';
 
 abstract class APage extends AErrorThing {
-
   bool processing = false;
 
   final PageControlService _pageControl;
@@ -35,7 +34,7 @@ abstract class APage extends AErrorThing {
       loggerImpl.severe(e, st);
       await _handleApiError(e, st, form);
     } catch (e, st) {
-      setErrorMessage(e,st);
+      setErrorMessage(e, st);
     } finally {
       processing = false;
     }
@@ -53,9 +52,9 @@ abstract class APage extends AErrorThing {
         this._auth.promptForAuthentication();
       } else if (error.status == 413) {
         errorMessage =
-        "The submitted data was too large, please submit smaller images";
+            "The submitted data was too large, please submit smaller images";
       } else if (error.status == HTTP_STATUS_SERVER_NEEDS_SETUP) {} else {
-        loggerImpl.warning("Server replied that setup is required",error, st);
+        loggerImpl.warning("Server replied that setup is required", error, st);
         await _router.navigate([setupRoute.name]);
       }
     } catch (e, st) {

@@ -12,11 +12,10 @@ export 'a_mongo_object_data_source.dart';
 import 'a_mongo_uuid_based_data_source.dart';
 import 'constants.dart';
 
-
 abstract class AMongoIdDataSource<T extends AHumanFriendlyData>
     extends AMongoUuidBasedDataSource<T> with AIdNameBasedDataSource<T> {
   dynamic prepareId(String id) {
-    if(isUuid(id)) {
+    if (isUuid(id)) {
       //bsonObjectFromTypeByte(3);
       //return new ObjectId.fromHexString(id.replaceAll("\-",""));
       return id;
@@ -26,18 +25,22 @@ abstract class AMongoIdDataSource<T extends AHumanFriendlyData>
   }
 
   @override
-  Future<bool> existsByReadableID(String id) => super.exists(where.eq(readableIdField, id));
+  Future<bool> existsByReadableID(String id) =>
+      super.exists(where.eq(readableIdField, id));
 
   @override
   Future<UuidDataList<T>> getAll({String sortField: null}) =>
-        super.getAll(sortField: sortField ?? readableIdField);
+      super.getAll(sortField: sortField ?? readableIdField);
 
   @override
   Future<PaginatedUuidData<T>> getPaginated(
           {String sortField: null,
           int offset: 0,
           int limit: PAGINATED_DATA_LIMIT}) =>
-  super.getPaginated(sortField: sortField ?? readableIdField, offset: offset, limit: limit);
+      super.getPaginated(
+          sortField: sortField ?? readableIdField,
+          offset: offset,
+          limit: limit);
 
   Future<UuidDataList<IdNamePair>> getAllIdsAndNames(
           {String sortField: readableIdField}) =>
@@ -56,7 +59,8 @@ abstract class AMongoIdDataSource<T extends AHumanFriendlyData>
       final UuidDataList<IdNamePair> output = new UuidDataList<IdNamePair>();
 
       for (Map<String, dynamic> result in results) {
-        output.add(new IdNamePair.withValues(result[uuidField], result[nameField], result[readableIdField]));
+        output.add(new IdNamePair.withValues(
+            result[uuidField], result[nameField], result[readableIdField]));
       }
 
       return output;
@@ -84,7 +88,8 @@ abstract class AMongoIdDataSource<T extends AHumanFriendlyData>
       output.totalCount = count;
 
       for (Map<String, dynamic> result in results) {
-        output.data.add(new IdNamePair.withValues(result[uuidField], result[nameField], result[readableIdField]));
+        output.data.add(new IdNamePair.withValues(
+            result[uuidField], result[nameField], result[readableIdField]));
       }
 
       return output;
@@ -94,7 +99,6 @@ abstract class AMongoIdDataSource<T extends AHumanFriendlyData>
   @override
   Future<Option<T>> getByReadableId(String id) =>
       getForOneFromDb(where.eq(readableIdField, id));
-
 
   @override
   void updateMap(T item, Map<String, dynamic> data) {
@@ -108,5 +112,4 @@ abstract class AMongoIdDataSource<T extends AHumanFriendlyData>
     item.name = data[nameField];
     item.readableId = data[readableIdField];
   }
-
 }

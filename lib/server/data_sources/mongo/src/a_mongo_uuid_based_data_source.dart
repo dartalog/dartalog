@@ -14,7 +14,7 @@ import 'constants.dart';
 abstract class AMongoUuidBasedDataSource<T extends AUuidData>
     extends AMongoObjectDataSource<T> with AUuidBasedDataSource<T> {
   dynamic convertUuid(String uuid) {
-    if(isUuid(uuid)) {
+    if (isUuid(uuid)) {
       //bsonObjectFromTypeByte(3);
       //return new ObjectId.fromHexString(id.replaceAll("\-",""));
       // TODO: Convert the uuid to a native data format, currently not properly supported in the mongo dart lib
@@ -25,10 +25,12 @@ abstract class AMongoUuidBasedDataSource<T extends AUuidData>
   }
 
   @override
-  Future<Null> deleteByUuid(String uuid) => deleteFromDb(where.eq(uuidField, convertUuid(uuid)));
+  Future<Null> deleteByUuid(String uuid) =>
+      deleteFromDb(where.eq(uuidField, convertUuid(uuid)));
 
   @override
-  Future<bool> existsByUuid(String uuid) => super.exists(where.eq(uuidField, convertUuid(uuid)));
+  Future<bool> existsByUuid(String uuid) =>
+      super.exists(where.eq(uuidField, convertUuid(uuid)));
 
   @override
   Future<UuidDataList<T>> getAll({String sortField: null}) =>
@@ -46,12 +48,16 @@ abstract class AMongoUuidBasedDataSource<T extends AUuidData>
       getForOneFromDb(where.eq(uuidField, convertUuid(uuid)));
 
   @override
-  Future<String> write(T object, [String uuid = null]) async {
-    if (!StringTools.isNullOrWhitespace(uuid)) {
-      await updateToDb(where.eq(uuidField, convertUuid(uuid)), object);
-    } else {
-      await insertIntoDb(object);
-    }
+  Future<String> create(String uuid, T object) async {
+    object.uuid = uuid;
+    await insertIntoDb(object);
+    return object.uuid;
+  }
+
+  @override
+  Future<String> update(String uuid, T object) async {
+    object.uuid = uuid;
+    await updateToDb(where.eq(uuidField, convertUuid(uuid)), object);
     return object.uuid;
   }
 
@@ -60,13 +66,13 @@ abstract class AMongoUuidBasedDataSource<T extends AUuidData>
     data[uuidField] = item.uuid;
   }
 
-  static void setUuidForData<T extends AUuidData>(T item, Map<String, dynamic> data) {
+  static void setUuidForData<T extends AUuidData>(
+      T item, Map<String, dynamic> data) {
     item.uuid = data[uuidField];
   }
 
   @protected
-  Future<PaginatedUuidData<T>> getPaginatedListFromDb(
-          SelectorBuilder selector,
+  Future<PaginatedUuidData<T>> getPaginatedListFromDb(SelectorBuilder selector,
           {int offset: 0,
           int limit: PAGINATED_DATA_LIMIT,
           String sortField: uuidField}) async =>

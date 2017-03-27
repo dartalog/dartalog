@@ -4,7 +4,6 @@ import '../../data.dart';
 
 // TODO: Add version tracking for fields to guide updates
 
-
 final Field asinField = new Field.withValues("ASIN", "asin", stringFieldTypeId,
     id: "7fa61c6e-0777-42c2-a40e-8f91e557e53c");
 final Field authorField = new Field.withValues(

@@ -18,24 +18,25 @@ class ItemTypeModel extends AIdNameBasedModel<ItemType> {
   String get defaultReadPrivilegeRequirement => UserPrivilege.curator;
 
   @override
-  Future<ItemType> getById(String id,
+  Future<ItemType> getByUuid(String uuid,
       {bool includeFields: false, bool bypassAuth: false}) async {
-    final ItemType output = await super.getById(id, bypassAuth: bypassAuth);
+    final ItemType output = await super.getByUuid(uuid, bypassAuth: bypassAuth);
     if (includeFields) {
-      output.fields = await data_sources.fields.getByIds(output.fieldIds);
+      output.fields = await data_sources.fields.getByUuids(output.fieldUuids);
     }
     return output;
   }
 
   @override
-  Future validateFieldsInternal(Map<String, String> fieldErrors,
-      ItemType itemType, {String existingId: null}) async {
-    if (itemType.fieldIds == null || itemType.fieldIds.length == 0)
-      fieldErrors["fieldIds"] = "Required";
+  Future<Null> validateFieldsInternal(
+      Map<String, String> fieldErrors, ItemType itemType,
+      {String existingId: null}) async {
+    if (itemType.fieldUuids == null || itemType.fieldUuids.length == 0)
+      fieldErrors["fieldUuids"] = "Required";
     else {
-      final List test = await data_sources.fields.getByIds(itemType.fieldIds);
-      if (test.length != itemType.fieldIds.length)
-        fieldErrors["fieldIds"] = "Not found";
+      final List<Field> test = await data_sources.fields.getByUuids(itemType.fieldUuids);
+      if (test.length != itemType.fieldUuids.length)
+        fieldErrors["fieldUuids"] = "Not found";
     }
   }
 }

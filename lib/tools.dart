@@ -91,8 +91,6 @@ class StringTools {
   }
 }
 
-
-
 Future<Null> wait({int milliseconds: 100}) {
   final Completer<Null> completer = new Completer<Null>();
   new Timer(new Duration(milliseconds: 100), () {

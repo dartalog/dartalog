@@ -20,9 +20,5 @@ class TemplateModel extends AModel {
     return itemTypeTemplates;
   }
 
-  Future<Null> applyFieldTemplate(String id) async {
-
-  }
-
-
+  Future<Null> applyFieldTemplate(String id) async {}
 }

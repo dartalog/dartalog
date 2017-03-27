@@ -7,30 +7,23 @@ import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
 import 'a_typed_model.dart';
 import 'package:meta/meta.dart';
 
-abstract class AIdNameBasedModel<T extends AHumanFriendlyData> extends ATypedModel<T> {
+abstract class AIdNameBasedModel<T extends AHumanFriendlyData>
+    extends ATypedModel<T> {
   AIdNameBasedDataSource<T> get dataSource;
 
-  @protected
-  String normalizeId(String input) {
-    String output = input.trim().toLowerCase();
-    output = Uri.decodeQueryComponent(output);
-    return output;
-  }
-
   Future<String> create(T t, {bool bypassAuthentication: false}) async {
-    if(!bypassAuthentication)
-      await validateCreatePrivileges();
+    if (!bypassAuthentication) await validateCreatePrivileges();
 
     await validate(t);
 
     t.uuid = generateUuid();
 
-    return await dataSource.write(t);
+    return await dataSource.create(t.uuid, t);
   }
 
   Future<String> delete(String uuid) async {
     await validateDeletePrivileges(uuid);
-    await dataSource.deleteByID(uuid);
+    await dataSource.deleteByUuid(uuid);
     return uuid;
   }
 
@@ -50,7 +43,7 @@ abstract class AIdNameBasedModel<T extends AHumanFriendlyData> extends ATypedMod
   Future<T> getByUuid(String uuid, {bool bypassAuth: false}) async {
     if (!bypassAuth) await validateGetByIdPrivileges();
 
-    final Option<T> output = await dataSource.getById(uuid);
+    final Option<T> output = await dataSource.getByUuid(uuid);
 
     if (output.isEmpty) throw new NotFoundException("UUID '$uuid' not found");
 
@@ -66,18 +59,18 @@ abstract class AIdNameBasedModel<T extends AHumanFriendlyData> extends ATypedMod
 
   Future<String> update(String uuid, T t) async {
     await validateUpdatePrivileges(uuid);
-    await validate(t, existingId:  uuid);
-    return await dataSource.write(t, uuid);
+    await validate(t, existingId: uuid);
+    return await dataSource.update(uuid, t);
   }
 
   @protected
   void performAdjustments(T t) {}
 
   @override
-  Future<Map<String, String>> validateFields(T t, {String existingId: null}) async {
+  Future<Map<String, String>> validateFields(T t,
+      {String existingId: null}) async {
     final Map<String, String> fieldErrors = new Map<String, String>();
 
-    t.readableId = normalizeId(t.readableId);
     t.name = t.name.trim();
 
     if (StringTools.isNullOrWhitespace(t.readableId))
@@ -85,17 +78,17 @@ abstract class AIdNameBasedModel<T extends AHumanFriendlyData> extends ATypedMod
     else {
       final Option<T> item = await dataSource.getByReadableId(t.readableId);
 
-      if(StringTools.isNullOrWhitespace(existingId)) {
+      if (StringTools.isNullOrWhitespace(existingId)) {
         // Creating
-        if(item.isNotEmpty)
-          fieldErrors["readableId"] = "Already in use";
+        if (item.isNotEmpty) fieldErrors["readableId"] = "Already in use";
       } else {
         // Updating
-        if(item.isNotEmpty&&item.first.uuid!=existingId)
+        if (item.isNotEmpty && item.first.uuid != existingId)
           fieldErrors["readableId"] = "Already in use";
       }
       if (isReservedWord(t.readableId)) {
-        fieldErrors["readableId"] = "Cannot use '${t.readableId}' as Readable ID";
+        fieldErrors["readableId"] =
+            "Cannot use '${t.readableId}' as Readable ID";
       }
     }
 
@@ -111,7 +104,8 @@ abstract class AIdNameBasedModel<T extends AHumanFriendlyData> extends ATypedMod
   }
 
   @protected
-  Future<Null> validateFieldsInternal(Map<String,String> fieldErrors, T t, {String existingId: null}) async =>
+  Future<Null> validateFieldsInternal(Map<String, String> fieldErrors, T t,
+          {String existingId: null}) async =>
       {};
 
   @protected

@@ -5,8 +5,8 @@ class CreateItemRequest {
   Item item;
   List<MediaMessage> files = new List<MediaMessage>();
 
-  String collectionId;
-  String uniqueId;
+  String collectionUuid;
+  String uniqueUuid;
 
   CreateItemRequest();
 }

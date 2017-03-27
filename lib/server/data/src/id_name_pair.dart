@@ -3,13 +3,12 @@ import 'package:rpc/rpc.dart';
 
 @ApiMessage(includeSuper: true)
 class IdNamePair extends AHumanFriendlyData {
-
   IdNamePair();
 
-  IdNamePair.withValues(String uuid, String name, String readableId):
-        super.withValues(name, readableId, uuid: uuid);
+  IdNamePair.withValues(String uuid, String name, String readableId)
+      : super.withValues(name, readableId, uuid: uuid);
 
-  IdNamePair.copy(dynamic o): super.copy(o);
+  IdNamePair.copy(dynamic o) : super.copy(o);
 
   static List<IdNamePair> convertList(Iterable<dynamic> i) {
     final List<IdNamePair> output = new List<IdNamePair>();

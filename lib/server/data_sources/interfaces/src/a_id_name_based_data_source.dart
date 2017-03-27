@@ -5,7 +5,8 @@ import 'package:option/option.dart';
 
 import 'a_uuid_based_data_source.dart';
 
-abstract class AIdNameBasedDataSource<T extends AHumanFriendlyData> extends AUuidBasedDataSource<T> {
+abstract class AIdNameBasedDataSource<T extends AHumanFriendlyData>
+    extends AUuidBasedDataSource<T> {
   static final Logger _log = new Logger('AIdNameBasedDataSource');
 
   Future<UuidDataList<IdNamePair>> getAllIdsAndNames();

@@ -9,12 +9,11 @@ class MongoItemTypeDataSource extends AMongoIdDataSource<ItemType>
     with AItemTypeDataSource {
   static final Logger _log = new Logger('MongoItemTypeDataSource');
 
-
   static const String fieldUuidsField = "fieldUuids";
   @override
   ItemType createObject(Map data) {
     final ItemType output = new ItemType();
-    setIdDataFields(output,data);
+    setIdDataFields(output, data);
     output.fieldUuids = data[fieldUuidsField];
     return output;
   }

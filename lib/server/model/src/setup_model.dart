@@ -29,7 +29,6 @@ class SetupModel extends AModel {
     return output;
   }
 
-
   Future<Null> _checkIfSetupEnabled() async {
     if (!await isSetupAvailable()) {
       throw new SetupDisabledException();
@@ -53,13 +52,11 @@ class SetupModel extends AModel {
     return true;
   }
 
-
-
-
   Future<SetupResponse> apply(SetupRequest request) async {
     await _checkIfSetupEnabled();
 
-    await DataValidationException.PerformValidation((Map<String,String> fieldErrors) async {
+    await DataValidationException
+        .PerformValidation((Map<String, String> fieldErrors) async {
 //      if(StringTools.isNotNullOrWhitespace(request.databaseConnectionString)) {
 //        try {
 //          await mongo.MongoDatabase.testConnectionString(
@@ -76,15 +73,15 @@ class SetupModel extends AModel {
 //        fieldErrors["databaseConnectionString"] = "Required";
 //      }
 
-
-      if(StringTools.isNotNullOrWhitespace(request.adminUser)) {
+      if (StringTools.isNotNullOrWhitespace(request.adminUser)) {
         try {
           await users.createUserWith(
-              request.adminUser, request.adminPassword, UserPrivilege.admin, bypassAuthentication: true);
-        } on DataValidationException catch(e) {
+              request.adminUser, request.adminPassword, UserPrivilege.admin,
+              bypassAuthentication: true);
+        } on DataValidationException catch (e) {
           fieldErrors.addAll(e.fieldErrors);
         }
-      } else if(await checkForAdminUsers()) {
+      } else if (await checkForAdminUsers()) {
         fieldErrors["adminUser"] = "Required";
       }
     });
@@ -93,5 +90,4 @@ class SetupModel extends AModel {
 
     return await checkSetup();
   }
-
 }

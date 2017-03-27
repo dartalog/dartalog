@@ -10,17 +10,17 @@ import 'dart:convert' as convert;
 import 'package:_discoveryapis_commons/_discoveryapis_commons.dart' as commons;
 import 'package:http/http.dart' as http;
 
-export 'package:_discoveryapis_commons/_discoveryapis_commons.dart' show
-    ApiRequestError, DetailedApiRequestError;
+export 'package:_discoveryapis_commons/_discoveryapis_commons.dart'
+    show ApiRequestError, DetailedApiRequestError;
 
 const core.String USER_AGENT = 'dart-api-client item/0.1';
 
 /** Item REST API */
 class ItemApi {
-
   final commons.ApiRequester _requester;
 
-  CollectionsResourceApi get collections => new CollectionsResourceApi(_requester);
+  CollectionsResourceApi get collections =>
+      new CollectionsResourceApi(_requester);
   ExportResourceApi get export => new ExportResourceApi(_requester);
   FieldsResourceApi get fields => new FieldsResourceApi(_requester);
   ImportResourceApi get import => new ImportResourceApi(_requester);
@@ -30,16 +30,17 @@ class ItemApi {
   SetupResourceApi get setup => new SetupResourceApi(_requester);
   UsersResourceApi get users => new UsersResourceApi(_requester);
 
-  ItemApi(http.Client client, {core.String rootUrl: "http://localhost:8080/", core.String servicePath: "item/0.1/"}) :
-      _requester = new commons.ApiRequester(client, rootUrl, servicePath, USER_AGENT);
+  ItemApi(http.Client client,
+      {core.String rootUrl: "http://localhost:8080/",
+      core.String servicePath: "item/0.1/"})
+      : _requester =
+            new commons.ApiRequester(client, rootUrl, servicePath, USER_AGENT);
 }
-
 
 class CollectionsResourceApi {
   final commons.ApiRequester _requester;
 
-  CollectionsResourceApi(commons.ApiRequester client) : 
-      _requester = client;
+  CollectionsResourceApi(commons.ApiRequester client) : _requester = client;
 
   /**
    * [request] - The metadata request object.
@@ -68,13 +69,12 @@ class CollectionsResourceApi {
 
     _url = 'collections/';
 
-    var _response = _requester.request(_url,
-                                       "POST",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "POST",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new IdResponse.fromJson(data));
   }
 
@@ -105,13 +105,12 @@ class CollectionsResourceApi {
 
     _url = 'collections/' + commons.Escaper.ecapeVariable('$id') + '/';
 
-    var _response = _requester.request(_url,
-                                       "DELETE",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "DELETE",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => null);
   }
 
@@ -134,16 +133,14 @@ class CollectionsResourceApi {
     var _downloadOptions = commons.DownloadOptions.Metadata;
     var _body = null;
 
-
     _url = 'collections/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new ListOfIdNamePair.fromJson(data));
   }
 
@@ -174,13 +171,12 @@ class CollectionsResourceApi {
 
     _url = 'collections/' + commons.Escaper.ecapeVariable('$id') + '/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new Collection.fromJson(data));
   }
 
@@ -216,24 +212,20 @@ class CollectionsResourceApi {
 
     _url = 'collections/' + commons.Escaper.ecapeVariable('$id') + '/';
 
-    var _response = _requester.request(_url,
-                                       "PUT",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "PUT",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new IdResponse.fromJson(data));
   }
-
 }
-
 
 class ExportResourceApi {
   final commons.ApiRequester _requester;
 
-  ExportResourceApi(commons.ApiRequester client) : 
-      _requester = client;
+  ExportResourceApi(commons.ApiRequester client) : _requester = client;
 
   /**
    * Request parameters:
@@ -254,27 +246,22 @@ class ExportResourceApi {
     var _downloadOptions = commons.DownloadOptions.Metadata;
     var _body = null;
 
-
     _url = 'export/collections/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new ListOfCollection.fromJson(data));
   }
-
 }
-
 
 class FieldsResourceApi {
   final commons.ApiRequester _requester;
 
-  FieldsResourceApi(commons.ApiRequester client) : 
-      _requester = client;
+  FieldsResourceApi(commons.ApiRequester client) : _requester = client;
 
   /**
    * [request] - The metadata request object.
@@ -303,13 +290,12 @@ class FieldsResourceApi {
 
     _url = 'fields/';
 
-    var _response = _requester.request(_url,
-                                       "POST",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "POST",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new IdResponse.fromJson(data));
   }
 
@@ -340,13 +326,12 @@ class FieldsResourceApi {
 
     _url = 'fields/' + commons.Escaper.ecapeVariable('$id') + '/';
 
-    var _response = _requester.request(_url,
-                                       "DELETE",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "DELETE",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => null);
   }
 
@@ -369,16 +354,14 @@ class FieldsResourceApi {
     var _downloadOptions = commons.DownloadOptions.Metadata;
     var _body = null;
 
-
     _url = 'fields/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new ListOfIdNamePair.fromJson(data));
   }
 
@@ -409,13 +392,12 @@ class FieldsResourceApi {
 
     _url = 'fields/' + commons.Escaper.ecapeVariable('$id') + '/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new Field.fromJson(data));
   }
 
@@ -451,24 +433,20 @@ class FieldsResourceApi {
 
     _url = 'fields/' + commons.Escaper.ecapeVariable('$id') + '/';
 
-    var _response = _requester.request(_url,
-                                       "PUT",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "PUT",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new IdResponse.fromJson(data));
   }
-
 }
-
 
 class ImportResourceApi {
   final commons.ApiRequester _requester;
 
-  ImportResourceApi(commons.ApiRequester client) : 
-      _requester = client;
+  ImportResourceApi(commons.ApiRequester client) : _requester = client;
 
   /**
    * Request parameters:
@@ -500,15 +478,17 @@ class ImportResourceApi {
       throw new core.ArgumentError("Parameter id is required.");
     }
 
-    _url = 'import/' + commons.Escaper.ecapeVariable('$provider') + '/' + commons.Escaper.ecapeVariable('$id');
+    _url = 'import/' +
+        commons.Escaper.ecapeVariable('$provider') +
+        '/' +
+        commons.Escaper.ecapeVariable('$id');
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new ImportResult.fromJson(data));
   }
 
@@ -531,16 +511,14 @@ class ImportResourceApi {
     var _downloadOptions = commons.DownloadOptions.Metadata;
     var _body = null;
 
-
     _url = 'import/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new MapOfListOfString.fromJson(data));
   }
 
@@ -561,7 +539,8 @@ class ImportResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<SearchResults> search(core.String provider, core.String query, {core.int page}) {
+  async.Future<SearchResults> search(core.String provider, core.String query,
+      {core.int page}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -579,26 +558,25 @@ class ImportResourceApi {
       _queryParams["page"] = ["${page}"];
     }
 
-    _url = 'import/' + commons.Escaper.ecapeVariable('$provider') + '/search/' + commons.Escaper.ecapeVariable('$query');
+    _url = 'import/' +
+        commons.Escaper.ecapeVariable('$provider') +
+        '/search/' +
+        commons.Escaper.ecapeVariable('$query');
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new SearchResults.fromJson(data));
   }
-
 }
-
 
 class ItemTypesResourceApi {
   final commons.ApiRequester _requester;
 
-  ItemTypesResourceApi(commons.ApiRequester client) : 
-      _requester = client;
+  ItemTypesResourceApi(commons.ApiRequester client) : _requester = client;
 
   /**
    * [request] - The metadata request object.
@@ -627,13 +605,12 @@ class ItemTypesResourceApi {
 
     _url = 'types/';
 
-    var _response = _requester.request(_url,
-                                       "POST",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "POST",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new IdResponse.fromJson(data));
   }
 
@@ -664,13 +641,12 @@ class ItemTypesResourceApi {
 
     _url = 'types/' + commons.Escaper.ecapeVariable('$id') + '/';
 
-    var _response = _requester.request(_url,
-                                       "DELETE",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "DELETE",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => null);
   }
 
@@ -693,16 +669,14 @@ class ItemTypesResourceApi {
     var _downloadOptions = commons.DownloadOptions.Metadata;
     var _body = null;
 
-
     _url = 'types/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new ListOfIdNamePair.fromJson(data));
   }
 
@@ -738,13 +712,12 @@ class ItemTypesResourceApi {
 
     _url = 'types/' + commons.Escaper.ecapeVariable('$id') + '/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new ItemType.fromJson(data));
   }
 
@@ -780,26 +753,22 @@ class ItemTypesResourceApi {
 
     _url = 'types/' + commons.Escaper.ecapeVariable('$id') + '/';
 
-    var _response = _requester.request(_url,
-                                       "PUT",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "PUT",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new IdResponse.fromJson(data));
   }
-
 }
-
 
 class ItemsResourceApi {
   final commons.ApiRequester _requester;
 
   ItemsCopiesResourceApi get copies => new ItemsCopiesResourceApi(_requester);
 
-  ItemsResourceApi(commons.ApiRequester client) : 
-      _requester = client;
+  ItemsResourceApi(commons.ApiRequester client) : _requester = client;
 
   /**
    * [request] - The metadata request object.
@@ -828,13 +797,12 @@ class ItemsResourceApi {
 
     _url = 'items/';
 
-    var _response = _requester.request(_url,
-                                       "POST",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "POST",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new ItemCopyId.fromJson(data));
   }
 
@@ -865,13 +833,12 @@ class ItemsResourceApi {
 
     _url = 'items/' + commons.Escaper.ecapeVariable('$id') + '/';
 
-    var _response = _requester.request(_url,
-                                       "DELETE",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "DELETE",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => null);
   }
 
@@ -896,7 +863,11 @@ class ItemsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<Item> getById(core.String id, {core.bool includeType, core.bool includeFields, core.bool includeCopies, core.bool includeCopyCollection}) {
+  async.Future<Item> getById(core.String id,
+      {core.bool includeType,
+      core.bool includeFields,
+      core.bool includeCopies,
+      core.bool includeCopyCollection}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -922,13 +893,12 @@ class ItemsResourceApi {
 
     _url = 'items/' + commons.Escaper.ecapeVariable('$id') + '/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new Item.fromJson(data));
   }
 
@@ -947,7 +917,8 @@ class ItemsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<PaginatedResponse> getVisibleSummaries({core.int page, core.int perPage}) {
+  async.Future<PaginatedResponse> getVisibleSummaries(
+      {core.int page, core.int perPage}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -964,13 +935,12 @@ class ItemsResourceApi {
 
     _url = 'items/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new PaginatedResponse.fromJson(data));
   }
 
@@ -991,7 +961,8 @@ class ItemsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<PaginatedResponse> searchVisible(core.String query, {core.int page, core.int perPage}) {
+  async.Future<PaginatedResponse> searchVisible(core.String query,
+      {core.int page, core.int perPage}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -1011,13 +982,12 @@ class ItemsResourceApi {
 
     _url = 'search/' + commons.Escaper.ecapeVariable('$query') + '/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new PaginatedResponse.fromJson(data));
   }
 
@@ -1036,7 +1006,8 @@ class ItemsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<IdResponse> updateItem(UpdateItemRequest request, core.String id) {
+  async.Future<IdResponse> updateItem(
+      UpdateItemRequest request, core.String id) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -1053,24 +1024,20 @@ class ItemsResourceApi {
 
     _url = 'items/' + commons.Escaper.ecapeVariable('$id') + '/';
 
-    var _response = _requester.request(_url,
-                                       "PUT",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "PUT",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new IdResponse.fromJson(data));
   }
-
 }
-
 
 class ItemsCopiesResourceApi {
   final commons.ApiRequester _requester;
 
-  ItemsCopiesResourceApi(commons.ApiRequester client) : 
-      _requester = client;
+  ItemsCopiesResourceApi(commons.ApiRequester client) : _requester = client;
 
   /**
    * [request] - The metadata request object.
@@ -1104,13 +1071,12 @@ class ItemsCopiesResourceApi {
 
     _url = 'items/' + commons.Escaper.ecapeVariable('$itemId') + '/copies/';
 
-    var _response = _requester.request(_url,
-                                       "POST",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "POST",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new ItemCopyId.fromJson(data));
   }
 
@@ -1133,7 +1099,8 @@ class ItemsCopiesResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ItemCopy> get(core.String itemId, core.int copy, {core.bool includeCollection, core.bool includeItemSummary}) {
+  async.Future<ItemCopy> get(core.String itemId, core.int copy,
+      {core.bool includeCollection, core.bool includeItemSummary}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -1154,15 +1121,18 @@ class ItemsCopiesResourceApi {
       _queryParams["includeItemSummary"] = ["${includeItemSummary}"];
     }
 
-    _url = 'items/' + commons.Escaper.ecapeVariable('$itemId') + '/copies/' + commons.Escaper.ecapeVariable('$copy') + '/';
+    _url = 'items/' +
+        commons.Escaper.ecapeVariable('$itemId') +
+        '/copies/' +
+        commons.Escaper.ecapeVariable('$copy') +
+        '/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new ItemCopy.fromJson(data));
   }
 
@@ -1183,7 +1153,8 @@ class ItemsCopiesResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ItemCopy> getByUniqueID(core.String uniqueId, {core.bool includeCollection, core.bool includeItemSummary}) {
+  async.Future<ItemCopy> getByUniqueID(core.String uniqueId,
+      {core.bool includeCollection, core.bool includeItemSummary}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -1201,15 +1172,16 @@ class ItemsCopiesResourceApi {
       _queryParams["includeItemSummary"] = ["${includeItemSummary}"];
     }
 
-    _url = 'items/copies/by_unique_id/' + commons.Escaper.ecapeVariable('$uniqueId') + '/';
+    _url = 'items/copies/by_unique_id/' +
+        commons.Escaper.ecapeVariable('$uniqueId') +
+        '/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new ItemCopy.fromJson(data));
   }
 
@@ -1228,7 +1200,8 @@ class ItemsCopiesResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ListOfItemCopy> getVisibleForItem(core.String itemId, {core.bool includeCollection}) {
+  async.Future<ListOfItemCopy> getVisibleForItem(core.String itemId,
+      {core.bool includeCollection}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -1245,13 +1218,12 @@ class ItemsCopiesResourceApi {
 
     _url = 'items/' + commons.Escaper.ecapeVariable('$itemId') + '/copies/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new ListOfItemCopy.fromJson(data));
   }
 
@@ -1270,7 +1242,8 @@ class ItemsCopiesResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future performAction(ItemActionRequest request, core.String itemId, core.int copy) {
+  async.Future performAction(
+      ItemActionRequest request, core.String itemId, core.int copy) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -1290,15 +1263,18 @@ class ItemsCopiesResourceApi {
 
     _downloadOptions = null;
 
-    _url = 'items/' + commons.Escaper.ecapeVariable('$itemId') + '/copies/' + commons.Escaper.ecapeVariable('$copy') + '/action/';
+    _url = 'items/' +
+        commons.Escaper.ecapeVariable('$itemId') +
+        '/copies/' +
+        commons.Escaper.ecapeVariable('$copy') +
+        '/action/';
 
-    var _response = _requester.request(_url,
-                                       "PUT",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "PUT",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => null);
   }
 
@@ -1329,13 +1305,12 @@ class ItemsCopiesResourceApi {
 
     _url = 'items/copies/action/';
 
-    var _response = _requester.request(_url,
-                                       "PUT",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "PUT",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => null);
   }
 
@@ -1366,13 +1341,12 @@ class ItemsCopiesResourceApi {
 
     _url = 'items/copies/transfer/';
 
-    var _response = _requester.request(_url,
-                                       "PUT",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "PUT",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => null);
   }
 
@@ -1393,7 +1367,8 @@ class ItemsCopiesResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<ItemCopyId> update(ItemCopy request, core.String itemId, core.int copy) {
+  async.Future<ItemCopyId> update(
+      ItemCopy request, core.String itemId, core.int copy) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -1411,34 +1386,32 @@ class ItemsCopiesResourceApi {
       throw new core.ArgumentError("Parameter copy is required.");
     }
 
-    _url = 'items/' + commons.Escaper.ecapeVariable('$itemId') + '/copies/' + commons.Escaper.ecapeVariable('$copy') + '/';
+    _url = 'items/' +
+        commons.Escaper.ecapeVariable('$itemId') +
+        '/copies/' +
+        commons.Escaper.ecapeVariable('$copy') +
+        '/';
 
-    var _response = _requester.request(_url,
-                                       "PUT",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "PUT",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new ItemCopyId.fromJson(data));
   }
-
 }
-
 
 class PresetsResourceApi {
   final commons.ApiRequester _requester;
 
-  PresetsResourceApi(commons.ApiRequester client) : 
-      _requester = client;
+  PresetsResourceApi(commons.ApiRequester client) : _requester = client;
 }
-
 
 class SetupResourceApi {
   final commons.ApiRequester _requester;
 
-  SetupResourceApi(commons.ApiRequester client) : 
-      _requester = client;
+  SetupResourceApi(commons.ApiRequester client) : _requester = client;
 
   /**
    * [request] - The metadata request object.
@@ -1467,13 +1440,12 @@ class SetupResourceApi {
 
     _url = 'setup/';
 
-    var _response = _requester.request(_url,
-                                       "PUT",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "PUT",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new SetupResponse.fromJson(data));
   }
 
@@ -1496,27 +1468,22 @@ class SetupResourceApi {
     var _downloadOptions = commons.DownloadOptions.Metadata;
     var _body = null;
 
-
     _url = 'setup/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new SetupResponse.fromJson(data));
   }
-
 }
-
 
 class UsersResourceApi {
   final commons.ApiRequester _requester;
 
-  UsersResourceApi(commons.ApiRequester client) : 
-      _requester = client;
+  UsersResourceApi(commons.ApiRequester client) : _requester = client;
 
   /**
    * [request] - The metadata request object.
@@ -1550,13 +1517,12 @@ class UsersResourceApi {
 
     _url = 'users/' + commons.Escaper.ecapeVariable('$id') + '/password/';
 
-    var _response = _requester.request(_url,
-                                       "PUT",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "PUT",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => null);
   }
 
@@ -1587,13 +1553,12 @@ class UsersResourceApi {
 
     _url = 'users/';
 
-    var _response = _requester.request(_url,
-                                       "POST",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "POST",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new IdResponse.fromJson(data));
   }
 
@@ -1624,13 +1589,12 @@ class UsersResourceApi {
 
     _url = 'users/' + commons.Escaper.ecapeVariable('$id') + '/';
 
-    var _response = _requester.request(_url,
-                                       "DELETE",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "DELETE",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => null);
   }
 
@@ -1653,16 +1617,14 @@ class UsersResourceApi {
     var _downloadOptions = commons.DownloadOptions.Metadata;
     var _body = null;
 
-
     _url = 'users/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new ListOfIdNamePair.fromJson(data));
   }
 
@@ -1693,13 +1655,12 @@ class UsersResourceApi {
 
     _url = 'users/' + commons.Escaper.ecapeVariable('$id') + '/borrowed/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new ListOfIdNamePair.fromJson(data));
   }
 
@@ -1730,13 +1691,12 @@ class UsersResourceApi {
 
     _url = 'users/' + commons.Escaper.ecapeVariable('$id') + '/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new User.fromJson(data));
   }
 
@@ -1759,16 +1719,14 @@ class UsersResourceApi {
     var _downloadOptions = commons.DownloadOptions.Metadata;
     var _body = null;
 
-
     _url = 'current_user/';
 
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "GET",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new User.fromJson(data));
   }
 
@@ -1804,19 +1762,15 @@ class UsersResourceApi {
 
     _url = 'users/' + commons.Escaper.ecapeVariable('$id') + '/';
 
-    var _response = _requester.request(_url,
-                                       "PUT",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
+    var _response = _requester.request(_url, "PUT",
+        body: _body,
+        queryParams: _queryParams,
+        uploadOptions: _uploadOptions,
+        uploadMedia: _uploadMedia,
+        downloadOptions: _downloadOptions);
     return _response.then((data) => new IdResponse.fromJson(data));
   }
-
 }
-
-
 
 class BulkItemActionRequest {
   core.String action;
@@ -1833,7 +1787,9 @@ class BulkItemActionRequest {
       actionerUserId = _json["actionerUserId"];
     }
     if (_json.containsKey("itemCopies")) {
-      itemCopies = _json["itemCopies"].map((value) => new ItemCopyId.fromJson(value)).toList();
+      itemCopies = _json["itemCopies"]
+          .map((value) => new ItemCopyId.fromJson(value))
+          .toList();
     }
   }
 
@@ -1846,7 +1802,8 @@ class BulkItemActionRequest {
       _json["actionerUserId"] = actionerUserId;
     }
     if (itemCopies != null) {
-      _json["itemCopies"] = itemCopies.map((value) => (value).toJson()).toList();
+      _json["itemCopies"] =
+          itemCopies.map((value) => (value).toJson()).toList();
     }
     return _json;
   }
@@ -1920,7 +1877,9 @@ class CreateItemRequest {
       collectionId = _json["collectionId"];
     }
     if (_json.containsKey("files")) {
-      files = _json["files"].map((value) => new MediaMessage.fromJson(value)).toList();
+      files = _json["files"]
+          .map((value) => new MediaMessage.fromJson(value))
+          .toList();
     }
     if (_json.containsKey("item")) {
       item = new Item.fromJson(_json["item"]);
@@ -2149,7 +2108,8 @@ class Item {
       canEdit = _json["canEdit"];
     }
     if (_json.containsKey("copies")) {
-      copies = _json["copies"].map((value) => new ItemCopy.fromJson(value)).toList();
+      copies =
+          _json["copies"].map((value) => new ItemCopy.fromJson(value)).toList();
     }
     if (_json.containsKey("dateAdded")) {
       dateAdded = core.DateTime.parse(_json["dateAdded"]);
@@ -2415,7 +2375,8 @@ class ItemType {
       fieldIds = _json["fieldIds"];
     }
     if (_json.containsKey("fields")) {
-      fields = _json["fields"].map((value) => new Field.fromJson(value)).toList();
+      fields =
+          _json["fields"].map((value) => new Field.fromJson(value)).toList();
     }
     if (_json.containsKey("name")) {
       name = _json["name"];
@@ -2449,8 +2410,7 @@ class ItemType {
   }
 }
 
-class ListOfCollection
-    extends collection_1.ListBase<Collection> {
+class ListOfCollection extends collection_1.ListBase<Collection> {
   final core.List<Collection> _inner;
 
   ListOfCollection() : _inner = [];
@@ -2475,8 +2435,7 @@ class ListOfCollection
   }
 }
 
-class ListOfIdNamePair
-    extends collection_1.ListBase<IdNamePair> {
+class ListOfIdNamePair extends collection_1.ListBase<IdNamePair> {
   final core.List<IdNamePair> _inner;
 
   ListOfIdNamePair() : _inner = [];
@@ -2501,8 +2460,7 @@ class ListOfIdNamePair
   }
 }
 
-class ListOfItemCopy
-    extends collection_1.ListBase<ItemCopy> {
+class ListOfItemCopy extends collection_1.ListBase<ItemCopy> {
   final core.List<ItemCopy> _inner;
 
   ListOfItemCopy() : _inner = [];
@@ -2547,8 +2505,7 @@ class MapOfListOfString
     return _json;
   }
 
-  core.List<core.String> operator [](core.Object key)
-      => _innerMap[key];
+  core.List<core.String> operator [](core.Object key) => _innerMap[key];
 
   operator []=(core.String key, core.List<core.String> value) {
     _innerMap[key] = value;
@@ -2644,7 +2601,9 @@ class PaginatedResponse {
 
   PaginatedResponse.fromJson(core.Map _json) {
     if (_json.containsKey("items")) {
-      items = _json["items"].map((value) => new ItemSummary.fromJson(value)).toList();
+      items = _json["items"]
+          .map((value) => new ItemSummary.fromJson(value))
+          .toList();
     }
     if (_json.containsKey("page")) {
       page = _json["page"];
@@ -2780,7 +2739,9 @@ class SearchResults {
       data = _json["data"];
     }
     if (_json.containsKey("results")) {
-      results = _json["results"].map((value) => new SearchResult.fromJson(value)).toList();
+      results = _json["results"]
+          .map((value) => new SearchResult.fromJson(value))
+          .toList();
     }
     if (_json.containsKey("searchUrl")) {
       searchUrl = _json["searchUrl"];
@@ -2872,7 +2833,9 @@ class TransferRequest {
 
   TransferRequest.fromJson(core.Map _json) {
     if (_json.containsKey("itemCopies")) {
-      itemCopies = _json["itemCopies"].map((value) => new ItemCopyId.fromJson(value)).toList();
+      itemCopies = _json["itemCopies"]
+          .map((value) => new ItemCopyId.fromJson(value))
+          .toList();
     }
     if (_json.containsKey("targetCollection")) {
       targetCollection = _json["targetCollection"];
@@ -2882,7 +2845,8 @@ class TransferRequest {
   core.Map toJson() {
     var _json = new core.Map();
     if (itemCopies != null) {
-      _json["itemCopies"] = itemCopies.map((value) => (value).toJson()).toList();
+      _json["itemCopies"] =
+          itemCopies.map((value) => (value).toJson()).toList();
     }
     if (targetCollection != null) {
       _json["targetCollection"] = targetCollection;
@@ -2899,7 +2863,9 @@ class UpdateItemRequest {
 
   UpdateItemRequest.fromJson(core.Map _json) {
     if (_json.containsKey("files")) {
-      files = _json["files"].map((value) => new MediaMessage.fromJson(value)).toList();
+      files = _json["files"]
+          .map((value) => new MediaMessage.fromJson(value))
+          .toList();
     }
     if (_json.containsKey("item")) {
       item = new Item.fromJson(_json["item"]);

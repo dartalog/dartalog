@@ -12,9 +12,9 @@ import 'package:angular2/router.dart';
 
 @Component(
     selector: 'collections-page',
-    directives: const [materialDirectives,commonControls],
+    directives: const [materialDirectives, commonControls],
     providers: const [materialProviders],
-    styleUrls: const ["../../shared.css","collections_page.css"],
+    styleUrls: const ["../../shared.css", "collections_page.css"],
     templateUrl: 'collections_page.html')
 class CollectionsPage extends APage implements OnInit, OnDestroy {
   static final Logger _log = new Logger("CollectionsPage");
@@ -42,7 +42,8 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
 
   final ApiService _api;
 
-  CollectionsPage(this._pageControl, this._api, AuthenticationService _auth, Router router)
+  CollectionsPage(
+      this._pageControl, this._api, AuthenticationService _auth, Router router)
       : super(_pageControl, _auth, router) {
     _pageControl.setPageTitle("Collections");
     _pageControl.setAvailablePageActions(
@@ -53,7 +54,7 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
   @override
   Logger get loggerImpl => _log;
 
-  bool get isNewItem => selectedItem==null;
+  bool get isNewItem => selectedItem == null;
 
   bool get noItemsFound => items.isEmpty;
 
@@ -67,7 +68,7 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
 
   void authorizationChanged(bool value) {
     this.userAuthorized = value;
-    if(value) {
+    if (value) {
       refresh();
     } else {
       clear();
@@ -82,7 +83,7 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
   Future<Null> selectItem(IdNamePair item) async {
     await performApiCall(() async {
       reset();
-      if(item!=null) {
+      if (item != null) {
         model = await _api.collections.getById(item.uuid);
       }
       users = await _api.users.getAllIdsAndNames();
@@ -104,17 +105,17 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
           throw new Exception(
               action.toString() + " not implemented for this page");
       }
-    } catch(e,st) {
-      handleException(e,st);
+    } catch (e, st) {
+      handleException(e, st);
     }
   }
 
   Future<Null> onSubmit() async {
     await performApiCall(() async {
-      if(isNewItem) {
+      if (isNewItem) {
         await _api.collections.create(model);
       } else {
-        await _api.collections.update(model,selectedItem.uuid);
+        await _api.collections.update(model, selectedItem.uuid);
       }
       editVisible = false;
       await this.refresh();
@@ -125,7 +126,7 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
     await performApiCall(() async {
       editVisible = false;
       items.clear();
-      final ListOfIdNamePair data =await _api.collections.getAllIdsAndNames();
+      final ListOfIdNamePair data = await _api.collections.getAllIdsAndNames();
       items.addAll(data);
     });
   }
@@ -145,21 +146,21 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
     errorMessage = "";
   }
 
-  void removeCurator(String user ) {
-    if(model!=null&&model.curators.contains(user)) {
+  void removeCurator(String user) {
+    if (model != null && model.curators.contains(user)) {
       model.curators.remove(user);
     }
   }
-  void removeBrowser(String user ) {
-    if(model!=null&&model.browsers.contains(user)) {
+
+  void removeBrowser(String user) {
+    if (model != null && model.browsers.contains(user)) {
       model.browsers.remove(user);
     }
   }
 
   void addCurator() {
-    if(selectedUser!=null&&this.model!=null) {
-      if(this.model.curators==null)
-        this.model.curators = <String>[];
+    if (selectedUser != null && this.model != null) {
+      if (this.model.curators == null) this.model.curators = <String>[];
       if (!this.model.curators.contains(selectedUser.uuid)) {
         this.model.curators.add(selectedUser.uuid);
       }
@@ -167,9 +168,8 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
   }
 
   void addBrowser() {
-    if(selectedUser!=null&&this.model!=null) {
-      if(this.model.browsers==null)
-        this.model.browsers = <String>[];
+    if (selectedUser != null && this.model != null) {
+      if (this.model.browsers == null) this.model.browsers = <String>[];
       if (!this.model.browsers.contains(selectedUser.uuid)) {
         this.model.browsers.add(selectedUser.uuid);
       }
@@ -189,5 +189,4 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
       await refresh();
     });
   }
-
 }

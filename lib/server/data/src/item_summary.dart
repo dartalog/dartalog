@@ -15,7 +15,7 @@ class ItemSummary {
   ItemSummary.copyItem(Item o, {String thumbnailField: "front_cover"}) {
     this.uuid = o.uuid;
     this.name = o.name;
-    this.typeUuid= o.typeUuid;
+    this.typeUuid = o.typeUuid;
     if (o.values == null) throw new Exception("Null value object");
 
     if (o.values.containsKey(thumbnailField)) {

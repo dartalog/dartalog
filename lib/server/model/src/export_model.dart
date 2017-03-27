@@ -18,7 +18,7 @@ class ExportModel extends AModel {
 
   // This is a temporary implementation to insert UUIds where there where none before
   void fixIds(AHumanFriendlyData data) {
-    if(StringTools.isNullOrWhitespace(data.readableId)) {
+    if (StringTools.isNullOrWhitespace(data.readableId)) {
       data.readableId = data.uuid;
       data.uuid = generateUuid();
     }
@@ -26,11 +26,10 @@ class ExportModel extends AModel {
 
   Future<List<Collection>> exportCollections() async {
     //await validateGetPrivileges();
-      final List<Collection> output = await data_source.itemCollections.getAll();
-      for(Collection c in output) {
-        fixIds(c);
-      }
-      return output;
+    final List<Collection> output = await data_source.itemCollections.getAll();
+    for (Collection c in output) {
+      fixIds(c);
+    }
+    return output;
   }
-
 }

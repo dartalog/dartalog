@@ -6,5 +6,5 @@ class TransferHistoryEntry extends AHistoryEntry {
   String fromCollectionUuid = "";
   String toCollectionUuid = "";
 
-  TransferHistoryEntry(): super(type);
+  TransferHistoryEntry() : super(type);
 }

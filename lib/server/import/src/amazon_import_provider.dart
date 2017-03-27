@@ -152,7 +152,8 @@ class AmazonImportProvider extends AScrapingImportProvider {
     final List<Element> top_elements = doc.querySelectorAll(".s-result-item");
 
     for (Element top_element in top_elements) {
-      final Element image_element = top_element.querySelector("img.s-access-image");
+      final Element image_element =
+          top_element.querySelector("img.s-access-image");
       final Element title_element = top_element.querySelector("h2");
       if (title_element == null) continue;
       final Element title_parent_element = title_element.parent;

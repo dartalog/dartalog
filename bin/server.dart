@@ -125,16 +125,15 @@ dynamic _startServer() async {
           apiPipeline,
           exactMatch: false);
 
-
-
     pathToBuild = join(rootDirectory, 'build/web/');
     final Directory siteDir = new Directory(pathToBuild);
-    if(siteDir.existsSync()) {
+    if (siteDir.existsSync()) {
       final Handler staticSiteHandler = createStaticHandler(pathToBuild,
           listDirectories: false,
           defaultDocument: 'index.html',
           serveFilesOutsidePath: true);
-      root.add('/', <String>['GET', 'OPTIONS'], staticSiteHandler, exactMatch: false);
+      root.add('/', <String>['GET', 'OPTIONS'], staticSiteHandler,
+          exactMatch: false);
     }
 
     final Map<String, String> extraHeaders = <String, String>{

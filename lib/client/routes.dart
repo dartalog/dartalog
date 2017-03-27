@@ -5,7 +5,6 @@ const String queryRouteParameter = "query";
 const String pageRouteParameter = "page";
 const String idRouteParameter = "id";
 
-
 const Route collectionsRoute = const Route(
   path: '/collections',
   name: 'Collections',
@@ -28,7 +27,9 @@ const Route itemAddRoute =
     const Route(path: '/items/add', name: 'ItemAdd', component: ItemAddPage);
 
 const Route itemsPageRoute = const Route(
-    path: '/items/:$pageRouteParameter', name: 'ItemsPage', component: ItemBrowseComponent);
+    path: '/items/:$pageRouteParameter',
+    name: 'ItemsPage',
+    component: ItemBrowseComponent);
 
 const Route itemsSearchPageRoute = const Route(
     path: '/items/search/:$queryRouteParameter/:$pageRouteParameter',
@@ -51,7 +52,6 @@ const Route setupRoute = const Route(
   name: 'Setup',
   component: SetupPage,
 );
-
 
 const Route itemViewRoute = const Route(
   path: '/item/:$idRouteParameter',

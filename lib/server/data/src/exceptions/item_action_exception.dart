@@ -13,8 +13,7 @@ class ItemActionException implements Exception {
 
   static Future<Null> performValidation(
       Future<Null> toAwait(Map<String, String> fieldErrors)) async {
-    final Map<String, String> itemActionErrors =
-        new Map<String, String>();
+    final Map<String, String> itemActionErrors = new Map<String, String>();
 
     await toAwait(itemActionErrors);
 

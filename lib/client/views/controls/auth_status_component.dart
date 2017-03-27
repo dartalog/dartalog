@@ -7,7 +7,8 @@ import 'package:dartalog/global.dart';
 @Component(
     selector: 'auth-status',
     styleUrls: const ['../shared.css'],
-    template: '<div *ngIf="showMessage&&!authorized" class="no-items">Access Denied</div>')
+    template:
+        '<div *ngIf="showMessage&&!authorized" class="no-items">Access Denied</div>')
 class AuthStatusComponent implements OnInit, OnDestroy {
   static final Logger _log = new Logger("AuthStatusComponent");
 
@@ -33,9 +34,8 @@ class AuthStatusComponent implements OnInit, OnDestroy {
   }
 
   bool get authorized {
-   if(!_auth.isAuthenticated)
-     return false;
-   return _auth.hasPrivilege(required);
+    if (!_auth.isAuthenticated) return false;
+    return _auth.hasPrivilege(required);
   }
 
   @override
@@ -43,10 +43,8 @@ class AuthStatusComponent implements OnInit, OnDestroy {
     authorizedChanged.emit(authorized);
   }
 
-
   @override
   void ngOnDestroy() {
     _subscription.cancel();
   }
-
 }

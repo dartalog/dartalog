@@ -3,6 +3,7 @@ export 'src/exceptions/forbidden_exception.dart';
 export 'src/exceptions/invalid_input_exception.dart';
 export 'src/exceptions/not_found_exception.dart';
 export 'src/exceptions/validation_exception.dart';
+export 'src/exceptions/not_implemented_exception.dart';
 export 'src/item_action.dart';
 export 'src/item_status.dart';
 export 'src/user_privilege.dart';
@@ -25,7 +26,6 @@ const String HOSTED_IMAGES_THUMBNAILS_PATH = "${HOSTED_IMAGES_PATH}thumbnails/";
 const int HTTP_STATUS_SERVER_NEEDS_SETUP = 555;
 
 const int PAGINATED_DATA_LIMIT = 60;
-
 
 const String numericFieldTypeId = "numeric";
 const String stringFieldTypeId = "string";

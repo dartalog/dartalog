@@ -1,6 +1,6 @@
 class ItemActionRequest {
   String action;
-  String actionerUserId;
+  String actionerUserUuid;
 
   ItemActionRequest();
 }

@@ -23,7 +23,7 @@ class UserResource extends AIdResource<User> {
   Future<List<IdNamePair>> getAllIdsAndNames() => getAllIdsAndNamesWithCatch();
 
   @ApiMethod(path: '${ItemApi.usersPath}/{id}/')
-  Future<User> getById(String id) => getByIdWithCatch(id);
+  Future<User> getById(String id) => getByUuidWithCatch(id);
 
   @ApiMethod(path: 'current_user/')
   Future<User> getMe() => catchExceptionsAwait(() async {

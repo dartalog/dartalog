@@ -19,6 +19,7 @@ class MongoDatabase {
   static const String _itemTypesCollection = "itemTypes";
   static const String _collectionsCollection = "collections";
   static const String _usersCollection = "users";
+  static const String _historyCollection = "itemCopyHistory";
 
   static String redirectEntryName = "redirect";
   ManagedConnection<Db> con;
@@ -33,8 +34,16 @@ class MongoDatabase {
       //throw new api.RedirectingException(data["id"], data[REDIRECT_ENTRY_NAME]);
     }
   }
+  Future<DbCollection> getItemCopyHistoryCollection() async {
+    _checkConnection();
 
-  Map createRedirectMap(String oldUuid, String newUuid) {
+    final DbCollection output = con.conn.collection(_historyCollection);
+    await con.conn.createIndex(_historyCollection,
+        keys: {itemCopyUuidField: 1}, name: "ItemCopyUuidIndex");
+    return output;
+  }
+
+    Map createRedirectMap(String oldUuid, String newUuid) {
     return {"uuid": oldUuid, redirectEntryName: newUuid};
   }
 
@@ -52,7 +61,6 @@ class MongoDatabase {
     return output;
   }
 
-
   Future<DbCollection> getCollectionsCollection() async {
     return await getHumanReadableCollection(_collectionsCollection);
   }
@@ -62,7 +70,8 @@ class MongoDatabase {
   }
 
   Future<DbCollection> getItemsCollection() async {
-    final DbCollection output = await getHumanReadableCollection(_itemsCollection);
+    final DbCollection output =
+        await getHumanReadableCollection(_itemsCollection);
     await con.conn.createIndex(_itemsCollection,
         keys: {r"$**": "text"}, name: "TextIndex");
     await con.conn.createIndex(_itemsCollection,
@@ -97,8 +106,7 @@ class MongoDatabase {
   Future<DbCollection> getUsersCollection() async {
     final DbCollection output = await getUuidCollection(_usersCollection);
     await con.conn.createIndex(_usersCollection,
-        keys: {"id": "text", "name": "text"},
-        name: "TextIndex");
+        keys: {"id": "text", "name": "text"}, name: "TextIndex");
     return output;
   }
 
@@ -123,8 +131,9 @@ class MongoDatabase {
   }
 
   static Future<Null> testConnectionString(String connectionString) async {
-    final MongoDbConnectionPool pool = new MongoDbConnectionPool(connectionString, 3);
-    final ManagedConnection<Db> con =  await pool.getConnection();
+    final MongoDbConnectionPool pool =
+        new MongoDbConnectionPool(connectionString, 3);
+    final ManagedConnection<Db> con = await pool.getConnection();
     pool.releaseConnection(con);
     await pool.closeConnections();
   }
@@ -136,7 +145,7 @@ class MongoDatabase {
       if (pool != null) {
         await pool.closeConnections();
       }
-    } catch (e,st) {
+    } catch (e, st) {
       _log.warning("changeConnectionString", e, st);
     }
   }

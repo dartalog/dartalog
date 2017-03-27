@@ -9,6 +9,7 @@ import 'package:dartalog/client/services/services.dart';
 import 'package:dartalog/client/views/controls/auth_status_component.dart';
 import 'package:logging/logging.dart';
 import '../src/a_page.dart';
+
 @Component(
     selector: 'setup-page',
     providers: const <dynamic>[materialProviders],
@@ -42,7 +43,6 @@ class SetupPage extends APage implements OnInit {
   @override
   Logger get loggerImpl => _log;
 
-
   @override
   void ngOnInit() {
     refresh();
@@ -55,7 +55,7 @@ class SetupPage extends APage implements OnInit {
         await _api.setup.get();
       } on DetailedApiRequestError catch (e, st) {
         loggerImpl.warning(e, st);
-        if(e.status==403) {
+        if (e.status == 403) {
           // This indicates that setup is disabled, so we redirect to the main page and prompt for login
           await _router.navigate(<String>[homeRoute.name]);
           _auth.promptForAuthentication();
@@ -69,9 +69,10 @@ class SetupPage extends APage implements OnInit {
   Future<Null> onSubmit() async {
     try {
       // TODO: Figure out how to use angular's validators to do this on-the-fly
-      if(request.adminPassword!=confirmPassword) {
+      if (request.adminPassword != confirmPassword) {
         final AbstractControl control = form.controls["confirmPassword"];
-        control.setErrors(<String,String>{"confirmPassword": "Passwords must match"});
+        control.setErrors(
+            <String, String>{"confirmPassword": "Passwords must match"});
         return;
       }
       await performApiCall(() async {
@@ -81,7 +82,7 @@ class SetupPage extends APage implements OnInit {
           await refresh();
         } on DetailedApiRequestError catch (e, st) {
           loggerImpl.warning(e, st);
-          if(e.status==403) {
+          if (e.status == 403) {
             // This indicates that setup is disabled, so we redirect to the main page and prompt for login
             await _router.navigate(<String>[homeRoute.name]);
             _auth.promptForAuthentication();
@@ -90,9 +91,8 @@ class SetupPage extends APage implements OnInit {
           }
         }
       });
-
-    } catch(e,st) {
-      setErrorMessage(e,st);
+    } catch (e, st) {
+      setErrorMessage(e, st);
     }
   }
 

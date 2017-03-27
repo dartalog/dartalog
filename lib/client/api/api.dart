@@ -28,4 +28,3 @@ export 'src/item.dart'
         ItemSummary,
         SetupRequest,
         SetupResponse;
-

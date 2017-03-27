@@ -20,7 +20,8 @@ class MongoCollectionDataSource extends AMongoIdDataSource<Collection>
   }
 
   @override
-  Future<UuidDataList<Collection>> getVisibleCollections(String userUuid) async {
+  Future<UuidDataList<Collection>> getVisibleCollections(
+      String userUuid) async {
     final SelectorBuilder selector = where
         .eq(publiclyBrowsableField, true)
         .or(where.eq(curatorUuidsField, userUuid))
@@ -34,8 +35,10 @@ class MongoCollectionDataSource extends AMongoIdDataSource<Collection>
     setIdDataFields(output, data);
     if (data.containsKey(publiclyBrowsableField))
       output.publiclyBrowsable = data[publiclyBrowsableField];
-    if (data.containsKey(curatorUuidsField)) output.curatorUuids = data[curatorUuidsField];
-    if (data.containsKey(browserUuidsField)) output.browserUuids = data[browserUuidsField];
+    if (data.containsKey(curatorUuidsField))
+      output.curatorUuids = data[curatorUuidsField];
+    if (data.containsKey(browserUuidsField))
+      output.browserUuids = data[browserUuidsField];
     return output;
   }
 
@@ -50,5 +53,4 @@ class MongoCollectionDataSource extends AMongoIdDataSource<Collection>
     data[curatorUuidsField] = collection.curatorUuids;
     data[browserUuidsField] = collection.browserUuids;
   }
-
 }

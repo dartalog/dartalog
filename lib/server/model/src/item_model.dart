@@ -17,19 +17,19 @@ import 'package:dartalog/server/model/model.dart';
 
 class ItemModel extends AIdNameBasedModel<Item> {
   static final Logger _log = new Logger('ItemModel');
-  static final RegExp LEGAL_ID_CHARACTERS = new RegExp("[a-zA-Z0-9_]");
+  static final RegExp legalIdCharacters = new RegExp("[a-zA-Z0-9_\-]");
 
-  static final String ORIGINAL_IMAGE_PATH =
+  static final String originalImagePath =
       path.join(rootDirectory, HOSTED_IMAGES_ORIGINALS_PATH);
 
-  static final String THUMBNAIL_IMAGE_PATH =
+  static final String thumbnailImagePath =
       path.join(rootDirectory, HOSTED_IMAGES_THUMBNAILS_PATH);
 
-  static final Directory ORIGINAL_IMAGE_DIR =
-      new Directory(ORIGINAL_IMAGE_PATH);
+  static final Directory originalImageDir =
+      new Directory(originalImagePath);
 
-  static final Directory THUMBNAIL_DIR = new Directory(THUMBNAIL_IMAGE_PATH);
-  static final List<String> NON_SORTING_WORDS = ["the", "a", "an"];
+  static final Directory thumbnailDir = new Directory(thumbnailImagePath);
+  static final List<String> nonSortingWords = ["the", "a", "an"];
 
   // TODO: evaluate more (oh)
   final ItemCopyModel copies = new ItemCopyModel();
@@ -63,7 +63,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
       throw new InvalidInputException("Per-page must be a non-negative number");
     }
     await validateGetAllIdsAndNamesPrivileges();
-    return await dataSource.getVisibleIdsAndNamesPaginated(this.currentUserId,
+    return await dataSource.getVisibleIdsAndNamesPaginated(this.currentUserUuid,
         page: page, perPage: perPage);
   }
 
@@ -76,7 +76,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
       throw new InvalidInputException("Per-page must be a non-negative number");
     }
     await validateGetAllIdsAndNamesPrivileges();
-    return await dataSource.getVisiblePaginated(this.currentUserId,
+    return await dataSource.getVisiblePaginated(this.currentUserUuid,
         page: page, perPage: perPage);
   }
 
@@ -89,15 +89,16 @@ class ItemModel extends AIdNameBasedModel<Item> {
       throw new InvalidInputException("Per-page must be a non-negative number");
     }
     await validateGetAllIdsAndNamesPrivileges();
-    return await dataSource.searchVisiblePaginated(this.currentUserId, query,
+    return await dataSource.searchVisiblePaginated(this.currentUserUuid, query,
         page: page, perPage: perPage);
   }
 
   @override
-  Future<String> create(Item item, {List<List<int>> files, bool bypassAuthentication: false}) =>
+  Future<String> create(Item item,
+          {List<List<int>> files, bool bypassAuthentication: false}) =>
       throw new InvalidInputException("Use createWithCopy");
 
-  Future<ItemCopyId> createWithCopy(Item item, String collectionId,
+  Future<String> createWithCopy(Item item, String collectionUuid,
       {String uniqueId, List<List<int>> files}) async {
     await validateCreatePrivileges();
 
@@ -108,25 +109,25 @@ class ItemModel extends AIdNameBasedModel<Item> {
       item.readableId = await _generateUniqueReadableId(item);
 
     final ItemCopy itemCopy = new ItemCopy();
-    itemCopy.collectionId = collectionId;
+    itemCopy.collectionUuid = collectionUuid;
     itemCopy.uniqueId = uniqueId;
     itemCopy.status = ItemStatus.defaultStatus;
 
     await DataValidationException.PerformValidation((Map output) async {
       output.addAll(await validateFields(item));
-      output.addAll(
-          await copies.validateFields(itemCopy, skipItemIdCheck: true));
+      output
+          .addAll(await copies.validateFields(itemCopy, skipItemIdCheck: true));
     });
 
     await _handleFileUploads(item, files);
     //TODO: More thorough cleanup of files in case of failure
 
-    final String itemId = await data_sources.items.write(item);
+    final String itemId = await data_sources.items.create(item.uuid, item);
     return await copies.create(itemId, itemCopy);
   }
 
   @override
-  Future<Item> getById(String id,
+  Future<Item> getByUuid(String uuid,
       {bool includeType: false,
       bool includeFields: false,
       bool includeCopies: false,
@@ -134,16 +135,16 @@ class ItemModel extends AIdNameBasedModel<Item> {
       bool bypassAuth: false}) async {
     await validateGetPrivileges();
 
-    final Item output = await super.getById(id, bypassAuth: bypassAuth);
+    final Item output = await super.getByUuid(uuid, bypassAuth: bypassAuth);
 
     if (includeType) {
-      output.type = (await data_sources.itemTypes.getById(output.typeId))
+      output.type = (await data_sources.itemTypes.getByUuid(output.typeUuid))
           .getOrElse(() => throw new Exception(
-              "Item type '${output.typeId}' specified for item not found"));
+              "Item type '${output.typeUuid}' specified for item not found"));
 
       if (includeFields) {
         output.type.fields =
-            await data_sources.fields.getByIds(output.type.fieldIds);
+            await data_sources.fields.getByUuids(output.type.fieldUuids);
       }
     } else if (includeFields) {
       throw new InvalidInputException(
@@ -153,19 +154,19 @@ class ItemModel extends AIdNameBasedModel<Item> {
       if (output.copies == null) {
         output.copies = await this
             .copies
-            .getVisibleForItem(id, includeCollection: includeCopyCollection);
+            .getVisibleForItem(uuid, includeCollection: includeCopyCollection);
       }
     } else {
       output.copies = null;
     }
     try {
-      await validateUpdatePrivileges(id);
+      await validateUpdatePrivileges(uuid);
       output.canEdit = true;
     } catch (e) {
       output.canEdit = false;
     }
     try {
-      await validateDeletePrivileges(id);
+      await validateDeletePrivileges(uuid);
       output.canDelete = true;
     } catch (e) {
       output.canDelete = false;
@@ -174,29 +175,29 @@ class ItemModel extends AIdNameBasedModel<Item> {
   }
 
   @override
-  Future<String> update(String id, Item item, {List<List<int>> files}) async {
-    await validateUpdatePrivileges(id);
+  Future<String> update(String uuid, Item item, {List<List<int>> files}) async {
+    await validateUpdatePrivileges(uuid);
 
     item.dateAdded = null;
     item.dateUpdated = new DateTime.now();
 
     if (!StringTools.isNullOrWhitespace(item.name)) {
-      final Item oldItem = (await data_sources.items.getById(id)).getOrElse(
-          () => throw new NotFoundException("Item $item not found"));
+      final Item oldItem = (await data_sources.items.getByUuid(uuid))
+          .getOrElse(() => throw new NotFoundException("Item $uuid not found"));
 
-      if (oldItem.name.trim().toLowerCase() !=
-          item.name.trim().toLowerCase())
+      if (oldItem.name.trim().toLowerCase() != item.name.trim().toLowerCase())
         item.readableId = await _generateUniqueReadableId(item);
     }
 
     await _handleFileUploads(item, files);
 
-    return await super.update(id, item);
+    return await super.update(uuid, item);
   }
 
   Future<Null> _handleFileUploads(Item item, List<List<int>> files) async {
-    final ItemType type = await itemTypes.getById(item.typeId);
-    final List<Field> fields = await data_sources.fields.getByIds(type.fieldIds);
+    final ItemType type = await itemTypes.getByUuid(item.typeUuid);
+    final List<Field> fields =
+        await data_sources.fields.getByUuids(type.fieldUuids);
     final Map<String, List<int>> filesToWrite = new Map<String, List<int>>();
 
     for (Field f in fields) {
@@ -261,13 +262,13 @@ class ItemModel extends AIdNameBasedModel<Item> {
     // Now that the above sections have completed gathering all the file services for saving, we save it all
     final List<String> filesWritten = new List<String>();
     try {
-      if (!ORIGINAL_IMAGE_DIR.existsSync())
-        ORIGINAL_IMAGE_DIR.createSync(recursive: true);
-      if (!THUMBNAIL_DIR.existsSync())
-        THUMBNAIL_DIR.createSync(recursive: true);
+      if (!originalImageDir.existsSync())
+        originalImageDir.createSync(recursive: true);
+      if (!thumbnailDir.existsSync())
+        thumbnailDir.createSync(recursive: true);
 
       for (String key in filesToWrite.keys) {
-        final File file = new File(path.join(ORIGINAL_IMAGE_PATH, key));
+        final File file = new File(path.join(originalImagePath, key));
         final bool fileExists = await file.exists();
         if (!fileExists) {
           await file.create();
@@ -280,7 +281,8 @@ class ItemModel extends AIdNameBasedModel<Item> {
 
         final Image image = decodeImage(filesToWrite[key]);
         List<int> thumbnailData;
-        final File thumbnailFile = new File(path.join(THUMBNAIL_IMAGE_PATH, key));
+        final File thumbnailFile =
+            new File(path.join(thumbnailImagePath, key));
         if (thumbnailFile.existsSync()) thumbnailFile.deleteSync();
         thumbnailFile.createSync();
 
@@ -291,7 +293,8 @@ class ItemModel extends AIdNameBasedModel<Item> {
           thumbnailData = filesToWrite[key];
         }
 
-        final RandomAccessFile imageRaf = await file.open(mode: FileMode.WRITE_ONLY);
+        final RandomAccessFile imageRaf =
+            await file.open(mode: FileMode.WRITE_ONLY);
         final RandomAccessFile thumbnailRaf =
             await thumbnailFile.open(mode: FileMode.WRITE_ONLY);
         try {
@@ -325,13 +328,14 @@ class ItemModel extends AIdNameBasedModel<Item> {
 
   @override
   Future<Null> validateFieldsInternal(
-      Map<String, String> fieldErrors, Item item, {String existingId: null}) async {
+      Map<String, String> fieldErrors, Item item,
+      {String existingId: null}) async {
     //TODO: add dynamic field validation
-    if (StringTools.isNullOrWhitespace(item.typeId))
-      fieldErrors["typeId"] = "Required";
+    if (StringTools.isNullOrWhitespace(item.typeUuid))
+      fieldErrors["typeUuid"] = "Required";
     else {
-      final dynamic test = await data_sources.itemTypes.getById(item.typeId);
-      if (test == null) fieldErrors["typeId"] = "Not found";
+      final dynamic test = await data_sources.itemTypes.getByUuid(item.typeUuid);
+      if (test == null) fieldErrors["typeUuid"] = "Not found";
     }
   }
 
@@ -343,7 +347,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
     String lastChar = "_";
     String name = item.name.trim().toLowerCase();
     final String firstWord = name.split(" ")[0];
-    if (NON_SORTING_WORDS.contains(firstWord))
+    if (nonSortingWords.contains(firstWord))
       name = name.substring(name.indexOf(" ") + 1, name.length);
 
     for (int i = 0; i < name.length; i++) {
@@ -357,7 +361,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
           }
           break;
         default:
-          if (LEGAL_ID_CHARACTERS.hasMatch(char)) {
+          if (legalIdCharacters.hasMatch(char)) {
             lastChar = char.toLowerCase();
             output.write(lastChar);
           }
@@ -376,7 +380,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
     while (testItem.isNotEmpty) {
       testName = "${baseName}_$i";
       i++;
-      testItem = await data_sources.items.getById(testName);
+      testItem = await data_sources.items.getByReadableId(testName);
     }
     return testName;
   }

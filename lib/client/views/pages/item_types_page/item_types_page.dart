@@ -11,6 +11,7 @@ import 'package:logging/logging.dart';
 
 import '../src/a_page.dart';
 import 'package:angular2/router.dart';
+
 @Component(
     selector: 'item-types-page',
     directives: const [materialDirectives, commonControls],
@@ -47,7 +48,8 @@ class ItemTypesPage extends APage implements OnInit, OnDestroy {
 
   List<api.IdNamePair> users = <api.IdNamePair>[];
 
-  ItemTypesPage(this._pageControl, this._api, AuthenticationService _auth, Router router)
+  ItemTypesPage(
+      this._pageControl, this._api, AuthenticationService _auth, Router router)
       : super(_pageControl, _auth, router) {
     _pageControl.setPageTitle("Item Types");
     _pageControl.setAvailablePageActions(
@@ -151,15 +153,14 @@ class ItemTypesPage extends APage implements OnInit, OnDestroy {
   }
 
   void removeField(String field) {
-    if(model!=null&&model.fieldIds.contains(field)) {
+    if (model != null && model.fieldIds.contains(field)) {
       model.fieldIds.remove(field);
     }
   }
 
   void addField() {
-    if(selectedField!=null&&this.model!=null) {
-      if(this.model.fieldIds==null)
-        this.model.fieldIds = <String>[];
+    if (selectedField != null && this.model != null) {
+      if (this.model.fieldIds == null) this.model.fieldIds = <String>[];
       if (!this.model.fieldIds.contains(selectedField.uuid)) {
         this.model.fieldIds.add(selectedField.uuid);
       }

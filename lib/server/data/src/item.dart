@@ -4,6 +4,7 @@ import 'item_type.dart';
 import 'package:option/option.dart';
 
 import 'package:rpc/rpc.dart';
+
 @ApiMessage(includeSuper: true)
 class Item extends AHumanFriendlyData {
   String typeUuid;

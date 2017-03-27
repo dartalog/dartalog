@@ -9,7 +9,8 @@ abstract class AUuidBasedDataSource<T extends AUuidData> extends ADataSource {
 
   Future<UuidDataList<T>> getAll();
   Future<Option<T>> getByUuid(String uuid);
-  Future<String> write(T t, [String uuid = null]);
+  Future<String> create(String uuid, T t);
+  Future<String> update(String uuid, T t);
   Future<Null> deleteByUuid(String uuid);
   Future<bool> existsByUuid(String uuid);
   Future<UuidDataList<T>> search(String query);

@@ -6,5 +6,5 @@ class ActionHistoryEntry extends AHistoryEntry {
   String action = "";
   String actionerUserUuid = "";
 
-  ActionHistoryEntry(): super(type);
+  ActionHistoryEntry() : super(type);
 }

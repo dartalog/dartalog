@@ -20,12 +20,12 @@ class CollectionsModel extends AIdNameBasedModel<Collection> {
   String get defaultPrivilegeRequirement => UserPrivilege.curator;
 
   Future<Null> _verifyUserIsCurator(String collectionUuid) async {
-    if(await userHasPrivilege(UserPrivilege.admin)) {
+    if (await userHasPrivilege(UserPrivilege.admin)) {
       return;
     }
     await validateDefaultPrivilegeRequirement();
     final Collection col = await this.getByUuid(collectionUuid);
-    if (!col.curators.contains(this.currentUserId))
+    if (!col.curatorUuids.contains(this.currentUserUuid))
       throw new ForbiddenException.withMessage(
           "You are not a curator for collection \"${col.name}\"");
   }
@@ -37,10 +37,12 @@ class CollectionsModel extends AIdNameBasedModel<Collection> {
   }
 
   @override
-  Future<Null> validateDeletePrivileges(String uuid) => _verifyUserIsCurator(uuid);
+  Future<Null> validateDeletePrivileges(String uuid) =>
+      _verifyUserIsCurator(uuid);
 
   @override
-  Future<Null> validateUpdatePrivileges(String uuid) => _verifyUserIsCurator(uuid);
+  Future<Null> validateUpdatePrivileges(String uuid) =>
+      _verifyUserIsCurator(uuid);
 
   @override
   Future<List<Collection>> getAll() async {

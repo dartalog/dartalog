@@ -18,28 +18,30 @@ abstract class AScrapingImportProvider extends AImportProvider {
   List<ScrapingImportCriteria> get itemTypeCriteria;
   List<ScrapingImportCriteria> get fieldCriteria;
 
+  @override
   Future<ImportResult> import(String id) async {
-    String itemUrl = getItemURL(id);
+    final String itemUrl = getItemURL(id);
 
-    ImportResult output = new ImportResult();
+    final ImportResult output = new ImportResult();
     output.itemUrl = itemUrl;
     output.itemId = id;
     output.itemSource = importProviderName;
 
-    String contents = await this.downloadPage(itemUrl, stripNewlines: true);
+    final String contents = await this.downloadPage(itemUrl, stripNewlines: true);
 
-    Document doc = parse(contents);
+    final Document doc = parse(contents);
 
-    List itemTypes = (await data_sources.itemTypes.getAllIdsAndNames()).uuidList;
+    final List<String> itemTypes =
+        (await data_sources.itemTypes.getAllIdsAndNames()).uuidList;
 
     _log.fine("Attempting to determine item type");
     for (ScrapingImportCriteria criteria in itemTypeCriteria) {
       criteria.acceptedValues = itemTypes;
-      List<String> values = criteria.getFieldValues(doc);
+      final List<String> values = criteria.getFieldValues(doc);
       for (String value in values) {
         if (!StringTools.isNullOrWhitespace(value)) {
-          Option<ItemType> itemTypeOpt =
-              await data_sources.itemTypes.getById(value);
+          final Option<ItemType> itemTypeOpt =
+              await data_sources.itemTypes.getByUuid(value);
           itemTypeOpt.map((ItemType itemType) {
             _log.fine(("Item type determined to be ${itemType.uuid}"));
             output.itemTypeId = itemType.uuid;
@@ -59,7 +61,7 @@ abstract class AScrapingImportProvider extends AImportProvider {
       _log.fine(("Item type could not be determined"));
 
     for (ScrapingImportCriteria field in fieldCriteria) {
-      List<String> values = field.getFieldValues(doc);
+      final List<String> values = field.getFieldValues(doc);
       if (values.length > 0)
         output.values[field.field] = field.getFieldValues(doc);
     }

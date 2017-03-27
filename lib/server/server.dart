@@ -27,4 +27,3 @@ Future<Map<String, dynamic>> loadJSONFile(String path) async {
 //}
 
 enum SettingNames { itemNameFormat }
-

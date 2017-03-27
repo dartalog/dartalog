@@ -1,20 +1,21 @@
 import 'dart:async';
-import 'package:logging/logging.dart';
-import 'package:dartalog/server/data/data.dart';
-import 'package:option/option.dart';
-import 'a_data_source.dart';
 
-abstract class AItemCopyDataSource extends ADataSource {
+import 'package:dartalog/server/data/data.dart';
+import 'package:logging/logging.dart';
+import 'package:option/option.dart';
+
+import 'a_data_source.dart';
+import 'a_uuid_based_data_source.dart';
+
+abstract class AItemCopyDataSource extends AUuidBasedDataSource<ItemCopy> {
   static final Logger _log = new Logger('AItemCopyModel');
 
   Future<Null> deleteByCollection(String collectionUuid);
-  Future<Option<ItemCopy>> getByUniqueId(String uniqueId);
-  Future<Option<ItemCopy>> getByUuid(String uuid);
   Future<bool> existsByUniqueId(String uniqueId);
-  Future<List<ItemCopy>> getAllForItem(String itemUuid);
+  Future<List<ItemCopy>> getAllByUuids(List<String> itemCopyUuids);
+  Future<List<ItemCopy>> getByItemUuid(String itemUuid);
+  Future<Option<ItemCopy>> getByUniqueId(String uniqueId);
   Future<List<ItemCopy>> getVisibleForItem(String itemUuid, String userUuid);
-
-  Future<List<ItemCopy>> getAll(List<String> itemCopyUuids);
-  Future<Null> updateStatus(List<String> itemCopyUuids, String status);
   Future<Null> updateCollection(List<String> itemCopyUuids, String status);
+  Future<Null> updateStatus(List<String> itemCopyUuids, String status);
 }

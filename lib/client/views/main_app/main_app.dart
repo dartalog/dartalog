@@ -73,7 +73,6 @@ class MainApp implements OnInit, OnDestroy {
   bool userIsCurator = false;
   bool userIsAdmin = false;
 
-
   StreamSubscription<String> _pageTitleSubscription;
   StreamSubscription<String> _searchSubscription;
   StreamSubscription<List> _pageActionsSubscription;
@@ -115,7 +114,6 @@ class MainApp implements OnInit, OnDestroy {
     await _auth.clear();
     //await _router.navigate(<dynamic>["Home"]);
   }
-
 
   @override
   void ngOnDestroy() {

@@ -9,10 +9,10 @@ import 'package:option/option.dart';
 import 'a_mongo_id_data_source.dart';
 import 'mongo_item_copy_data_source.dart';
 import 'constants.dart';
+
 class MongoItemDataSource extends AMongoIdDataSource<Item>
     with AItemDataSource {
   static final Logger _log = new Logger('MongoItemDataSource');
-
 
   static Future<Option<SelectorBuilder>> generateVisibleCriteria(
       String userUuid) async {
@@ -20,15 +20,15 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
         await data_sources.itemCollections.getVisibleCollections(userUuid);
     if (collections.isEmpty) return new None<SelectorBuilder>();
 
-    return new Some<SelectorBuilder>(where.oneFrom(itemCopyCollectionPath, collections.uuidList));
+    return new Some<SelectorBuilder>(
+        where.oneFrom(itemCopyCollectionPath, collections.uuidList));
   }
 
   @override
   Future<UuidDataList<Item>> getVisible(String userUuid) async {
     return (await generateVisibleCriteria(userUuid)).cata(
         () => new UuidDataList<Item>(),
-        (SelectorBuilder selector) async =>
-            await getListFromDb(selector));
+        (SelectorBuilder selector) async => await getListFromDb(selector));
   }
 
   @override
@@ -55,7 +55,8 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   }
 
   @override
-  Future<UuidDataList<Item>> searchVisible(String userUuid, String query) async {
+  Future<UuidDataList<Item>> searchVisible(
+      String userUuid, String query) async {
     return (await generateVisibleCriteria(userUuid)).cata(
         () => new UuidDataList<Item>(),
         (SelectorBuilder selector) async =>
@@ -63,7 +64,8 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   }
 
   @override
-  Future<UuidDataList<IdNamePair>> getVisibleIdsAndNames(String userUuid) async {
+  Future<UuidDataList<IdNamePair>> getVisibleIdsAndNames(
+      String userUuid) async {
     return (await generateVisibleCriteria(userUuid)).cata(
         () => new UuidDataList<IdNamePair>(),
         (SelectorBuilder selector) async =>
@@ -96,9 +98,10 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
     output.dateAdded = data[dateAddedField];
     output.dateUpdated = data[dateUpdatedField];
 
-    if(data[itemCopiesField]!=null) {
-      for(Map itemCopy in data[itemCopiesField]) {
-        final ItemCopy copy = MongoItemCopyDataSource.staticCreateObject(itemCopy);
+    if (data[itemCopiesField] != null) {
+      for (Map itemCopy in data[itemCopiesField]) {
+        final ItemCopy copy =
+            MongoItemCopyDataSource.staticCreateObject(itemCopy);
         copy.itemUuid = output.uuid;
         output.copies.add(copy);
       }

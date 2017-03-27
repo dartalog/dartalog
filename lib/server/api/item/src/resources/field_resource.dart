@@ -15,21 +15,23 @@ class FieldResource extends AIdResource<Field> {
   @override
   Logger get childLogger => _log;
 
+  @override
   @ApiMethod(method: 'POST', path: '${ItemApi.fieldsPath}/')
   Future<IdResponse> create(Field field) => createWithCatch(field);
 
+  @override
   @ApiMethod(path: '${ItemApi.fieldsPath}/')
   Future<List<IdNamePair>> getAllIdsAndNames() => getAllIdsAndNamesWithCatch();
 
-  @ApiMethod(path: '${ItemApi.fieldsPath}/{id}/')
-  Future<Field> getById(String id) => getByIdWithCatch(id);
+  @ApiMethod(path: '${ItemApi.fieldsPath}/{uuid}/')
+  Future<Field> getById(String uuid) => getByUuidWithCatch(uuid);
 
-  @ApiMethod(method: 'PUT', path: '${ItemApi.fieldsPath}/{id}/')
-  Future<IdResponse> update(String id, Field field) =>
-      updateWithCatch(id, field);
+  @ApiMethod(method: 'PUT', path: '${ItemApi.fieldsPath}/{uuid}/')
+  Future<IdResponse> update(String uuid, Field field) =>
+      updateWithCatch(uuid, field);
 
-  @ApiMethod(method: 'DELETE', path: '${ItemApi.fieldsPath}/{id}/')
-  Future<VoidMessage> delete(String id) => deleteWithCatch(id);
+  @ApiMethod(method: 'DELETE', path: '${ItemApi.fieldsPath}/{uuid}/')
+  Future<VoidMessage> delete(String uuid) => deleteWithCatch(uuid);
 
   @override
   String generateRedirect(String newId) =>

@@ -17,7 +17,6 @@ class UuidDataList<T extends AUuidData> extends ListBase<T> {
   @override
   int get length => l.length;
 
-
   @override
   T operator [](int index) => l[index];
   @override
@@ -42,9 +41,8 @@ class UuidDataList<T extends AUuidData> extends ListBase<T> {
 
   void sortBytList(List<String> uuids) {
     for (int i = 0; i < uuids.length; i++) {
-      final T item = this
-          .getByUuid(uuids[i])
-          .getOrElse(() => throw new Exception("${uuids[i]} not found in list"));
+      final T item = this.getByUuid(uuids[i]).getOrElse(
+          () => throw new Exception("${uuids[i]} not found in list"));
       this.remove(item);
       this.insert(i, item);
     }

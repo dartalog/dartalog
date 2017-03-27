@@ -7,22 +7,58 @@ import 'constants.dart';
 import 'package:dartalog/server/data/data.dart';
 import 'a_mongo_uuid_based_data_source.dart';
 import 'package:dartalog/global.dart';
-abstract class AMongoNestedObjectDataSource<T extends AUuidData,P extends AUuidData>
-    extends AMongoDataSource {
 
+abstract class AMongoNestedObjectDataSource<T extends AParentedUuidData,
+    P extends AUuidData> extends AMongoDataSource {
   AMongoUuidBasedDataSource<P> get parentSource;
 
-  Future<Null> iterateParentObjects(SelectorBuilder selector, Future<Null> toAwait(P item), {bool update: false}) async {
-    final Stream<P> items = await parentSource.streamFromDb(selector);
-    await items.forEach((P item) async {
-      await toAwait(item);
+  String get childFieldPath;
+  String get childUuidPath;
 
-      if(update) {
-        final SelectorBuilder selector = where
-            .eq(uuidField, item.uuid);
-        await parentSource.genericUpdate(selector, item, multiUpdate: false);
-      }
+  Future<Null> iterateParentObjects(
+      SelectorBuilder selector, Future<Null> toAwait(P item),
+      {bool errorWhenNotFound: false}) async {
+    final Stream<P> items = await parentSource.streamFromDb(selector);
+    bool found = false;
+    await items.forEach((P item) async {
+      found = true;
+      await toAwait(item);
     });
+    if (!found && errorWhenNotFound) {
+      throw new NotFoundException("Parent object not found");
+    }
   }
 
+  Future<String> create(String uuid, T o) async {
+    o.uuid = uuid;
+    final Map data = {};
+    updateMap(o, data);
+    await genericUpdate(
+        where.eq(uuidField, o.parentUuid), modify.push(childFieldPath, data));
+    return uuid;
+  }
+
+  Future<String> update(String uuid, T o) async {
+    o.uuid = uuid;
+    final Map data = {};
+    updateMap(o, data);
+
+    ModifierBuilder modifier = modify;
+    for (String key in data.keys) {
+      modifier = modifier.set("$childFieldPath.\$.$key", data[key]);
+    }
+
+    await genericUpdate(where.eq(childUuidPath, uuid), modifier);
+
+    return uuid;
+  }
+
+  void updateMap(T itemCopy, Map data);
+  T createObject(Map data);
+
+  Future<Null> getParentObjectByUuid(String uuid, Future<Null> toAwait(P item),
+      {bool errorWhenNotFound: false}) async {
+    await iterateParentObjects(where.eq(uuidField, uuid).limit(1), toAwait,
+        errorWhenNotFound: errorWhenNotFound);
+  }
 }

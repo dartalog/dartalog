@@ -20,4 +20,3 @@ const List<Type> pageDirectives = const <Type>[
   ItemAddPage,
   SetupPage
 ];
-

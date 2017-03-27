@@ -23,6 +23,8 @@ class MongoHistoryDataSource extends AMongoObjectDataSource<AHistoryEntry>
   static const String timestampField = "timestamp";
   static const String operatorUserUuidField = "operatorUserUuid";
 
+  static const String itemUuidField = "itemUuid";
+
   @override
   AHistoryEntry createObject(Map data) {
     dynamic output;

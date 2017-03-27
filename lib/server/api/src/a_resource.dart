@@ -12,12 +12,19 @@ import 'package:rpc/rpc.dart';
 import 'package:stack_trace/stack_trace.dart';
 import '../api.dart';
 
-
 abstract class AResource {
   @protected
   Logger get childLogger;
 
   String get resourcePath => "";
+
+  @protected
+  String normalizeReadableId(String input) {
+    String output = input.trim().toLowerCase();
+    output = Uri.decodeQueryComponent(output);
+    return output;
+  }
+
 
   @protected
   Future<dynamic> catchExceptionsAwait(Future<dynamic> toAwait()) async {
@@ -40,7 +47,8 @@ abstract class AResource {
     dynamic exception, stackTrace;
 
     try {
-      if (resourcePath!=setupApiPath&&await model.setup.isSetupAvailable()) {
+      if (resourcePath != setupApiPath &&
+          await model.setup.isSetupAvailable()) {
         throw new SetupRequiredException();
       }
 
@@ -82,9 +90,9 @@ abstract class AResource {
       exception = e;
       stackTrace = st;
       output = new BadRequestError(e.message);
-      for (ItemCopyId id in e.itemActionErrors.keys) {
+      for (String id in e.itemActionErrors.keys) {
         output.errors.add(new RpcErrorDetail(
-            location: id.toString(),
+            location: id,
             locationType: "itemCopy",
             message: e.itemActionErrors[id]));
       }
@@ -92,9 +100,9 @@ abstract class AResource {
       exception = e;
       stackTrace = st;
       output = new BadRequestError(e.message);
-      for (ItemCopyId id in e.transferErrors.keys) {
+      for (String id in e.transferErrors.keys) {
         output.errors.add(new RpcErrorDetail(
-            location: id.toString(),
+            location: id,
             locationType: "itemCopy",
             message: e.transferErrors[id]));
       }

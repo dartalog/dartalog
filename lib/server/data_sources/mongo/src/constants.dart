@@ -12,6 +12,8 @@ const String typeUuidField = "typeUuid";
 
 const String itemCopiesField = "copies";
 const String uniqueIdField = "uniqueId";
+const String itemCopyHistoryField = "history";
+const String itemCopyUuidField = "itemCopyUuid";
 
 const String itemCopyCollectionPath = "$itemCopiesField.$collectionUuidField";
 

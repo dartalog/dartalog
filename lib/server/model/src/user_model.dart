@@ -23,8 +23,10 @@ class UserModel extends AIdNameBasedModel<User> {
 
   @override
   Future<Null> validateFieldsInternal(
-      Map<String,String> fieldErrors, User user, {String existingId: null}) async {
-    if (StringTools.isNullOrWhitespace(existingId) || !StringTools.isNullOrWhitespace(user.password)) {
+      Map<String, String> fieldErrors, User user,
+      {String existingId: null}) async {
+    if (StringTools.isNullOrWhitespace(existingId) ||
+        !StringTools.isNullOrWhitespace(user.password)) {
       _validatePassword(fieldErrors, user.password);
     }
     if (StringTools.isNullOrWhitespace(user.type)) {
@@ -35,7 +37,7 @@ class UserModel extends AIdNameBasedModel<User> {
     }
   }
 
-  void _validatePassword(Map<String,String> fieldErrors, String password) {
+  void _validatePassword(Map<String, String> fieldErrors, String password) {
     if (StringTools.isNullOrWhitespace(password)) {
       fieldErrors["password"] = "Required";
     } else if (password.length < 8) {
@@ -47,12 +49,14 @@ class UserModel extends AIdNameBasedModel<User> {
   Future<User> getMe() async {
     if (!userAuthenticated) throw new NotAuthorizedException();
 
-    final Option<User> output = await dataSource.getById(userPrincipal.get().name);
+    final Option<User> output =
+        await dataSource.getByUuid(userPrincipal.get().name);
     return output.getOrElse(() =>
         throw new Exception("Authenticated user not present in database"));
   }
 
-  Future<String> createUserWith(String username, String password, String type, {bool bypassAuthentication: false}) async {
+  Future<String> createUserWith(String username, String password, String type,
+      {bool bypassAuthentication: false}) async {
     final User newUser = new User();
     newUser.readableId = username;
     newUser.name = username;
@@ -62,8 +66,10 @@ class UserModel extends AIdNameBasedModel<User> {
   }
 
   @override
-  Future<String> create(User user, {List<String> privileges, bool bypassAuthentication: false}) async {
-    final String output = await super.create(user, bypassAuthentication: bypassAuthentication);
+  Future<String> create(User user,
+      {List<String> privileges, bool bypassAuthentication: false}) async {
+    final String output =
+        await super.create(user, bypassAuthentication: bypassAuthentication);
 
     await _setPassword(output, user.password);
 
@@ -72,7 +78,6 @@ class UserModel extends AIdNameBasedModel<User> {
 
   @override
   Future<String> update(String id, User user) async {
-    id = normalizeId(id);
     // Only admin can update...for now
 
     final String output = await super.update(id, user);
@@ -84,37 +89,37 @@ class UserModel extends AIdNameBasedModel<User> {
   }
 
   Future<Null> changePassword(
-      String id, String currentPassword, String newPassword) async {
-    id = normalizeId(id);
+      String uuid, String currentPassword, String newPassword) async {
     if (!userAuthenticated) {
       throw new NotAuthorizedException();
     }
-    if (currentUserId != id)
+    if (currentUserUuid != uuid)
       throw new ForbiddenException.withMessage(
           "You do not have permission to change another user's password");
 
-    final String userPassword = (await data_sources.users.getPasswordHash(id))
+    final String userPassword = (await data_sources.users.getPasswordHashByUuid(uuid))
         .getOrElse(() =>
-            throw new Exception("User $id does not have a current password"));
+            throw new Exception("User $uuid does not have a current password"));
 
-    await DataValidationException.PerformValidation((Map<String,String> fieldErrors) async {
+    await DataValidationException
+        .PerformValidation((Map<String, String> fieldErrors) async {
       if (StringTools.isNullOrWhitespace(currentPassword)) {
         fieldErrors["currentPassword"] = "Required";
       } else if (!verifyPassword(userPassword, currentPassword)) {
         fieldErrors["currentPassword"] = "Incorrect";
       }
     });
-    await _setPassword(id, newPassword);
+    await _setPassword(uuid, newPassword);
   }
 
-  Future<Null> _setPassword(String id, String newPassword) async {
-    id = normalizeId(id);
-    await DataValidationException.PerformValidation((Map<String,String> fieldErrors) async {
+  Future<Null> _setPassword(String uuid, String newPassword) async {
+    await DataValidationException
+        .PerformValidation((Map<String, String> fieldErrors) async {
       _validatePassword(fieldErrors, newPassword);
     });
 
     final String passwordHash = hashPassword(newPassword);
-    await dataSource.setPassword(id, passwordHash);
+    await dataSource.setPassword(uuid, passwordHash);
   }
 
   String hashPassword(String password) {

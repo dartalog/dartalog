@@ -9,25 +9,26 @@ class PageControlService {
   PaginationInfo currentPaginationInfo;
 
   final StreamController<PaginationInfo> _paginationController =
-  new StreamController<PaginationInfo>.broadcast();
+      new StreamController<PaginationInfo>.broadcast();
 
   final StreamController<String> _pageTitleController =
-  new StreamController<String>.broadcast();
+      new StreamController<String>.broadcast();
 
   final StreamController<PageActions> _pageActionController =
-  new StreamController<PageActions>.broadcast();
+      new StreamController<PageActions>.broadcast();
 
   final StreamController<List<PageActions>> _availablePageActionController =
-  new StreamController<List<PageActions>>.broadcast();
+      new StreamController<List<PageActions>>.broadcast();
 
   Stream<PageActions> get pageActionRequested => _pageActionController.stream;
 
   Stream<String> get pageTitleChanged => _pageTitleController.stream;
 
-  Stream<List<PageActions>> get availablePageActionsSet => _availablePageActionController.stream;
+  Stream<List<PageActions>> get availablePageActionsSet =>
+      _availablePageActionController.stream;
 
   void requestPageAction(PageActions action) {
-    switch(action) {
+    switch (action) {
       case PageActions.Search:
         throw new Exception("Use the search() function");
       default:
@@ -48,6 +49,7 @@ class PageControlService {
   void clearPaginationInfo() {
     setPaginationInfo(new PaginationInfo());
   }
+
   void clearSearch() {
     search("");
   }
@@ -58,8 +60,6 @@ class PageControlService {
     clearPageTitle();
     clearAvailablePageActions();
   }
-
-
 
   void clearAvailablePageActions() {
     setAvailablePageActions(<PageActions>[]);

@@ -18,16 +18,16 @@ abstract class AIdResource<T extends AHumanFriendlyData> extends AResource {
         return new IdResponse.fromId(output, this.generateRedirect(output));
       });
 
-  Future<VoidMessage> delete(String id);
+  Future<VoidMessage> delete(String uuid);
   @protected
-  Future<VoidMessage> deleteWithCatch(String id) =>
+  Future<VoidMessage> deleteWithCatch(String uuid) =>
       catchExceptionsAwait(() async {
-        await idModel.delete(id);
+        await idModel.delete(uuid);
         return new VoidMessage();
       });
 
   Future<List<IdNamePair>> getAllIdsAndNames();
-  Future<T> getById(String id);
+  Future<T> getByUuid(String uuid);
 
   //Future<PaginatedResponse<IdNamePair>> getPaginatedIdsAndNames({int offset: 0});
 //  Future<PaginatedResponse<IdNamePair>> _getPaginatedIdsAndNamesWithCatch(
@@ -36,17 +36,18 @@ abstract class AIdResource<T extends AHumanFriendlyData> extends AResource {
 //      new PaginatedResponse<IdNamePair>.fromPaginatedData(
 //          await idModel.getAllIdsAndNames()));
 
-  Future<IdResponse> update(String id, T t);
+  Future<IdResponse> update(String uuid, T t);
   @protected
   Future<List<IdNamePair>> getAllIdsAndNamesWithCatch() async =>
       catchExceptionsAwait(() => idModel.getAllIdsAndNames());
 
   @protected
-  Future<T> getByIdWithCatch(String id) =>
-      catchExceptionsAwait(() async => idModel.getById(id));
-  Future<IdResponse> updateWithCatch(String id, T t) =>
+  Future<T> getByUuidWithCatch(String uuid) =>
+      catchExceptionsAwait(() async => idModel.getByUuid(uuid));
+
+  Future<IdResponse> updateWithCatch(String uuid, T t) =>
       catchExceptionsAwait(() async {
-        String output = await idModel.update(id, t);
+        final String output = await idModel.update(uuid, t);
         return new IdResponse.fromId(output, this.generateRedirect(output));
       });
 }

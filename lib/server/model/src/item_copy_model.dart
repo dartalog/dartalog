@@ -18,31 +18,30 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
   @override
   Logger get loggerImpl => _log;
 
-  Future<ItemCopyId> create(String itemId, ItemCopy itemCopy) async {
+  Future<String> create(String itemUuid, ItemCopy itemCopy) async {
     await validateCreatePrivileges();
 
-    itemCopy.itemId = itemId;
+    itemCopy.itemUuid = itemUuid;
     itemCopy.status = ItemStatus.defaultStatus;
-
-    itemCopy.copy = await data_sources.itemCopies.getNextCopyNumber(itemId);
 
     await validate(itemCopy);
 
-    return await data_sources.itemCopies.write(itemCopy, false);
+    return await data_sources.itemCopies.create(generateUuid(), itemCopy);
   }
 
-  Future<ItemCopy> get(String itemId, int copy,
+  Future<ItemCopy> get(String uuid,
       {bool includeItemSummary: false, bool includeCollection: false}) async {
     await validateGetPrivileges();
 
     final Option<ItemCopy> optItemCopy =
-        await data_sources.itemCopies.getByItemIdAndCopy(itemId, copy);
+        await data_sources.itemCopies.getByUuid(uuid);
 
-    final ItemCopy itemCopy = optItemCopy.getOrElse(() =>
-        throw new NotFoundException("Copy #$copy of $itemId not found"));
+    final ItemCopy itemCopy = optItemCopy.getOrElse(
+        () => throw new NotFoundException("Item copy $uuid not found"));
 
-    await _setAdditionalFieldsOnList(<ItemCopy>[itemCopy], itemId,
-        includeCollection: includeCollection, includeItemSummary: includeItemSummary);
+    await _setAdditionalFieldsOnList(<ItemCopy>[itemCopy],
+        includeCollection: includeCollection,
+        includeItemSummary: includeItemSummary);
 
     return itemCopy;
   }
@@ -52,39 +51,41 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
     await validateGetPrivileges();
 
     final Option<ItemCopy> optItemCopy =
-    await data_sources.itemCopies.getByUniqueId(uniqueId);
+        await data_sources.itemCopies.getByUniqueId(uniqueId);
 
     final ItemCopy itemCopy = optItemCopy.getOrElse(() =>
-    throw new NotFoundException("Item copy with unique ID $uniqueId not found"));
+        throw new NotFoundException(
+            "Item copy with unique ID $uniqueId not found"));
 
-    await _setAdditionalFieldsOnList(<ItemCopy>[itemCopy], itemCopy.itemId,
-        includeCollection: includeCollection, includeItemSummary: includeItemSummary);
+    await _setAdditionalFieldsOnList(<ItemCopy>[itemCopy],
+        includeCollection: includeCollection,
+        includeItemSummary: includeItemSummary);
 
     return itemCopy;
   }
 
-  Future<List<ItemCopy>> getAllForItem(String itemId,
+  Future<List<ItemCopy>> getAllForItem(String itemUuid,
       {bool includeRemoved: false, bool includeCollection: false}) async {
     await validateGetPrivileges();
 
     final List<ItemCopy> output =
-        await data_sources.itemCopies.getAllForItemId(itemId);
-    await _setAdditionalFieldsOnList(output, itemId,
+        await data_sources.itemCopies.getByItemUuid(itemUuid);
+    await _setAdditionalFieldsOnList(output,
         includeCollection: includeCollection);
     return output;
   }
 
-  Future<ItemCopy> getVisible(String itemId, int copy,
+  Future<ItemCopy> getVisible(String itemCopyUuid,
       {bool includeItemSummary: false, bool includeCollection: false}) async {
     await validateGetPrivileges();
 
-    final ItemCopy itemCopy = await get(itemId, copy,
+    final ItemCopy itemCopy = await get(itemCopyUuid,
         includeItemSummary: includeItemSummary,
         includeCollection: includeCollection);
 
     final UuidDataList<Collection> visibleCollection =
-        await data_sources.itemCollections.getVisibleCollections(currentUserId);
-    if (!visibleCollection.containsId(itemCopy.collectionId)) {
+        await data_sources.itemCollections.getVisibleCollections(currentUserUuid);
+    if (!visibleCollection.containsUuid(itemCopy.collectionUuid)) {
       throw new ForbiddenException();
     }
     return itemCopy;
@@ -99,27 +100,26 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
         includeCollection: includeCollection);
 
     final UuidDataList<Collection> visibleCollection =
-    await data_sources.itemCollections.getVisibleCollections(currentUserId);
-    if (!visibleCollection.containsId(itemCopy.collectionId)) {
+        await data_sources.itemCollections.getVisibleCollections(currentUserUuid);
+    if (!visibleCollection.containsUuid(itemCopy.collectionUuid)) {
       throw new ForbiddenException();
     }
     return itemCopy;
   }
 
-
-  Future<List<ItemCopy>> getVisibleForItem(String itemId,
+  Future<List<ItemCopy>> getVisibleForItem(String itemUuid,
       {bool includeRemoved: false, bool includeCollection: false}) async {
     await validateGetPrivileges();
 
     final List<ItemCopy> output = await data_sources.itemCopies
-        .getVisibleForItemId(itemId, currentUserId);
-    await _setAdditionalFieldsOnList(output, itemId,
+        .getVisibleForItem(itemUuid, currentUserUuid);
+    await _setAdditionalFieldsOnList(output,
         includeCollection: includeCollection);
     return output;
   }
 
-  Future<Null> performBulkAction(List<ItemCopyId> itemCopyIds, String action,
-      String actionerUserId) async {
+  Future<Null> performBulkAction(List<String> itemCopyUuids, String action,
+      String actionerUserUuid) async {
     // TODO: Pre-validate privileges for all requested items as one command?
     await validateUpdatePrivileges(null);
 
@@ -131,30 +131,31 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
         fieldErrors["action"] = "Invalid";
       }
 
-      if (StringTools.isNullOrWhitespace(actionerUserId)) {
-        fieldErrors["user"] = "Required";
+      if (StringTools.isNullOrWhitespace(actionerUserUuid)) {
+        fieldErrors["actionerUserUuid"] = "Required";
       } else {
-        if (!await data_sources.users.existsByID(actionerUserId))
-          fieldErrors["user"] = "Not found";
+        if (!await data_sources.users.existsByUuid(actionerUserUuid))
+          fieldErrors["actionerUserUuid"] = "Not found";
       }
     });
 
     // TODO: Validate that both the person checking out AND the person being checked out to have permission to take the item.
-    final List<ItemCopy> copies = await data_sources.itemCopies.getAll(itemCopyIds);
+    final List<ItemCopy> copies =
+        await data_sources.itemCopies.getAllByUuids(itemCopyUuids);
 
     await ItemActionException
-        .performValidation((Map<ItemCopyId, String> itemActionErrors) async {
-      for (ItemCopyId itemCopyId in itemCopyIds) {
+        .performValidation((Map<String, String> itemActionErrors) async {
+      for (String itemCopyUuid in itemCopyUuids) {
         ItemCopy itemCopy;
         for (ItemCopy ic in copies) {
-          if (itemCopyId.matchesItemCopy(ic)) itemCopy = ic;
+          if (itemCopyUuid==ic.uuid) itemCopy = ic;
           break;
         }
         if (itemCopy == null) {
-          itemActionErrors[itemCopyId] = "Item copy not found";
+          itemActionErrors[itemCopyUuid] = "Item copy not found";
         } else {
           if (!ItemAction.isActionValidForStatus(action, itemCopy.status)) {
-            itemActionErrors[itemCopyId] = "Item is ${itemCopy.status}";
+            itemActionErrors[itemCopyUuid] = "Item is ${itemCopy.status}";
           }
         }
         return itemActionErrors;
@@ -162,15 +163,15 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
     });
 
     final String newStatus = ItemAction.getResultingStatus(action);
-    await data_sources.itemCopies.updateStatus(itemCopyIds, newStatus);
+    await data_sources.itemCopies.updateStatus(itemCopyUuids, newStatus);
 
     for (ItemCopy itemCopy in copies) {
       final ActionHistoryEntry historyEntry = new ActionHistoryEntry();
       historyEntry.action = action;
-      historyEntry.actionerUserId = actionerUserId;
-      historyEntry.copy = itemCopy.copy;
-      historyEntry.itemId = itemCopy.itemId;
-      historyEntry.operatorUserId = currentUserId;
+      historyEntry.actionerUserUuid = actionerUserUuid;
+      historyEntry.itemCopyUuid = itemCopy.uuid;
+      historyEntry.itemUuid = itemCopy.itemUuid;
+      historyEntry.operatorUserUuid = currentUserUuid;
 
       itemCopy.status = newStatus;
 
@@ -178,65 +179,69 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
     }
   }
 
-  Future<Null> transfer(List<ItemCopyId> itemCopyIds, String targetCollection) async {
+  Future<Null> transfer(
+      List<String> itemCopyUuids, String targetCollectionUuid) async {
     // TODO: Pre-validate privileges for all requested items as one command?
     await validateUpdatePrivileges(null);
 
     await DataValidationException
         .PerformValidation((Map<String, String> fieldErrors) async {
-      if(StringTools.isNullOrWhitespace(targetCollection)) {
-        fieldErrors["targetCollection"] ="Required";
+      if (StringTools.isNullOrWhitespace(targetCollectionUuid)) {
+        fieldErrors["targetCollectionUuid"] = "Required";
       } else {
-        if(!await data_sources.itemCollections.existsByID(targetCollection)) {
-          fieldErrors["targetCollection"] ="Invalid";
+        if (!await data_sources.itemCollections.existsByUuid(targetCollectionUuid)) {
+          fieldErrors["targetCollectionUuid"] = "Invalid";
         }
       }
     });
 
     // TODO: Validate that the user has permission to transfer to the target collection
-    final List<ItemCopy> copies = await data_sources.itemCopies.getAll(itemCopyIds);
+    final List<ItemCopy> copies =
+        await data_sources.itemCopies.getAllByUuids(itemCopyUuids);
 
     await TransferException
-        .performValidation((Map<ItemCopyId, String> transferErrors) async {
-      for (ItemCopyId itemCopyId in itemCopyIds) {
+        .performValidation((Map<String, String> transferErrors) async {
+      for (String itemCopyId in itemCopyUuids) {
         ItemCopy itemCopy;
         for (ItemCopy ic in copies) {
-          if (itemCopyId.matchesItemCopy(ic)) itemCopy = ic;
+          if (itemCopyId == ic.uuid) itemCopy = ic;
           break;
         }
         if (itemCopy == null) {
           transferErrors[itemCopyId] = "Item copy not found";
-        } else if(itemCopy.collectionId==targetCollection) {
+        } else if (itemCopy.collectionUuid == targetCollectionUuid) {
           transferErrors[itemCopyId] = "Item is already in collection";
-        } else if(itemCopy.status!= ItemStatus.available) {
+        } else if (itemCopy.status != ItemStatus.available) {
           transferErrors[itemCopyId] = "Item is ${itemCopy.status}";
         }
         return transferErrors;
       }
     });
 
-    await data_sources.itemCopies.updateCollection(itemCopyIds, targetCollection);
+    await data_sources.itemCopies
+        .updateCollection(itemCopyUuids, targetCollectionUuid);
 
     for (ItemCopy itemCopy in copies) {
       final TransferHistoryEntry historyEntry = new TransferHistoryEntry();
-      historyEntry.fromCollection = itemCopy.collectionId;
-      historyEntry.toCollection = targetCollection;
-      historyEntry.copy = itemCopy.copy;
-      historyEntry.itemId = itemCopy.itemId;
-      historyEntry.operatorUserId = currentUserId;
+      historyEntry.fromCollectionUuid = itemCopy.collectionUuid;
+      historyEntry.toCollectionUuid = targetCollectionUuid;
+      historyEntry.itemUuid = itemCopy.itemUuid;
+      historyEntry.itemCopyUuid = itemCopy.uuid;
+      historyEntry.operatorUserUuid = currentUserUuid;
 
-      itemCopy.collectionId = targetCollection;
+      itemCopy.collectionUuid = targetCollectionUuid;
 
       await data_sources.itemHistories.write(historyEntry);
     }
   }
 
-  Future<ItemCopyId> update(String itemId, int copy, ItemCopy itemCopy) async {
-    await validateUpdatePrivileges(itemId);
+  Future<String> update(String uuid, ItemCopy itemCopy) async {
+    // TODO: Enforce item-level privilage?
+    await validateUpdatePrivileges(uuid);
 
     itemCopy.status = "";
-    await validate(itemCopy, existingId:  itemId);
-    return await data_sources.itemCopies.write(itemCopy, true);
+    await validate(itemCopy, existingId: uuid);
+    return await data_sources.itemCopies.update(uuid, itemCopy);
   }
 
   Future<Null> _setAdditionalFields(ItemCopy itemCopy) async {
@@ -247,13 +252,13 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
     if (itemCopy.collection != null)
       col = itemCopy.collection;
     else
-      col = await collections.getById(itemCopy.collectionId, bypassAuth: true);
+      col = await collections.getByUuid(itemCopy.collectionUuid, bypassAuth: true);
 
     itemCopy.userCanCheckout = false;
     itemCopy.userCanEdit = false;
 
     if (userAuthenticated) {
-      if (col.curators.contains(currentUserId)) {
+      if (col.curatorUuids.contains(currentUserUuid)) {
         itemCopy.userCanEdit = await userHasPrivilege(UserPrivilege.curator);
         itemCopy.userCanCheckout =
             await userHasPrivilege(UserPrivilege.checkout);
@@ -261,32 +266,31 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
     }
   }
 
-  Future<Null> _setAdditionalFieldsOnList(List<ItemCopy> data, String itemId,
+  Future<Null> _setAdditionalFieldsOnList(List<ItemCopy> data,
       {bool includeCollection: false, bool includeItemSummary: false}) async {
+    final UuidDataList<Collection> foundCollections =
+        new UuidDataList<Collection>();
 
-    final UuidDataList<Collection> foundCollections = new UuidDataList<Collection>();
-
-    ItemSummary itemSummary;
-    if (includeItemSummary) {
-      itemSummary = new ItemSummary.copyObject(await items.getById(itemId));
-    }
+    final Map<String, ItemSummary> itemSummaries = <String, ItemSummary>{};
 
     for (ItemCopy itemCopy in data) {
-      itemCopy.itemId = itemId;
       if (includeCollection) {
-        if (!foundCollections.containsId(itemCopy.collectionId)) {
+        if (!foundCollections.containsUuid(itemCopy.collectionUuid)) {
           final Option<Collection> collectionOpt =
-              await data_sources.itemCollections.getById(itemCopy.collectionId);
+              await data_sources.itemCollections.getByUuid(itemCopy.collectionUuid);
           foundCollections.add(collectionOpt.getOrElse(() => throw new Exception(
-              "Collection ID ${itemCopy.collectionId} specified on item $itemId copy ${itemCopy.copy} not found ")));
+              "Collection UUID ${itemCopy.collectionUuid} specified on item copy ${itemCopy.uuid} not found ")));
         }
         itemCopy.collection =
-            foundCollections.getByID(itemCopy.collectionId).get();
+            foundCollections.getByUuid(itemCopy.collectionUuid).get();
       }
+      // TODO: Make this more efficient, get it down to one call to the data source
       if (includeItemSummary) {
-        itemCopy.itemSummary = itemSummary;
+        if(!itemSummaries.containsKey(itemCopy.itemUuid)) {
+          itemSummaries[itemCopy.itemUuid] =new ItemSummary.copyObject(await items.getByUuid(itemCopy.itemUuid));
+        }
+        itemCopy.itemSummary = itemSummaries[itemCopy.itemUuid];
       }
-
 
       await _setAdditionalFields(itemCopy);
     }
@@ -298,35 +302,31 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
     final Map<String, String> fieldErrors = new Map<String, String>();
 
     if (!skipItemIdCheck) {
-      if (StringTools.isNullOrWhitespace(itemCopy.itemId))
-        fieldErrors["itemId"] = "Required";
+      if (StringTools.isNullOrWhitespace(itemCopy.itemUuid))
+        fieldErrors["itemUuid"] = "Required";
       else {
-        if(!await data_sources.items.existsByID(itemCopy.itemId))
-          fieldErrors["itemId"] = "Not found";
+        if (!await data_sources.items.existsByUuid(itemCopy.itemUuid))
+          fieldErrors["itemUuid"] = "Not found";
       }
-      if (itemCopy.copy == 0)
-        throw new Exception("Copy must be greater than 0");
-      else {
         final bool test = await data_sources.itemCopies
-            .existsByItemIdAndCopy(itemCopy.itemId, itemCopy.copy);
+            .existsByUuid(existingId);
         if (StringTools.isNullOrWhitespace(existingId)) {
           if (test) throw new InvalidInputException("Copy already exists");
         } else {
           if (!test) throw new NotFoundException("Specified copy not found");
         }
-      }
     }
 
-    if (StringTools.isNullOrWhitespace(itemCopy.collectionId)) {
-      fieldErrors["collectionId"] = "Required";
+    if (StringTools.isNullOrWhitespace(itemCopy.collectionUuid)) {
+      fieldErrors["collectionUuid"] = "Required";
     } else {
       final Option<Collection> col =
-          await data_sources.itemCollections.getById(itemCopy.collectionId);
+          await data_sources.itemCollections.getByUuid(itemCopy.collectionUuid);
       col.map((Collection col) {
-        if (!col.curators.contains(this.currentUserId))
-          fieldErrors["collectionId"] = "Not a curator";
+        if (!col.curatorUuids.contains(this.currentUserUuid))
+          fieldErrors["collectionUuid"] = "Not a curator";
       }).orElse(() {
-        fieldErrors["collectionId"] = "Not found";
+        fieldErrors["collectionUuid"] = "Not found";
       });
     }
 
@@ -339,8 +339,7 @@ class ItemCopyModel extends ATypedModel<ItemCopy> {
         final Option<ItemCopy> test =
             await data_sources.itemCopies.getByUniqueId(itemCopy.uniqueId);
         test.map((ItemCopy testItemCopy) {
-          if (testItemCopy.itemId != itemCopy.itemId ||
-              testItemCopy.copy != itemCopy.copy)
+          if (testItemCopy.uuid != itemCopy.uuid)
             fieldErrors["uniqueId"] = "Already used";
         });
       }

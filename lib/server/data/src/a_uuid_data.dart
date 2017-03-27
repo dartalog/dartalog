@@ -1,6 +1,6 @@
 import 'a_data.dart';
 
-class AUuidData extends AData  {
+class AUuidData extends AData {
   String uuid = "";
 
   AUuidData();
@@ -10,5 +10,4 @@ class AUuidData extends AData  {
   AUuidData.copy(dynamic o) {
     this.uuid = o.uuid;
   }
-
 }

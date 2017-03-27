@@ -13,8 +13,7 @@ class TransferException implements Exception {
 
   static Future<Null> performValidation(
       Future<Null> toAwait(Map<String, String> transferErrors)) async {
-    final Map<String, String> transferErrors =
-        new Map<String, String>();
+    final Map<String, String> transferErrors = new Map<String, String>();
 
     await toAwait(transferErrors);
 

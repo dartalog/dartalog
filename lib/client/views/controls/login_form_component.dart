@@ -9,6 +9,7 @@ import 'package:logging/logging.dart';
 import 'package:angular2/router.dart';
 import '../src/a_error_thing.dart';
 import 'package:dartalog/global.dart';
+
 @Component(
     selector: 'login-form',
     styleUrls: const ["../shared.css"],
@@ -80,7 +81,7 @@ class LoginFormComponent extends AErrorThing {
       await _auth.authenticate(userName, password);
       visible = false;
     } on Exception catch (e, st) {
-      setErrorMessage(e,st);
+      setErrorMessage(e, st);
     } catch (e, st) {
       _log.severe(e, st);
       final HttpRequest request = e.target;

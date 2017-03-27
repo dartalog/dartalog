@@ -1,10 +1,8 @@
-import 'a_human_friendly_data.dart';
+import 'a_parented_uuid_data.dart';
 import 'collection.dart';
 import 'item_summary.dart';
-import 'dart:convert';
-import 'a_uuid_data.dart';
 
-class ItemCopy extends AUuidData {
+class ItemCopy extends AParentedUuidData {
   String itemUuid = "";
   String collectionUuid = "";
   String uniqueId = "";
@@ -20,13 +18,16 @@ class ItemCopy extends AUuidData {
 
   ItemCopy();
 
-  ItemCopy.copyItem(ItemCopy o): super.copy(o) {
+  ItemCopy.copyItem(ItemCopy o) : super.copyItem(o) {
     this.itemUuid = o.itemUuid;
     this.collectionUuid = o.collectionUuid;
     this.collection = o.collection;
     this.uniqueId = o.uniqueId;
     this.status = o.status;
   }
+
+  @override
+  String get parentUuid => itemUuid;
 
   void cleanUp() {
     this.uniqueId = this.uniqueId.trim();

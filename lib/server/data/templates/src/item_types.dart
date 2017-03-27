@@ -40,8 +40,8 @@ final ItemType comicBookItemType = new ItemType.withValues(
     ],
     id: "6463f786-9ee3-49bf-a479-eb4c14d4a4fa");
 
-final ItemType dvdItemType = new ItemType.withValues(
-    "DVD", "dvd", <String>[frontCoverField.uuid, seriesField.uuid, upcField.uuid],
+final ItemType dvdItemType = new ItemType.withValues("DVD", "dvd",
+    <String>[frontCoverField.uuid, seriesField.uuid, upcField.uuid],
     id: "de113a38-fbab-4dc0-90c6-b7a89be06d5b");
 
 final ItemType videoGameItemType = new ItemType.withValues(

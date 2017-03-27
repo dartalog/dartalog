@@ -19,7 +19,8 @@ class FieldModel extends AIdNameBasedModel<Field> {
 
   @override
   Future<Null> validateFieldsInternal(
-      final Map<String,String> fieldErrors, Field field, {String existingId: null}) async {
+      final Map<String, String> fieldErrors, Field field,
+      {String existingId: null}) async {
     if (StringTools.isNullOrWhitespace(field.type))
       fieldErrors["type"] = "Required";
     else if (!globalFieldTypes.containsKey(field.type)) {
@@ -36,5 +37,4 @@ class FieldModel extends AIdNameBasedModel<Field> {
   Future<String> delete(String id) async {
     throw new Exception("Not implemented");
   }
-
 }

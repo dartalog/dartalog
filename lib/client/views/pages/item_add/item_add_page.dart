@@ -18,7 +18,11 @@ import 'package:angular2/router.dart';
 
 @Component(
     selector: 'item-add-page',
-    directives: const <dynamic>[FORM_DIRECTIVES, materialDirectives, commonControls],
+    directives: const <dynamic>[
+      FORM_DIRECTIVES,
+      materialDirectives,
+      commonControls
+    ],
     providers: const <dynamic>[FORM_PROVIDERS, materialProviders],
     styleUrls: const <String>["../../shared.css"],
     templateUrl: 'item_add_page.html')
@@ -35,7 +39,6 @@ class ItemAddPage extends APage implements OnInit, OnDestroy {
 
   ItemType selectedItemType = new ItemType();
   String selectedItemTypeId = "";
-
 
   SearchResults importSearchResults = new SearchResults();
 
@@ -55,7 +58,8 @@ class ItemAddPage extends APage implements OnInit, OnDestroy {
 
   List<IdNamePair> users = <IdNamePair>[];
 
-  ItemAddPage(this._pageControl, this._api, AuthenticationService _auth, Router router)
+  ItemAddPage(
+      this._pageControl, this._api, AuthenticationService _auth, Router router)
       : super(_pageControl, _auth, router) {
     _pageControl.setPageTitle("Add Item(s)");
     _pageControl.setAvailablePageActions(<PageActions>[PageActions.Refresh]);
@@ -93,7 +97,6 @@ class ItemAddPage extends APage implements OnInit, OnDestroy {
       if (input.files.length == 0) return;
       final File file = input.files[0];
 
-
       field.editImageUrl = file.name;
 
       final FileReader reader = new FileReader();
@@ -115,7 +118,7 @@ class ItemAddPage extends APage implements OnInit, OnDestroy {
               .toString();
           field.displayImageUrl = value;
         } finally {
-          field.imageLoading = false  ;
+          field.imageLoading = false;
         }
       }
     } finally {
@@ -148,11 +151,12 @@ class ItemAddPage extends APage implements OnInit, OnDestroy {
         selectedItemTypeId = importResult.itemTypeId;
       } else {
         selectedItemType = new ItemType();
-        selectedItemTypeId="";
+        selectedItemTypeId = "";
       }
 
       fields.clear();
-      fields.addAll(ItemEditField.createList(selectedItemType.fields, importResult));
+      fields.addAll(
+          ItemEditField.createList(selectedItemType.fields, importResult));
 
       itemName = ItemEditField.getImportResultValue(importResult, "name");
 
@@ -205,7 +209,7 @@ class ItemAddPage extends APage implements OnInit, OnDestroy {
     selectedItemType = new ItemType();
 
     itemName = "";
-    selectedItemTypeId="";
+    selectedItemTypeId = "";
     fields.clear();
     selectedCollectionId = "";
     newUniqueId = "";
@@ -221,13 +225,14 @@ class ItemAddPage extends APage implements OnInit, OnDestroy {
         throw new Exception("Please select an item type");
 
       final Item newItem = new Item();
-      newItem.values = <String,String>{};
+      newItem.values = <String, String>{};
 
       for (ItemEditField f in this.fields) {
         if (f.type == "image") {
           if (f.mediaMessage != null) {
             files.add(f.mediaMessage);
-            newItem.values[f.field.uuid] = "$fileUploadPrefix${files.length - 1}";
+            newItem.values[f.field.uuid] =
+                "$fileUploadPrefix${files.length - 1}";
           }
         } else {
           newItem.values[f.field.uuid] = f.value;
@@ -239,7 +244,7 @@ class ItemAddPage extends APage implements OnInit, OnDestroy {
         request.item = newItem;
         request.files = files;
         final IdResponse idResponse =
-        await _api.items.updateItem(request, this.selectedItemId);
+            await _api.items.updateItem(request, this.selectedItemId);
         return idResponse.id;
       } else {
         final CreateItemRequest request = new CreateItemRequest();
@@ -249,13 +254,11 @@ class ItemAddPage extends APage implements OnInit, OnDestroy {
         request.files = files;
 
         final ItemCopyId itemCopyId =
-        await _api.items.createItemWithCopy(request);
+            await _api.items.createItemWithCopy(request);
         return itemCopyId.itemId;
       }
     });
   }
-
-
 
   void uploadClicked() {
 //    final Option<Element> parent = getParentElement(event.target, "div");

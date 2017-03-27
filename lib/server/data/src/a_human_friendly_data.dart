@@ -4,6 +4,7 @@ import 'package:dartalog/global.dart';
 export 'a_data.dart';
 import 'package:rpc/rpc.dart';
 import 'a_uuid_data.dart';
+
 @ApiMessage()
 abstract class AHumanFriendlyData extends AUuidData {
   String name = "";
@@ -11,11 +12,11 @@ abstract class AHumanFriendlyData extends AUuidData {
 
   AHumanFriendlyData();
 
-  AHumanFriendlyData.withValues(this.name, this.readableId, {String uuid: ""}): super.withValues(uuid);
+  AHumanFriendlyData.withValues(this.name, this.readableId, {String uuid: ""})
+      : super.withValues(uuid);
 
-  AHumanFriendlyData.copy(dynamic o): super.copy(o) {
+  AHumanFriendlyData.copy(dynamic o) : super.copy(o) {
     this.name = o.name;
     this.readableId = o.readableId;
   }
-
 }

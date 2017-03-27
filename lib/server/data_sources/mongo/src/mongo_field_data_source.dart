@@ -9,8 +9,6 @@ import 'constants.dart';
 class MongoFieldDataSource extends AMongoIdDataSource<Field> with AFieldModel {
   static final Logger _log = new Logger('MongoFieldDataSource');
 
-
-
   @override
   Future<UuidDataList<Field>> getByUuids(List<String> uuids) async {
     _log.info("Getting all fields for UUIDs");

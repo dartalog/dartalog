@@ -13,7 +13,6 @@ final AItemTypeDataSource itemTypes = new MongoItemTypeDataSource();
 //final PresetModel presets = new PresetModel();
 final AUserDataSource users = new MongoUserDataSource();
 final AItemCopyDataSource itemCopies = new MongoItemCopyDataSource();
-final AHistoryDataSource itemHistories =
-    new MongoHistoryDataSource();
+final AHistoryDataSource itemHistories = new MongoHistoryDataSource();
 
 final ACollectionDataSource itemCollections = new MongoCollectionDataSource();

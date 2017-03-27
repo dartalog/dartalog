@@ -1,5 +1,6 @@
 import 'package:logging/logging.dart';
 import 'package:dartalog/tools.dart';
+
 abstract class AErrorThing {
   Logger get loggerImpl;
 
@@ -9,7 +10,7 @@ abstract class AErrorThing {
 
   set errorMessage(String message) {
     _errorMessage = message;
-    if(StringTools.isNotNullOrWhitespace(message))
+    if (StringTools.isNotNullOrWhitespace(message))
       loggerImpl.severe("Error message set: " + message);
   }
 

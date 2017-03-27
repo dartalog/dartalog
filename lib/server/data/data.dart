@@ -19,6 +19,7 @@ export 'src/item_type.dart';
 export 'src/settings.dart';
 export 'src/user.dart';
 export 'src/item_summary.dart';
+export 'src/a_parented_uuid_data.dart';
 
 export 'src/history/a_history_entry.dart';
 export 'src/history/action_history_entry.dart';

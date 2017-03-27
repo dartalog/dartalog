@@ -15,14 +15,11 @@ class ExportResource extends AResource {
   @override
   Logger get childLogger => _log;
 
-  static const String _apiPath= ItemApi.exportPath;
-
+  static const String _apiPath = ItemApi.exportPath;
 
   @ApiMethod(path: '${ItemApi.exportPath}/collections/')
-  Future<List<Collection>> exportCollections() =>catchExceptionsAwait(() async {
-    return await model.export.exportCollections();
-  });
-
-
-
+  Future<List<Collection>> exportCollections() =>
+      catchExceptionsAwait(() async {
+        return await model.export.exportCollections();
+      });
 }

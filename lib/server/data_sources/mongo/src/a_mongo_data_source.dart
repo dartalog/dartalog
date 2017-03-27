@@ -12,7 +12,8 @@ abstract class AMongoDataSource {
 
   int getOffset(int page, int perPage) => page * perPage;
 
-  Future<dynamic> _connectionWrapper(Future<dynamic> statement(MongoDatabase db),
+  Future<dynamic> _connectionWrapper(
+      Future<dynamic> statement(MongoDatabase db),
       {int retries: 3}) async {
     for (int i = 0; i < retries; i++) {
       final MongoDatabase con = await MongoDatabase.getConnection();
@@ -30,9 +31,10 @@ abstract class AMongoDataSource {
   }
 
   @protected
-  Future<dynamic> collectionWrapper(Future<dynamic> statement(DbCollection c)) =>
-      _connectionWrapper(
-          (MongoDatabase con) async => await statement(await getCollection(con)));
+  Future<dynamic> collectionWrapper(
+          Future<dynamic> statement(DbCollection c)) =>
+      _connectionWrapper((MongoDatabase con) async =>
+          await statement(await getCollection(con)));
 
   @protected
   Future<Null> deleteFromDb(dynamic selector) async {
@@ -84,7 +86,7 @@ abstract class AMongoDataSource {
     });
   }
 
-  Future<Stream<dynamic>> genericFindStream(SelectorBuilder selector) async  {
+  Future<Stream<dynamic>> genericFindStream(SelectorBuilder selector) async {
     return await collectionWrapper((DbCollection collection) async {
       return collection.find(selector);
     });

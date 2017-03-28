@@ -12,16 +12,16 @@ import 'package:html/parser.dart' show parse;
 class AmazonImportProvider extends AScrapingImportProvider {
   static final Logger _log = new Logger('AmazonImportProvider');
 
-  static const String BASE_URL = "www.amazon.com";
+  static const String baseUrl = "www.amazon.com";
 
-  static final List<String> VALID_TYPES = ["music", "dvd", "videogames", "vhs"];
+  static final List<String> validTypes = ["music", "dvd", "videogames", "vhs"];
 
-  static final RegExp _item_link_reg = new RegExp(
+  static final RegExp _itemLinkReg = new RegExp(
       r'https?://www.amazon.com/[^/]+/dp/([^/]+)/.+',
       multiLine: true,
       caseSensitive: false);
 
-  static const String NAME = "amazon";
+  static const String name = "amazon";
 
   static final List<ScrapingImportCriteria> _itemTypeCriteria = [
     new ScrapingImportCriteria(
@@ -116,16 +116,17 @@ class AmazonImportProvider extends AScrapingImportProvider {
   List<ScrapingImportCriteria> get fieldCriteria => _fieldCriteria;
 
   @override
-  String get importProviderName => NAME;
+  String get importProviderName => name;
 
   @override
   List<ScrapingImportCriteria> get itemTypeCriteria => _itemTypeCriteria;
 
   @override
   String getItemURL(String id) {
-    return "http://${BASE_URL}/dp/${id}";
+    return "http://${baseUrl}/dp/${id}";
   }
 
+  @override
   Future<ImportResult> import(String id) async {
     ImportResult result = await super.import(id);
 
@@ -134,15 +135,16 @@ class AmazonImportProvider extends AScrapingImportProvider {
     return result;
   }
 
+  @override
   Future<SearchResults> search(String query, {int page: 0}) async {
-    String item_type = "";
-    String url =
-        "http://${BASE_URL}/exec/obidos/external-search?ie=UTF8&index=${item_type}&keyword=${Uri.encodeComponent(query)}&page=${page}";
-    String contents = await this.downloadPage(url, stripNewlines: true);
+    final String item_type = "";
+    final String url =
+        "http://$baseUrl/exec/obidos/external-search?ie=UTF8&index=${item_type}&keyword=${Uri.encodeComponent(query)}&page=${page}";
+    final String contents = await this.downloadPage(url, stripNewlines: true);
 
-    Document doc = parse(contents);
+    final Document doc = parse(contents);
 
-    SearchResults output = new SearchResults();
+    final SearchResults output = new SearchResults();
     output.searchUrl = url;
 
     if (doc.querySelectorAll("#captchacharacters").isNotEmpty)
@@ -162,38 +164,38 @@ class AmazonImportProvider extends AScrapingImportProvider {
       final String title = title_element.text;
       final String top_url = title_parent_element.attributes["href"];
       if (StringTools.isNullOrWhitespace(top_url) ||
-          !_item_link_reg.hasMatch(top_url)) {
+          !_itemLinkReg.hasMatch(top_url)) {
         continue;
       }
-      final String top_id = _item_link_reg.firstMatch(top_url).group(1);
+      final String top_id = _itemLinkReg.firstMatch(top_url).group(1);
 
-      String image_url = null;
+      String imageUrl;
 
       if (image_element != null) {
-        image_url = image_element.attributes["src"];
+        imageUrl = image_element.attributes["src"];
       }
 
       final SearchResult top_result = new SearchResult();
       top_result.id = top_id;
-      top_result.thumbnail = image_url;
+      top_result.thumbnail = imageUrl;
       top_result.title = title;
       top_result.url = top_url;
 
-      List<Element> sub_elements = top_element.querySelectorAll("h3");
+      final List<Element> sub_elements = top_element.querySelectorAll("h3");
 
       if (sub_elements.length > 0) {
         for (Element sub_element in sub_elements) {
-          Element a_element = sub_element.parent;
+          final Element a_element = sub_element.parent;
           if (a_element == null) {
             continue;
           }
           String sub_url = a_element.attributes["href"];
           if (StringTools.isNullOrWhitespace(sub_url) ||
-              !_item_link_reg.hasMatch(sub_url)) {
+              !_itemLinkReg.hasMatch(sub_url)) {
             continue;
           }
 
-          String sub_id = _item_link_reg.firstMatch(sub_url).group(1);
+          String sub_id = _itemLinkReg.firstMatch(sub_url).group(1);
 
           SearchResult result = output.getById(sub_id);
           if (result != null) {
@@ -205,7 +207,7 @@ class AmazonImportProvider extends AScrapingImportProvider {
           result.title = "${title} - ${sub_element.text}";
 
           result.id = sub_id;
-          result.thumbnail = image_url;
+          result.thumbnail = imageUrl;
           output.results.add(result);
         }
       } else if (sub_elements.length == 0) {

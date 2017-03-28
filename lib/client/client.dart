@@ -38,8 +38,8 @@ String getImageUrl(String image, ImageType type) {
 }
 
 Element getParentElementRequired(Element start, String tagName) {
-  Option<Element> output = getParentElement(start, tagName);
-  if (output.isEmpty) throw new Exception("Parent ${tagName} not found");
+  final Option<Element> output = getParentElement(start, tagName);
+  if (output.isEmpty) throw new Exception("Parent $tagName not found");
   return output.get();
 }
 

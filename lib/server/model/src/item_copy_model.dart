@@ -25,7 +25,7 @@ class ItemCopyModel extends AUuidBasedModel<ItemCopy> {
 
   @override
   Future<String> create(ItemCopy itemCopy,
-      {bool bypassAuthentication = false}) async {
+      {bool bypassAuthentication: false}) async {
     itemCopy.status = ItemStatus.defaultStatus;
     return await super
         .create(itemCopy, bypassAuthentication: bypassAuthentication);
@@ -87,7 +87,7 @@ class ItemCopyModel extends AUuidBasedModel<ItemCopy> {
 
   @override
   Future<ItemCopy> getByUuid(String uuid,
-      {bool bypassAuthentication = false,
+      {bool bypassAuthentication: false,
       bool includeItemSummary: false,
       bool includeCollection: false}) async {
     final ItemCopy itemCopy =
@@ -198,7 +198,7 @@ class ItemCopyModel extends AUuidBasedModel<ItemCopy> {
     await validateUpdatePrivileges(null);
 
     await DataValidationException
-        .PerformValidation((Map<String, String> fieldErrors) async {
+        .performValidation((Map<String, String> fieldErrors) async {
       if (StringTools.isNullOrWhitespace(action)) {
         fieldErrors["action"] = "Required";
       } else if (!ItemAction.isValidAction(action)) {
@@ -259,7 +259,7 @@ class ItemCopyModel extends AUuidBasedModel<ItemCopy> {
     await validateUpdatePrivileges(null);
 
     await DataValidationException
-        .PerformValidation((Map<String, String> fieldErrors) async {
+        .performValidation((Map<String, String> fieldErrors) async {
       if (StringTools.isNullOrWhitespace(targetCollectionUuid)) {
         fieldErrors["targetCollectionUuid"] = "Required";
       } else {
@@ -318,7 +318,7 @@ class ItemCopyModel extends AUuidBasedModel<ItemCopy> {
   }
 
   @override
-  Future<Null> validateFields(ItemCopy itemCopy,
+  Future<Map<String, String>> validateFields(ItemCopy itemCopy,
       {String existingId: null, bool skipItemIdCheck: false}) async {
     final Map<String, String> fieldErrors = new Map<String, String>();
 

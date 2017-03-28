@@ -11,13 +11,13 @@ abstract class AImportProvider {
 
   @protected
   Future<String> downloadPage(String url, {bool stripNewlines: false}) async {
-    HttpClient http = new HttpClient();
-    Uri uri = Uri.parse(url);
+    final HttpClient http = new HttpClient();
+    final Uri uri = Uri.parse(url);
 
-    HttpClientRequest request = await http.getUrl(uri);
-    HttpClientResponse response = await request.close();
+    final HttpClientRequest request = await http.getUrl(uri);
+    final HttpClientResponse response = await request.close();
 
-    HttpClientResponseBody body =
+    final HttpClientResponseBody body =
         await HttpBodyHandler.processResponse(response);
 
     String output = body.body.toString();

@@ -1,7 +1,9 @@
 import 'a_parented_uuid_data.dart';
 import 'collection.dart';
 import 'item_summary.dart';
+import 'package:rpc/rpc.dart';
 
+@ApiMessage(includeSuper: true)
 class ItemCopy extends AParentedUuidData {
   String itemUuid = "";
   String collectionUuid = "";

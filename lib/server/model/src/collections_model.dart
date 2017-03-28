@@ -32,6 +32,7 @@ class CollectionsModel extends AIdNameBasedModel<Collection> {
 
   @override
   Future<String> delete(String uuid) async {
+    await super.delete(uuid);
     await data_sources.itemCopies.deleteByCollection(uuid);
     return uuid;
   }
@@ -55,7 +56,7 @@ class CollectionsModel extends AIdNameBasedModel<Collection> {
     else
       output = await dataSource.getAllForCurator(userPrincipal.get().name);
 
-    for (dynamic t in output) performAdjustments(t);
+    for (dynamic t in output) await  performAdjustments(t);
     return output;
   }
 }

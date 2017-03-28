@@ -41,17 +41,17 @@
             <material-tab label="Manual">
                 <div>
                     <form #manualForm="ngForm">
-                    <select [(ngModel)]="selectedItemTypeId">
+                        <select [(ngModel)]="selectedItemTypeUuid">
+                            <option></option>
+                            <option *ngFor="let t of itemTypes" [ngValue]="t.uuid">
+                                {{t.name}}
+                            </option>
+                        </select>
+                        <span>
+                    <select [(ngModel)]="selectedCollectionUuid">
                         <option></option>
-                        <option *ngFor="let t of itemTypes" [ngValue]="t.uuid">
-                            {{t.name}}
-                        </option>
-                    </select>
-                    <span>
-                    <select [(ngModel)]="selectedCollectionId">
-                        <option></option>
-                        <option *ngFor="let t of itemTypes" [ngValue]="t.uuid">
-                            {{t.name}}
+                        <option *ngFor="let c of collections" [ngValue]="c.uuid">
+                            {{c.name}}
                         </option>
                     </select>
                         <material-input [(ngModel)]="newUniqueId"
@@ -87,6 +87,10 @@
 
 
                         </div>
+                        <span *ngIf="hasErrorMessage" class="error_output">
+                    <glyph icon="error_outline"></glyph>
+                    {{errorMessage}}
+                </span>
                         <material-yes-no-buttons yesHighlighted
                                                  yesText="Save" (yes)="submitManualForm()"
                                                  noText="Cancel" (no)="reset()"

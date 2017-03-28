@@ -56,7 +56,7 @@ class SetupModel extends AModel {
     await _checkIfSetupEnabled();
 
     await DataValidationException
-        .PerformValidation((Map<String, String> fieldErrors) async {
+        .performValidation((Map<String, String> fieldErrors) async {
 //      if(StringTools.isNotNullOrWhitespace(request.databaseConnectionString)) {
 //        try {
 //          await mongo.MongoDatabase.testConnectionString(

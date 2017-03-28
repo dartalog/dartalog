@@ -11,15 +11,15 @@ class DataValidationException implements Exception {
     return message;
   }
 
-  static Future<Null> PerformValidation(
-      Future toAwait(Map<String, String> field_errors)) async {
-    Map<String, String> field_errors = new Map<String, String>();
+  static Future<Null> performValidation(
+      Future<Null> toAwait(Map<String, String> fieldErrors)) async {
+    final Map<String, String> fieldErrors = new Map<String, String>();
 
-    await toAwait(field_errors);
+    await toAwait(fieldErrors);
 
-    if (field_errors.length > 0) {
+    if (fieldErrors.length > 0) {
       throw new DataValidationException.WithFieldErrors(
-          "Invalid data", field_errors);
+          "Invalid data", fieldErrors);
     }
   }
 }

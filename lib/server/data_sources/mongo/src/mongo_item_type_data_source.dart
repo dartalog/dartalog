@@ -24,7 +24,7 @@ class MongoItemTypeDataSource extends AMongoIdDataSource<ItemType>
 
   @override
   void updateMap(ItemType itemType, Map data) {
-    updateMap(itemType, data);
+    super.updateMap(itemType, data);
     data[fieldUuidsField] = itemType.fieldUuids;
   }
 }

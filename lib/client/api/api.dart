@@ -7,7 +7,6 @@ export 'src/item.dart'
     show
         ItemApi,
         ItemCopy,
-        ItemCopyId,
         BulkItemActionRequest,
         ListOfIdNamePair,
         ImportResult,

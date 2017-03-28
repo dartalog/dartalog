@@ -15,7 +15,6 @@ import 'a_mongo_nested_object_data_source.dart';
 import 'a_mongo_object_data_source.dart';
 import 'a_mongo_uuid_based_data_source.dart';
 import 'constants.dart';
-import 'mongo_item_data_source.dart';
 
 class MongoItemCopyDataSource
     extends AMongoNestedObjectDataSource<ItemCopy, Item>
@@ -40,9 +39,11 @@ class MongoItemCopyDataSource
         where.eq(itemCopyCollectionPath, collectionUuid);
     //    { $pull: { fruits: { $in: [ "apples", "oranges" ] }, vegetables: "carrots" } },
 
-    final ModifierBuilder modifier = modify.pull(itemCopiesField, where.eq(collectionUuidField, collectionUuid));
+    final ModifierBuilder modifier = modify.pull(itemCopiesField,{collectionUuidField: collectionUuid});
 
     await parentSource.genericUpdate(selector, modifier, multiUpdate: true);
+    _log.fine("Deleted item copies for collection $collectionUuid");
+
     // TODO: Delete item history as well, eh?
   }
 
@@ -155,6 +156,8 @@ class MongoItemCopyDataSource
   }
   @override
   void updateMap(ItemCopy itemCopy, Map data) {
+    super.updateMap(itemCopy, data);
+
     data[collectionUuidField] = itemCopy.collectionUuid;
     if (!StringTools.isNullOrWhitespace(itemCopy.uniqueId))
       data[uniqueIdField] = itemCopy.uniqueId;

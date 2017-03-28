@@ -14,15 +14,6 @@ import 'constants.dart';
 
 abstract class AMongoIdDataSource<T extends AHumanFriendlyData>
     extends AMongoUuidBasedDataSource<T> with AIdNameBasedDataSource<T> {
-  dynamic prepareId(String id) {
-    if (isUuid(id)) {
-      //bsonObjectFromTypeByte(3);
-      //return new ObjectId.fromHexString(id.replaceAll("\-",""));
-      return id;
-    } else {
-      return id;
-    }
-  }
 
   @override
   Future<bool> existsByReadableID(String id) =>

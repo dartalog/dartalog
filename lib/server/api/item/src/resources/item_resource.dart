@@ -26,14 +26,17 @@ class ItemResource extends AIdNameResource<Item> {
   model.AIdNameBasedModel<Item> get idModel => model.items;
 
   @ApiMethod(method: 'POST', path: '$_apiPath/')
-  Future<IdNamePair> createItemWithCopy(CreateItemRequest newItem) async {
+  Future<IdResponse> createItemWithCopy(CreateItemRequest newItem) async {
     List<List<int>> files;
     if (newItem.files != null) {
       files = convertMediaMessagesToIntLists(newItem.files);
     }
-    return await catchExceptionsAwait(() => model.items.createWithCopy(
+    final String output = await catchExceptionsAwait(() => model.items.createWithCopy(
         newItem.item, newItem.collectionUuid,
         uniqueId: newItem.uniqueId, files: files));
+    return new IdResponse.fromId(output,
+    generateRedirect(output)
+    );
   }
 
   // Created only to satisfy the interface; should not be used, as creating a copy with each item should be required
@@ -81,7 +84,9 @@ class ItemResource extends AIdNameResource<Item> {
               (Item item) => new ItemSummary.copyItem(item)));
 
   @override
+  Future<IdResponse> update(String uuid, Item item) => throw new NotImplementedException("User updateItem");
+
   @ApiMethod(method: 'PUT', path: '$_apiPath/{uuid}/')
-  Future<IdResponse> update(String uuid, Item item) => updateWithCatch(uuid, item);
+  Future<IdResponse> updateItem(String uuid, UpdateItemRequest request) => updateWithCatch(uuid, request.item, mediaMessages: request.files);
 
 }

@@ -1,7 +1,7 @@
 <auth-status (authorizedChanged)="authorizationChanged($event)" require="admin" [showMessage]="true"></auth-status>
 
 <div *ngIf="userAuthorized">
-    <div *ngIf="noItemsFound&&!processing" class="no-items">No Collections Found</div>
+    <div *ngIf="noItemsFound&&!processing" class="no-items">No Fields Found</div>
     <material-list>
         <material-list-item *ngFor="let i of items" (trigger)="selectItem(i)">
             {{i.name}}
@@ -13,24 +13,25 @@
             <h3 *ngIf="isNewItem" header>Create</h3>
             <h3 *ngIf="!isNewItem" header>Edit</h3>
             <form (ngSubmit)="onSubmit()" #editForm="ngForm">
-            <material-input [(ngModel)]="model.id" ngControl="id" floatingLabel required autoFocus
+            <material-input [(ngModel)]="model.readableId" ngControl="readableId" floatingLabel required autoFocus
                             label="ID"></material-input>
             <br/>
                 <material-input [(ngModel)]="model.name" ngControl="name" floatingLabel required
                                 label="Name"></material-input>
                 <br/>
+                Type:
+                <select [(ngModel)]="model.type" ngControl="type" required>
+                    <option></option>
+                    <option *ngFor="let f of fieldTypes.keys" [ngValue]="f">
+                        {{fieldTypes[f]}}
+                    </option>
+                </select><br/>
                 <material-input [(ngModel)]="model.format" ngControl="format" floatingLabel
                                 label="Format"></material-input>
                 <br/>
             <material-checkbox [(ngModel)]="model.unique" ngControl="unique"
                                label="Unique"></material-checkbox>
                 <br/>
-                Type:
-            <select [(ngModel)]="model.type">
-                <option *ngFor="let f of fieldTypes.keys" [ngValue]="f">
-                    {{fieldTypes[f]}}
-                </option>
-            </select>
 
             <span *ngIf="hasErrorMessage" class="error_output">
                     <glyph icon="error_outline"></glyph>

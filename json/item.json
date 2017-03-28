@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "3a26446b9e61fefb1ab4707a628a5be432954ce1",
+ "etag": "cef592027cfe617a5af236c72d9a6208755b550a",
  "discoveryVersion": "v1",
  "id": "item:0.1",
  "name": "item",
@@ -31,6 +31,9 @@
      "type": "string"
     },
     "readableId": {
+     "type": "string"
+    },
+    "uuid": {
      "type": "string"
     }
    }
@@ -63,6 +66,9 @@
     },
     "readableId": {
      "type": "string"
+    },
+    "uuid": {
+     "type": "string"
     }
    }
   },
@@ -86,6 +92,9 @@
      "type": "string"
     },
     "readableId": {
+     "type": "string"
+    },
+    "uuid": {
      "type": "string"
     }
    }
@@ -126,6 +135,9 @@
     },
     "itemSummary": {
      "$ref": "ItemSummary"
+    },
+    "uuid": {
+     "type": "string"
     }
    }
   },
@@ -152,6 +164,9 @@
      "type": "string"
     },
     "readableId": {
+     "type": "string"
+    },
+    "uuid": {
      "type": "string"
     }
    }
@@ -288,6 +303,9 @@
     },
     "readableId": {
      "type": "string"
+    },
+    "uuid": {
+     "type": "string"
     }
    }
   },
@@ -357,6 +375,21 @@
      "type": "array",
      "items": {
       "$ref": "ItemSummary"
+     }
+    }
+   }
+  },
+  "UpdateItemRequest": {
+   "id": "UpdateItemRequest",
+   "type": "object",
+   "properties": {
+    "item": {
+     "$ref": "Item"
+    },
+    "files": {
+     "type": "array",
+     "items": {
+      "$ref": "MediaMessage"
      }
     }
    }
@@ -472,6 +505,9 @@
      "type": "string"
     },
     "readableId": {
+     "type": "string"
+    },
+    "uuid": {
      "type": "string"
     }
    }
@@ -709,7 +745,7 @@
       "$ref": "CreateItemRequest"
      },
      "response": {
-      "$ref": "IdNamePair"
+      "$ref": "IdResponse"
      }
     },
     "delete": {
@@ -825,8 +861,8 @@
       "$ref": "PaginatedResponse"
      }
     },
-    "update": {
-     "id": "ItemApi.items.update",
+    "updateItem": {
+     "id": "ItemApi.items.updateItem",
      "path": "items/{uuid}/",
      "httpMethod": "PUT",
      "parameters": {
@@ -841,7 +877,7 @@
       "uuid"
      ],
      "request": {
-      "$ref": "Item"
+      "$ref": "UpdateItemRequest"
      },
      "response": {
       "$ref": "IdResponse"

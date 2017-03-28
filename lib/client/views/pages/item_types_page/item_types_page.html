@@ -1,7 +1,7 @@
 <auth-status (authorizedChanged)="authorizationChanged($event)" require="admin" [showMessage]="true"></auth-status>
 
 <div *ngIf="userAuthorized">
-    <div *ngIf="noItemsFound&&!processing" class="no-items">No Collections Found</div>
+    <div *ngIf="noItemsFound&&!processing" class="no-items">No Item Types Found</div>
     <material-list>
         <material-list-item *ngFor="let i of items" (trigger)="selectItem(i)">
             {{i.name}}
@@ -13,14 +13,14 @@
             <h3 *ngIf="isNewItem" header>Create</h3>
             <h3 *ngIf="!isNewItem" header>Edit</h3>
             <form (ngSubmit)="onSubmit()" #editForm="ngForm">
-            <material-input [(ngModel)]="model.id" ngControl="id" floatingLabel required autoFocus
+            <material-input [(ngModel)]="model.readableId" ngControl="readableId" floatingLabel required autoFocus
                             label="ID"></material-input>
             <br/>
                 <material-input [(ngModel)]="model.name" ngControl="name" floatingLabel required
                                 label="Name"></material-input>
                 <br/>
                 Fields
-                <select [(ngModel)]="selectedField">
+                <select [(ngModel)]="selectedField" ngControl="fieldUuids">
                     <option></option>
                     <option *ngFor="let f of fields" [ngValue]="f">
                         {{f.name}}
@@ -29,7 +29,7 @@
                 <material-button (trigger)="addField()" raised >Add</material-button>
                 <ol>
                 <reorder-list  (reorder)="onReorder($event)">
-                    <material-list-item *ngFor="let f of model.fieldIds" (trigger)="removeField(f)" reorderItem>
+                    <material-list-item *ngFor="let f of model.fieldUuids" (trigger)="removeField(f)" reorderItem>
                         {{f}}
                     </material-list-item>
                 </reorder-list>

@@ -9,6 +9,7 @@ class NotAuthorizedException implements Exception {
   NotAuthorizedException.withMessage(this.message,
       {this.code: HttpStatus.UNAUTHORIZED});
 
+  @override
   String toString() {
     return message;
   }

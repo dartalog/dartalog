@@ -8,7 +8,6 @@ import 'package:dartalog/client/api/api.dart';
 import 'package:dartalog/client/client.dart';
 import 'package:dartalog/client/data/data.dart';
 import 'package:dartalog/client/routes.dart';
-import 'package:dartalog/client/routes.dart';
 import 'package:dartalog/client/services/services.dart';
 import 'package:dartalog/client/views/controls/auth_status_component.dart';
 import 'package:dartalog/global.dart';

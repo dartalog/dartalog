@@ -806,7 +806,7 @@ class ItemsResourceApi {
    *
    * Request parameters:
    *
-   * Completes with a [IdNamePair].
+   * Completes with a [IdResponse].
    *
    * Completes with a [commons.ApiRequestError] if the API endpoint returned an
    * error.
@@ -814,7 +814,7 @@ class ItemsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<IdNamePair> createItemWithCopy(CreateItemRequest request) {
+  async.Future<IdResponse> createItemWithCopy(CreateItemRequest request) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -835,7 +835,7 @@ class ItemsResourceApi {
                                        uploadOptions: _uploadOptions,
                                        uploadMedia: _uploadMedia,
                                        downloadOptions: _downloadOptions);
-    return _response.then((data) => new IdNamePair.fromJson(data));
+    return _response.then((data) => new IdResponse.fromJson(data));
   }
 
   /**
@@ -1036,7 +1036,7 @@ class ItemsResourceApi {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<IdResponse> update(Item request, core.String uuid) {
+  async.Future<IdResponse> updateItem(UpdateItemRequest request, core.String uuid) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -1828,6 +1828,7 @@ class Collection {
   core.String name;
   core.bool publiclyBrowsable;
   core.String readableId;
+  core.String uuid;
 
   Collection();
 
@@ -1847,6 +1848,9 @@ class Collection {
     if (_json.containsKey("readableId")) {
       readableId = _json["readableId"];
     }
+    if (_json.containsKey("uuid")) {
+      uuid = _json["uuid"];
+    }
   }
 
   core.Map toJson() {
@@ -1865,6 +1869,9 @@ class Collection {
     }
     if (readableId != null) {
       _json["readableId"] = readableId;
+    }
+    if (uuid != null) {
+      _json["uuid"] = uuid;
     }
     return _json;
   }
@@ -1917,6 +1924,7 @@ class Field {
   core.String readableId;
   core.String type;
   core.bool unique;
+  core.String uuid;
 
   Field();
 
@@ -1935,6 +1943,9 @@ class Field {
     }
     if (_json.containsKey("unique")) {
       unique = _json["unique"];
+    }
+    if (_json.containsKey("uuid")) {
+      uuid = _json["uuid"];
     }
   }
 
@@ -1955,6 +1966,9 @@ class Field {
     if (unique != null) {
       _json["unique"] = unique;
     }
+    if (uuid != null) {
+      _json["uuid"] = uuid;
+    }
     return _json;
   }
 }
@@ -1962,6 +1976,7 @@ class Field {
 class IdNamePair {
   core.String name;
   core.String readableId;
+  core.String uuid;
 
   IdNamePair();
 
@@ -1972,6 +1987,9 @@ class IdNamePair {
     if (_json.containsKey("readableId")) {
       readableId = _json["readableId"];
     }
+    if (_json.containsKey("uuid")) {
+      uuid = _json["uuid"];
+    }
   }
 
   core.Map toJson() {
@@ -1981,6 +1999,9 @@ class IdNamePair {
     }
     if (readableId != null) {
       _json["readableId"] = readableId;
+    }
+    if (uuid != null) {
+      _json["uuid"] = uuid;
     }
     return _json;
   }
@@ -2085,6 +2106,7 @@ class Item {
   core.String readableId;
   ItemType type;
   core.String typeUuid;
+  core.String uuid;
   core.Map<core.String, core.String> values;
 
   Item();
@@ -2116,6 +2138,9 @@ class Item {
     }
     if (_json.containsKey("typeUuid")) {
       typeUuid = _json["typeUuid"];
+    }
+    if (_json.containsKey("uuid")) {
+      uuid = _json["uuid"];
     }
     if (_json.containsKey("values")) {
       values = _json["values"];
@@ -2150,6 +2175,9 @@ class Item {
     }
     if (typeUuid != null) {
       _json["typeUuid"] = typeUuid;
+    }
+    if (uuid != null) {
+      _json["uuid"] = uuid;
     }
     if (values != null) {
       _json["values"] = values;
@@ -2196,6 +2224,7 @@ class ItemCopy {
   core.String uniqueId;
   core.bool userCanCheckout;
   core.bool userCanEdit;
+  core.String uuid;
 
   ItemCopy();
 
@@ -2230,6 +2259,9 @@ class ItemCopy {
     if (_json.containsKey("userCanEdit")) {
       userCanEdit = _json["userCanEdit"];
     }
+    if (_json.containsKey("uuid")) {
+      uuid = _json["uuid"];
+    }
   }
 
   core.Map toJson() {
@@ -2263,6 +2295,9 @@ class ItemCopy {
     }
     if (userCanEdit != null) {
       _json["userCanEdit"] = userCanEdit;
+    }
+    if (uuid != null) {
+      _json["uuid"] = uuid;
     }
     return _json;
   }
@@ -2314,6 +2349,7 @@ class ItemType {
   core.List<Field> fields;
   core.String name;
   core.String readableId;
+  core.String uuid;
 
   ItemType();
 
@@ -2330,6 +2366,9 @@ class ItemType {
     if (_json.containsKey("readableId")) {
       readableId = _json["readableId"];
     }
+    if (_json.containsKey("uuid")) {
+      uuid = _json["uuid"];
+    }
   }
 
   core.Map toJson() {
@@ -2345,6 +2384,9 @@ class ItemType {
     }
     if (readableId != null) {
       _json["readableId"] = readableId;
+    }
+    if (uuid != null) {
+      _json["uuid"] = uuid;
     }
     return _json;
   }
@@ -2792,11 +2834,39 @@ class TransferRequest {
   }
 }
 
+class UpdateItemRequest {
+  core.List<MediaMessage> files;
+  Item item;
+
+  UpdateItemRequest();
+
+  UpdateItemRequest.fromJson(core.Map _json) {
+    if (_json.containsKey("files")) {
+      files = _json["files"].map((value) => new MediaMessage.fromJson(value)).toList();
+    }
+    if (_json.containsKey("item")) {
+      item = new Item.fromJson(_json["item"]);
+    }
+  }
+
+  core.Map toJson() {
+    var _json = new core.Map();
+    if (files != null) {
+      _json["files"] = files.map((value) => (value).toJson()).toList();
+    }
+    if (item != null) {
+      _json["item"] = (item).toJson();
+    }
+    return _json;
+  }
+}
+
 class User {
   core.String name;
   core.String password;
   core.String readableId;
   core.String type;
+  core.String uuid;
 
   User();
 
@@ -2813,6 +2883,9 @@ class User {
     if (_json.containsKey("type")) {
       type = _json["type"];
     }
+    if (_json.containsKey("uuid")) {
+      uuid = _json["uuid"];
+    }
   }
 
   core.Map toJson() {
@@ -2828,6 +2901,9 @@ class User {
     }
     if (type != null) {
       _json["type"] = type;
+    }
+    if (uuid != null) {
+      _json["uuid"] = uuid;
     }
     return _json;
   }

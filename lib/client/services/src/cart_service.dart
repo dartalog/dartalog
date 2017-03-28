@@ -8,19 +8,16 @@ import 'package:angular2/core.dart';
 
 @Injectable()
 class CartService extends ADataSource {
-  Future<List<ItemCopy>> getCart() async {
+  Future<List<String>> getCart() async {
     return await wrapTransaction(
         ADataSource.idbCartStore, ADataSource.readOnlyPermission,
         (idb.ObjectStore store) async {
       final Stream<idb.CursorWithValue> stream =
           store.openCursor(autoAdvance: true);
-      final List<ItemCopy> output = <ItemCopy>[];
+      final List<String> output = <String>[];
       await stream.forEach((idb.CursorWithValue cursor) {
-        final Map<String, dynamic> value = cursor.value;
-        final ItemCopy ic = new ItemCopy();
-        ic.itemId = value["itemId"];
-        ic.copy = value["copy"];
-        output.add(ic);
+        final String uuid = cursor.value;
+        output.add(uuid);
       });
 
       return output;
@@ -33,10 +30,7 @@ class CartService extends ADataSource {
         (idb.ObjectStore store) async {
       await store.clear();
       for (ItemCopy itemCopy in cart) {
-        await store.put(<String, dynamic>{
-          "itemId": itemCopy.itemId,
-          "copy": itemCopy.copy
-        });
+        await store.put(itemCopy.uuid);
       }
     });
   }

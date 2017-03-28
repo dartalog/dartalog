@@ -58,6 +58,7 @@ class MongoHistoryDataSource extends AMongoObjectDataSource<AHistoryEntry>
 
   @override
   void updateMap(AHistoryEntry historyEntry, Map data) {
+    super.updateMap(historyEntry, data);
     data[typeField] = historyEntry.entryType;
     data[itemCopyUuidField] = historyEntry.itemCopyUuid;
     data[itemUuidField] = historyEntry.itemUuid;

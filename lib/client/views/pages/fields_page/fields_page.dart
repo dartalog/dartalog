@@ -136,7 +136,7 @@ class FieldsPage extends APage implements OnInit, OnDestroy {
   Future<Null> selectItem(IdNamePair item) async {
     await performApiCall(() async {
       reset();
-      model = await _api.fields.getById(item.uuid);
+      model = await _api.fields.getByUuid(item.uuid);
       selectedItem = item;
       editVisible = true;
     });

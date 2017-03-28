@@ -84,7 +84,7 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
     await performApiCall(() async {
       reset();
       if (item != null) {
-        model = await _api.collections.getById(item.uuid);
+        model = await _api.collections.getByUuid(item.uuid);
       }
       users = await _api.users.getAllIdsAndNames();
       selectedItem = item;
@@ -138,40 +138,40 @@ class CollectionsPage extends APage implements OnInit, OnDestroy {
 
   void reset() {
     model = new api.Collection();
-    model.curators = <String>[];
-    model.browsers = <String>[];
+    model.curatorUuids = <String>[];
+    model.browserUuids = <String>[];
     selectedItem = null;
     selectedUser = null;
     showDeleteConfirmation = false;
     errorMessage = "";
   }
 
-  void removeCurator(String user) {
-    if (model != null && model.curators.contains(user)) {
-      model.curators.remove(user);
+  void removeCurator(String userUuid) {
+    if (model != null && model.curatorUuids.contains(userUuid)) {
+      model.curatorUuids.remove(userUuid);
     }
   }
 
-  void removeBrowser(String user) {
-    if (model != null && model.browsers.contains(user)) {
-      model.browsers.remove(user);
+  void removeBrowser(String userUuid) {
+    if (model != null && model.browserUuids.contains(userUuid)) {
+      model.browserUuids.remove(userUuid);
     }
   }
 
   void addCurator() {
     if (selectedUser != null && this.model != null) {
-      if (this.model.curators == null) this.model.curators = <String>[];
-      if (!this.model.curators.contains(selectedUser.uuid)) {
-        this.model.curators.add(selectedUser.uuid);
+      if (this.model.curatorUuids == null) this.model.curatorUuids = <String>[];
+      if (!this.model.curatorUuids.contains(selectedUser.uuid)) {
+        this.model.curatorUuids.add(selectedUser.uuid);
       }
     }
   }
 
   void addBrowser() {
     if (selectedUser != null && this.model != null) {
-      if (this.model.browsers == null) this.model.browsers = <String>[];
-      if (!this.model.browsers.contains(selectedUser.uuid)) {
-        this.model.browsers.add(selectedUser.uuid);
+      if (this.model.browserUuids == null) this.model.browserUuids = <String>[];
+      if (!this.model.browserUuids.contains(selectedUser.uuid)) {
+        this.model.browserUuids.add(selectedUser.uuid);
       }
     }
   }

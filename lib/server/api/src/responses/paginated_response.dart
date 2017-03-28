@@ -25,7 +25,7 @@ class PaginatedResponse<T> {
     this.items.addAll(data.data.map((dynamic item) => conversion(item)));
   }
 
-  _copyPaginatedDataFields(PaginatedData data) {
+  void _copyPaginatedDataFields(PaginatedData data) {
     this.startIndex = data.startIndex;
     this.pageCount = data.count;
     this.totalCount = data.totalCount;

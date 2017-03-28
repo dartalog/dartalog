@@ -4,6 +4,7 @@ class ForbiddenException implements Exception {
   ForbiddenException();
   ForbiddenException.withMessage(this.message);
 
+  @override
   String toString() {
     return message;
   }

@@ -38,15 +38,16 @@ class ItemAddPage extends APage implements OnInit, OnDestroy {
   String itemName = "";
 
   ItemType selectedItemType = new ItemType();
-  String selectedItemTypeId = "";
+  String selectedItemTypeUuid = "";
 
   SearchResults importSearchResults = new SearchResults();
 
   bool importSearchBusy = false;
 
+
   String importSearchQuery = "";
 
-  String selectedItemId = "";
+  String selectedItemUuid = "";
 
   int currentTab = 0;
 
@@ -57,6 +58,8 @@ class ItemAddPage extends APage implements OnInit, OnDestroy {
   final ApiService _api;
 
   List<IdNamePair> users = <IdNamePair>[];
+
+// TODO: Add event handler to load item type on select list change
 
   ItemAddPage(
       this._pageControl, this._api, AuthenticationService _auth, Router router)
@@ -76,7 +79,7 @@ class ItemAddPage extends APage implements OnInit, OnDestroy {
 
   bool get noItemTypesFound => itemTypes.isEmpty;
 
-  String selectedCollectionId = "";
+  String selectedCollectionUuid = "";
 
   void authorizationChanged(bool value) {
     this.userAuthorized = value;
@@ -147,11 +150,12 @@ class ItemAddPage extends APage implements OnInit, OnDestroy {
 
       if (StringTools.isNotNullOrWhitespace(importResult.itemTypeId)) {
         selectedItemType = await _api.itemTypes
-            .getById(importResult.itemTypeId, includeFields: true);
-        selectedItemTypeId = importResult.itemTypeId;
+            .getByUuid(importResult.itemTypeId, includeFields: true);
+        selectedItemTypeUuid = importResult.itemTypeId;
       } else {
         selectedItemType = new ItemType();
-        selectedItemTypeId = "";
+        selectedItemType.fields = <Field>[];
+        selectedItemTypeUuid = "";
       }
 
       fields.clear();
@@ -192,11 +196,13 @@ class ItemAddPage extends APage implements OnInit, OnDestroy {
 
   Future<Null> refresh() async {
     await performApiCall(() async {
+      ListOfIdNamePair data = await _api.itemTypes.getAllIdsAndNames();
       itemTypes.clear();
-      final ListOfIdNamePair data = await _api.itemTypes.getAllIdsAndNames();
       itemTypes.addAll(data);
+
+      data = await _api.collections.getAllIdsAndNames();
       collections.clear();
-      collections.addAll(await _api.collections.getAllIdsAndNames());
+      collections.addAll(data);
     });
   }
 
@@ -207,11 +213,12 @@ class ItemAddPage extends APage implements OnInit, OnDestroy {
     importSearchQuery = "";
 
     selectedItemType = new ItemType();
+    selectedItemType.fields = new List<Field>();
 
     itemName = "";
-    selectedItemTypeId = "";
+    selectedItemTypeUuid = "";
     fields.clear();
-    selectedCollectionId = "";
+    selectedCollectionUuid = "";
     newUniqueId = "";
 
     errorMessage = "";
@@ -239,23 +246,23 @@ class ItemAddPage extends APage implements OnInit, OnDestroy {
         }
       }
 
-      if (StringTools.isNotNullOrWhitespace(this.selectedItemId)) {
+      if (StringTools.isNotNullOrWhitespace(this.selectedItemUuid)) {
         final UpdateItemRequest request = new UpdateItemRequest();
         request.item = newItem;
         request.files = files;
         final IdResponse idResponse =
-            await _api.items.updateItem(request, this.selectedItemId);
-        return idResponse.id;
+            await _api.items.updateItem(request, this.selectedItemUuid);
+        return idResponse.uuid;
       } else {
         final CreateItemRequest request = new CreateItemRequest();
         request.item = newItem;
         request.uniqueId = newUniqueId;
-        request.collectionId = selectedCollectionId;
+        request.collectionUuid = selectedCollectionUuid;
         request.files = files;
 
-        final ItemCopyId itemCopyId =
+        final IdResponse idResponse =
             await _api.items.createItemWithCopy(request);
-        return itemCopyId.itemId;
+        return idResponse.uuid;
       }
     });
   }

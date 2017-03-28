@@ -16,7 +16,7 @@
                 <table>
                     <tr>
                         <td>
-                            <material-input [(ngModel)]="model.id" ngControl="id" floatingLabel required autoFocus
+                            <material-input [(ngModel)]="model.readableId" ngControl="readableId" floatingLabel required autoFocus
                                             label="ID"></material-input>
                             <br/>
                             <material-input [(ngModel)]="model.name" ngControl="name" floatingLabel required
@@ -45,7 +45,7 @@
                         <td>
                             Curators
                             <material-list>
-                                <material-list-item *ngFor="let i of model.curators" (trigger)="removeCurator(i)">
+                                <material-list-item *ngFor="let i of model.curatorUuids" (trigger)="removeCurator(i)">
                                     {{i}}
                                 </material-list-item>
                             </material-list>
@@ -53,7 +53,7 @@
                         <td>
                             Browsers
                             <material-list>
-                                <material-list-item *ngFor="let i of model.browsers" (trigger)="removeBrowser(i)">
+                                <material-list-item *ngFor="let i of model.browserUuids" (trigger)="removeBrowser(i)">
                                     {{i}}
                                 </material-list-item>
                             </material-list>

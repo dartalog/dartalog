@@ -7,7 +7,7 @@ export 'src/search_results.dart';
 export 'src/import_result.dart';
 
 class ImportProvider {
-  static const AMAZON = AmazonImportProvider.NAME;
+  static const AMAZON = AmazonImportProvider.name;
   static const MOVIEDB = "themoviedb";
 
   static AImportProvider getProvider(String provider) {

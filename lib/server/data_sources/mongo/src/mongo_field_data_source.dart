@@ -56,7 +56,7 @@ class MongoFieldDataSource extends AMongoIdDataSource<Field> with AFieldModel {
 
   @override
   void updateMap(Field field, Map data) {
-    updateMap(field, data);
+    super.updateMap(field, data);
     data[typeField] = field.type;
     data[formatField] = field.format;
     data[uniqueField] = field.unique;

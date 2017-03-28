@@ -102,7 +102,7 @@ class UserModel extends AIdNameBasedModel<User> {
             throw new Exception("User $uuid does not have a current password"));
 
     await DataValidationException
-        .PerformValidation((Map<String, String> fieldErrors) async {
+        .performValidation((Map<String, String> fieldErrors) async {
       if (StringTools.isNullOrWhitespace(currentPassword)) {
         fieldErrors["currentPassword"] = "Required";
       } else if (!verifyPassword(userPassword, currentPassword)) {
@@ -114,7 +114,7 @@ class UserModel extends AIdNameBasedModel<User> {
 
   Future<Null> _setPassword(String uuid, String newPassword) async {
     await DataValidationException
-        .PerformValidation((Map<String, String> fieldErrors) async {
+        .performValidation((Map<String, String> fieldErrors) async {
       _validatePassword(fieldErrors, newPassword);
     });
 

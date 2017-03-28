@@ -114,7 +114,7 @@ class ItemModel extends AIdNameBasedModel<Item> with AFileUploadModel<Item> {
     itemCopy.uniqueId = uniqueId;
     itemCopy.status = ItemStatus.defaultStatus;
 
-    await DataValidationException.PerformValidation((Map<String,String> output) async {
+    await DataValidationException.performValidation((Map<String,String> output) async {
       output.addAll(await validateFields(item));
       output
           .addAll(await copies.validateFields(itemCopy, skipItemIdCheck: true));

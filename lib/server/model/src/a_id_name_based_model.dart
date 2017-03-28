@@ -27,7 +27,7 @@ abstract class AIdNameBasedModel<T extends AHumanFriendlyData>
 
     if (output.isEmpty) throw new NotFoundException("Readable ID '$readableId' not found");
 
-    performAdjustments(output.get());
+    await performAdjustments(output.get());
 
     return output.get();
   }

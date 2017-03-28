@@ -5,6 +5,7 @@ import 'search_results.dart';
 class TheMovieDbImportProvider extends AAPIImportProvider {
   static final List VALID_TYPES = ["movie", "tv"];
 
+  @override
   Future<SearchResults> search(String query, {int page: 0}) async {
 //    themoviedb.TheMovieDB mdb = new themoviedb.TheMovieDB(
 //        model.options.getString("themoviedb_api_key"));
@@ -33,5 +34,6 @@ class TheMovieDbImportProvider extends AAPIImportProvider {
     return new SearchResults();
   }
 
+  @override
   Future import(String identifier) async {}
 }

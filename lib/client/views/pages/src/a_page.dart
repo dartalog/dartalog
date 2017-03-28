@@ -53,9 +53,11 @@ abstract class APage extends AErrorThing {
       } else if (error.status == 413) {
         errorMessage =
             "The submitted data was too large, please submit smaller images";
-      } else if (error.status == HTTP_STATUS_SERVER_NEEDS_SETUP) {} else {
+      } else if (error.status == HTTP_STATUS_SERVER_NEEDS_SETUP) {
         loggerImpl.warning("Server replied that setup is required", error, st);
         await _router.navigate([setupRoute.name]);
+      } else {
+        errorMessage = "Server error: ${error.message} (${error.status})";
       }
     } catch (e, st) {
       loggerImpl.severe(e, st);
@@ -84,8 +86,9 @@ abstract class APage extends AErrorThing {
       final AbstractControl control = form.controls[field];
       control.setErrors({field: message});
     } else {
-      form.errors[field] = message;
-      errorMessage = message;
+      throw new NotFoundException("Can't find field for $field");
+      //form.errors[field] = message;
+      //errorMessage = message;
     }
   }
 }

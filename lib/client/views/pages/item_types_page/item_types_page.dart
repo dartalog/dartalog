@@ -59,8 +59,8 @@ class ItemTypesPage extends APage implements OnInit, OnDestroy {
   }
 
   void onReorder(ReorderEvent reorder) {
-    model.fieldIds.insert(
-        reorder.destIndex, model.fieldIds.removeAt(reorder.sourceIndex));
+    model.fieldUuids.insert(
+        reorder.destIndex, model.fieldUuids.removeAt(reorder.sourceIndex));
   }
 
   bool get isNewItem => selectedItem == null;
@@ -103,7 +103,7 @@ class ItemTypesPage extends APage implements OnInit, OnDestroy {
           break;
         case PageActions.Add:
           reset();
-          editVisible = true;
+          selectItem(null);
           break;
         default:
           throw new Exception(
@@ -145,24 +145,27 @@ class ItemTypesPage extends APage implements OnInit, OnDestroy {
   Future<Null> selectItem(IdNamePair item) async {
     await performApiCall(() async {
       reset();
-      model = await _api.itemTypes.getById(item.uuid);
+      if(item!=null) {
+        model = await _api.itemTypes.getByUuid(item.uuid);
+      }
+      fields.clear();
       fields = await _api.fields.getAllIdsAndNames();
       selectedItem = item;
       editVisible = true;
     });
   }
 
-  void removeField(String field) {
-    if (model != null && model.fieldIds.contains(field)) {
-      model.fieldIds.remove(field);
+  void removeField(String fieldUuid) {
+    if (model != null && model.fieldUuids.contains(fieldUuid)) {
+      model.fieldUuids.remove(fieldUuid);
     }
   }
 
   void addField() {
     if (selectedField != null && this.model != null) {
-      if (this.model.fieldIds == null) this.model.fieldIds = <String>[];
-      if (!this.model.fieldIds.contains(selectedField.uuid)) {
-        this.model.fieldIds.add(selectedField.uuid);
+      if (this.model.fieldUuids == null) this.model.fieldUuids = <String>[];
+      if (!this.model.fieldUuids.contains(selectedField.uuid)) {
+        this.model.fieldUuids.add(selectedField.uuid);
       }
     }
   }

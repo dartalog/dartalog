@@ -5,7 +5,7 @@ import 'package:options_file/options_file.dart';
 
 class SettingsModel {
   static final Logger _log = new Logger('SettingsModel');
-  OptionsFile _optionsFile = null;
+  OptionsFile _optionsFile;
 
   SettingsModel() {
     try {

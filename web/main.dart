@@ -8,7 +8,7 @@ import 'package:dartalog/client/views/main_app/main_app.dart';
 import 'dart:async';
 import 'package:logging/logging.dart';
 
-main() async {
+Future<Null> main() async {
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen(new LogPrintHandler());
   await findSystemLocale();

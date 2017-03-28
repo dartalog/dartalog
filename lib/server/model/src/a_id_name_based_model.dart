@@ -6,65 +6,40 @@ import 'package:dartalog/server/data/data.dart';
 import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
 import 'a_typed_model.dart';
 import 'package:meta/meta.dart';
+import 'a_uuid_based_model.dart';
 
 abstract class AIdNameBasedModel<T extends AHumanFriendlyData>
-    extends ATypedModel<T> {
+    extends AUuidBasedModel<T> {
+
+  @override
   AIdNameBasedDataSource<T> get dataSource;
 
-  Future<String> create(T t, {bool bypassAuthentication: false}) async {
-    if (!bypassAuthentication) await validateCreatePrivileges();
-
-    await validate(t);
-
-    t.uuid = generateUuid();
-
-    return await dataSource.create(t.uuid, t);
-  }
-
-  Future<String> delete(String uuid) async {
-    await validateDeletePrivileges(uuid);
-    await dataSource.deleteByUuid(uuid);
-    return uuid;
-  }
-
-  Future<UuidDataList<T>> getAll() async {
-    await validateGetAllPrivileges();
-
-    final List<T> output = await dataSource.getAll();
-    for (T t in output) performAdjustments(t);
-    return output;
-  }
 
   Future<UuidDataList<IdNamePair>> getAllIdsAndNames() async {
     await validateGetAllIdsAndNamesPrivileges();
     return await dataSource.getAllIdsAndNames();
   }
 
-  Future<T> getByUuid(String uuid, {bool bypassAuth: false}) async {
+  Future<T> getByReadableId(String readableId, {bool bypassAuth: false}) async {
     if (!bypassAuth) await validateGetByIdPrivileges();
 
-    final Option<T> output = await dataSource.getByUuid(uuid);
+    final Option<T> output = await dataSource.getByReadableId(readableId);
 
-    if (output.isEmpty) throw new NotFoundException("UUID '$uuid' not found");
+    if (output.isEmpty) throw new NotFoundException("Readable ID '$readableId' not found");
 
     performAdjustments(output.get());
 
     return output.get();
   }
 
-  Future<UuidDataList<T>> search(String query) async {
-    await validateSearchPrivileges();
-    return await dataSource.search(query);
+  Future<T> getByUuidOrReadableId(String uuidOrReadableId) async {
+    if(isUuid(uuidOrReadableId)) {
+      return getByUuid(uuidOrReadableId);
+    } else {
+      return getByReadableId(uuidOrReadableId);
+    }
   }
 
-  Future<String> update(String uuid, T t) async {
-    await validateUpdatePrivileges(uuid);
-    await validate(t, existingId: uuid);
-    return await dataSource.update(uuid, t);
-  }
-
-  @protected
-  void performAdjustments(T t) {}
 
   @override
   Future<Map<String, String>> validateFields(T t,
@@ -75,6 +50,10 @@ abstract class AIdNameBasedModel<T extends AHumanFriendlyData>
 
     if (StringTools.isNullOrWhitespace(t.readableId))
       fieldErrors["readableId"] = "Required";
+    else if(isUuid(t.readableId))
+      fieldErrors["readableId"] = "Cannot be in the form of a uuid";
+    else if (isReservedWord(t.readableId))
+      fieldErrors["readableId"] ="Cannot use '${t.readableId}' as Readable ID";
     else {
       final Option<T> item = await dataSource.getByReadableId(t.readableId);
 
@@ -85,10 +64,6 @@ abstract class AIdNameBasedModel<T extends AHumanFriendlyData>
         // Updating
         if (item.isNotEmpty && item.first.uuid != existingId)
           fieldErrors["readableId"] = "Already in use";
-      }
-      if (isReservedWord(t.readableId)) {
-        fieldErrors["readableId"] =
-            "Cannot use '${t.readableId}' as Readable ID";
       }
     }
 
@@ -104,27 +79,8 @@ abstract class AIdNameBasedModel<T extends AHumanFriendlyData>
   }
 
   @protected
-  Future<Null> validateFieldsInternal(Map<String, String> fieldErrors, T t,
-          {String existingId: null}) async =>
-      {};
-
-  @protected
   Future<Null> validateGetAllIdsAndNamesPrivileges() async {
     await validateGetPrivileges();
   }
 
-  @protected
-  Future<Null> validateGetAllPrivileges() async {
-    await validateGetPrivileges();
-  }
-
-  @protected
-  Future<Null> validateGetByIdPrivileges() async {
-    await validateGetPrivileges();
-  }
-
-  @protected
-  Future<Null> validateSearchPrivileges() async {
-    await validateGetPrivileges();
-  }
 }

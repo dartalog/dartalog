@@ -9,31 +9,38 @@ import 'package:rpc/rpc.dart';
 
 import '../../item_api.dart';
 
-class ItemTypeResource extends AIdResource<ItemType> {
+class ItemTypeResource extends AIdNameResource<ItemType> {
   static final Logger _log = new Logger('ItemTypeResource');
   @override
   Logger get childLogger => _log;
 
+  @override
   model.ItemTypeModel get idModel => model.itemTypes;
 
+  @override
   @ApiMethod(method: 'POST', path: '${ItemApi.itemTypesPath}/')
   Future<IdResponse> create(ItemType itemType) => createWithCatch(itemType);
 
-  @ApiMethod(path: '${ItemApi.itemTypesPath}/{id}/')
-  Future<ItemType> getById(String id, {bool includeFields: false}) =>
+  @override
+  @ApiMethod(path: '${ItemApi.itemTypesPath}/{uuid}/')
+  Future<ItemType> getByUuid(String uuid, {bool includeFields: false}) =>
       catchExceptionsAwait(
-          () => idModel.getById(id, includeFields: includeFields));
+          () => idModel.getByUuid(uuid, includeFields: includeFields));
 
+  @override
   @ApiMethod(path: '${ItemApi.itemTypesPath}/')
   Future<List<IdNamePair>> getAllIdsAndNames() => getAllIdsAndNamesWithCatch();
 
-  @ApiMethod(method: 'PUT', path: '${ItemApi.itemTypesPath}/{id}/')
-  Future<IdResponse> update(String id, ItemType itemType) =>
-      updateWithCatch(id, itemType);
+  @override
+  @ApiMethod(method: 'PUT', path: '${ItemApi.itemTypesPath}/{uuid}/')
+  Future<IdResponse> update(String uuid, ItemType itemType) =>
+      updateWithCatch(uuid, itemType);
 
-  @ApiMethod(method: 'DELETE', path: '${ItemApi.itemTypesPath}/{id}/')
-  Future<VoidMessage> delete(String id) => deleteWithCatch(id);
+  @override
+  @ApiMethod(method: 'DELETE', path: '${ItemApi.itemTypesPath}/{uuid}/')
+  Future<VoidMessage> delete(String uuid) => deleteWithCatch(uuid);
 
-  String generateRedirect(String newId) =>
-      "${serverApiRoot}${ItemApi.itemTypesPath}/${newId}";
+  @override
+  String generateRedirect(String newUuid) =>
+      "$serverApiRoot${ItemApi.itemTypesPath}/$newUuid";
 }

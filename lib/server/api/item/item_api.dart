@@ -19,6 +19,7 @@ import 'src/resources/setup_resource.dart';
 @ApiClass(
     version: itemApiVersion, name: itemApiName, description: 'Item REST API')
 class ItemApi {
+  static const String bulkPath = "bulk";
   static const String collectionsPath = "collections";
   static const String copiesPath = "copies";
   static const String fieldsPath = "fields";

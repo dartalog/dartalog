@@ -14,8 +14,9 @@ import 'package:dartalog/server/data_sources/data_sources.dart' as data_sources;
 import 'a_id_name_based_model.dart';
 import 'item_copy_model.dart';
 import 'package:dartalog/server/model/model.dart';
+import 'a_file_upload_model.dart';
 
-class ItemModel extends AIdNameBasedModel<Item> {
+class ItemModel extends AIdNameBasedModel<Item> with AFileUploadModel<Item> {
   static final Logger _log = new Logger('ItemModel');
   static final RegExp legalIdCharacters = new RegExp("[a-zA-Z0-9_\-]");
 
@@ -29,7 +30,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
       new Directory(originalImagePath);
 
   static final Directory thumbnailDir = new Directory(thumbnailImagePath);
-  static final List<String> nonSortingWords = ["the", "a", "an"];
+  static final List<String> nonSortingWords = <String>["the", "a", "an"];
 
   // TODO: evaluate more (oh)
   final ItemCopyModel copies = new ItemCopyModel();
@@ -113,7 +114,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
     itemCopy.uniqueId = uniqueId;
     itemCopy.status = ItemStatus.defaultStatus;
 
-    await DataValidationException.PerformValidation((Map output) async {
+    await DataValidationException.PerformValidation((Map<String,String> output) async {
       output.addAll(await validateFields(item));
       output
           .addAll(await copies.validateFields(itemCopy, skipItemIdCheck: true));
@@ -123,8 +124,23 @@ class ItemModel extends AIdNameBasedModel<Item> {
     //TODO: More thorough cleanup of files in case of failure
 
     final String itemId = await data_sources.items.create(item.uuid, item);
-    return await copies.create(itemId, itemCopy);
+    itemCopy.itemUuid = itemId;
+    await copies.create(itemCopy);
+    return itemId;
   }
+
+  @override
+  Future<Item> getByUuidOrReadableId(String uuidOrReadableId, {bool includeType: false,
+  bool includeFields: false,
+  bool includeCopies: false,
+  bool includeCopyCollection: false}) async {
+    if(isUuid(uuidOrReadableId)) {
+      return getByUuid(uuidOrReadableId, includeType: includeType, includeFields: includeFields, includeCopies: includeCopies, includeCopyCollection: includeCopyCollection);
+    } else {
+      return getByReadableId(uuidOrReadableId, includeType: includeType, includeFields: includeFields, includeCopies: includeCopies, includeCopyCollection: includeCopyCollection);
+    }
+  }
+
 
   @override
   Future<Item> getByUuid(String uuid,
@@ -132,19 +148,48 @@ class ItemModel extends AIdNameBasedModel<Item> {
       bool includeFields: false,
       bool includeCopies: false,
       bool includeCopyCollection: false,
-      bool bypassAuth: false}) async {
+      bool bypassAuthentication: false}) async {
     await validateGetPrivileges();
 
-    final Item output = await super.getByUuid(uuid, bypassAuth: bypassAuth);
+    final Item output = await super.getByUuid(uuid, bypassAuthentication: bypassAuthentication);
+
+    await prepareOutput(output, includeType: includeType, includeFields: includeFields, includeCopies: includeCopies, includeCopyCollection: includeCopyCollection);
+
+    return output;
+  }
+
+  @override
+  Future<Item> getByReadableId(String readableId,
+      {bool includeType: false,
+        bool includeFields: false,
+        bool includeCopies: false,
+        bool includeCopyCollection: false,
+        bool bypassAuth: false}) async {
+    await validateGetPrivileges();
+
+    final Item output = await super.getByReadableId(readableId, bypassAuth: bypassAuth);
+
+    await prepareOutput(output, includeType: includeType, includeFields: includeFields, includeCopies: includeCopies, includeCopyCollection: includeCopyCollection);
+
+    return output;
+  }
+
+
+  Future<Null> prepareOutput(Item output, {bool includeType: false,
+    bool includeFields: false,
+    bool includeCopies: false,
+    bool includeCopyCollection: false,}) async {
+
+    final String uuid = output.uuid;
 
     if (includeType) {
       output.type = (await data_sources.itemTypes.getByUuid(output.typeUuid))
           .getOrElse(() => throw new Exception(
-              "Item type '${output.typeUuid}' specified for item not found"));
+          "Item type '${output.typeUuid}' specified for item not found"));
 
       if (includeFields) {
         output.type.fields =
-            await data_sources.fields.getByUuids(output.type.fieldUuids);
+        await data_sources.fields.getByUuids(output.type.fieldUuids);
       }
     } else if (includeFields) {
       throw new InvalidInputException(
@@ -171,6 +216,7 @@ class ItemModel extends AIdNameBasedModel<Item> {
     } catch (e) {
       output.canDelete = false;
     }
+
     return output;
   }
 

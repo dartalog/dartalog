@@ -56,7 +56,7 @@ Future<Option<Principal>> _authenticateUser(
   if (user.isEmpty) return new None<Principal>();
 
   final Option<String> hashOption =
-      await data_source.users.getPasswordHash(user.get().uuid);
+      await data_source.users.getPasswordHashByUuid(user.get().uuid);
 
   if (hashOption.isEmpty)
     throw new Exception("User does not have a password set");
@@ -67,8 +67,8 @@ Future<Option<Principal>> _authenticateUser(
     return new None<Principal>();
 }
 
-Future<Option<Principal>> _getUser(String id) async {
-  final Option<User> user = await data_source.users.getById(id);
+Future<Option<Principal>> _getUser(String uuid) async {
+  final Option<User> user = await data_source.users.getByUuid(uuid);
   if (user.isEmpty) return new None<Principal>();
   return new Some<Principal>(new Principal(user.get().uuid));
 }

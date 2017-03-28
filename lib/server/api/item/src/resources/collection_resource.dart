@@ -8,7 +8,7 @@ import 'package:dartalog/server/server.dart';
 import 'package:logging/logging.dart';
 import 'package:rpc/rpc.dart';
 
-class CollectionResource extends AIdResource<Collection> {
+class CollectionResource extends AIdNameResource<Collection> {
   static final Logger _log = new Logger('CollectionResource');
 
   @override
@@ -35,9 +35,9 @@ class CollectionResource extends AIdResource<Collection> {
   Future<Collection> getByUuid(String uuid) => getByUuidWithCatch(uuid);
 
   @override
-  @ApiMethod(method: 'PUT', path: '${ItemApi.collectionsPath}/{id}/')
-  Future<IdResponse> update(String id, Collection collection) =>
-      updateWithCatch(id, collection);
+  @ApiMethod(method: 'PUT', path: '${ItemApi.collectionsPath}/{uuid}/')
+  Future<IdResponse> update(String uuid, Collection collection) =>
+      updateWithCatch(uuid, collection);
 
   @override
   String generateRedirect(String newId) =>

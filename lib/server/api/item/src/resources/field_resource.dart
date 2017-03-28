@@ -8,8 +8,10 @@ import 'package:dartalog/server/server.dart';
 import 'package:logging/logging.dart';
 import 'package:rpc/rpc.dart';
 
-class FieldResource extends AIdResource<Field> {
+class FieldResource extends AIdNameResource<Field> {
   static final Logger _log = new Logger('FieldResource');
+
+  @override
   model.AIdNameBasedModel<Field> get idModel => model.fields;
 
   @override
@@ -23,17 +25,20 @@ class FieldResource extends AIdResource<Field> {
   @ApiMethod(path: '${ItemApi.fieldsPath}/')
   Future<List<IdNamePair>> getAllIdsAndNames() => getAllIdsAndNamesWithCatch();
 
+  @override
   @ApiMethod(path: '${ItemApi.fieldsPath}/{uuid}/')
-  Future<Field> getById(String uuid) => getByUuidWithCatch(uuid);
+  Future<Field> getByUuid(String uuid) => getByUuidWithCatch(uuid);
 
+  @override
   @ApiMethod(method: 'PUT', path: '${ItemApi.fieldsPath}/{uuid}/')
   Future<IdResponse> update(String uuid, Field field) =>
       updateWithCatch(uuid, field);
 
+  @override
   @ApiMethod(method: 'DELETE', path: '${ItemApi.fieldsPath}/{uuid}/')
   Future<VoidMessage> delete(String uuid) => deleteWithCatch(uuid);
 
   @override
-  String generateRedirect(String newId) =>
-      "${serverApiRoot}${ItemApi.fieldsPath}/${newId}";
+  String generateRedirect(String newUuid) =>
+      "$serverApiRoot${ItemApi.fieldsPath}/$newUuid";
 }

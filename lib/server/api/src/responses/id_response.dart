@@ -1,8 +1,8 @@
 class IdResponse {
-  String id;
+  String uuid;
   String location;
 
   IdResponse();
 
-  IdResponse.fromId(this.id, [this.location]);
+  IdResponse.fromId(this.uuid, [this.location]);
 }

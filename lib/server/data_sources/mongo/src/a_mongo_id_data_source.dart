@@ -42,6 +42,7 @@ abstract class AMongoIdDataSource<T extends AHumanFriendlyData>
           offset: offset,
           limit: limit);
 
+  @override
   Future<UuidDataList<IdNamePair>> getAllIdsAndNames(
           {String sortField: readableIdField}) =>
       getIdsAndNames(sortField: sortField);
@@ -97,8 +98,18 @@ abstract class AMongoIdDataSource<T extends AHumanFriendlyData>
   }
 
   @override
-  Future<Option<T>> getByReadableId(String id) =>
-      getForOneFromDb(where.eq(readableIdField, id));
+  Future<Option<T>> getByReadableId(String readableId) =>
+      getForOneFromDb(where.eq(readableIdField, readableId));
+
+  @override
+  Future<Option<String>> getUuidForReadableId(String readableId) async {
+    final List data = await genericFind(where.eq(readableIdField, readableId).limit(1).fields(<String>[uuidField]));
+    if(data.isEmpty)
+      return new None<String>();
+
+    return new Some<String>(data.first[uuidField]);
+  }
+
 
   @override
   void updateMap(T item, Map<String, dynamic> data) {

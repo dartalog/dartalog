@@ -9,6 +9,8 @@ import 'src/item_type_model.dart';
 import 'src/export_model.dart';
 export 'src/a_id_name_based_model.dart';
 export 'src/item_type_model.dart';
+export 'src/a_uuid_based_model.dart';
+export 'src/a_file_upload_model.dart';
 
 final UserModel users = new UserModel();
 final FieldModel fields = new FieldModel();

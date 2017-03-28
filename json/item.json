@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "22718aaf4e1af6af7324abedc479fc17c97413a0",
+ "etag": "3a26446b9e61fefb1ab4707a628a5be432954ce1",
  "discoveryVersion": "v1",
  "id": "item:0.1",
  "name": "item",
@@ -27,9 +27,6 @@
     "format": {
      "type": "string"
     },
-    "uuid": {
-     "type": "string"
-    },
     "name": {
      "type": "string"
     },
@@ -42,7 +39,7 @@
    "id": "IdResponse",
    "type": "object",
    "properties": {
-    "id": {
+    "uuid": {
      "type": "string"
     },
     "location": {
@@ -61,9 +58,6 @@
    "id": "IdNamePair",
    "type": "object",
    "properties": {
-    "uuid": {
-     "type": "string"
-    },
     "name": {
      "type": "string"
     },
@@ -76,7 +70,7 @@
    "id": "ItemType",
    "type": "object",
    "properties": {
-    "fieldIds": {
+    "fieldUuids": {
      "type": "array",
      "items": {
       "type": "string"
@@ -87,9 +81,6 @@
      "items": {
       "$ref": "Field"
      }
-    },
-    "uuid": {
-     "type": "string"
     },
     "name": {
      "type": "string"
@@ -103,14 +94,10 @@
    "id": "ItemCopy",
    "type": "object",
    "properties": {
-    "itemId": {
+    "itemUuid": {
      "type": "string"
     },
-    "copy": {
-     "type": "integer",
-     "format": "int32"
-    },
-    "collectionId": {
+    "collectionUuid": {
      "type": "string"
     },
     "uniqueId": {
@@ -149,20 +136,17 @@
     "publiclyBrowsable": {
      "type": "boolean"
     },
-    "curators": {
+    "curatorUuids": {
      "type": "array",
      "items": {
       "type": "string"
      }
     },
-    "browsers": {
+    "browserUuids": {
      "type": "array",
      "items": {
       "type": "string"
      }
-    },
-    "uuid": {
-     "type": "string"
     },
     "name": {
      "type": "string"
@@ -176,30 +160,17 @@
    "id": "ItemSummary",
    "type": "object",
    "properties": {
-    "id": {
+    "uuid": {
      "type": "string"
     },
     "name": {
      "type": "string"
     },
-    "typeId": {
+    "typeUuid": {
      "type": "string"
     },
     "thumbnail": {
      "type": "string"
-    }
-   }
-  },
-  "ItemCopyId": {
-   "id": "ItemCopyId",
-   "type": "object",
-   "properties": {
-    "itemId": {
-     "type": "string"
-    },
-    "copy": {
-     "type": "integer",
-     "format": "int32"
     }
    }
   },
@@ -217,7 +188,7 @@
     "action": {
      "type": "string"
     },
-    "actionerUserId": {
+    "actionerUserUuid": {
      "type": "string"
     }
    }
@@ -229,13 +200,13 @@
     "action": {
      "type": "string"
     },
-    "actionerUserId": {
+    "actionerUserUuid": {
      "type": "string"
     },
-    "itemCopies": {
+    "itemCopyUuids": {
      "type": "array",
      "items": {
-      "$ref": "ItemCopyId"
+      "type": "string"
      }
     }
    }
@@ -244,13 +215,13 @@
    "id": "TransferRequest",
    "type": "object",
    "properties": {
-    "targetCollection": {
+    "targetCollectionUuid": {
      "type": "string"
     },
-    "itemCopies": {
+    "itemCopyUuids": {
      "type": "array",
      "items": {
-      "$ref": "ItemCopyId"
+      "type": "string"
      }
     }
    }
@@ -268,7 +239,7 @@
       "$ref": "MediaMessage"
      }
     },
-    "collectionId": {
+    "collectionUuid": {
      "type": "string"
     },
     "uniqueId": {
@@ -280,7 +251,7 @@
    "id": "Item",
    "type": "object",
    "properties": {
-    "typeId": {
+    "typeUuid": {
      "type": "string"
     },
     "dateAdded": {
@@ -311,9 +282,6 @@
     },
     "canDelete": {
      "type": "boolean"
-    },
-    "uuid": {
-     "type": "string"
     },
     "name": {
      "type": "string"
@@ -389,21 +357,6 @@
      "type": "array",
      "items": {
       "$ref": "ItemSummary"
-     }
-    }
-   }
-  },
-  "UpdateItemRequest": {
-   "id": "UpdateItemRequest",
-   "type": "object",
-   "properties": {
-    "item": {
-     "$ref": "Item"
-    },
-    "files": {
-     "type": "array",
-     "items": {
-      "$ref": "MediaMessage"
      }
     }
    }
@@ -512,13 +465,7 @@
     "password": {
      "type": "string"
     },
-    "idNumber": {
-     "type": "string"
-    },
     "type": {
-     "type": "string"
-    },
-    "uuid": {
      "type": "string"
     },
     "name": {
@@ -599,20 +546,20 @@
       "$ref": "ListOfIdNamePair"
      }
     },
-    "getById": {
-     "id": "ItemApi.fields.getById",
-     "path": "fields/{id}/",
+    "getByUuid": {
+     "id": "ItemApi.fields.getByUuid",
+     "path": "fields/{uuid}/",
      "httpMethod": "GET",
      "parameters": {
-      "id": {
+      "uuid": {
        "type": "string",
-       "description": "Path parameter: 'id'.",
+       "description": "Path parameter: 'uuid'.",
        "required": true,
        "location": "path"
       }
      },
      "parameterOrder": [
-      "id"
+      "uuid"
      ],
      "response": {
       "$ref": "Field"
@@ -620,18 +567,18 @@
     },
     "update": {
      "id": "ItemApi.fields.update",
-     "path": "fields/{id}/",
+     "path": "fields/{uuid}/",
      "httpMethod": "PUT",
      "parameters": {
-      "id": {
+      "uuid": {
        "type": "string",
-       "description": "Path parameter: 'id'.",
+       "description": "Path parameter: 'uuid'.",
        "required": true,
        "location": "path"
       }
      },
      "parameterOrder": [
-      "id"
+      "uuid"
      ],
      "request": {
       "$ref": "Field"
@@ -642,18 +589,18 @@
     },
     "delete": {
      "id": "ItemApi.fields.delete",
-     "path": "fields/{id}/",
+     "path": "fields/{uuid}/",
      "httpMethod": "DELETE",
      "parameters": {
-      "id": {
+      "uuid": {
        "type": "string",
-       "description": "Path parameter: 'id'.",
+       "description": "Path parameter: 'uuid'.",
        "required": true,
        "location": "path"
       }
      },
      "parameterOrder": [
-      "id"
+      "uuid"
      ]
     }
    },
@@ -674,14 +621,14 @@
       "$ref": "IdResponse"
      }
     },
-    "getById": {
-     "id": "ItemApi.itemTypes.getById",
-     "path": "types/{id}/",
+    "getByUuid": {
+     "id": "ItemApi.itemTypes.getByUuid",
+     "path": "types/{uuid}/",
      "httpMethod": "GET",
      "parameters": {
-      "id": {
+      "uuid": {
        "type": "string",
-       "description": "Path parameter: 'id'.",
+       "description": "Path parameter: 'uuid'.",
        "required": true,
        "location": "path"
       },
@@ -693,7 +640,7 @@
       }
      },
      "parameterOrder": [
-      "id"
+      "uuid"
      ],
      "response": {
       "$ref": "ItemType"
@@ -711,18 +658,18 @@
     },
     "update": {
      "id": "ItemApi.itemTypes.update",
-     "path": "types/{id}/",
+     "path": "types/{uuid}/",
      "httpMethod": "PUT",
      "parameters": {
-      "id": {
+      "uuid": {
        "type": "string",
-       "description": "Path parameter: 'id'.",
+       "description": "Path parameter: 'uuid'.",
        "required": true,
        "location": "path"
       }
      },
      "parameterOrder": [
-      "id"
+      "uuid"
      ],
      "request": {
       "$ref": "ItemType"
@@ -733,18 +680,18 @@
     },
     "delete": {
      "id": "ItemApi.itemTypes.delete",
-     "path": "types/{id}/",
+     "path": "types/{uuid}/",
      "httpMethod": "DELETE",
      "parameters": {
-      "id": {
+      "uuid": {
        "type": "string",
-       "description": "Path parameter: 'id'.",
+       "description": "Path parameter: 'uuid'.",
        "required": true,
        "location": "path"
       }
      },
      "parameterOrder": [
-      "id"
+      "uuid"
      ]
     }
    },
@@ -762,23 +709,23 @@
       "$ref": "CreateItemRequest"
      },
      "response": {
-      "$ref": "ItemCopyId"
+      "$ref": "IdNamePair"
      }
     },
     "delete": {
      "id": "ItemApi.items.delete",
-     "path": "items/{id}/",
+     "path": "items/{uuid}/",
      "httpMethod": "DELETE",
      "parameters": {
-      "id": {
+      "uuid": {
        "type": "string",
-       "description": "Path parameter: 'id'.",
+       "description": "Path parameter: 'uuid'.",
        "required": true,
        "location": "path"
       }
      },
      "parameterOrder": [
-      "id"
+      "uuid"
      ]
     },
     "getVisibleSummaries": {
@@ -804,14 +751,14 @@
       "$ref": "PaginatedResponse"
      }
     },
-    "getById": {
-     "id": "ItemApi.items.getById",
-     "path": "items/{id}/",
+    "getByUuidOrReadableId": {
+     "id": "ItemApi.items.getByUuidOrReadableId",
+     "path": "items/{uuidOrReadableId}/",
      "httpMethod": "GET",
      "parameters": {
-      "id": {
+      "uuidOrReadableId": {
        "type": "string",
-       "description": "Path parameter: 'id'.",
+       "description": "Path parameter: 'uuidOrReadableId'.",
        "required": true,
        "location": "path"
       },
@@ -841,7 +788,7 @@
       }
      },
      "parameterOrder": [
-      "id"
+      "uuidOrReadableId"
      ],
      "response": {
       "$ref": "Item"
@@ -878,23 +825,23 @@
       "$ref": "PaginatedResponse"
      }
     },
-    "updateItem": {
-     "id": "ItemApi.items.updateItem",
-     "path": "items/{id}/",
+    "update": {
+     "id": "ItemApi.items.update",
+     "path": "items/{uuid}/",
      "httpMethod": "PUT",
      "parameters": {
-      "id": {
+      "uuid": {
        "type": "string",
-       "description": "Path parameter: 'id'.",
+       "description": "Path parameter: 'uuid'.",
        "required": true,
        "location": "path"
       }
      },
      "parameterOrder": [
-      "id"
+      "uuid"
      ],
      "request": {
-      "$ref": "UpdateItemRequest"
+      "$ref": "Item"
      },
      "response": {
       "$ref": "IdResponse"
@@ -906,40 +853,41 @@
      "methods": {
       "create": {
        "id": "ItemApi.items.copies.create",
-       "path": "items/{itemId}/copies/",
+       "path": "copies/",
        "httpMethod": "POST",
-       "parameters": {
-        "itemId": {
-         "type": "string",
-         "description": "Path parameter: 'itemId'.",
-         "required": true,
-         "location": "path"
-        }
-       },
-       "parameterOrder": [
-        "itemId"
-       ],
+       "parameters": {},
+       "parameterOrder": [],
        "request": {
         "$ref": "ItemCopy"
        },
        "response": {
-        "$ref": "ItemCopyId"
+        "$ref": "IdResponse"
        }
       },
-      "get": {
-       "id": "ItemApi.items.copies.get",
-       "path": "items/{itemId}/copies/{copy}/",
-       "httpMethod": "GET",
+      "delete": {
+       "id": "ItemApi.items.copies.delete",
+       "path": "copies/{uuid}/",
+       "httpMethod": "DELETE",
        "parameters": {
-        "itemId": {
+        "uuid": {
          "type": "string",
-         "description": "Path parameter: 'itemId'.",
+         "description": "Path parameter: 'uuid'.",
          "required": true,
          "location": "path"
-        },
-        "copy": {
-         "type": "integer",
-         "description": "Path parameter: 'copy'.",
+        }
+       },
+       "parameterOrder": [
+        "uuid"
+       ]
+      },
+      "getByUuidOrUniqueId": {
+       "id": "ItemApi.items.copies.getByUuidOrUniqueId",
+       "path": "copies/{uuidOrUniqueId}/",
+       "httpMethod": "GET",
+       "parameters": {
+        "uuidOrUniqueId": {
+         "type": "string",
+         "description": "Path parameter: 'uuidOrUniqueId'.",
          "required": true,
          "location": "path"
         },
@@ -957,39 +905,7 @@
         }
        },
        "parameterOrder": [
-        "itemId",
-        "copy"
-       ],
-       "response": {
-        "$ref": "ItemCopy"
-       }
-      },
-      "getByUniqueID": {
-       "id": "ItemApi.items.copies.getByUniqueID",
-       "path": "items/copies/by_unique_id/{uniqueId}/",
-       "httpMethod": "GET",
-       "parameters": {
-        "uniqueId": {
-         "type": "string",
-         "description": "Path parameter: 'uniqueId'.",
-         "required": true,
-         "location": "path"
-        },
-        "includeCollection": {
-         "type": "boolean",
-         "description": "Query parameter: 'includeCollection'.",
-         "required": false,
-         "location": "query"
-        },
-        "includeItemSummary": {
-         "type": "boolean",
-         "description": "Query parameter: 'includeItemSummary'.",
-         "required": false,
-         "location": "query"
-        }
-       },
-       "parameterOrder": [
-        "uniqueId"
+        "uuidOrUniqueId"
        ],
        "response": {
         "$ref": "ItemCopy"
@@ -997,12 +913,12 @@
       },
       "getVisibleForItem": {
        "id": "ItemApi.items.copies.getVisibleForItem",
-       "path": "items/{itemId}/copies/",
+       "path": "items/{itemUuidOrReadableId}/copies/",
        "httpMethod": "GET",
        "parameters": {
-        "itemId": {
+        "itemUuidOrReadableId": {
          "type": "string",
-         "description": "Path parameter: 'itemId'.",
+         "description": "Path parameter: 'itemUuidOrReadableId'.",
          "required": true,
          "location": "path"
         },
@@ -1014,7 +930,7 @@
         }
        },
        "parameterOrder": [
-        "itemId"
+        "itemUuidOrReadableId"
        ],
        "response": {
         "$ref": "ListOfItemCopy"
@@ -1022,25 +938,18 @@
       },
       "performAction": {
        "id": "ItemApi.items.copies.performAction",
-       "path": "items/{itemId}/copies/{copy}/action/",
+       "path": "copies/{uuid}/action/",
        "httpMethod": "PUT",
        "parameters": {
-        "itemId": {
+        "uuid": {
          "type": "string",
-         "description": "Path parameter: 'itemId'.",
-         "required": true,
-         "location": "path"
-        },
-        "copy": {
-         "type": "integer",
-         "description": "Path parameter: 'copy'.",
+         "description": "Path parameter: 'uuid'.",
          "required": true,
          "location": "path"
         }
        },
        "parameterOrder": [
-        "itemId",
-        "copy"
+        "uuid"
        ],
        "request": {
         "$ref": "ItemActionRequest"
@@ -1048,7 +957,7 @@
       },
       "performBulkAction": {
        "id": "ItemApi.items.copies.performBulkAction",
-       "path": "items/copies/action/",
+       "path": "bulk/copies/action/",
        "httpMethod": "PUT",
        "parameters": {},
        "parameterOrder": [],
@@ -1058,7 +967,7 @@
       },
       "transfer": {
        "id": "ItemApi.items.copies.transfer",
-       "path": "items/copies/transfer/",
+       "path": "bulk/copies/transfer/",
        "httpMethod": "PUT",
        "parameters": {},
        "parameterOrder": [],
@@ -1068,31 +977,24 @@
       },
       "update": {
        "id": "ItemApi.items.copies.update",
-       "path": "items/{itemId}/copies/{copy}/",
+       "path": "copies/{uuid}/",
        "httpMethod": "PUT",
        "parameters": {
-        "itemId": {
+        "uuid": {
          "type": "string",
-         "description": "Path parameter: 'itemId'.",
-         "required": true,
-         "location": "path"
-        },
-        "copy": {
-         "type": "integer",
-         "description": "Path parameter: 'copy'.",
+         "description": "Path parameter: 'uuid'.",
          "required": true,
          "location": "path"
         }
        },
        "parameterOrder": [
-        "itemId",
-        "copy"
+        "uuid"
        ],
        "request": {
         "$ref": "ItemCopy"
        },
        "response": {
-        "$ref": "ItemCopyId"
+        "$ref": "IdResponse"
        }
       }
      },
@@ -1194,18 +1096,18 @@
     },
     "delete": {
      "id": "ItemApi.collections.delete",
-     "path": "collections/{id}/",
+     "path": "collections/{uuid}/",
      "httpMethod": "DELETE",
      "parameters": {
-      "id": {
+      "uuid": {
        "type": "string",
-       "description": "Path parameter: 'id'.",
+       "description": "Path parameter: 'uuid'.",
        "required": true,
        "location": "path"
       }
      },
      "parameterOrder": [
-      "id"
+      "uuid"
      ]
     },
     "getAllIdsAndNames": {
@@ -1218,20 +1120,20 @@
       "$ref": "ListOfIdNamePair"
      }
     },
-    "getById": {
-     "id": "ItemApi.collections.getById",
-     "path": "collections/{id}/",
+    "getByUuid": {
+     "id": "ItemApi.collections.getByUuid",
+     "path": "collections/{uuid}/",
      "httpMethod": "GET",
      "parameters": {
-      "id": {
+      "uuid": {
        "type": "string",
-       "description": "Path parameter: 'id'.",
+       "description": "Path parameter: 'uuid'.",
        "required": true,
        "location": "path"
       }
      },
      "parameterOrder": [
-      "id"
+      "uuid"
      ],
      "response": {
       "$ref": "Collection"
@@ -1239,18 +1141,18 @@
     },
     "update": {
      "id": "ItemApi.collections.update",
-     "path": "collections/{id}/",
+     "path": "collections/{uuid}/",
      "httpMethod": "PUT",
      "parameters": {
-      "id": {
+      "uuid": {
        "type": "string",
-       "description": "Path parameter: 'id'.",
+       "description": "Path parameter: 'uuid'.",
        "required": true,
        "location": "path"
       }
      },
      "parameterOrder": [
-      "id"
+      "uuid"
      ],
      "request": {
       "$ref": "Collection"
@@ -1287,20 +1189,20 @@
       "$ref": "ListOfIdNamePair"
      }
     },
-    "getById": {
-     "id": "ItemApi.users.getById",
-     "path": "users/{id}/",
+    "getByUuid": {
+     "id": "ItemApi.users.getByUuid",
+     "path": "users/{uuid}/",
      "httpMethod": "GET",
      "parameters": {
-      "id": {
+      "uuid": {
        "type": "string",
-       "description": "Path parameter: 'id'.",
+       "description": "Path parameter: 'uuid'.",
        "required": true,
        "location": "path"
       }
      },
      "parameterOrder": [
-      "id"
+      "uuid"
      ],
      "response": {
       "$ref": "User"
@@ -1318,18 +1220,18 @@
     },
     "update": {
      "id": "ItemApi.users.update",
-     "path": "users/{id}/",
+     "path": "users/{uuid}/",
      "httpMethod": "PUT",
      "parameters": {
-      "id": {
+      "uuid": {
        "type": "string",
-       "description": "Path parameter: 'id'.",
+       "description": "Path parameter: 'uuid'.",
        "required": true,
        "location": "path"
       }
      },
      "parameterOrder": [
-      "id"
+      "uuid"
      ],
      "request": {
       "$ref": "User"
@@ -1340,18 +1242,18 @@
     },
     "changePassword": {
      "id": "ItemApi.users.changePassword",
-     "path": "users/{id}/password/",
+     "path": "users/{uuid}/password/",
      "httpMethod": "PUT",
      "parameters": {
-      "id": {
+      "uuid": {
        "type": "string",
-       "description": "Path parameter: 'id'.",
+       "description": "Path parameter: 'uuid'.",
        "required": true,
        "location": "path"
       }
      },
      "parameterOrder": [
-      "id"
+      "uuid"
      ],
      "request": {
       "$ref": "PasswordChangeRequest"
@@ -1359,34 +1261,34 @@
     },
     "delete": {
      "id": "ItemApi.users.delete",
-     "path": "users/{id}/",
+     "path": "users/{uuid}/",
      "httpMethod": "DELETE",
      "parameters": {
-      "id": {
+      "uuid": {
        "type": "string",
-       "description": "Path parameter: 'id'.",
+       "description": "Path parameter: 'uuid'.",
        "required": true,
        "location": "path"
       }
      },
      "parameterOrder": [
-      "id"
+      "uuid"
      ]
     },
     "getBorrowedItems": {
      "id": "ItemApi.users.getBorrowedItems",
-     "path": "users/{id}/borrowed/",
+     "path": "users/{uuid}/borrowed/",
      "httpMethod": "GET",
      "parameters": {
-      "id": {
+      "uuid": {
        "type": "string",
-       "description": "Path parameter: 'id'.",
+       "description": "Path parameter: 'uuid'.",
        "required": true,
        "location": "path"
       }
      },
      "parameterOrder": [
-      "id"
+      "uuid"
      ],
      "response": {
       "$ref": "ListOfIdNamePair"

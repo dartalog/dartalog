@@ -9,6 +9,7 @@ import 'package:rpc/rpc.dart';
 
 class PresetResource extends AResource {
   static final Logger _log = new Logger('PresetResource');
+
   @override
   Logger get childLogger => _log;
 

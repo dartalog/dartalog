@@ -10,6 +10,7 @@ abstract class AIdNameBasedDataSource<T extends AHumanFriendlyData>
   static final Logger _log = new Logger('AIdNameBasedDataSource');
 
   Future<UuidDataList<IdNamePair>> getAllIdsAndNames();
-  Future<Option<T>> getByReadableId(String id);
-  Future<bool> existsByReadableID(String id);
+  Future<Option<T>> getByReadableId(String readableId);
+  Future<bool> existsByReadableID(String readableId);
+  Future<Option<String>> getUuidForReadableId(String readableId);
 }

@@ -49,7 +49,7 @@ abstract class AMongoObjectDataSource<T> extends AMongoDataSource {
     return new Some<T>(results.first);
   }
 
-  Future<List<T>> getFromDb(dynamic selector) async {
+  Future<List<T>> getFromDb(SelectorBuilder selector) async {
     final List<dynamic> results = await genericFind(selector);
     final List<T> output = new List<T>();
     for (dynamic result in results) {

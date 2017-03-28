@@ -19,8 +19,8 @@ class ItemTypeModel extends AIdNameBasedModel<ItemType> {
 
   @override
   Future<ItemType> getByUuid(String uuid,
-      {bool includeFields: false, bool bypassAuth: false}) async {
-    final ItemType output = await super.getByUuid(uuid, bypassAuth: bypassAuth);
+      {bool includeFields: false, bool bypassAuthentication: false}) async {
+    final ItemType output = await super.getByUuid(uuid, bypassAuthentication: bypassAuthentication);
     if (includeFields) {
       output.fields = await data_sources.fields.getByUuids(output.fieldUuids);
     }

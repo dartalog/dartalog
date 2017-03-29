@@ -30,6 +30,7 @@ class ItemApi {
   static const String itemsPath = "items";
   static const String usersPath = "users";
   static const String exportPath = "export";
+  static const String templatesPath = "templates";
 
   @ApiResource()
   final FieldResource fields = new FieldResource();

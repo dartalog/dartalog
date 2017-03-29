@@ -25,10 +25,10 @@ class ItemCopyModel extends AUuidBasedModel<ItemCopy> {
 
   @override
   Future<String> create(ItemCopy itemCopy,
-      {bool bypassAuthentication: false}) async {
+      {bool bypassAuthentication: false, bool keepUuid: false}) async {
     itemCopy.status = ItemStatus.defaultStatus;
     return await super
-        .create(itemCopy, bypassAuthentication: bypassAuthentication);
+        .create(itemCopy, bypassAuthentication: bypassAuthentication, keepUuid: keepUuid);
   }
 
   @override

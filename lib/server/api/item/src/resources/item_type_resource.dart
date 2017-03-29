@@ -43,4 +43,14 @@ class ItemTypeResource extends AIdNameResource<ItemType> {
   @override
   String generateRedirect(String newUuid) =>
       "$serverApiRoot${ItemApi.itemTypesPath}/$newUuid";
+
+  @ApiMethod(path: '${ItemApi.templatesPath}/${ItemApi.itemTypesPath}/')
+  Future<List<IdNamePair>> getAllTemplates() => model.itemTypes.getAllTemplateIds();
+
+  @ApiMethod(method: 'PUT',path: '${ItemApi.templatesPath}/${ItemApi.itemTypesPath}/')
+  Future<IdResponse> applyTemplate(IdRequest uuid) async => new IdResponse.fromId(await model.itemTypes.applyTemplate(uuid.id), generateRedirect(uuid.id));
+
+
+
+
 }

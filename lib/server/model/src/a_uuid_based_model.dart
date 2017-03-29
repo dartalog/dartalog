@@ -11,10 +11,11 @@ abstract class AUuidBasedModel<T extends AUuidData>
     extends ATypedModel<T> {
   AUuidBasedDataSource<T> get dataSource;
 
-  Future<String> create(T t, {bool bypassAuthentication: false}) async {
+  Future<String> create(T t, {bool bypassAuthentication: false, bool keepUuid: false}) async {
     if (!bypassAuthentication) await validateCreatePrivileges();
     await validate(t);
-    t.uuid = generateUuid();
+    if(!keepUuid)
+      t.uuid = generateUuid();
     return await dataSource.create(t.uuid, t);
   }
 

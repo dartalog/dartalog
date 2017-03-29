@@ -41,4 +41,12 @@ class FieldResource extends AIdNameResource<Field> {
   @override
   String generateRedirect(String newUuid) =>
       "$serverApiRoot${ItemApi.fieldsPath}/$newUuid";
+
+  @ApiMethod(path: '${ItemApi.templatesPath}/${ItemApi.fieldsPath}/')
+  Future<List<IdNamePair>> getAllTemplates() => model.fields.getAllTemplateIds();
+
+  @ApiMethod(method: 'PUT',path: '${ItemApi.templatesPath}/${ItemApi.fieldsPath}/')
+  Future<IdResponse> applyTemplate(IdRequest uuid) async => new IdResponse.fromId(await model.fields.applyTemplate(uuid.id), generateRedirect(uuid.id));
+
+
 }

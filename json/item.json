@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "cef592027cfe617a5af236c72d9a6208755b550a",
+ "etag": "98fa9f7c25e820833b9ca181a5b95f866d2a88f3",
  "discoveryVersion": "v1",
  "id": "item:0.1",
  "name": "item",
@@ -68,6 +68,15 @@
      "type": "string"
     },
     "uuid": {
+     "type": "string"
+    }
+   }
+  },
+  "IdRequest": {
+   "id": "IdRequest",
+   "type": "object",
+   "properties": {
+    "id": {
      "type": "string"
     }
    }
@@ -638,6 +647,29 @@
      "parameterOrder": [
       "uuid"
      ]
+    },
+    "getAllTemplates": {
+     "id": "ItemApi.fields.getAllTemplates",
+     "path": "templates/fields/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "ListOfIdNamePair"
+     }
+    },
+    "applyTemplate": {
+     "id": "ItemApi.fields.applyTemplate",
+     "path": "templates/fields/",
+     "httpMethod": "PUT",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "IdRequest"
+     },
+     "response": {
+      "$ref": "IdResponse"
+     }
     }
    },
    "resources": {}
@@ -729,6 +761,29 @@
      "parameterOrder": [
       "uuid"
      ]
+    },
+    "getAllTemplates": {
+     "id": "ItemApi.itemTypes.getAllTemplates",
+     "path": "templates/types/",
+     "httpMethod": "GET",
+     "parameters": {},
+     "parameterOrder": [],
+     "response": {
+      "$ref": "ListOfIdNamePair"
+     }
+    },
+    "applyTemplate": {
+     "id": "ItemApi.itemTypes.applyTemplate",
+     "path": "templates/types/",
+     "httpMethod": "PUT",
+     "parameters": {},
+     "parameterOrder": [],
+     "request": {
+      "$ref": "IdRequest"
+     },
+     "response": {
+      "$ref": "IdResponse"
+     }
     }
    },
    "resources": {}

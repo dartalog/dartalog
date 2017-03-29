@@ -96,7 +96,7 @@ class ItemModel extends AIdNameBasedModel<Item> with AFileUploadModel<Item> {
 
   @override
   Future<String> create(Item item,
-          {List<List<int>> files, bool bypassAuthentication: false}) =>
+          {List<List<int>> files, bool bypassAuthentication: false, bool keepUuid: false}) =>
       throw new InvalidInputException("Use createWithCopy");
 
   Future<String> createWithCopy(Item item, String collectionUuid,

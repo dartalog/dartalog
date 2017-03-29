@@ -67,9 +67,9 @@ class UserModel extends AIdNameBasedModel<User> {
 
   @override
   Future<String> create(User user,
-      {List<String> privileges, bool bypassAuthentication: false}) async {
+      {List<String> privileges, bool bypassAuthentication: false, bool keepUuid: false}) async {
     final String output =
-        await super.create(user, bypassAuthentication: bypassAuthentication);
+        await super.create(user, bypassAuthentication: bypassAuthentication, keepUuid: keepUuid);
 
     await _setPassword(output, user.password);
 

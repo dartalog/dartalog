@@ -5,14 +5,19 @@ import 'package:dartalog/server/data/data.dart';
 import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
 import 'package:dartalog/server/data_sources/data_sources.dart' as data_sources;
 import 'a_id_name_based_model.dart';
+import 'package:dartalog/server/data/templates/templates.dart' as templates;
+import 'a_templating_model.dart';
 
-class ItemTypeModel extends AIdNameBasedModel<ItemType> {
+class ItemTypeModel extends ATemplatingModel<ItemType> {
   static final Logger _log = new Logger('ItemTypeModel');
   @override
   Logger get loggerImpl => _log;
 
   @override
   AIdNameBasedDataSource<ItemType> get dataSource => data_sources.itemTypes;
+
+  @override
+  List<ItemType> get availableTemplates => templates.itemTypeTemplates;
 
   @override
   String get defaultReadPrivilegeRequirement => UserPrivilege.curator;
@@ -39,4 +44,6 @@ class ItemTypeModel extends AIdNameBasedModel<ItemType> {
         fieldErrors["fieldUuids"] = "Not found";
     }
   }
+
+
 }

@@ -24,6 +24,7 @@ export 'src/item.dart'
         UpdateItemRequest,
         TransferRequest,
         IdResponse,
+        IdRequest,
         ItemSummary,
         SetupRequest,
         SetupResponse;

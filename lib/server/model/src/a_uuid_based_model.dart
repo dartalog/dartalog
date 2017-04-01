@@ -51,8 +51,10 @@ abstract class AUuidBasedModel<T extends AUuidData>
     return await dataSource.search(query);
   }
 
-  Future<String> update(String uuid, T t) async {
-    await validateUpdatePrivileges(uuid);
+  Future<String> update(String uuid, T t, {bool bypassAuthentication: false}) async {
+    if(!bypassAuthentication)
+      await validateUpdatePrivileges(uuid);
+    
     await validate(t, existingId: uuid);
     return await dataSource.update(uuid, t);
   }

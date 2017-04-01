@@ -77,10 +77,10 @@ class UserModel extends AIdNameBasedModel<User> {
   }
 
   @override
-  Future<String> update(String id, User user) async {
-    // Only admin can update...for now
+  Future<String> update(String id, User user, {bool bypassAuthentication: false}) async {
+    // TODO: Only admin can update...for now
 
-    final String output = await super.update(id, user);
+    final String output = await super.update(id, user, bypassAuthentication: bypassAuthentication);
 
     if (!StringTools.isNullOrWhitespace(user.password))
       await _setPassword(output, user.password);

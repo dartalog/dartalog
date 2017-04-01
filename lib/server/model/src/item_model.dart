@@ -221,8 +221,9 @@ class ItemModel extends AIdNameBasedModel<Item> with AFileUploadModel<Item> {
   }
 
   @override
-  Future<String> update(String uuid, Item item, {List<List<int>> files}) async {
-    await validateUpdatePrivileges(uuid);
+  Future<String> update(String uuid, Item item, {List<List<int>> files, bool bypassAuthentication: false}) async {
+    if(!bypassAuthentication)
+      await validateUpdatePrivileges(uuid);
 
     item.dateAdded = null;
     item.dateUpdated = new DateTime.now();
@@ -237,7 +238,7 @@ class ItemModel extends AIdNameBasedModel<Item> with AFileUploadModel<Item> {
 
     await _handleFileUploads(item, files);
 
-    return await super.update(uuid, item);
+    return await super.update(uuid, item, bypassAuthentication: bypassAuthentication);
   }
 
   Future<Null> _handleFileUploads(Item item, List<List<int>> files) async {

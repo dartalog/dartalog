@@ -311,10 +311,10 @@ class ItemCopyModel extends AUuidBasedModel<ItemCopy> {
   }
 
   @override
-  Future<String> update(String uuid, ItemCopy itemCopy) async {
-    // TODO: Enforce item-level privilage?
+  Future<String> update(String uuid, ItemCopy itemCopy, {bool bypassAuthentication: false}) async {
+    // TODO: Enforce item-level privilege?
     itemCopy.status = "";
-    return await super.update(uuid, itemCopy);
+    return await super.update(uuid, itemCopy, bypassAuthentication: bypassAuthentication);
   }
 
   @override

@@ -1,7 +1,7 @@
 import 'package:rpc/rpc.dart';
 
 import 'a_human_friendly_data.dart';
-
+import 'a_templating_data.dart';
 @ApiMessage(includeSuper: true)
 class Field extends AHumanFriendlyData {
   bool unique = false;
@@ -16,8 +16,8 @@ class Field extends AHumanFriendlyData {
   }
 
   Field.withValues(String name, String readableId, this.type,
-      {this.unique: false, this.format: "", String id: ""})
-      : super.withValues(name, readableId, uuid: id);
+      {this.unique: false, this.format: "", String uuid: ""})
+      : super.withValues(name, readableId, uuid: uuid);
 
   void copyObject(dynamic from, dynamic to) {
     to.format = from.format;

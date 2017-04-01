@@ -4,9 +4,10 @@ import 'package:dartalog/global.dart';
 import 'package:dartalog/server/data/data.dart';
 import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
 import 'package:dartalog/server/data_sources/data_sources.dart' as data_sources;
-import 'a_id_name_based_model.dart';
 import 'package:dartalog/server/data/templates/templates.dart' as templates;
+import '../model.dart' as model;
 import 'a_templating_model.dart';
+import 'package:option/option.dart';
 
 class ItemTypeModel extends ATemplatingModel<ItemType> {
   static final Logger _log = new Logger('ItemTypeModel');
@@ -17,7 +18,7 @@ class ItemTypeModel extends ATemplatingModel<ItemType> {
   AIdNameBasedDataSource<ItemType> get dataSource => data_sources.itemTypes;
 
   @override
-  List<ItemType> get availableTemplates => templates.itemTypeTemplates;
+  UuidDataList<ItemType> get availableTemplates => templates.itemTypeTemplates;
 
   @override
   String get defaultReadPrivilegeRequirement => UserPrivilege.curator;
@@ -45,5 +46,15 @@ class ItemTypeModel extends ATemplatingModel<ItemType> {
     }
   }
 
+  @override
+  Future<String> applyTemplate(String uuid) async {
+    final Option<ItemType> templateOpt = availableTemplates.getByUuid(uuid);
+    final ItemType template = templateOpt.getOrElse(() => throw new NotFoundException("Item type template $uuid not found"));
 
+    for(String fieldUuid in template.fieldUuids) {
+      await model.fields.applyTemplate(fieldUuid);
+    }
+
+    return super.applyTemplate(uuid);
+  }
 }

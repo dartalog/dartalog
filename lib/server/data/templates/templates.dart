@@ -5,7 +5,7 @@ import 'src/item_types.dart';
 export 'src/fields.dart';
 export 'src/item_types.dart';
 
-final List<Field> fieldTemplates = <Field>[
+final UuidDataList<Field> fieldTemplates = new UuidDataList<Field>.copy([
   asinField,
   authorField,
   backCoverField,
@@ -20,12 +20,12 @@ final List<Field> fieldTemplates = <Field>[
   synopsisField,
   upcField,
   volumeField,
-];
+]);
 
-final List<ItemType> itemTypeTemplates = <ItemType>[
+final UuidDataList<ItemType> itemTypeTemplates = new UuidDataList<ItemType>.copy([
   bookItemType,
   comicBookItemType,
   blurayItemType,
   dvdItemType,
   videoGameItemType
-];
+]);

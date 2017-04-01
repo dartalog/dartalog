@@ -12,6 +12,6 @@ class ItemType extends AHumanFriendlyData {
   ItemType();
 
   ItemType.withValues(String name, String readableId, this.fieldUuids,
-      {String id: ""})
-      : super.withValues(name, readableId, uuid: id);
+      {String uuid: ""})
+      : super.withValues(name, readableId, uuid: uuid);
 }

@@ -9,7 +9,7 @@ import 'package:dartalog/client/views/controls/common_controls.dart';
 import 'package:dartalog/global.dart';
 import 'package:logging/logging.dart';
 
-import '../src/a_page.dart';
+import '../src/a_maintenance_page.dart';
 import 'package:angular2/router.dart';
 
 @Component(
@@ -18,44 +18,18 @@ import 'package:angular2/router.dart';
     providers: const [materialProviders],
     styleUrls: const ["../../shared.css"],
     templateUrl: 'item_types_page.html')
-class ItemTypesPage extends APage implements OnInit, OnDestroy {
+class ItemTypesPage extends AMaintenancePage<api.ItemType> {
   static final Logger _log = new Logger("ItemTypesPage");
-
-  @ViewChild("editForm")
-  NgForm form;
-
-  bool userAuthorized = false;
-
-  List<IdNamePair> items = <IdNamePair>[];
 
   List<api.IdNamePair> fields = <api.IdNamePair>[];
 
-  IdNamePair selectedItem;
   IdNamePair selectedField;
 
-  api.ItemType model = new api.ItemType();
 
-  bool editVisible = false;
-
-  @Output()
-  EventEmitter<bool> visibleChange = new EventEmitter<bool>();
-
-  StreamSubscription<PageActions> _pageActionSubscription;
-
-  final PageControlService _pageControl;
-
-  final ApiService _api;
-
-  List<api.IdNamePair> users = <api.IdNamePair>[];
-
-  ItemTypesPage(
-      this._pageControl, this._api, AuthenticationService _auth, Router router)
-      : super(_pageControl, _auth, router) {
-    _pageControl.setPageTitle("Item Types");
-    _pageControl.setAvailablePageActions(
-        <PageActions>[PageActions.Refresh, PageActions.Add]);
-    _pageActionSubscription =
-        _pageControl.pageActionRequested.listen(onPageActionRequested);
+  ItemTypesPage(PageControlService pageControl, ApiService api,
+      AuthenticationService auth, Router router)
+      : super(true, pageControl, api, auth, router) {
+    pageControl.setPageTitle("Item Types");
   }
 
   void onReorder(ReorderEvent reorder) {

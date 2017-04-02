@@ -28,7 +28,7 @@
                                 Users
                                 <select [(ngModel)]="selectedUser">
                                     <option></option>
-                                    <option *ngFor="let u of users" [ngValue]="u">
+                                    <option *ngFor="let u of users.values" [ngValue]="u">
                                         {{u.name}}
                                     </option>
                                 </select>
@@ -41,7 +41,7 @@
                                 Curators
                                 <material-list>
                                     <material-list-item *ngFor="let i of model.curatorUuids" (trigger)="removeCurator(i)">
-                                        {{i}}
+                                        {{users[i]?.name??i}}
                                     </material-list-item>
                                 </material-list>
                             </td>
@@ -49,7 +49,7 @@
                                 Browsers
                                 <material-list>
                                     <material-list-item *ngFor="let i of model.browserUuids" (trigger)="removeBrowser(i)">
-                                        {{i}}
+                                        {{users[i]?.name??i}}
                                     </material-list-item>
                                 </material-list>
                             </td>

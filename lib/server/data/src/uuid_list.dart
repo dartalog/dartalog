@@ -1,5 +1,5 @@
 import 'package:option/option.dart';
-import 'a_uuid_data.dart';
+import 'package:dartalog/server/data/src/a_uuid_data.dart';
 import 'dart:collection';
 
 class UuidDataList<T extends AUuidData> extends ListBase<T> {

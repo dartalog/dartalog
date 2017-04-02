@@ -7,7 +7,7 @@ import 'package:dartalog/client/api/api.dart' as api;
 import 'package:dartalog/client/services/services.dart';
 import 'package:dartalog/client/views/controls/common_controls.dart';
 import 'package:logging/logging.dart';
-
+import 'package:dartalog/client/data/data.dart';
 import '../src/a_maintenance_page.dart';
 
 @Component(
@@ -21,7 +21,7 @@ class CollectionsPage extends AMaintenancePage<api.Collection> {
 
   api.IdNamePair selectedUser;
 
-  List<IdNamePair> users = <IdNamePair>[];
+  UuidCollection<api.IdNamePair> users = new UuidCollection<api.IdNamePair>();
 
   CollectionsPage(PageControlService pageControl, ApiService api,
       AuthenticationService auth, Router router)
@@ -80,6 +80,10 @@ class CollectionsPage extends AMaintenancePage<api.Collection> {
 
   @override
   Future<Null> selectItemInternal(IdNamePair item) async {
-    users = await this.api.users.getAllIdsAndNames();
+    final ListOfIdNamePair data = await this.api.users.getAllIdsAndNames();
+    users.clear();
+    users.addAllItems(data);
   }
+
+
 }

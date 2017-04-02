@@ -161,7 +161,7 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
       await selectItemInternal(item);
     });
   }
-
+  
   Future<Null> selectItemInternal(IdNamePair item) async {}
 
   Future<Null> selectTemplate(IdNamePair template) async {

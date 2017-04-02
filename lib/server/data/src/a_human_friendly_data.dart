@@ -1,6 +1,6 @@
-export 'a_data.dart';
+export 'package:dartalog/server/data/src/a_data.dart';
 import 'package:rpc/rpc.dart';
-import 'a_uuid_data.dart';
+import 'package:dartalog/server/data/src/a_uuid_data.dart';
 
 @ApiMessage(includeSuper: true)
 abstract class AHumanFriendlyData extends AUuidData {

@@ -3,7 +3,7 @@ import 'package:dartalog/global.dart';
 import '../../data.dart';
 import 'fields.dart';
 
-final ItemType blurayItemType = new ItemType.withValues("Blu-Ray", "bluray",
+final ItemType bluRayItemType = new ItemType.withValues("Blu-Ray", "bluray",
     <String>[seriesField.uuid, frontCoverField.uuid, upcField.uuid],
     uuid: "cfc164fd-4dba-49c1-a771-bca5078d7876");
 

@@ -1,7 +1,7 @@
 import 'paginated_data.dart';
 import 'a_human_friendly_data.dart';
-import 'uuid_list.dart';
-import 'a_uuid_data.dart';
+import 'package:dartalog/server/data/src/uuid_list.dart';
+import 'package:dartalog/server/data/src/a_uuid_data.dart';
 
 class PaginatedUuidData<T extends AUuidData> extends PaginatedData<T> {
   UuidDataList<T> _data = new UuidDataList<T>();

@@ -25,7 +25,7 @@ final UuidDataList<Field> fieldTemplates = new UuidDataList<Field>.copy([
 final UuidDataList<ItemType> itemTypeTemplates = new UuidDataList<ItemType>.copy([
   bookItemType,
   comicBookItemType,
-  blurayItemType,
+  bluRayItemType,
   dvdItemType,
   videoGameItemType
 ]);

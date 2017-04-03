@@ -58,7 +58,7 @@
 
             <span class="title" style="margin-left:0pt;">{{pageTitle}}</span>
 
-            <material-input *ngIf="showSearch" [(ngModel)]="query" style="color:white;" label="Search" trailingGlyph="search" (keyup)="searchKeyup($event)" ></material-input>
+            <material-input *ngIf="showSearch" [(ngModel)]="query" style="color:white;" label="Search" leadingGlyph="search" (keyup)="searchKeyup($event)" ></material-input>
             <!--<material-button *ngIf="showAddButton" icon (trigger)="addClicked()"><glyph icon="add"></glyph></material-button>-->
             <material-button *ngIf="showRefreshButton" icon (trigger)="refreshClicked()"><glyph icon="refresh"></glyph></material-button>
         </paper-toolbar>

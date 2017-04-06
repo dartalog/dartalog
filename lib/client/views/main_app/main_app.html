@@ -50,6 +50,12 @@
                     <paper-item-body>Item Types</paper-item-body>
                 </paper-item>
             </a>
+            <a [routerLink]="['Users']" *ngIf="userIsAdmin">
+                <paper-item>
+                    <iron-icon icon="label-outline"></iron-icon>
+                    <paper-item-body>Users</paper-item-body>
+                </paper-item>
+            </a>
         </div>
     </paper-header-panel>
     <paper-header-panel main>

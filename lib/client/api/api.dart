@@ -26,5 +26,6 @@ export 'src/item.dart'
         IdResponse,
         IdRequest,
         ItemSummary,
+        PasswordChangeRequest,
         SetupRequest,
         SetupResponse;

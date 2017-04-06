@@ -1,27 +1,23 @@
 import 'package:angular2/router.dart';
 import 'package:dartalog/client/views/pages/pages.dart';
 
-const String queryRouteParameter = "query";
-const String pageRouteParameter = "page";
-const String idRouteParameter = "id";
-
 const Route collectionsRoute = const Route(
   path: '/collections',
   name: 'Collections',
   component: CollectionsPage,
 );
-
 const Route fieldsRoute = const Route(
   path: '/fields',
   name: 'Fields',
   component: FieldsPage,
 );
-
 const Route homeRoute = const Route(
     path: '/',
     name: "Home",
     component: ItemBrowseComponent,
     useAsDefault: true);
+
+const String idRouteParameter = "id";
 
 const Route itemAddRoute =
     const Route(path: '/items/add', name: 'ItemAdd', component: ItemAddPage);
@@ -47,17 +43,15 @@ const Route itemTypesRoute = const Route(
   component: ItemTypesPage,
 );
 
-const Route setupRoute = const Route(
-  path: '/setup',
-  name: 'Setup',
-  component: SetupPage,
-);
-
 const Route itemViewRoute = const Route(
   path: '/item/:$idRouteParameter',
   name: 'Item',
   component: ItemBrowseComponent,
 );
+
+const String pageRouteParameter = "page";
+
+const String queryRouteParameter = "query";
 
 const List<Route> routes = const <Route>[
   homeRoute,
@@ -69,5 +63,18 @@ const List<Route> routes = const <Route>[
   collectionsRoute,
   fieldsRoute,
   itemTypesRoute,
-  setupRoute
+  setupRoute,
+  usersRoute
 ];
+
+const Route setupRoute = const Route(
+  path: '/setup',
+  name: 'Setup',
+  component: SetupPage,
+);
+
+const Route usersRoute = const Route(
+  path: '/users',
+  name: 'Users',
+  component: UsersPage,
+);

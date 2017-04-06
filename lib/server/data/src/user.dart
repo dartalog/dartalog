@@ -8,35 +8,21 @@ class User extends AHumanFriendlyData {
   String password;
 
   String type;
-  User();
-  User.copy(dynamic field) {
-    _copy(field, this);
-  }
+  String email;
 
-  void copyTo(dynamic to) {
-    _copy(this, to);
+  User();
+
+  User.copy(dynamic o): super.copy(o) {
+    this.email = o.email;
+    this.type = o.type;
+    if (o.password == null)
+      this.password = "";
+    else
+      this.password = o.password;
   }
 
   bool evaluateType(String needed) {
     return UserPrivilege.evaluate(needed, this.type);
   }
 
-  void _copy(dynamic from, dynamic to) {
-    to.uuid = from.uuid;
-    to.name = from.name;
-    to.readableId = from.readableId;
-    to.type = from.type;
-    if (from.password == null)
-      to.password = "";
-    else
-      to.password = from.password;
-  }
-
-  static List<User> copyList(Iterable<dynamic> e) {
-    final List<User> output = <User>[];
-    for (dynamic obj in e) {
-      output.add(new User.copy(obj));
-    }
-    return output;
-  }
 }

@@ -131,7 +131,7 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
 
   Future<Null> refresh() async {
     await performApiCall(() async {
-      ListOfIdNamePair data = await itemApi.getAllIdsAndNames();
+      final ListOfIdNamePair data = await itemApi.getAllIdsAndNames();
       items.clear();
       items.addAll(data);
       if (_loadTemplates) {
@@ -143,7 +143,7 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
     });
   }
 
-  Future<Null> refreshInternal() async => {};
+  Future<Null> refreshInternal() async {}
 
   void reset() {
     model = createBlank();

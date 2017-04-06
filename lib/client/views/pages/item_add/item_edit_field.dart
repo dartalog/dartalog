@@ -31,7 +31,7 @@ class ItemEditField {
     _value = value;
     if (isTypeImage) {
       this.displayImageUrl = getImageUrl(value, ImageType.thumbnail);
-      if (!value.startsWith(HOSTED_IMAGE_PREFIX)) editImageUrl = value;
+      if (!value.startsWith(hostedImagesPrefix)) editImageUrl = value;
     }
   }
 

@@ -59,7 +59,7 @@ abstract class APage extends AErrorThing {
       } else if (error.status == 413) {
         errorMessage =
             "The submitted data was too large, please submit smaller images";
-      } else if (error.status == HTTP_STATUS_SERVER_NEEDS_SETUP) {
+      } else if (error.status == httpStatusServerNeedsSetup) {
         loggerImpl.warning("Server replied that setup is required", error, st);
         await _router.navigate([setupRoute.name]);
       } else {

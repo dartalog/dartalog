@@ -21,10 +21,10 @@ class ItemModel extends AIdNameBasedModel<Item> with AFileUploadModel<Item> {
   static final RegExp legalIdCharacters = new RegExp("[a-zA-Z0-9_\-]");
 
   static final String originalImagePath =
-      path.join(rootDirectory, HOSTED_IMAGES_ORIGINALS_PATH);
+      path.join(rootDirectory, hostedImagesOriginalsPath);
 
   static final String thumbnailImagePath =
-      path.join(rootDirectory, HOSTED_IMAGES_THUMBNAILS_PATH);
+      path.join(rootDirectory, hostedImagesThumbnailsPath);
 
   static final Directory originalImageDir =
       new Directory(originalImagePath);
@@ -56,7 +56,7 @@ class ItemModel extends AIdNameBasedModel<Item> with AFileUploadModel<Item> {
 //  }
 
   Future<PaginatedUuidData<IdNamePair>> getVisibleIdsAndNames(
-      {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
+      {int page: 0, int perPage: defaultPerPage}) async {
     if (page < 0) {
       throw new InvalidInputException("Page must be a non-negative number");
     }
@@ -69,7 +69,7 @@ class ItemModel extends AIdNameBasedModel<Item> with AFileUploadModel<Item> {
   }
 
   Future<PaginatedUuidData<Item>> getVisible(
-      {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
+      {int page: 0, int perPage: defaultPerPage}) async {
     if (page < 0) {
       throw new InvalidInputException("Page must be a non-negative number");
     }
@@ -82,7 +82,7 @@ class ItemModel extends AIdNameBasedModel<Item> with AFileUploadModel<Item> {
   }
 
   Future<PaginatedUuidData<Item>> searchVisible(String query,
-      {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
+      {int page: 0, int perPage: defaultPerPage}) async {
     if (page < 0) {
       throw new InvalidInputException("Page must be a non-negative number");
     }
@@ -256,7 +256,7 @@ class ItemModel extends AIdNameBasedModel<Item> with AFileUploadModel<Item> {
 
       final String value = item.values[f.uuid];
 
-      if (value.startsWith(HOSTED_IMAGE_PREFIX)) {
+      if (value.startsWith(hostedImagesPrefix)) {
         // This should indicate that the submitted image is one that is already hosted on the server, so nothing to do here
         continue;
       }
@@ -274,7 +274,7 @@ class ItemModel extends AIdNameBasedModel<Item> with AFileUploadModel<Item> {
 
       List<int> data;
 
-      final Match m = FILE_UPLOAD_REGEX.firstMatch(value);
+      final Match m = fileUploadRegex.firstMatch(value);
       if (m != null) {
         // This is a new file upload
         final int filePosition = int.parse(m.group(1));
@@ -303,7 +303,7 @@ class ItemModel extends AIdNameBasedModel<Item> with AFileUploadModel<Item> {
       final Digest hash = sha256.convert(data);
       final String hashString = hash.toString();
       filesToWrite[hashString] = data;
-      item.values[f.uuid] = "$HOSTED_IMAGE_PREFIX$hashString";
+      item.values[f.uuid] = "$hostedImagesPrefix$hashString";
     }
 
     // Now that the above sections have completed gathering all the file services for saving, we save it all

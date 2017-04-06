@@ -14,6 +14,7 @@ import 'package:dartalog/client/views/controls/paginator_component.dart';
 import 'package:dartalog/client/views/pages/pages.dart';
 import 'package:dartalog/global.dart';
 import 'package:dartalog/tools.dart';
+import 'package:logging/logging.dart';
 import 'package:polymer_elements/iron_flex_layout/classes/iron_flex_layout.dart';
 import 'package:polymer_elements/iron_icon.dart';
 import 'package:polymer_elements/iron_image.dart';
@@ -23,7 +24,6 @@ import 'package:polymer_elements/paper_item.dart';
 import 'package:polymer_elements/paper_item_body.dart';
 import 'package:polymer_elements/paper_material.dart';
 import 'package:polymer_elements/paper_toolbar.dart';
-import 'package:logging/logging.dart';
 
 @Component(
     selector: 'main-app',
@@ -128,7 +128,7 @@ class MainApp implements OnInit, OnDestroy {
     try {
       await _auth.evaluateAuthentication();
     } on DetailedApiRequestError catch (e, st) {
-      if (e.status == HTTP_STATUS_SERVER_NEEDS_SETUP) {
+      if (e.status == httpStatusServerNeedsSetup) {
         await _router.navigate([setupRoute.name]);
       } else {
         _log.severe("evaluateAuthentication", e, st);

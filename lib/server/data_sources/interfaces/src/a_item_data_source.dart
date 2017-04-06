@@ -11,12 +11,12 @@ abstract class AItemDataSource extends AIdNameBasedDataSource<Item> {
   Future<UuidDataList<Item>> searchVisible(String userUuid, String query);
   Future<UuidDataList<IdNamePair>> getVisibleIdsAndNames(String userUuid);
   Future<PaginatedUuidData<Item>> getVisiblePaginated(String userUuid,
-      {int page: 0, int perPage: DEFAULT_PER_PAGE});
+      {int page: 0, int perPage: defaultPerPage});
   Future<PaginatedUuidData<Item>> searchVisiblePaginated(
       String userUuid, String query,
-      {int page: 0, int perPage: DEFAULT_PER_PAGE});
+      {int page: 0, int perPage: defaultPerPage});
   Future<PaginatedUuidData<IdNamePair>> getVisibleIdsAndNamesPaginated(
       String userUuid,
       {int page: 0,
-      int perPage: DEFAULT_PER_PAGE});
+      int perPage: defaultPerPage});
 }

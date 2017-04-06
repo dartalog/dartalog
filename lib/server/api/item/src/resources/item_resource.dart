@@ -53,7 +53,7 @@ class ItemResource extends AIdNameResource<Item> {
 
   @ApiMethod(path: '$_apiPath/')
   Future<PaginatedResponse<ItemSummary>> getVisibleSummaries(
-          {int page: 0, int perPage: DEFAULT_PER_PAGE}) =>
+          {int page: 0, int perPage: defaultPerPage}) =>
       catchExceptionsAwait(() async =>
           new PaginatedResponse<ItemSummary>.convertPaginatedData(
               await model.items.getVisible(page: page, perPage: perPage),
@@ -76,7 +76,7 @@ class ItemResource extends AIdNameResource<Item> {
 
   @ApiMethod(path: 'search/{query}/')
   Future<PaginatedResponse<ItemSummary>> searchVisible(String query,
-          {int page: 0, int perPage: DEFAULT_PER_PAGE}) =>
+          {int page: 0, int perPage: defaultPerPage}) =>
       catchExceptionsAwait(() async =>
           new PaginatedResponse<ItemSummary>.convertPaginatedData(
               await model.items

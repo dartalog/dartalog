@@ -39,7 +39,7 @@ abstract class AMongoUuidBasedDataSource<T extends AUuidData>
   Future<PaginatedUuidData<T>> getPaginated(
           {String sortField: null,
           int offset: 0,
-          int limit: PAGINATED_DATA_LIMIT}) =>
+          int limit: paginatedDataLimit}) =>
       getPaginatedListFromDb(where.sortBy(sortField ?? uuidField),
           offset: offset, limit: limit);
 
@@ -74,7 +74,7 @@ abstract class AMongoUuidBasedDataSource<T extends AUuidData>
   @protected
   Future<PaginatedUuidData<T>> getPaginatedListFromDb(SelectorBuilder selector,
           {int offset: 0,
-          int limit: PAGINATED_DATA_LIMIT,
+          int limit: paginatedDataLimit,
           String sortField: uuidField}) async =>
       new PaginatedUuidData<T>.copyPaginatedData(await getPaginatedFromDb(
           selector,
@@ -86,7 +86,7 @@ abstract class AMongoUuidBasedDataSource<T extends AUuidData>
   Future<PaginatedUuidData<T>> searchPaginated(String query,
           {SelectorBuilder selector,
           int offset: 0,
-          int limit: PAGINATED_DATA_LIMIT}) async =>
+          int limit: paginatedDataLimit}) async =>
       new PaginatedUuidData<T>.copyPaginatedData(
           await super.searchPaginated(query, offset: offset, limit: limit));
 

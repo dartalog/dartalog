@@ -33,7 +33,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
 
   @override
   Future<PaginatedUuidData<Item>> getVisiblePaginated(String userUuid,
-      {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
+      {int page: 0, int perPage: defaultPerPage}) async {
     return (await generateVisibleCriteria(userUuid)).cata(
         () => new PaginatedUuidData<Item>(),
         (SelectorBuilder selector) async => await getPaginatedListFromDb(
@@ -45,7 +45,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   @override
   Future<PaginatedUuidData<Item>> searchVisiblePaginated(
       String userUuid, String query,
-      {int page: 0, int perPage: DEFAULT_PER_PAGE}) async {
+      {int page: 0, int perPage: defaultPerPage}) async {
     return (await generateVisibleCriteria(userUuid)).cata(
         () => new PaginatedUuidData<Item>(),
         (SelectorBuilder selector) async => await searchPaginated(query,
@@ -76,7 +76,7 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   Future<PaginatedUuidData<IdNamePair>> getVisibleIdsAndNamesPaginated(
       String userUuid,
       {int page: 0,
-      int perPage: DEFAULT_PER_PAGE}) async {
+      int perPage: defaultPerPage}) async {
     return (await generateVisibleCriteria(userUuid)).cata(
         () => new UuidDataList<IdNamePair>(),
         (SelectorBuilder selector) async => await getPaginatedIdsAndNames(

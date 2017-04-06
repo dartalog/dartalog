@@ -27,7 +27,7 @@ abstract class AMongoIdDataSource<T extends AHumanFriendlyData>
   Future<PaginatedUuidData<T>> getPaginated(
           {String sortField: null,
           int offset: 0,
-          int limit: PAGINATED_DATA_LIMIT}) =>
+          int limit: paginatedDataLimit}) =>
       super.getPaginated(
           sortField: sortField ?? readableIdField,
           offset: offset,

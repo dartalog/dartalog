@@ -3020,6 +3020,7 @@ class UpdateItemRequest {
 }
 
 class User {
+  core.String email;
   core.String name;
   core.String password;
   core.String readableId;
@@ -3029,6 +3030,9 @@ class User {
   User();
 
   User.fromJson(core.Map _json) {
+    if (_json.containsKey("email")) {
+      email = _json["email"];
+    }
     if (_json.containsKey("name")) {
       name = _json["name"];
     }
@@ -3048,6 +3052,9 @@ class User {
 
   core.Map toJson() {
     var _json = new core.Map();
+    if (email != null) {
+      _json["email"] = email;
+    }
     if (name != null) {
       _json["name"] = name;
     }

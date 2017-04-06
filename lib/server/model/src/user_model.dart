@@ -35,6 +35,10 @@ class UserModel extends AIdNameBasedModel<User> {
       if (!UserPrivilege.values.contains(user.type))
         fieldErrors["type"] = "Invalid";
     }
+
+    if (StringTools.isNullOrWhitespace(user.email)) {
+      fieldErrors["email"] = "Required";
+    }
   }
 
   void _validatePassword(Map<String, String> fieldErrors, String password) {

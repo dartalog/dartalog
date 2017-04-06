@@ -13,6 +13,7 @@ class MongoUserDataSource extends AMongoIdDataSource<User>
   static final Logger _log = new Logger('MongoUserDataSource');
 
   static const String typeField = "type";
+  static const String emailField = "email";
   static const String passwordField = "password";
 
   @override
@@ -51,6 +52,7 @@ class MongoUserDataSource extends AMongoIdDataSource<User>
     final User output = new User();
     setIdDataFields(output, data);
     if (data.containsKey(typeField)) output.type = data[typeField];
+    if (data.containsKey(emailField)) output.email = data[emailField];
     return output;
   }
 
@@ -62,5 +64,6 @@ class MongoUserDataSource extends AMongoIdDataSource<User>
   void updateMap(User user, Map data) {
     super.updateMap(user, data);
     data[typeField] = user.type;
+    data[emailField] = user.email;
   }
 }

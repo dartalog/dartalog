@@ -91,7 +91,7 @@ class LoginFormComponent extends AErrorThing {
           case 401:
             message = "Login incorrect";
             break;
-          case HTTP_STATUS_SERVER_NEEDS_SETUP:
+          case httpStatusServerNeedsSetup:
             await _router.navigate([setupRoute.name]);
             break;
           default:

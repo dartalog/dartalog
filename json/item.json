@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "98fa9f7c25e820833b9ca181a5b95f866d2a88f3",
+ "etag": "8d8a4ed956139f6a7feb8e781e2585f62c4ad7cd",
  "discoveryVersion": "v1",
  "id": "item:0.1",
  "name": "item",
@@ -508,6 +508,9 @@
      "type": "string"
     },
     "type": {
+     "type": "string"
+    },
+    "email": {
      "type": "string"
     },
     "name": {

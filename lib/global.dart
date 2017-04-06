@@ -13,19 +13,19 @@ const String itemApiVersion = "0.1";
 const String itemApiName = "item";
 const String itemApiPath = "api/$itemApiName/$itemApiVersion/";
 
-const int DEFAULT_PER_PAGE = 60;
+const int defaultPerPage = 60;
 
 const String fileUploadPrefix =
     "upload:"; // Chosen because it easily subdivides into the most digits
-const String HOSTED_IMAGE_PREFIX = "image:";
+const String hostedImagesPrefix = "image:";
 
-const String HOSTED_IMAGES_ORIGINALS_PATH = "${HOSTED_IMAGES_PATH}originals/";
-const String HOSTED_IMAGES_PATH = "images/";
+const String hostedImagesOriginalsPath = "${hostedImagesPath}originals/";
+const String hostedImagesPath = "images/";
 
-const String HOSTED_IMAGES_THUMBNAILS_PATH = "${HOSTED_IMAGES_PATH}thumbnails/";
-const int HTTP_STATUS_SERVER_NEEDS_SETUP = 555;
+const String hostedImagesThumbnailsPath = "${hostedImagesPath}thumbnails/";
+const int httpStatusServerNeedsSetup = 555;
 
-const int PAGINATED_DATA_LIMIT = 60;
+const int paginatedDataLimit = 60;
 
 const String numericFieldTypeId = "numeric";
 const String stringFieldTypeId = "string";
@@ -34,7 +34,7 @@ const String imageFieldTypeId = "image";
 const String hiddenFieldTypeId = "hidden";
 const String multiValueStringTypeID = "multiValueString";
 
-final Map<String, String> globalFieldTypes = {
+final Map<String, String> globalFieldTypes = <String,String> {
   numericFieldTypeId: 'Numeric',
   stringFieldTypeId: 'String',
   dateFieldTypeId: 'Date',
@@ -43,7 +43,7 @@ final Map<String, String> globalFieldTypes = {
   multiValueStringTypeID: "Multi-value String",
 };
 
-final RegExp FILE_UPLOAD_REGEX = new RegExp("$fileUploadPrefix(\\d+)");
+final RegExp fileUploadRegex = new RegExp("$fileUploadPrefix(\\d+)");
 
 final List<String> _reservedWords = <String>[
   'id',

@@ -24,15 +24,20 @@ class MongoDatabase {
   static String redirectEntryName = "redirect";
   ManagedConnection<Db> con;
 
+  static const int maxConnections = 3;
+
   bool released = false;
 
   MongoDatabase(this.con);
+
+  State get state => this.con.conn.state;
 
   void checkForRedirectMap(Map data) {
     if (data.containsKey(redirectEntryName)) {
       throw new Exception("Not inplemented"); //TODO: Implement!
       //throw new api.RedirectingException(data["id"], data[REDIRECT_ENTRY_NAME]);
     }
+
   }
   Future<DbCollection> getItemCopyHistoryCollection() async {
     _checkConnection();
@@ -132,7 +137,7 @@ class MongoDatabase {
 
   static Future<Null> testConnectionString(String connectionString) async {
     final MongoDbConnectionPool pool =
-        new MongoDbConnectionPool(connectionString, 3);
+        new MongoDbConnectionPool(connectionString, maxConnections);
     final ManagedConnection<Db> con = await pool.getConnection();
     pool.releaseConnection(con);
     await pool.closeConnections();
@@ -150,17 +155,27 @@ class MongoDatabase {
     }
   }
 
+  static void closeConnection(Db conn) {
+    try {
+      if (_pool != null) {
+        _pool.closeConnection(conn);
+      }
+    } catch (e, st) {
+      _log.warning("closeConnection", e, st);
+    }
+  }
+
   static Future<MongoDatabase> getConnection() async {
     if (_pool == null) {
       _pool =
-          new MongoDbConnectionPool(model.settings.mongoConnectionString, 3);
+          new MongoDbConnectionPool(model.settings.mongoConnectionString, maxConnections);
     }
 
     ManagedConnection<Db> con = await _pool.getConnection();
-    Db db = con.conn;
 
+    // Theoretically this should be able to catch closed connections, but it can't catch connections that were closed by the server without notifying the client, like when the server restarts.
     int i = 0;
-    while (db == null || db.state != State.OPEN) {
+    while (con?.conn == null || con.conn.state != State.OPEN) {
       if (i > 5) {
         throw new Exception(
             "Too many attempts to fetch a connection from the pool");
@@ -171,7 +186,6 @@ class MongoDatabase {
         _pool.releaseConnection(con, markAsInvalid: true);
       }
       con = await _pool.getConnection();
-      db = con.conn;
       i++;
     }
 

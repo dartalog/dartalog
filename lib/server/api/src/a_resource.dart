@@ -125,7 +125,7 @@ abstract class AResource {
     } on SetupRequiredException catch (e, st) {
       exception = e;
       stackTrace = st;
-      output = new RpcError(HTTP_STATUS_SERVER_NEEDS_SETUP, "Setup Required",
+      output = new RpcError(httpStatusServerNeedsSetup, "Setup Required",
           "Setup is required");
     } catch (e, st) {
       exception = e;

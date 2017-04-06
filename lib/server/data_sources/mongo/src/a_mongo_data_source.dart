@@ -14,18 +14,31 @@ abstract class AMongoDataSource {
 
   Future<dynamic> _connectionWrapper(
       Future<dynamic> statement(MongoDatabase db),
-      {int retries: 3}) async {
+      {int retries: 5}) async {
+    // The number of retries should be at least as much as the number of connections in the connection pool.
+    // Otherwise it might run out of retries before invalidating every potentially disconnected connection in the pool.
     for (int i = 0; i < retries; i++) {
+      bool closeConnection = false;
       final MongoDatabase con = await MongoDatabase.getConnection();
+
       try {
         return await statement(con);
       } on ConnectionException catch (e, st) {
-        _log.warning(
-            "ConnectionException while operating on mongo database, retrying",
-            e,
-            st);
+        if(i>=retries) {
+          _log.severe(
+              "ConnectionException while operating on mongo database",
+              e,
+              st);
+          rethrow;
+        } else {
+          _log.warning(
+              "ConnectionException while operating on mongo database, retrying",
+              e,
+              st);
+        }
+        closeConnection = true;
       } finally {
-        con.release();
+        con.release(dispose: closeConnection);
       }
     }
   }

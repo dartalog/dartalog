@@ -9,4 +9,5 @@ class SetupRequest {
 
   String adminUser;
   String adminPassword;
+  String adminEmail;
 }

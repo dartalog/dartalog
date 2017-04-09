@@ -25,7 +25,7 @@ dependencies:
   image: ^1.1.26
   intl: ^0.14.0
   logging_handlers: ^0.8.0
-  meta: ^1.0.4
+  meta: ^1.0.5
   mime: ^0.9.3
   mongo_dart: ^0.2.10
   option: ^1.2.0

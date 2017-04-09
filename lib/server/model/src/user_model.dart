@@ -38,6 +38,8 @@ class UserModel extends AIdNameBasedModel<User> {
 
     if (StringTools.isNullOrWhitespace(user.email)) {
       fieldErrors["email"] = "Required";
+    } else if(!isValidEmail(user.email)) {
+      fieldErrors["email"] = "Invalid";
     }
   }
 
@@ -59,11 +61,12 @@ class UserModel extends AIdNameBasedModel<User> {
         throw new Exception("Authenticated user not present in database"));
   }
 
-  Future<String> createUserWith(String username, String password, String type,
+  Future<String> createUserWith(String username, String email, String password, String type,
       {bool bypassAuthentication: false}) async {
     final User newUser = new User();
     newUser.readableId = username;
     newUser.name = username;
+    newUser.email = email;
     newUser.password = password;
     newUser.type = type;
     return await create(newUser, bypassAuthentication: bypassAuthentication);

@@ -12,6 +12,8 @@ import 'package:rpc/rpc.dart';
 import 'package:stack_trace/stack_trace.dart';
 import '../api.dart';
 
+
+
 abstract class AResource {
   @protected
   Logger get childLogger;
@@ -134,10 +136,16 @@ abstract class AResource {
     }
     childLogger.severe(exception, stackTrace);
     output.errors.add(new RpcErrorDetail(
-        location: Trace.format(stackTrace, terse: true),
-        locationType: "stackTrace"));
+    location: Trace.format(stackTrace, terse: true),
+    locationType: "stackTrace"));
+
+    output.errors.add(new RpcErrorDetail(
+    location: exception.runtimeType.toString(),
+    locationType: "exceptionType"));
+
     throw output;
   }
+
 
   void _sendRedirectHeader(String target) {
     context.responseStatusCode = HttpStatus.MOVED_PERMANENTLY;

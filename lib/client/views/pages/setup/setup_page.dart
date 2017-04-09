@@ -68,6 +68,7 @@ class SetupPage extends APage implements OnInit {
 
   Future<Null> onSubmit() async {
     try {
+      // TODO: Add support for new required e-mail field on users
       // TODO: Figure out how to use angular's validators to do this on-the-fly
       if (request.adminPassword != confirmPassword) {
         final AbstractControl control = form.controls["confirmPassword"];

@@ -57,7 +57,7 @@ bool keyExistsAndHasValue(Map<dynamic, dynamic> map, String key) {
   return !StringTools.isNullOrWhitespace(map[key]);
 }
 
-/// Returns a [String] containing the validation error message for the specified input [String], or an empty [String] if the input is valid for use as a [RegExp]
+/// Returns a [String] containing the validation error message for the specified input [String], or an empty [String] if the input is valid for use as a [RegExp].
 String validateRegularExpression(String input) {
   try {
     final RegExp test = new RegExp(input);
@@ -67,6 +67,15 @@ String validateRegularExpression(String input) {
     return e.message;
   }
 }
+
+/// This matches the w3 spec for use with type="email" input fields, and that's good enough for us.
+final RegExp _emailRegex = new RegExp(r"^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$");
+
+/// Checks if the [email] specified matches whe w3 spec regexp for email input fields, which is close enough to validating it as an e-mail address.
+bool isValidEmail(String email) {
+  return _emailRegex.hasMatch(email);
+}
+
 
 /// Helper class containing tools for handling strings
 class StringTools {

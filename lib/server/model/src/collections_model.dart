@@ -56,7 +56,32 @@ class CollectionsModel extends AIdNameBasedModel<Collection> {
     else
       output = await dataSource.getAllForCurator(userPrincipal.get().name);
 
-    for (dynamic t in output) await  performAdjustments(t);
+    for (dynamic t in output) await performAdjustments(t);
     return output;
+  }
+
+  @override
+  Future<Null> validateFieldsInternal(
+      Map<String, String> fieldErrors, Collection collection,
+      {String existingId: null}) async {
+    if (collection.browserUuids == null) {
+      fieldErrors["browserUuids"] = "Cannot be null";
+    } else {
+      for (String uuid in collection.browserUuids) {
+        if (!await data_sources.users.existsByUuid(uuid))
+          fieldErrors["browserUuids"] = "Invalid user";
+      }
+    }
+
+    if (collection.curatorUuids == null) {
+      fieldErrors["curatorUuids"] = "Cannot be null";
+    } else if (collection.curatorUuids.length == 0) {
+      fieldErrors["curatorUuids"] = "Please specify at least one curator";
+    } else {
+      for (String uuid in collection.curatorUuids) {
+        if (!await data_sources.users.existsByUuid(uuid))
+          fieldErrors["curatorUuids"] = "Invalid user";
+      }
+    }
   }
 }

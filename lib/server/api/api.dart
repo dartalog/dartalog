@@ -11,4 +11,3 @@ export 'item/src/responses/setup_response.dart';
 
 const String setupApiPath = "setup";
 
-class ManagementApi {}

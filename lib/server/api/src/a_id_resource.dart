@@ -49,6 +49,7 @@ abstract class AIdResource<T extends AUuidData> extends AResource {
   Future<T> getByUuidWithCatch(String uuid) =>
       catchExceptionsAwait(() async => idModel.getByUuid(uuid));
 
+  @protected
   Future<IdResponse> updateWithCatch(String uuid, T t, {List<MediaMessage> mediaMessages}) =>
       catchExceptionsAwait(() async {
         List<List<int>> files;
@@ -66,13 +67,17 @@ abstract class AIdResource<T extends AUuidData> extends AResource {
 
         return new IdResponse.fromId(output, this.generateRedirect(output));
       });
-}
 
 
-List<List<int>> convertMediaMessagesToIntLists(List<MediaMessage> input) {
-  final List<List<int>> output = <List<int>>[];
-  for (MediaMessage mm in input) {
-    output.add(mm.bytes);
+  @protected
+  List<List<int>> convertMediaMessagesToIntLists(List<MediaMessage> input) {
+    final List<List<int>> output = <List<int>>[];
+    for (MediaMessage mm in input) {
+      output.add(mm.bytes);
+    }
+    return output;
   }
-  return output;
 }
+
+
+

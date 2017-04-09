@@ -9,6 +9,9 @@ import 'package:dartalog/server/data_sources/data_sources.dart' as data_sources;
 import 'package:meta/meta.dart';
 
 abstract class AModel {
+  /// This is for testing ONLY, do not use for anything!
+  static User AuthenticationOverride;
+
   @protected
   String get currentUserUuid =>
       userPrincipal.map((Principal p) => p.name).getOrDefault("");
@@ -33,9 +36,14 @@ abstract class AModel {
   Logger get loggerImpl;
 
   @protected
-  bool get userAuthenticated => userPrincipal
-      .map((Principal p) => true)
-      .getOrDefault(false); // High-security defaults
+  bool get userAuthenticated {
+    if(AuthenticationOverride!=null)
+      return true;
+
+    return userPrincipal
+        .map((Principal p) => true)
+        .getOrDefault(false); // High-security defaults
+  }
 
   @protected
   Option<Principal> get userPrincipal => authenticatedContext()
@@ -43,6 +51,9 @@ abstract class AModel {
 
   @protected
   Future<User> getCurrentUser() async {
+    if(AModel.AuthenticationOverride!=null)
+      return AModel.AuthenticationOverride;
+
     final Principal p = userPrincipal.getOrElse(
         () => throw new NotAuthorizedException.withMessage("Please log in"));
     return (await data_sources.users.getByUuid(p.name)).getOrElse(

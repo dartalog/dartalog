@@ -52,6 +52,7 @@ final List<String> _reservedWords = <String>[
   'search',
   'edit',
   'add',
+  'test',
 ];
 
 bool isReservedWord(String input) =>

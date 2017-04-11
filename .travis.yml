@@ -1,3 +1,4 @@
 language: dart
 services: mongodb
-script: script: ./tool/build.sh
+sudo: false
+script: ./tool/travis.sh

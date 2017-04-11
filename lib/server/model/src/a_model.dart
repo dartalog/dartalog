@@ -10,7 +10,7 @@ import 'package:meta/meta.dart';
 
 abstract class AModel {
   /// This is for testing ONLY, do not use for anything!
-  static User AuthenticationOverride;
+  static User authenticationOverride;
 
   @protected
   String get currentUserUuid =>
@@ -37,7 +37,7 @@ abstract class AModel {
 
   @protected
   bool get userAuthenticated {
-    if(AuthenticationOverride!=null)
+    if(authenticationOverride!=null)
       return true;
 
     return userPrincipal
@@ -51,8 +51,8 @@ abstract class AModel {
 
   @protected
   Future<User> getCurrentUser() async {
-    if(AModel.AuthenticationOverride!=null)
-      return AModel.AuthenticationOverride;
+    if(AModel.authenticationOverride!=null)
+      return AModel.authenticationOverride;
 
     final Principal p = userPrincipal.getOrElse(
         () => throw new NotAuthorizedException.withMessage("Please log in"));

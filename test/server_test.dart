@@ -1,15 +1,37 @@
 import 'package:dartalog/global.dart';
-import 'package:dartalog/server/api/api.dart';
 import 'package:dartalog/server/api/item/item_api.dart';
 import 'package:dartalog/server/data/data.dart';
 import 'package:dartalog/server/data_sources/data_sources.dart' as data_source;
 import 'package:dartalog/server/model/model.dart' as model;
 import 'package:dartalog/tools.dart';
 import 'package:rpc/rpc.dart';
-import 'package:shelf_auth/shelf_auth.dart';
 import 'package:test/test.dart';
+import 'package:dartalog/server/api/api.dart';
 
 void main() {
+  ItemApi api;
+  User adminUser;
+  final String userPassword = generateUuid();
+
+  setUp(() async {
+    model.settings.loadSettingsFile("test/server.options");
+
+    model.setup.disableSetup();
+
+    await data_source.nukeDataSource();
+
+    final String uuid = await model.users.createUserWith(
+        "TESTUSER" + generateUuid(),
+        "test@test.com",
+        userPassword,
+        UserPrivilege.admin,
+        bypassAuthentication: true);
+    adminUser = await model.users.getByUuid(uuid, bypassAuthentication: true);
+    model.AModel.authenticationOverride = adminUser;
+
+    api = new ItemApi();
+  });
+
   group("Global tools", () {
     test("Generate UUID", () {
       generateUuid();
@@ -34,34 +56,11 @@ void main() {
   });
 
   group("API", () {
-    model.setup.disableSetup();
-
-    ItemApi api;
-
-    User adminUser;
-    User patronUser;
-    User curatorUser;
-
-    String userPassword = generateUuid();
-
-    test("Create Test user", () async {
-      final String uuid = await model.users.createUserWith(
-          "TESTUSER" + generateUuid(),
-          "test@test.com",
-          userPassword,
-          UserPrivilege.admin,
-          bypassAuthentication: true);
-      adminUser = await model.users.getByUuid(uuid, bypassAuthentication: true);
-      model.AModel.AuthenticationOverride = adminUser;
-    });
-
-    test("Instantiate API", () {
-      api = new ItemApi();
-    });
-
     Collection col;
     String collectionUuid;
 
+    //User patronUser;
+    //User curatorUser;
 
     test("User validation", () async {
       User user = createUser();
@@ -77,15 +76,15 @@ void main() {
       expect(api.users.create(user), isDataValidationException);
 
       user = createUser();
-      user.name= "";
+      user.name = "";
       expect(api.users.create(user), isDataValidationException);
 
       user = createUser();
-      user.type= "";
+      user.type = "";
       expect(api.users.create(user), isDataValidationException);
 
       user = createUser();
-      user.type= "invalidUserType";
+      user.type = "invalidUserType";
       expect(api.users.create(user), isDataValidationException);
 
       user = createUser();
@@ -95,11 +94,7 @@ void main() {
       user = createUser();
       user.email = "invalidEmail";
       expect(api.users.create(user), isDataValidationException);
-
     });
-
-
-
 
     test("Collection validation", () async {
       // Test blank name
@@ -131,57 +126,59 @@ void main() {
       col = createCollection(adminUser);
       col.curatorUuids.add(generateUuid());
       expect(api.collections.create(col), isDataValidationException);
-
     });
 
     test("Create collection", () async {
       final Collection col = createCollection(adminUser);
-      collectionUuid = (await api.collections.create(col)).uuid;
+      final IdResponse response =  await api.collections.create(col);
+      expect(response, isNotNull);
+      collectionUuid = response.uuid;
+      expect(collectionUuid, isNotEmpty);
     });
 
     test("Get collection by uuid", () async {
       col = await api.collections.getByUuid(collectionUuid);
+      expect(col, isNotNull);
       expect(col.name, testCollectionName);
     });
 
     test("Update collection by uuid", () async {
       final String newName = "$testCollectionName 2";
       final String newReadableId = testCollectionName + generateUuid();
-      final bool newPublicallyBrowsable = !col.publiclyBrowsable;
+      final bool newPubliclyBrowsable = !col.publiclyBrowsable;
 
       col.name = newName;
       col.readableId = newReadableId;
-      col.publiclyBrowsable =newPublicallyBrowsable;
+      col.publiclyBrowsable = newPubliclyBrowsable;
       await api.collections.update(collectionUuid, col);
 
       col = await api.collections.getByUuid(collectionUuid);
 
       expect(col.name, newName);
       expect(col.readableId, newReadableId);
-      expect(col.publiclyBrowsable, newPublicallyBrowsable);
+      expect(col.publiclyBrowsable, newPubliclyBrowsable);
     });
 
     test("Delete collection", () async {
       await api.collections.delete(collectionUuid);
       expect(api.collections.getByUuid(collectionUuid), isNotFoundException);
     });
+  });
 
-    test("Deleting Test user", () async {
-      // TODO: Get this going through the model or API instead
-      await data_source.users.deleteByUuid(adminUser.uuid);
-    });
+  tearDown(() async {
+    // TODO: Get this going through the model or API instead
+    await data_source.users.deleteByUuid(adminUser.uuid);
   });
 }
-
 
 const String testCollectionName = "TESTCOLLECTION";
 const String testFieldName = "TESTFIELD";
 
 final Matcher isDataValidationException =
-throwsA(new RpcErrorMatcher<DataValidationException>());
+    throwsA(new RpcErrorMatcher<DataValidationException>());
 
 final Matcher isNotFoundException =
-throwsA(new RpcErrorMatcher<NotFoundException>());
+    throwsA(new RpcErrorMatcher<NotFoundException>());
 
 /// Creates a [Collection] object that should meet all validation requirements.
 Collection createCollection(User testUser) {
@@ -196,12 +193,13 @@ Collection createCollection(User testUser) {
 
 /// Creates a [Field] object that should meet all validation requirements.
 Field createField() {
-  final Field field = new Field.withValues(testFieldName, testFieldName + generateUuid(), numericFieldTypeId);
+  final Field field = new Field.withValues(
+      testFieldName, testFieldName + generateUuid(), numericFieldTypeId);
   return field;
 }
 
 /// Creates a [User] object with the specified [type] that should meet all validation requirements.
-User createUser([String type= UserPrivilege.patron]) {
+User createUser([String type = UserPrivilege.patron]) {
   final User user = new User();
   user.readableId = "testUser$type" + generateUuid();
   user.name = "TEST $type";
@@ -221,7 +219,7 @@ class RpcErrorMatcher<T> extends Matcher {
       description.add('an instance of RpcError containing a(n) $T');
 
   @override
-  bool matches(dynamic obj, Map matchState) {
+  bool matches(dynamic obj, Map<dynamic, dynamic> matchState) {
     if (obj is RpcError) {
       for (RpcErrorDetail detail in obj.errors) {
         if (detail.locationType == "exceptionType" &&

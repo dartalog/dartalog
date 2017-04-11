@@ -9,11 +9,16 @@ class SettingsModel {
 
   SettingsModel() {
     try {
-      _optionsFile = new OptionsFile('server.options');
+      loadSettingsFile('server.options');
     } on FileSystemException catch (e) {
       _log.info("server.options not found, using all default settings", e);
     }
   }
+  void loadSettingsFile(String file) {
+      _optionsFile = new OptionsFile(file);
+  }
+
+
   String get mongoConnectionString =>
       _getStringFromOptionFile("mongo", "mongodb://localhost:27017/dartalog");
 

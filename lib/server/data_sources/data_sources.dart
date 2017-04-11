@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:logging/logging.dart';
 import 'package:dartalog/server/data_sources/interfaces/interfaces.dart';
 import 'package:dartalog/server/data_sources/mongo/mongo.dart';
@@ -16,3 +17,9 @@ final AItemCopyDataSource itemCopies = new MongoItemCopyDataSource();
 final AHistoryDataSource itemHistories = new MongoHistoryDataSource();
 
 final ACollectionDataSource itemCollections = new MongoCollectionDataSource();
+
+Future<Null> nukeDataSource() async {
+  await MongoDatabase.connectionWrapper((MongoDatabase db) async {
+    await db.nukeDatabase();
+  });
+}

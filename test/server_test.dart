@@ -13,28 +13,36 @@ void main() {
   User adminUser;
   final String userPassword = generateUuid();
 
-  setUp(() async {
+  setUpAll(() async {
     model.settings.loadSettingsFile("test/server.options");
 
     model.setup.disableSetup();
 
     await data_source.nukeDataSource();
-
     final String uuid = await model.users.createUserWith(
-        "TESTUSER" + generateUuid(),
-        "test@test.com",
-        userPassword,
-        UserPrivilege.admin,
-        bypassAuthentication: true);
+    "TESTUSER" + generateUuid(),
+    "test@test.com",
+    userPassword,
+    UserPrivilege.admin,
+    bypassAuthentication: true);
     adminUser = await model.users.getByUuid(uuid, bypassAuthentication: true);
     model.AModel.authenticationOverride = adminUser;
 
     api = new ItemApi();
+    });
+
+  setUp(() async {
   });
 
   group("Global tools", () {
-    test("Generate UUID", () {
-      generateUuid();
+    String uuid;
+    test("generateUuid()", () {
+      uuid = generateUuid();
+      expect(uuid, isNotEmpty);
+    });
+    test("isUuid()", () {
+      expect(isUuid(uuid), isTrue);
+      expect(isUuid("Not a uuid"), isFalse);
     });
     test("StringTools.isNullOrWhitespace", () {
       expect(StringTools.isNullOrWhitespace(null), isTrue);
@@ -165,7 +173,7 @@ void main() {
     });
   });
 
-  tearDown(() async {
+  tearDownAll(() async {
     // TODO: Get this going through the model or API instead
     await data_source.users.deleteByUuid(adminUser.uuid);
   });

@@ -1,2 +1,3 @@
 language: dart
 services: mongodb
+script: script: ./tool/build.sh

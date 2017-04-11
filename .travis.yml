@@ -1,3 +1,6 @@
 language: dart
 services: mongodb
-script: ./tool/build.sh
+dart_task:
+- dartanalyzer: true
+- test: --platform vm
+- build: true

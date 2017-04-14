@@ -1,5 +1,3 @@
 language: dart
 services: mongodb
-dart_task:
-- test: true
 script: ./tool/build.sh

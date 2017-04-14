@@ -1,8 +1,14 @@
+import 'dart:io';
+
 class ForbiddenException implements Exception {
   String message = "Forbidden";
 
-  ForbiddenException();
-  ForbiddenException.withMessage(this.message);
+  int code =  HttpStatus.UNAUTHORIZED;
+
+  ForbiddenException({this.code: HttpStatus.UNAUTHORIZED});
+  ForbiddenException.withMessage(this.message,
+      {this.code: HttpStatus.UNAUTHORIZED});
+
 
   @override
   String toString() {

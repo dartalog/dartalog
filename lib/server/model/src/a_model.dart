@@ -37,7 +37,7 @@ abstract class AModel {
 
   @protected
   bool get userAuthenticated {
-    if(authenticationOverride!=null)
+    if(AModel.authenticationOverride!=null)
       return true;
 
     return userPrincipal
@@ -55,9 +55,9 @@ abstract class AModel {
       return AModel.authenticationOverride;
 
     final Principal p = userPrincipal.getOrElse(
-        () => throw new NotAuthorizedException.withMessage("Please log in"));
+        () => throw new UnauthorizedException.withMessage("Please log in"));
     return (await data_sources.users.getByUuid(p.name)).getOrElse(
-        () => throw new NotAuthorizedException.withMessage("User not found"));
+        () => throw new UnauthorizedException.withMessage("User not found"));
   }
 
   @protected
@@ -75,7 +75,7 @@ abstract class AModel {
   @protected
   Future<Null> validateCreatePrivileges() async {
     if (!userAuthenticated) {
-      throw new NotAuthorizedException();
+      throw new UnauthorizedException();
     }
     await validateCreatePrivilegeRequirement();
   }
@@ -91,7 +91,7 @@ abstract class AModel {
   @protected
   Future<Null> validateDeletePrivileges(String id) async {
     if (!userAuthenticated) {
-      throw new NotAuthorizedException();
+      throw new UnauthorizedException();
     }
     await validateDeletePrivilegeRequirement();
   }
@@ -112,7 +112,7 @@ abstract class AModel {
   @protected
   Future<Null> validateUpdatePrivileges(String uuid) async {
     if (!userAuthenticated) {
-      throw new NotAuthorizedException();
+      throw new UnauthorizedException();
     }
     await validateUpdatePrivilegeRequirement();
   }

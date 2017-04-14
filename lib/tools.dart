@@ -73,6 +73,8 @@ final RegExp _emailRegex = new RegExp(r"^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-z
 
 /// Checks if the [email] specified matches whe w3 spec regexp for email input fields, which is close enough to validating it as an e-mail address.
 bool isValidEmail(String email) {
+  if(email==null)
+    throw new ArgumentError.notNull("email");
   return _emailRegex.hasMatch(email);
 }
 

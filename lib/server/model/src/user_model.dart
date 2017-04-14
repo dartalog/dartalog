@@ -53,7 +53,7 @@ class UserModel extends AIdNameBasedModel<User> {
   }
 
   Future<User> getMe() async {
-    if (!userAuthenticated) throw new NotAuthorizedException();
+    if (!userAuthenticated) throw new UnauthorizedException();
 
     final Option<User> output =
         await dataSource.getByUuid(userPrincipal.get().name);
@@ -98,7 +98,7 @@ class UserModel extends AIdNameBasedModel<User> {
   Future<Null> changePassword(
       String uuid, String currentPassword, String newPassword) async {
     if (!userAuthenticated) {
-      throw new NotAuthorizedException();
+      throw new UnauthorizedException();
     }
     if (currentUserUuid != uuid)
       throw new ForbiddenException.withMessage(

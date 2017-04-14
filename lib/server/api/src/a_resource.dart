@@ -55,7 +55,7 @@ abstract class AResource {
       }
 
       return await toAwait;
-    } on NotAuthorizedException catch (e, st) {
+    } on UnauthorizedException catch (e, st) {
       exception = e;
       stackTrace = st;
       output =

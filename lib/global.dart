@@ -4,6 +4,7 @@ export 'src/exceptions/invalid_input_exception.dart';
 export 'src/exceptions/not_found_exception.dart';
 export 'src/exceptions/validation_exception.dart';
 export 'src/exceptions/not_implemented_exception.dart';
+export 'src/exceptions/unauthorized_exception.dart';
 export 'src/item_action.dart';
 export 'src/item_status.dart';
 export 'src/user_privilege.dart';

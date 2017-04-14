@@ -54,6 +54,8 @@ abstract class AIdNameBasedModel<T extends AHumanFriendlyData>
       fieldErrors["readableId"] = "Cannot be in the form of a uuid";
     else if (isReservedWord(t.readableId))
       fieldErrors["readableId"] ="Cannot use '${t.readableId}' as Readable ID";
+    else if (t.readableId.contains(" ")) // TODO: Come up with more definitive rules for readable IDs
+      fieldErrors["readableId"] ="Cannot use spaces in Readable ID";
     else {
       final Option<T> item = await dataSource.getByReadableId(t.readableId);
 

@@ -21,6 +21,7 @@ abstract class AIdNameResource<T extends AHumanFriendlyData> extends AIdResource
 //      new PaginatedResponse<IdNamePair>.fromPaginatedData(
 //          await idModel.getAllIdsAndNames()));
 
+  @protected
   Future<List<IdNamePair>> getAllIdsAndNamesWithCatch() async =>
       catchExceptionsAwait(() => idModel.getAllIdsAndNames());
 

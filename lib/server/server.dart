@@ -8,7 +8,6 @@ import 'package:angular2/di.dart';
 export 'src/settings.dart';
 export 'src/exceptions/setup_disabled_exception.dart';
 export 'src/exceptions/setup_required_exception.dart';
-export 'src/exceptions/not_authorized_exception.dart';
 
 final String rootDirectory = join(dirname(Platform.script.toFilePath()), '..');
 String serverRoot, serverApiRoot;

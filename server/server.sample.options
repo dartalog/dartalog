@@ -1,0 +1,6 @@
+# server options
+port=3278
+# this binds to IPv4 and IPv6 localhost addresses
+bind=::1
+# database connection string
+connection_string=mongodb://127.0.0.1:27017/dartalog

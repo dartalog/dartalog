@@ -1,3 +1,0 @@
-class IdRequest {
-  String id;
-}

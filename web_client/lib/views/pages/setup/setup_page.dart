@@ -2,11 +2,12 @@ import 'dart:async';
 
 import 'package:angular2/angular2.dart';
 import 'package:angular2/router.dart';
-import 'package:angular2_components/angular2_components.dart';
+import 'package:angular_components/angular_components.dart';
 import 'package:dartalog/api/api.dart';
 import 'package:dartalog/routes.dart';
 import 'package:dartalog/services/services.dart';
 import 'package:dartalog/views/controls/auth_status_component.dart';
+import 'package:dartalog/views/controls/error_output.dart';
 import 'package:logging/logging.dart';
 import '../src/a_page.dart';
 
@@ -17,6 +18,7 @@ import '../src/a_page.dart';
       materialDirectives,
       ROUTER_DIRECTIVES,
       AuthStatusComponent,
+      ErrorOutputComponent
     ],
     styleUrls: const <String>["../../shared.css"],
     templateUrl: "setup_page.html")
@@ -68,7 +70,6 @@ class SetupPage extends APage implements OnInit {
 
   Future<Null> onSubmit() async {
     try {
-      // TODO: Add support for new required e-mail field on users
       // TODO: Figure out how to use angular's validators to do this on-the-fly
       if (request.adminPassword != confirmPassword) {
         final AbstractControl control = form.controls["confirmPassword"];
@@ -91,7 +92,7 @@ class SetupPage extends APage implements OnInit {
             rethrow;
           }
         }
-      });
+      }, form:  form);
     } catch (e, st) {
       setErrorMessage(e, st);
     }

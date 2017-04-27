@@ -7,6 +7,8 @@ import 'package:rpc/rpc.dart';
 class ItemType extends AHumanFriendlyData {
   List<String> fieldUuids = new List<String>();
 
+  bool isFileType = false;
+
   List<Field> fields;
 
   ItemType();

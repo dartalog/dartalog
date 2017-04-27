@@ -9,6 +9,7 @@ import 'package:dartalog/data/data.dart';
 import 'package:dartalog/data_sources/interfaces/interfaces.dart';
 import 'package:dartalog/data_sources/data_sources.dart' as data_sources;
 import 'a_id_name_based_model.dart';
+import 'a_model.dart';
 
 class UserModel extends AIdNameBasedModel<User> {
   static final Logger _log = new Logger('UserModel');
@@ -93,8 +94,6 @@ class UserModel extends AIdNameBasedModel<User> {
   @override
   Future<String> update(String id, User user,
       {bool bypassAuthentication: false}) async {
-    // TODO: Only admin can update...for now
-
     final String output = await super
         .update(id, user, bypassAuthentication: bypassAuthentication);
 
@@ -104,12 +103,25 @@ class UserModel extends AIdNameBasedModel<User> {
     return output;
   }
 
+
+  @override
+  Future<Null> validateUpdatePrivileges(String uuid) async {
+    if (!userAuthenticated) {
+      throw new UnauthorizedException();
+    }
+    // This should allow a user to update their own data
+    if(currentUserUuid!=uuid) {
+      await super.validateUpdatePrivileges(uuid);
+    }
+  }
+
   Future<Null> changePassword(
       String uuid, String currentPassword, String newPassword) async {
     if (!userAuthenticated) {
       throw new UnauthorizedException();
     }
-    if (currentUserUuid != uuid)
+
+    if(currentUserUuid != uuid && !(await userHasPrivilege(UserPrivilege.admin)))
       throw new ForbiddenException.withMessage(
           "You do not have permission to change another user's password");
 
@@ -125,6 +137,7 @@ class UserModel extends AIdNameBasedModel<User> {
         fieldErrors["currentPassword"] = "Incorrect";
       }
     });
+
     await _setPassword(uuid, newPassword);
   }
 

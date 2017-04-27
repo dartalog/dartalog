@@ -2,8 +2,6 @@ analyzer:
   strong-mode:
     - implicit-downcasts: false
     - implicit-dynamic: false
-  exclude:
-    - lib/client/api/src/item.dart
   errors:
     todo: ignore
     unused_import: info

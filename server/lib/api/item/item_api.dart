@@ -30,6 +30,7 @@ import 'package:dartalog/model/model.dart';
 //export 'src/requests/create_item_request.dart';
 //export 'src/requests/update_item_request.dart';
 //export 'src/requests/transfer_request.dart';
+export 'src/requests/password_change_request.dart';
 
 @ApiClass(
     version: itemApiVersion, name: itemApiName, description: 'Item REST API')
@@ -74,21 +75,19 @@ class ItemApi {
   @ApiResource()
   final SetupResource setup;
 
-  ItemApi(this.fields, this.itemTypes, this.items, this.import,
-      this.presets, this.collections, this.users, this.export, this.setup);
-
-
+  ItemApi(this.fields, this.itemTypes, this.items, this.import, this.presets,
+      this.collections, this.users, this.export, this.setup);
 
   static Module get injectorModules => new Module()
-                ..bind(FieldResource)
-                ..bind(ItemTypeResource)
+    ..bind(FieldResource)
+    ..bind(ItemTypeResource)
     ..bind(ItemResource)
     ..bind(ItemCopyResource)
-                ..bind(ImportResource)
-                ..bind(PresetResource)
-                ..bind(CollectionResource)
-                ..bind(UserResource)
-                ..bind(ExportResource)
-                ..bind(SetupResource)
-      ..bind(ItemApi);
+    ..bind(ImportResource)
+    ..bind(PresetResource)
+    ..bind(CollectionResource)
+    ..bind(UserResource)
+    ..bind(ExportResource)
+    ..bind(SetupResource)
+    ..bind(ItemApi);
 }

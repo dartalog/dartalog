@@ -15,6 +15,7 @@ import 'a_mongo_nested_object_data_source.dart';
 import 'a_mongo_object_data_source.dart';
 import 'a_mongo_uuid_based_data_source.dart';
 import 'constants.dart';
+import 'package:meta/meta.dart';
 
 class MongoItemCopyDataSource
     extends AMongoNestedObjectDataSource<ItemCopy, Item>

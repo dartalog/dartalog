@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "8d8a4ed956139f6a7feb8e781e2585f62c4ad7cd",
+ "etag": "c132302c6d8c442458c5d31a897077d180a3f4a9",
  "discoveryVersion": "v1",
  "id": "item:0.1",
  "name": "item",
@@ -8,10 +8,10 @@
  "revision": "0",
  "description": "Item REST API",
  "protocol": "rest",
- "baseUrl": "http://localhost:8080/item/0.1/",
- "basePath": "/item/0.1/",
- "rootUrl": "http://localhost:8080/",
- "servicePath": "item/0.1/",
+ "baseUrl": "http://localhost:3278/api/item/0.1/",
+ "basePath": "/api/item/0.1/",
+ "rootUrl": "http://localhost:3278/",
+ "servicePath": "api/item/0.1/",
  "parameters": {},
  "schemas": {
   "Field": {
@@ -553,6 +553,9 @@
      "type": "string"
     },
     "adminPassword": {
+     "type": "string"
+    },
+    "adminEmail": {
      "type": "string"
     }
    }

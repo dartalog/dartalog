@@ -12,14 +12,16 @@ class MongoItemTypeDataSource extends AMongoIdDataSource<ItemType>
   static final Logger _log = new Logger('MongoItemTypeDataSource');
 
   static const String fieldUuidsField = "fieldUuids";
+  static const String isFileTypeField = "isFileType";
 
   MongoItemTypeDataSource(MongoDbConnectionPool pool): super(pool);
 
   @override
   ItemType createObject(Map data) {
     final ItemType output = new ItemType();
-    setIdDataFields(output, data);
+    AMongoIdDataSource.setIdDataFields(output, data);
     output.fieldUuids = data[fieldUuidsField];
+    output.isFileType = data[isFileTypeField];
     return output;
   }
 
@@ -31,5 +33,6 @@ class MongoItemTypeDataSource extends AMongoIdDataSource<ItemType>
   void updateMap(ItemType itemType, Map data) {
     super.updateMap(itemType, data);
     data[fieldUuidsField] = itemType.fieldUuids;
+    data[isFileTypeField] = itemType.isFileType;
   }
 }

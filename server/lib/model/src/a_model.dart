@@ -8,10 +8,24 @@ import 'user_model.dart';
 import 'package:dartalog/data/data.dart';
 import 'package:dartalog/data_sources/data_sources.dart';
 import 'package:meta/meta.dart';
+import 'package:dartalog_shared/tools.dart';
 
 abstract class AModel {
-  /// This is for testing ONLY, do not use for anything!
-  static User authenticationOverride;
+  /// Manually sets the current logged-in (or not logged-in) user.
+  @visibleForTesting
+  static void overrideCurrentUser(String uuid) {
+    if (StringTools.isNullOrWhitespace(uuid)) {
+      _authenticationOverride = new None<Principal>();
+    } else {
+      _authenticationOverride = new Some<Principal>(new Principal(uuid));
+    }
+  }
+
+  /// Clears out all current user overrides, even an override of "un-authenticated".
+  @visibleForTesting
+  static void clearCurrentUserOverride() => _authenticationOverride = null;
+  static Option<Principal> _authenticationOverride;
+  // TODO: Get this not to be static so that it's carried along with the server instance.
 
   final AUserDataSource userDataSource;
   AModel(this.userDataSource);
@@ -41,22 +55,21 @@ abstract class AModel {
 
   @protected
   bool get userAuthenticated {
-    if (AModel.authenticationOverride != null) return true;
-
-    return userPrincipal
-        .map((Principal p) => true)
-        .getOrDefault(false); // High-security defaults
+    return userPrincipal.isNotEmpty;
   }
 
   @protected
-  Option<Principal> get userPrincipal => authenticatedContext()
-      .map((AuthenticatedContext<Principal> context) => context.principal);
+  Option<Principal> get userPrincipal {
+    if (_authenticationOverride == null) {
+      return authenticatedContext()
+          .map((AuthenticatedContext<Principal> context) => context.principal);
+    } else {
+      return _authenticationOverride;
+    }
+  }
 
   @protected
   Future<User> getCurrentUser() async {
-    if (AModel.authenticationOverride != null)
-      return AModel.authenticationOverride;
-
     final Principal p = userPrincipal.getOrElse(
         () => throw new UnauthorizedException.withMessage("Please log in"));
     return (await userDataSource.getByUuid(p.name)).getOrElse(

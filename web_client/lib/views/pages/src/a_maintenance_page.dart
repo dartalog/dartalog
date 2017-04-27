@@ -32,7 +32,10 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
 
   bool showDeleteConfirmation = false;
 
-  AMaintenancePage(this._loadTemplates, this._pageControl, this.api,
+  final String dataType;
+
+
+  AMaintenancePage(this.dataType, this._loadTemplates, this._pageControl, this.api,
       AuthenticationService _auth, Router router)
       : super(_pageControl, _auth, router) {
     _pageControl.setAvailablePageActions(
@@ -105,7 +108,7 @@ abstract class AMaintenancePage<T> extends APage implements OnInit, OnDestroy {
         case PageActions.Add:
           cancelEdit();
           final IdNamePair id = new IdNamePair();
-          id.name = "New Field";
+          id.name = "New $dataType";
           id.uuid = "";
           items.insert(0, id);
           break;

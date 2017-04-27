@@ -53,10 +53,10 @@ abstract class AIdNameBasedModel<T extends AHumanFriendlyData>
     else if (isUuid(t.readableId))
       fieldErrors["readableId"] = "Cannot be in the form of a uuid";
     else if (isReservedWord(t.readableId))
-      fieldErrors["readableId"] = "Cannot use '${t.readableId}' as Readable ID";
+      fieldErrors["readableId"] = "'${t.readableId}' is a reserved word";
     else if (t.readableId.contains(
         " ")) // TODO: Come up with more definitive rules for readable IDs
-      fieldErrors["readableId"] = "Cannot use spaces in Readable ID";
+      fieldErrors["readableId"] = "Cannot use spaces";
     else {
       final Option<T> item = await dataSource.getByReadableId(t.readableId);
 
@@ -73,7 +73,7 @@ abstract class AIdNameBasedModel<T extends AHumanFriendlyData>
     if (StringTools.isNullOrWhitespace(t.name)) {
       fieldErrors["name"] = "Required";
     } else if (isReservedWord(t.name)) {
-      fieldErrors["name"] = "Cannot use '${t.name}' as name";
+      fieldErrors["name"] = "'${t.readableId}' is a reserved word";
     }
 
     await validateFieldsInternal(fieldErrors, t, existingId: existingId);

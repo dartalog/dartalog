@@ -96,7 +96,7 @@ abstract class AMongoIdDataSource<T extends AHumanFriendlyData>
 
   @override
   Future<Option<String>> getUuidForReadableId(String readableId) async {
-    final List data = await genericFind(where
+    final List<dynamic> data = await genericFind(where
         .eq(readableIdField, readableId)
         .limit(1)
         .fields(<String>[uuidField]));
@@ -106,14 +106,18 @@ abstract class AMongoIdDataSource<T extends AHumanFriendlyData>
   }
 
   @override
-  void updateMap(T item, Map<String, dynamic> data) {
-    super.updateMap(item, data);
+  void updateMap(AHumanFriendlyData item, Map<String, dynamic> data) {
+    staticUpdateMap(item, data);
+  }
+  static void staticUpdateMap(AHumanFriendlyData item, Map<String, dynamic> data) {
+    AMongoUuidBasedDataSource.staticUpdateMap(item, data);
     data[nameField] = item.name;
     data[readableIdField] = item.readableId;
   }
 
-  void setIdDataFields(T item, Map<String, dynamic> data) {
-    AMongoUuidBasedDataSource.setUuidForData<T>(item, data);
+
+  static void setIdDataFields(AHumanFriendlyData item, Map<String, dynamic> data) {
+    AMongoUuidBasedDataSource.setUuidForData(item, data);
     item.name = data[nameField];
     item.readableId = data[readableIdField];
   }

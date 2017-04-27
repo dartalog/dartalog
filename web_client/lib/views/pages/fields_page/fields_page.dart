@@ -1,6 +1,6 @@
 import 'package:angular2/angular2.dart';
 import 'package:angular2/router.dart';
-import 'package:angular2_components/angular2_components.dart';
+import 'package:angular_components/angular_components.dart';
 import 'package:dartalog/api/api.dart' as api;
 import 'package:dartalog/services/services.dart';
 import 'package:dartalog/views/controls/common_controls.dart';
@@ -20,7 +20,7 @@ class FieldsPage extends AMaintenancePage<api.Field> {
 
   FieldsPage(PageControlService pageControl, ApiService api,
       AuthenticationService auth, Router router)
-      : super(true, pageControl, api, auth, router) {
+      : super("Field", true, pageControl, api, auth, router) {
     pageControl.setPageTitle("Fields");
   }
 

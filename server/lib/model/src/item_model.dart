@@ -15,13 +15,14 @@ import 'a_id_name_based_model.dart';
 import 'item_copy_model.dart';
 import 'package:dartalog/model/model.dart';
 import 'a_file_upload_model.dart';
+import 'package:mime/mime.dart';
 
 class ItemModel extends AIdNameBasedModel<Item> with AFileUploadModel<Item> {
   static final Logger _log = new Logger('ItemModel');
   static final RegExp legalIdCharacters = new RegExp("[a-zA-Z0-9_\-]");
 
   static final String originalImagePath =
-      path.join(rootDirectory, hostedImagesOriginalsPath);
+      path.join(rootDirectory, hostedFilesOriginalsPath);
 
   static final String thumbnailImagePath =
       path.join(rootDirectory, hostedImagesThumbnailsPath);
@@ -36,8 +37,19 @@ class ItemModel extends AIdNameBasedModel<Item> with AFileUploadModel<Item> {
   final AItemDataSource itemDataSource;
   final AItemTypeDataSource itemTypeDataSource;
   final AFieldDataSource fieldDataSource;
+  final ATagDataSource tagDataSource;
+  final ATagCategoryDataSource tagCategoryDataSource;
 
-  ItemModel(this.itemCopyModel, this.itemTypeModel, this.itemDataSource, this.itemTypeDataSource, this.fieldDataSource, AUserDataSource userDataSource): super(userDataSource);
+  ItemModel(
+      this.itemCopyModel,
+      this.itemTypeModel,
+      this.itemDataSource,
+      this.itemTypeDataSource,
+      this.fieldDataSource,
+      this.tagDataSource,
+      this.tagCategoryDataSource,
+      AUserDataSource userDataSource)
+      : super(userDataSource);
 
   // TODO: evaluate more (oh)
   @override
@@ -129,7 +141,8 @@ class ItemModel extends AIdNameBasedModel<Item> with AFileUploadModel<Item> {
           await itemCopyModel.validateFields(itemCopy, skipItemIdCheck: true));
     });
 
-    await _handleFileUploads(item, files);
+    await _prepareFileUploads(item, files);
+    await _handleTags(item.tags);
     //TODO: More thorough cleanup of files in case of failure
 
     final String itemId = await itemDataSource.create(item.uuid, item);
@@ -264,33 +277,30 @@ class ItemModel extends AIdNameBasedModel<Item> with AFileUploadModel<Item> {
         item.readableId = await _generateUniqueReadableId(item);
     }
 
-    await _handleFileUploads(item, files);
+    await _prepareFileUploads(item, files);
+
+    await _handleTags(item.tags);
 
     return await super
         .update(uuid, item, bypassAuthentication: bypassAuthentication);
   }
 
-  Future<Null> _handleFileUploads(Item item, List<List<int>> files) async {
-    final ItemType type = await itemTypeModel.getByUuid(item.typeUuid);
-    final List<Field> fields =
-        await fieldDataSource.getByUuids(type.fieldUuids);
-    final Map<String, List<int>> filesToWrite = new Map<String, List<int>>();
-
-    for (Field f in fields) {
-      if (f.type != "image" ||
-          !item.values.containsKey(f.uuid) ||
-          StringTools.isNullOrWhitespace(item.values[f.uuid])) continue;
-
-      //TODO: Old image cleanup
-
-      final String value = item.values[f.uuid];
-
-      if (value.startsWith(hostedImagesPrefix)) {
-        // This should indicate that the submitted image is one that is already hosted on the server, so nothing to do here
-        continue;
+  Future<Null> _handleTags(List<Tag> tags) async {
+    for(Tag tag in tags) {
+      if(StringTools.isNullOrWhitespace(tag.uuid)) {
+        tag.uuid = generateUuid();
+        await tagDataSource.create(tag.uuid, tag);
       }
+    }
+  }
 
-//      String image_url = getImagesRootUrl().toLowerCase();
+  Future<_PrepareFileResult> _prepareFileUpload(
+      String fileId, List<List<int>> files) async {
+    if (fileId.startsWith(hostedFilesPrefix)) {
+      // This should indicate that the submitted image is one that is already hosted on the server, so nothing to do here
+      return null;
+    }
+    //      String image_url = getImagesRootUrl().toLowerCase();
 //      if(value.toLowerCase().startsWith(image_url))
 //        continue;
 //      //TODO: Evaluate for abuse
@@ -301,38 +311,70 @@ class ItemModel extends AIdNameBasedModel<Item> with AFileUploadModel<Item> {
 //      // Since the file already exists, it would catch that it was the same file and abort,
 //      // but there may be some way to abuse this. Have to think about it.
 
-      List<int> data;
+    List<int> data;
 
-      final Match m = fileUploadRegex.firstMatch(value);
-      if (m != null) {
-        // This is a new file upload
-        final int filePosition = int.parse(m.group(1));
-        if (files.length - 1 < filePosition) {
-          throw new InvalidInputException(
-              "Field ${f.uuid} specifies unprovided upload file at position $filePosition");
-        }
-        data = files[filePosition];
-      } else {
-        // So we assume it's a URL
-        _log.fine("Processing as URL: $value");
-        final Uri fileUri = Uri.parse(value);
-        final HttpClientRequest req = await new HttpClient().getUrl(fileUri);
-        final HttpClientResponse response = await req.close();
-        final List<List<int>> output = await response.toList();
-        data = new List<int>();
-        for (List<int> chunk in output) {
-          data.addAll(chunk);
-        }
-      }
-
-      if (data.length == 0)
+    final Match m = fileUploadRegex.firstMatch(fileId);
+    if (m != null) {
+      // This is a new file upload
+      final int filePosition = int.parse(m.group(1));
+      if (files.length - 1 < filePosition) {
         throw new InvalidInputException(
-            "Specified file upload $value is empty");
+            "Unprovided upload file specified at position $filePosition");
+      }
+      data = files[filePosition];
+    } else {
+      // So we assume it's a URL
+      _log.fine("Processing as URL: $fileId");
+      final Uri fileUri = Uri.parse(fileId);
+      final HttpClientRequest req = await new HttpClient().getUrl(fileUri);
+      final HttpClientResponse response = await req.close();
+      final List<List<int>> output = await response.toList();
+      data = new List<int>();
+      for (List<int> chunk in output) {
+        data.addAll(chunk);
+      }
+    }
 
-      final Digest hash = sha256.convert(data);
-      final String hashString = hash.toString();
-      filesToWrite[hashString] = data;
-      item.values[f.uuid] = "$hostedImagesPrefix$hashString";
+    if (data.length == 0)
+      throw new InvalidInputException("Specified file upload $fileId is empty");
+
+    final Digest hash = sha256.convert(data);
+    final String hashString = hash.toString();
+    final _PrepareFileResult result = new _PrepareFileResult();
+    result.hash = hashString;
+    result.data = data;
+    result.fileSpecifier = "$hostedFilesPrefix$hashString";
+    return result;
+  }
+
+  Future<Null> _prepareFileUploads(Item item, List<List<int>> files) async {
+    final ItemType type = await itemTypeModel.getByUuid(item.typeUuid);
+    final List<Field> fields =
+        await fieldDataSource.getByUuids(type.fieldUuids);
+
+    final Map<String, _PrepareFileResult> filesToWrite =
+        new Map<String, _PrepareFileResult>();
+
+    if (type.isFileType) {
+      final _PrepareFileResult result =
+          await _prepareFileUpload(item.file, files);
+      if (result == null)
+        throw new InvalidInputException("Invalid file upload");
+      filesToWrite[result.hash] = result;
+      item.file = result.fileSpecifier;
+    }
+
+    for (Field f in fields) {
+      if (f.type != "image" ||
+          !item.values.containsKey(f.uuid) ||
+          StringTools.isNullOrWhitespace(item.values[f.uuid])) continue;
+
+      //TODO: Old image cleanup
+
+      final String value = item.values[f.uuid];
+
+      final _PrepareFileResult result = await _prepareFileUpload(value, files);
+      filesToWrite[result.hash] = result;
     }
 
     // Now that the above sections have completed gathering all the file services for saving, we save it all
@@ -343,29 +385,46 @@ class ItemModel extends AIdNameBasedModel<Item> with AFileUploadModel<Item> {
       if (!thumbnailDir.existsSync()) thumbnailDir.createSync(recursive: true);
 
       for (String key in filesToWrite.keys) {
+        final List<int> data = filesToWrite[key].data;
+
         final File file = new File(path.join(originalImagePath, key));
         final bool fileExists = await file.exists();
         if (!fileExists) {
           await file.create();
         } else {
           final int size = await file.length();
-          if (size != filesToWrite[key].length)
+          if (size != data.length)
             throw new Exception("File already exists with a different size");
           continue;
         }
 
-        final Image image = decodeImage(filesToWrite[key]);
+        List<int> lookupBytes;
+        if (data.length > 10) {
+          lookupBytes = data.sublist(0, 10);
+        } else {
+          lookupBytes = data;
+        }
+        final String mime = lookupMimeType("", headerBytes: lookupBytes);
+
         List<int> thumbnailData;
+        switch (mime) {
+          case "imagerelatedMIME":
+            final Image image = decodeImage(data);
+            if (image.width > 300) {
+              final Image thumbnail = copyResize(image, 300, -1, AVERAGE);
+              thumbnailData = encodeJpg(thumbnail, quality: 90);
+            } else {
+              thumbnailData = filesToWrite[key].data;
+            }
+            break;
+          default:
+            throw new Exception("MIME type not supported: $mime");
+        }
+
         final File thumbnailFile = new File(path.join(thumbnailImagePath, key));
+
         if (thumbnailFile.existsSync()) thumbnailFile.deleteSync();
         thumbnailFile.createSync();
-
-        if (image.width > 300) {
-          final Image thumbnail = copyResize(image, 300, -1, AVERAGE);
-          thumbnailData = encodeJpg(thumbnail, quality: 90);
-        } else {
-          thumbnailData = filesToWrite[key];
-        }
 
         final RandomAccessFile imageRaf =
             await file.open(mode: FileMode.WRITE_ONLY);
@@ -373,7 +432,7 @@ class ItemModel extends AIdNameBasedModel<Item> with AFileUploadModel<Item> {
             await thumbnailFile.open(mode: FileMode.WRITE_ONLY);
         try {
           _log.fine("Writing to ${file.path}");
-          await imageRaf.writeFrom(filesToWrite[key]);
+          await imageRaf.writeFrom(filesToWrite[key].data);
           filesWritten.add(file.path);
           _log.fine("Writing to ${thumbnailFile.path}");
           await thumbnailRaf.writeFrom(thumbnailData);
@@ -388,6 +447,7 @@ class ItemModel extends AIdNameBasedModel<Item> with AFileUploadModel<Item> {
         }
       }
     } catch (e, st) {
+      // TODO: Verify that when an item is deleted, that its files ends up going with them IF no other items reference that file
       _log.severe(e.message, e, st);
       for (String f in filesWritten) {
         try {
@@ -408,9 +468,40 @@ class ItemModel extends AIdNameBasedModel<Item> with AFileUploadModel<Item> {
     if (StringTools.isNullOrWhitespace(item.typeUuid))
       fieldErrors["typeUuid"] = "Required";
     else {
-      final dynamic test =
+      final Option<ItemType> type =
           await itemTypeDataSource.getByUuid(item.typeUuid);
-      if (test == null) fieldErrors["typeUuid"] = "Not found";
+      if (type.isEmpty) {
+        fieldErrors["typeUuid"] = "Not found";
+      } else {
+        if (type.first.isFileType) {
+          if (item.file == null) {
+            fieldErrors["file"] = "Required";
+          }
+        }
+      }
+
+      if(item.tags!=null) {
+        // TODO: Get the error feedback to be able to handle positional feedback
+        for(Tag tag in item.tags) {
+          if(StringTools.isNullOrWhitespace(tag.name)) {
+            fieldErrors["tag"] = "Tag name required";
+          }
+
+          if(StringTools.isNotNullOrWhitespace(tag.uuid)) {
+            final Option<Tag> result = await tagDataSource.getByUuid(tag.uuid);
+            if (result.isEmpty) {
+              fieldErrors["tag"] = "Not found";
+            }
+          }
+
+          if(StringTools.isNotNullOrWhitespace(tag.categoryUuid)) {
+            final Option<TagCategory> result = await tagCategoryDataSource.getByUuid(tag.categoryUuid);
+            if(result.isEmpty)
+              fieldErrors["tag"] = "Not found";
+          }
+        }
+      }
+
     }
   }
 
@@ -459,4 +550,10 @@ class ItemModel extends AIdNameBasedModel<Item> with AFileUploadModel<Item> {
     }
     return testName;
   }
+}
+
+class _PrepareFileResult {
+  String hash;
+  String fileSpecifier;
+  List<int> data;
 }

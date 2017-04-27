@@ -11,6 +11,7 @@ import '../../item_api.dart';
 import 'item_copy_resource.dart';
 import '../requests/create_item_request.dart';
 import '../requests/update_item_request.dart';
+import 'package:dartalog/tools.dart';
 
 class ItemResource extends AIdNameResource<Item> {
   static final Logger _log = new Logger('ItemResource');
@@ -29,7 +30,7 @@ class ItemResource extends AIdNameResource<Item> {
   AIdNameBasedModel<Item> get idModel => itemModel;
 
   @ApiMethod(method: 'POST', path: '$_apiPath/')
-  Future<IdResponse> createItemWithCopy(CreateItemRequest newItem) async {
+  Future<IdResponse> createItem(CreateItemRequest newItem) async {
     List<List<int>> files;
     if (newItem.files != null) {
       files = convertMediaMessagesToIntLists(newItem.files);
@@ -40,10 +41,12 @@ class ItemResource extends AIdNameResource<Item> {
     return new IdResponse.fromId(output, generateRedirect(output));
   }
 
+
+
   // Created only to satisfy the interface; should not be used, as creating a copy with each item should be required
   @override
   Future<IdResponse> create(Item item) =>
-      throw new NotImplementedException("Use createItemWithCopy instead");
+      throw new NotImplementedException("Use createItem instead");
 
   @override
   @ApiMethod(method: 'DELETE', path: '$_apiPath/{uuid}/')

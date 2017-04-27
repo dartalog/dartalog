@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:angular2/angular2.dart';
 import 'package:angular2/router.dart';
-import 'package:angular2_components/angular2_components.dart';
+import 'package:angular_components/angular_components.dart';
 import 'package:dartalog/api/api.dart' as api;
 import 'package:dartalog/services/services.dart';
 import 'package:dartalog/views/controls/common_controls.dart';
@@ -30,7 +30,7 @@ class UsersPage extends AMaintenancePage<api.User> {
 
   UsersPage(PageControlService pageControl, ApiService api,
       AuthenticationService auth, Router router)
-      : super(false, pageControl, api, auth, router) {
+      : super("User",false, pageControl, api, auth, router) {
     pageControl.setPageTitle("Users");
   }
 

@@ -9,6 +9,8 @@ import 'package:option/option.dart';
 import 'a_mongo_id_data_source.dart';
 import 'mongo_item_copy_data_source.dart';
 import 'constants.dart';
+import 'mongo_tag_data_source.dart';
+
 
 class MongoItemDataSource extends AMongoIdDataSource<Item>
     with AItemDataSource {
@@ -92,22 +94,35 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
   static const String dateAddedField = "dateAdded";
   static const String valuesField = "values";
   static const String dateUpdatedField = "dateUpdated";
+  static const String tagsField = "tags";
+  static const String fileField = "file";
+  static const String fileThumbnailField = "fileThumbnail";
 
   @override
   Item createObject(Map<String, dynamic> data) {
     final Item output = new Item();
-    setIdDataFields(output, data);
+    AMongoIdDataSource.setIdDataFields(output, data);
     output.typeUuid = data[typeUuidField];
     output.values = data[valuesField];
     output.dateAdded = data[dateAddedField];
     output.dateUpdated = data[dateUpdatedField];
+    output.file = data[fileField];
+    output.fileThumbnail= data[fileThumbnailField];
 
     if (data[itemCopiesField] != null) {
-      for (Map itemCopy in data[itemCopiesField]) {
+      for (Map<dynamic,dynamic> itemCopy in data[itemCopiesField]) {
         final ItemCopy copy =
             MongoItemCopyDataSource.staticCreateObject(itemCopy);
         copy.itemUuid = output.uuid;
         output.copies.add(copy);
+      }
+    }
+
+    if(data[tagsField]!=null) {
+      output.tags = <Tag>[];
+      for (Map<dynamic,dynamic> tag in data[tagsField]) {
+        final Tag newTag = MongoTagDataSource.staticCreateObject(tag);
+        output.tags.add(newTag);
       }
     }
 
@@ -125,5 +140,16 @@ class MongoItemDataSource extends AMongoIdDataSource<Item>
     data[valuesField] = item.values;
     if (item.dateAdded != null) data[dateAddedField] = item.dateAdded;
     data[dateUpdatedField] = item.dateUpdated;
+    data[fileField] = item.file;
+    data[fileThumbnailField] = item.fileThumbnail;
+    if(item.tags!=null) {
+      final List<dynamic> tagsList = new List<dynamic>();
+      for(Tag tag in item.tags) {
+        final Map<dynamic,dynamic> tagMap = <dynamic,dynamic>{};
+        MongoTagDataSource.staticUpdateMap(tag, tagMap);
+        tagsList.add(tagMap);
+      }
+    data[tagsField] = tagsList;
+  }
   }
 }

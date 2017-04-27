@@ -19,13 +19,6 @@ abstract class AResource {
   String get resourcePath => "";
 
   @protected
-  String normalizeReadableId(String input) {
-    String output = input.trim().toLowerCase();
-    output = Uri.decodeQueryComponent(output);
-    return output;
-  }
-
-  @protected
   Future<dynamic> catchExceptionsAwait(Future<dynamic> toAwait()) async {
     return _catchExceptions(toAwait());
   }
@@ -35,13 +28,6 @@ abstract class AResource {
   String generateRedirect(String newId) {
     return "";
   }
-
-  Future<Null> checkIfSetupRequired() async {
-    if (await isSetupAvailable())
-      throw new SetupRequiredException();
-  }
-
-
 
   Future<dynamic> _catchExceptions(Future<dynamic> toAwait) async {
     RpcError output;

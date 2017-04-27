@@ -21,7 +21,7 @@ class MongoFieldDataSource extends AMongoIdDataSource<Field> with AFieldDataSour
   @override
   Field createObject(Map data) {
     final Field output = new Field();
-    setIdDataFields(output, data);
+    AMongoIdDataSource.setIdDataFields(output, data);
     output.type = data[typeField];
     output.format = data[formatField];
 

@@ -67,12 +67,15 @@ abstract class AMongoUuidBasedDataSource<T extends AUuidData>
   }
 
   @override
-  void updateMap(T item, Map<String, dynamic> data) {
+  void updateMap(AUuidData item, Map<String, dynamic> data) {
+    staticUpdateMap(item, data);
+  }
+  static void staticUpdateMap(AUuidData item, Map<String, dynamic> data) {
     data[uuidField] = item.uuid;
   }
 
-  static void setUuidForData<T extends AUuidData>(
-      T item, Map<String, dynamic> data) {
+  static void setUuidForData(
+      AUuidData item, Map<String, dynamic> data) {
     item.uuid = data[uuidField];
   }
 

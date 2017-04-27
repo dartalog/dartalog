@@ -34,7 +34,7 @@ class MongoCollectionDataSource extends AMongoIdDataSource<Collection>
   @override
   Collection createObject(Map data) {
     final Collection output = new Collection();
-    setIdDataFields(output, data);
+    AMongoIdDataSource.setIdDataFields(output, data);
     if (data.containsKey(publiclyBrowsableField))
       output.publiclyBrowsable = data[publiclyBrowsableField];
     if (data.containsKey(curatorUuidsField))

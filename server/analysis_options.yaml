@@ -1,9 +1,9 @@
 analyzer:
+  language:
+    enableSuperMixins: true
   strong-mode:
     - implicit-downcasts: false
     - implicit-dynamic: false
-  exclude:
-    - lib/client/api/src/item.dart
   errors:
     todo: ignore
     unused_import: info
@@ -11,7 +11,6 @@ analyzer:
     invalid_assignment: error
     unused_local_variable: warning
     dead_code: error
-
 linter:
   rules:
     - always_declare_return_types

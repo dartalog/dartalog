@@ -23,7 +23,7 @@ class MongoUserDataSource extends AMongoIdDataSource<User>
   @override
   User createObject(Map data) {
     final User output = new User();
-    setIdDataFields(output, data);
+    AMongoIdDataSource.setIdDataFields(output, data);
     if (data.containsKey(typeField)) output.type = data[typeField];
     if (data.containsKey(emailField)) output.email = data[emailField];
     return output;

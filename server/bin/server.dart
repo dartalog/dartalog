@@ -17,7 +17,7 @@ void main(List<String> args) {
 //  });
 //
   // Add a simple log handler to log information to a server side file.
-  Logger.root.level = Level.ALL;
+  Logger.root.level = Level.FINEST;
   Logger.root.onRecord.listen(new server_logging.LogPrintHandler());
   final Logger _log = new Logger("server.main()");
 

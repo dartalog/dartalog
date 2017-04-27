@@ -13,47 +13,70 @@ import 'package:dartalog/data_sources/mongo/mongo.dart';
 
 const String testCollectionName = "TESTCOLLECTION";
 const String testFieldName = "TESTFIELD";
+const String testAdminPassword = "TESTPASSWORD";
+const String testItemTypeName = "TESTITEMTYPE";
+const String testItemName = "TESTITEM";
 
 final Matcher isUnauthorizedException =
-    new RpcErrorMatcher<UnauthorizedException>();
+new RpcErrorMatcher<UnauthorizedException>();
+final Matcher isForbiddenException =
+new RpcErrorMatcher<ForbiddenException>();
 
 final Matcher throwsDataValidationException =
     throwsA(new RpcErrorMatcher<DataValidationException>());
 final Matcher throwsForbiddenException =
-    throwsA(new RpcErrorMatcher<ForbiddenException>());
+    throwsA(isForbiddenException);
 final Matcher throwsNotFoundException =
     throwsA(new RpcErrorMatcher<NotFoundException>());
 final Matcher throwsUnauthorizedException = throwsA(isUnauthorizedException);
 
-Future<Server> setUpServer() async {
-  final String connectionString = "mongodb://192.168.1.10:27017/dartalog_test" + "_" + generateUuid();
+final Matcher throwsNotImplementedException = throwsA(isNotImplementedException);
+
+const Matcher isNotImplementedException = const _NotImplementedException();
+
+class _NotImplementedException extends TypeMatcher {
+  const _NotImplementedException() : super("NotImplementedException");
+  bool matches(item, Map matchState) => item is NotImplementedException;
+}
+
+Future<Null> _nukeDatabase(String connectionString) async {
   final MongoDbConnectionPool pool = new MongoDbConnectionPool(connectionString);
   await pool.databaseWrapper((MongoDatabase db) => db.nukeDatabase());
+}
+
+Future<Server> setUpServer() async {
+  final String serverUuid = generateUuid();
+  final String connectionString = "mongodb://192.168.1.10:27017/dartalog_test_$serverUuid";
+  await _nukeDatabase(connectionString);
   disableSetup();
 
-  final Server server = Server.createInstance(connectionString);
+  final Server server = Server.createInstance(connectionString, instanceUuid: serverUuid);
 
-  final String password = generateUuid();
+  final String password = testAdminPassword;
   final String uuid = await server.userModel.createUserWith(
       "AdminUser", "test@test.com", password, UserPrivilege.admin,
       bypassAuthentication: true);
 
   final User adminUser =
       await server.userModel.getByUuid(uuid, bypassAuthentication: true);
-  adminUser.password = password;
 
-  AModel.authenticationOverride = adminUser;
+  AModel.overrideCurrentUser(adminUser.uuid);
 
   return server;
 }
 
-Future<Null> tearDownApi() async {}
+Future<Null> tearDownServer(Server server) async {
+  final MongoDbConnectionPool pool = server.injector.get(MongoDbConnectionPool);
+  await pool.closeConnections();
+  await _nukeDatabase(server.connectionString);
+}
 
 Future<Map<String, User>> createTestUsers(ItemApi api,
     {List<String> types: const <String>[
+      UserPrivilege.admin,
       UserPrivilege.curator,
       UserPrivilege.checkout,
-      UserPrivilege.patron
+      UserPrivilege.patron,
     ]}) async {
   final Map<String, User> output = <String, User>{};
   for (String type in types) {
@@ -89,6 +112,21 @@ Field createField() {
   return field;
 }
 
+/// Creates a [ItemType] object that should meet all validation requirements.
+ItemType createItemType(List<String> fieldUuids) {
+  final ItemType itemType = new ItemType.withValues(
+      testItemTypeName, testItemTypeName + generateUuid(), fieldUuids);
+  return itemType;
+}
+
+/// Creates a [Item] object that should meet all validation requirements.
+Item createItem(String typeUuid) {
+  final Item item = new Item();
+  item.typeUuid = typeUuid;
+  item.name = testItemName;
+  return item;
+}
+
 /// Creates a [User] object with the specified [type] that should meet all validation requirements.
 User createUser([String type = UserPrivilege.patron]) {
   final User user = new User();
@@ -106,7 +144,7 @@ User createUser([String type = UserPrivilege.patron]) {
 /// Also runs [toAwait] with no user and checks for an [UnauthorizedException] based on [expectUnauthorizedException].
 void testSecurity(Future<Null> toAwait(), Map<User, bool> getUsers(),
     bool expectUnauthorizedException) {
-  AModel.authenticationOverride = null;
+  AModel.overrideCurrentUser(null);
 
   test("Unauthenticated", () async {
     if (expectUnauthorizedException) {
@@ -121,7 +159,7 @@ void testSecurity(Future<Null> toAwait(), Map<User, bool> getUsers(),
     final Map<User, bool> users = getUsers();
     for (User user in users.keys) {
       test(user.name, () async {
-        AModel.authenticationOverride = user;
+        AModel.overrideCurrentUser(user.uuid);
         if (users[user]) {
           await toAwait();
         } else {
@@ -154,7 +192,8 @@ class RpcErrorMatcher<T> extends Matcher {
     if (obj is RpcError) {
       for (RpcErrorDetail detail in obj.errors) {
         if (detail.locationType == "exceptionType" &&
-            detail.location == T.toString()) return true;
+            detail.location == T.toString())
+          return true;
       }
     }
     return false;

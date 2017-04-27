@@ -23,15 +23,15 @@ Option<Element> getChildElement(Element start, String tagName) {
 
 /// Determines the appropriate URL to get an image from the server's image store.
 String getImageUrl(String image, ImageType type) {
-  if (!image.startsWith(hostedImagesPrefix)) return image;
+  if (!image.startsWith(hostedFilesPrefix)) return image;
 
   switch (type) {
     case ImageType.original:
-      return "${getServerRoot()}$hostedImagesOriginalsPath${image
-          .substring(hostedImagesPrefix.length)}";
+      return "${getServerRoot()}$hostedFilesOriginalsPath${image
+          .substring(hostedFilesPrefix.length)}";
     case ImageType.thumbnail:
       return "${getServerRoot()}$hostedImagesThumbnailsPath${image
-          .substring(hostedImagesPrefix.length)}";
+          .substring(hostedFilesPrefix.length)}";
     default:
       throw new Exception("Not supported: $type");
   }

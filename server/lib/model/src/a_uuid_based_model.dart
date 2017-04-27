@@ -57,6 +57,7 @@ abstract class AUuidBasedModel<T extends AUuidData> extends ATypedModel<T> {
     return await dataSource.update(uuid, t);
   }
 
+
   @protected
   Future<Null> performAdjustments(T t) async {}
 

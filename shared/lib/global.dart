@@ -18,12 +18,12 @@ const int defaultPerPage = 60;
 
 const String fileUploadPrefix =
     "upload:"; // Chosen because it easily subdivides into the most digits
-const String hostedImagesPrefix = "image:";
+const String hostedFilesPrefix = "file:";
 
-const String hostedImagesOriginalsPath = "${hostedImagesPath}originals/";
-const String hostedImagesPath = "images/";
+const String hostedFilesOriginalsPath = "${hostedFilesPath}originals/";
+const String hostedFilesPath = "files/";
 
-const String hostedImagesThumbnailsPath = "${hostedImagesPath}thumbnails/";
+const String hostedImagesThumbnailsPath = "${hostedFilesPath}thumbnails/";
 const int httpStatusServerNeedsSetup = 555;
 
 const int paginatedDataLimit = 60;
@@ -58,6 +58,8 @@ final List<String> _reservedWords = <String>[
 
 bool isReservedWord(String input) =>
     _reservedWords.contains(input.trim().toLowerCase());
+
+
 
 //class Guid {
 //  List<int> data;

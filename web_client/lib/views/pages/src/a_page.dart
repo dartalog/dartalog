@@ -21,6 +21,8 @@ abstract class APage extends AErrorThing {
   final AuthenticationService auth;
   final Router _router;
 
+  DetailedApiRequestError apiError;
+
   APage(this._pageControl, this.auth, this._router);
   bool get hasErrorMessage => StringTools.isNotNullOrWhitespace(errorMessage);
 
@@ -48,6 +50,7 @@ abstract class APage extends AErrorThing {
 
   Future<Null> _handleApiError(DetailedApiRequestError error, dynamic st,
       [NgForm form = null]) async {
+        apiError = error;
     try {
 //      clearValidation();
       if (error.status == 400) {
@@ -92,7 +95,7 @@ abstract class APage extends AErrorThing {
       final AbstractControl control = form.controls[field];
       control.setErrors({field: message});
     } else {
-      throw new NotFoundException("Can't find field for $field");
+      //throw new NotFoundException("Can't find field for $field");
       //form.errors[field] = message;
       //errorMessage = message;
     }

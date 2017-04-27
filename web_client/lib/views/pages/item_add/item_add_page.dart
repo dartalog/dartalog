@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:angular2/angular2.dart';
-import 'package:angular2_components/angular2_components.dart';
+import 'package:angular_components/angular_components.dart';
 import 'package:dartalog/api/api.dart';
 import 'package:dartalog/client.dart';
 import 'package:dartalog/services/services.dart';

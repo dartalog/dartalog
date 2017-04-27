@@ -3,7 +3,7 @@ export 'src/api_http_client.dart';
 export 'package:_discoveryapis_commons/_discoveryapis_commons.dart'
     show DetailedApiRequestError, ApiRequestErrorDetail;
 
-export 'src/item.dart'
+export 'package:api_client/item/0_1.dart'
     show
         ItemApi,
         ItemCopy,

@@ -25,6 +25,8 @@ import 'package:shelf_static/shelf_static.dart';
 export 'src/exceptions/setup_disabled_exception.dart';
 export 'src/exceptions/setup_required_exception.dart';
 export 'src/settings.dart';
+import 'src/exceptions/setup_required_exception.dart';
+import 'package:meta/meta.dart';
 
 final String rootDirectory = join(dirname(Platform.script.toFilePath()), '..');
 String serverRoot, serverApiRoot;
@@ -50,18 +52,22 @@ class Server {
   final AUserDataSource userDataSource;
   final UserModel userModel;
 
-  final String instanceUuid = generateUuid();
+  String instanceUuid;
+  String connectionString;
+  ModuleInjector injector;
 
   final ApiServer _apiServer =
       new ApiServer(apiPrefix: _apiPrefix, prettyPrint: true);
 
   HttpServer _server;
 
-  Server(this.itemApi, this.userDataSource, this.userModel);
-
+  Server(this.itemApi, this.userDataSource, this.userModel) {
+    _log.fine("new Server($itemApi, $userDataSource, $userModel)");
+  }
 
   dynamic start(String bindIp, int port) async {
     try {
+      _log.fine("Start start($bindIp, $port)");
       if (_server != null)
         throw new Exception("Server has already been started");
 
@@ -111,6 +117,8 @@ class Server {
             '/api/',
             <String>['GET', 'PUT', 'POST', 'HEAD', 'OPTIONS', 'DELETE'],
             apiPipeline,
+            exactMatch: false)
+        ..add('/discovery/', <String>['GET', 'HEAD', 'OPTIONS'], apiPipeline,
             exactMatch: false);
 
       pathToBuild = join(rootDirectory, 'build/web/');
@@ -142,14 +150,15 @@ class Server {
           .addMiddleware(exceptionHandler())
           .addHandler(root.handler);
 
-      _server = await io.serve(
-          handler, bindIp, port);
+      _server = await io.serve(handler, bindIp, port);
 
       serverRoot = "http://${_server.address.host}:${_server.port}/";
       serverApiRoot = "$serverRoot$itemApiPath";
       print('Serving at $serverRoot');
     } catch (e, s) {
       _log.severe("Error while starting server", e, s);
+    } finally{
+      _log.fine("End start()");
     }
   }
 
@@ -161,21 +170,33 @@ class Server {
 
   Future<Option<Principal>> _authenticateUser(
       String userName, String password) async {
-    final Option<User> user =
-        await userDataSource.getByUsername(userName.trim().toLowerCase());
+    try {
+      _log.fine("Start _authenticateUser($userName, password_obfuscated)");
+      final Option<User> user =
+      await userDataSource.getByUsername(userName.trim().toLowerCase());
 
-    if (user.isEmpty) return new None<Principal>();
+      if (user.isEmpty) return new None<Principal>();
 
-    final Option<String> hashOption =
-        await userDataSource.getPasswordHashByUuid(user.get().uuid);
+      final Option<String> hashOption =
+      await userDataSource.getPasswordHashByUuid(user
+          .get()
+          .uuid);
 
-    if (hashOption.isEmpty)
-      throw new Exception("User does not have a password set");
+      if (hashOption.isEmpty)
+        throw new Exception("User does not have a password set");
 
-    if (userModel.verifyPassword(hashOption.get(), password))
-      return new Some<Principal>(new Principal(user.get().uuid));
-    else
-      return new None<Principal>();
+      if (userModel.verifyPassword(hashOption.get(), password))
+        return new Some<Principal>(new Principal(user
+            .get()
+            .uuid));
+      else
+        return new None<Principal>();
+    } catch(e,st) {
+      _log.severe(e);
+      rethrow;
+    } finally {
+      _log.fine("End _authenticateUser()");
+    }
   }
 
   Future<Option<Principal>> _getUser(String uuid) async {
@@ -184,17 +205,19 @@ class Server {
     return new Some<Principal>(new Principal(user.get().uuid));
   }
 
-  static Server createInstance(String connectionString) {
-    final ModuleInjector parentInjector = createModelModuleInjector(connectionString);
-    final ModuleInjector injector = new ModuleInjector(<Module>[
-      ItemApi.injectorModules,
-      new Module()..bind(Server)
-    ], parentInjector);
+  static Server createInstance(String connectionString, {String instanceUuid}) {
+    final ModuleInjector parentInjector =
+        createModelModuleInjector(connectionString);
+    final ModuleInjector injector = new ModuleInjector(
+        <Module>[ItemApi.injectorModules, new Module()..bind(Server)],
+        parentInjector);
 
-    return injector.get(Server);
+    final Server server = injector.get(Server);
+    server.instanceUuid = instanceUuid ?? generateUuid();
+    server.connectionString = connectionString;
+    server.injector = injector;
+    return server;
   }
-
-
 }
 
 enum SettingNames { itemNameFormat }
@@ -209,7 +232,13 @@ Future<bool> isSetupAvailable() async {
   }
   return true;
 }
+
 void disableSetup() {
   _setupDisabled = true;
+}
+
+Future<Null> checkIfSetupRequired() async {
+  if (await isSetupAvailable())
+    throw new SetupRequiredException();
 }
 
